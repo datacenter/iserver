@@ -1,0 +1,89 @@
+value: dict
+properties:
+  name:
+    mandatory: True
+    type: str
+    check: null
+  installation:
+    mandatory: True
+    type: str
+    check: null
+  source:
+    mandatory: False
+    type: str
+    check: values:local,web
+    default: local
+  release:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  cluster.name:
+    mandatory: True
+    type: str
+    check: null
+  cluster.domain:
+    mandatory: True
+    type: str
+    check: null
+  cluster.api_vip:
+    mandatory: True
+    type: str
+    check: ipv4
+  cluster.ingress_vip:
+    mandatory: True
+    type: str
+    check: ipv4
+  cluster.master.hyperthreading:
+    mandatory: False
+    type: bool
+    default: True
+    check: null
+  cluster.master.replicas:
+    mandatory: False
+    type: int
+    check: eq3
+    default: 3
+  cluster.master.cpu:
+    mandatory: True
+    type: int
+    check: ge1
+  cluster.master.memory:
+    mandatory: True
+    type: int
+    check: ge2048
+  cluster.master.disk.size:
+    mandatory: True
+    type: int
+    check: ge50
+  cluster.master.disk.type:
+    mandatory: False
+    type: string
+    check: values:thin,thick,eagerZeroedThick
+    default: thin
+  cluster.worker.hyperthreading:
+    mandatory: False
+    type: bool
+    default: True
+    check: null
+  cluster.worker.replicas:
+    mandatory: True
+    type: int
+    check: ge2
+  cluster.worker.cpu:
+    mandatory: True
+    type: int
+    check: ge1
+  cluster.worker.memory:
+    mandatory: True
+    type: int
+    check: ge2048
+  cluster.worker.disk.size:
+    mandatory: True
+    type: int
+    check: ge50
+  cluster.worker.disk.type:
+    mandatory: False
+    type: string
+    check: values:thin,thick,eagerZeroedThick
+    default: thin

@@ -1,0 +1,9 @@
+# Redfish Template Thermal
+
+Vendor | Model
+--- | ---
+${TEST_VENDOR} | ${TEST_MODEL}
+
+```
+DOC_TEMPLATE:${TEST_RESULT}.thermal:iserver.output.default
+```

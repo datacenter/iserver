@@ -1,0 +1,9 @@
+apiVersion: projectcalico.org/v3
+kind: BGPConfiguration
+metadata:
+  name: default
+spec:
+  asNumber: ${BGP_LOCAL_AS}
+  nodeToNodeMeshEnabled: ${BGP_MESH}
+${BGP_ADVERTISEMENTS}
+${BGP_PEERS}

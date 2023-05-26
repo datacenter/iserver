@@ -1,0 +1,9 @@
+# Redfish Oem Resources
+
+Vendor | Model
+--- | ---
+${TEST_VENDOR} | ${TEST_MODEL}
+
+```
+DOC_TEMPLATE:${TEST_RESULT}.oem:iserver.output.default
+```

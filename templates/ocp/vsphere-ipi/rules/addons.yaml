@@ -1,0 +1,17 @@
+value: dict
+properties:
+  iwo:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  calisti:
+    mandatory: False
+    type: bool
+    check: url
+    default: False
+  panoptica:
+    mandatory: False
+    type: bool
+    check: url
+    default: False

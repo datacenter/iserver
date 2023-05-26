@@ -1,0 +1,9 @@
+# Redfish Action Resources
+
+Vendor | Model
+--- | ---
+${TEST_VENDOR} | ${TEST_MODEL}
+
+```
+DOC_TEMPLATE:${TEST_RESULT}.action:iserver.output.default
+```

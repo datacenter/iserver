@@ -1,0 +1,22 @@
+value: dict
+properties:
+  ocp:
+    mandatory: False
+    type: str
+    check: local-file-null-accepted
+    default: null
+  ocp_base_url:
+    mandatory: False
+    type: str
+    check: url
+    default: https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp
+  oc:
+    mandatory: False
+    type: str
+    check: local-file-null-accepted
+    default: null
+  oc_base_url:
+    mandatory: False
+    type: str
+    check: url
+    default: https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp

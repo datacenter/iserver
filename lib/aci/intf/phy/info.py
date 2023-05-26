@@ -1,0 +1,841 @@
+import json
+
+from lib import filter_helper
+from lib import ip_helper
+
+
+class InterfacePhyInfo():
+    def __init__(self):
+        self.interface_phy = {}
+
+    def get_interfaces_phy_summary(self, pod_id, node_id):
+        interfaces = self.get_interfaces_phy(
+            pod_id,
+            node_id
+        )
+
+        if interfaces is None:
+            return None
+
+        summary = {}
+        summary['__Output'] = {}
+        summary['uplinkUp'] = 0
+        summary['uplinkDown'] = 0
+        summary['uplinkCount'] = 0
+        summary['downlinkUp'] = 0
+        summary['downlinkDown'] = 0
+        summary['downlinkCount'] = 0
+        summary['portUp'] = 0
+        summary['portDown'] = 0
+        summary['portCount'] = 0
+
+        speeds = [
+            '100M',
+            '1G',
+            '10G',
+            '25G',
+            '40G',
+            '100G',
+            '400G'
+        ]
+        for speed in speeds:
+            summary['%sUp' % (speed)] = 0
+            summary['%sDown' % (speed)] = 0
+
+        for interface in interfaces:
+            if interface['up']:
+                if interface['uplink']:
+                    summary['uplinkUp'] = summary['uplinkUp'] + 1
+                if interface['downlink']:
+                    summary['downlinkUp'] = summary['downlinkUp'] + 1
+                if interface['stats'] is not None:
+                    if interface['stats']['operSpeed'] in speeds:
+                        summary['%sUp' % (interface['stats']['operSpeed'])] = summary['%sUp' % (interface['stats']['operSpeed'])] + 1
+
+            if not interface['up']:
+                if interface['uplink']:
+                    summary['uplinkDown'] = summary['uplinkDown'] + 1
+                if interface['downlink']:
+                    summary['downlinkDown'] = summary['downlinkDown'] + 1
+                if interface['stats'] is not None:
+                    if interface['stats']['operSpeed'] in speeds:
+                        summary['%sDown' % (interface['stats']['operSpeed'])] = summary['%sDown' % (interface['stats']['operSpeed'])] + 1
+
+        summary['uplinkCount'] = summary['uplinkUp'] + summary['uplinkDown']
+        summary['downlinkCount'] = summary['downlinkUp'] + summary['downlinkDown']
+        summary['portUp'] = summary['uplinkUp'] + summary['downlinkUp']
+        summary['portDown'] = summary['uplinkDown'] + summary['downlinkDown']
+        summary['portCount'] = summary['portUp'] + summary['portDown']
+
+        for speed in speeds:
+            summary['%sCount' % (speed)] = summary['%sUp' % (speed)] + summary['%sDown' % (speed)]
+
+        (summary['uplinkSummary'], summary['__Output']['uplinkSummary']) = self.get_interface_summary_output(
+            summary['uplinkUp'],
+            summary['uplinkDown'],
+            summary['uplinkCount']
+        )
+
+        (summary['downlinkSummary'], summary['__Output']['downlinkSummary']) = self.get_interface_summary_output(
+            summary['downlinkUp'],
+            summary['downlinkDown'],
+            summary['downlinkCount']
+        )
+
+        (summary['portSummary'], summary['__Output']['portSummary']) = self.get_interface_summary_output(
+            summary['portUp'],
+            summary['portDown'],
+            summary['portCount']
+        )
+
+        for speed in speeds:
+            (summary['%sSummary' % (speed)], summary['__Output']['%sSummary' % (speed)]) = self.get_interface_summary_output(
+                summary['%sUp' % (speed)],
+                summary['%sDown' % (speed)],
+                summary['%sCount' % (speed)]
+            )
+
+        return summary
+
+    def get_port_count(self, pod_id, node_id):
+        ports = self.get_ports(
+            pod_id,
+            node_id
+        )
+
+        if ports is None:
+            return 0
+
+        return len(ports)
+
+    def get_interface_phy_info(self, managed_object):
+        keys = [
+            'adminSt',
+            'autoNeg',
+            'bw',
+            'delay',
+            'descr',
+            'dfeDelayMs',
+            'dn',
+            'dot1qEtherType',
+            'fecMode',
+            'id',
+            'layer',
+            'linkDebounce',
+            'mdix',
+            'medium',
+            'mode',
+            'mtu',
+            'name',
+            'portPhyMediaType',
+            'portT',
+            'routerMac',
+            'spanMode',
+            'speed',
+            'switchingSt',
+            'usage'
+        ]
+
+        info = {}
+        info['__Output'] = {}
+        for key in keys:
+            info[key] = None
+            if key in managed_object:
+                info[key] = managed_object[key]
+
+        # Dn format
+        # [0]: topology/pod-{id}/node-{id}/sys/phys-[{id}]
+        # [1]: sys/phys-[{id}]
+
+        info['portId'] = int(info['id'].split('/')[1])
+        info['portName'] = info['id'][3:]
+        info['podId'] = info['dn'].split('/')[1][4:]
+        info['nodeId'] = info['dn'].split('/')[2][5:]
+        info['nodeName'] = self.get_node_name(info['nodeId'])
+
+        info['apic'] = self.apic_label
+        info['pod_node_name'] = 'pod-%s/%s' % (
+            info['podId'],
+            self.get_node_name(
+                info['nodeId']
+            )
+        )
+
+        info['uplink'] = False
+        info['downlink'] = False
+
+        if info['portT'] == 'leaf':
+            info['uplink'] = False
+            info['downlink'] = True
+
+        if info['portT'] == 'fab':
+            info['uplink'] = True
+            info['downlink'] = False
+
+        info['layerT'] = ''
+        if info['layer'] == 'Layer2':
+            info['layerT'] = 'switched'
+        if info['layer'] == 'Layer3':
+            info['layerT'] = 'routed'
+
+        info['__Output']['id'] = 'Blue'
+        if info['adminSt'] == 'up':
+            info['__Output']['adminSt'] = 'Green'
+        else:
+            info['__Output']['adminSt'] = 'Red'
+
+        if info['switchingSt'] == 'enabled':
+            info['__Output']['switchingSt'] = 'Green'
+        else:
+            info['__Output']['switchingSt'] = 'Red'
+
+        interfaces_stats = self.get_interface_phy_ether_stats(
+            info['podId'],
+            info['nodeId'],
+            interface_filter=['dn:%s' % (info['dn'])]
+        )
+        if len(interfaces_stats) == 0:
+            info['stats'] = None
+        if len(interfaces_stats) == 1:
+            info['stats'] = interfaces_stats[0]
+        if len(interfaces_stats) > 1:
+            self.log.error(
+                'get_interface_phy_info',
+                'Unexpected ether stats object count: %s' % (info['dn'])
+            )
+            self.log.error(
+                'get_interface_phy_info',
+                json.dumps(interfaces_stats, indent=4)
+            )
+
+        info['up'] = False
+        if info['stats'] is not None:
+            if info['adminSt'] == 'up' and info['switchingSt'] == 'enabled' and info['stats']['operSt'] == 'up':
+                info['up'] = True
+
+        info = self.my_output.merge_output(info)
+
+        return info
+
+    def get_interfaces_phy_info(self, pod_id, node_id):
+        key = '%s.%s' % (pod_id, node_id)
+        if key in self.interface_phy:
+            return self.interface_phy[key]
+
+        interfaces_mo = self.get_interface_phy_mo(pod_id, node_id)
+        if interfaces_mo is not None:
+            self.interface_phy[key] = []
+            for interface_mo in interfaces_mo:
+                self.interface_phy[key].append(
+                    self.get_interface_phy_info(
+                        interface_mo
+                    )
+                )
+
+        self.log.apic_mo(
+            'l1PhysIf.info.%s' % (key),
+            self.interface_phy[key]
+        )
+
+        return self.interface_phy[key]
+
+    def match_interface_phy_epg_stats(self, epg_stats_info, interface_filter):
+        if interface_filter is None or len(interface_filter) == 0:
+            return True
+
+        for ap_rule in interface_filter:
+            key = ap_rule.split(':')[0]
+            value = ':'.join(ap_rule.split(':')[1:])
+
+            if key == 'epg':
+                if not filter_helper.match_string(value, epg_stats_info['vlan']['epgDn']):
+                    return False
+
+            if key == 'vlan':
+                if not filter_helper.match_id(epg_stats_info['vlan']['id'], value):
+                    return False
+
+            if key == 'evlan':
+                if not filter_helper.match_id(epg_stats_info['vlan']['evlan'], value):
+                    return False
+
+            if key == 'fvxlan':
+                if not filter_helper.match_id(epg_stats_info['vlan']['fvxlan'], value):
+                    return False
+
+        return True
+
+    def filter_interface_phy_epg_stats(self, epgs_stats_info, interface_filter):
+        filtered = []
+
+        for epg_stats_info in epgs_stats_info:
+            if self.match_interface_phy_epg_stats(epg_stats_info, interface_filter):
+                filtered.append(
+                    epg_stats_info
+                )
+
+        return filtered
+
+    def match_interface_phy(self, interface_info, interface_filter):
+        if interface_filter is None or len(interface_filter) == 0:
+            return True
+
+        for ap_rule in interface_filter:
+            key = ap_rule.split(':')[0]
+            value = ':'.join(ap_rule.split(':')[1:])
+
+            if key == 'ctx':
+                found = False
+                for context in value.split(','):
+                    (pod_id, node_id, interface_id) = context.split(':')
+                    if filter_helper.match_string(pod_id, 'pod-%s' % (interface_info['podId'])):
+                        if filter_helper.match_string(node_id, 'node-%s' % (interface_info['nodeId'])):
+                            if filter_helper.match_string(interface_id, interface_info['id']):
+                                found = True
+                                break
+
+                if not found:
+                    return False
+
+            if key == 'id':
+                if not filter_helper.match_string(value, interface_info['id']):
+                    return False
+
+            if key == 'ids':
+                found = False
+                for interface_id in value.split(','):
+                    if filter_helper.match_string(interface_id, interface_info['id']):
+                        found = True
+                        break
+
+                if not found:
+                    return False
+
+            if key == 'dn':
+                if not filter_helper.match_string(value, interface_info['dn']):
+                    return False
+
+            if key == 'switching':
+                if not filter_helper.match_string(value, interface_info['switchingSt']):
+                    return False
+
+            if key == 'oper':
+                if interface_info['stats'] is None:
+                    return False
+
+                if not filter_helper.match_string(value, interface_info['stats']['operSt']):
+                    return False
+
+            if key == 'type':
+                if not filter_helper.match_string(value, interface_info['portT']):
+                    return False
+
+            if key == 'layer':
+                if not filter_helper.match_string(value, interface_info['layerT']):
+                    return False
+
+            if key == 'mac':
+                if interface_info['stats'] is None:
+                    return False
+
+                if not ip_helper.is_mac_match(value, interface_info['stats']['backplaneMac']):
+                    return False
+
+            if key == 'speed':
+                if interface_info['stats'] is None:
+                    return False
+
+                if not filter_helper.match_string(value, interface_info['stats']['operSpeed']):
+                    return False
+
+            if key == 'fec':
+                if interface_info['stats'] is None:
+                    return False
+
+                if not filter_helper.match_string(value, interface_info['stats']['operFecMode']):
+                    return False
+
+            if key == 'trans':
+                if 'fc_stats' in interface_info:
+                    if interface_info['fc_stats'] is None:
+                        return False
+
+                    if not filter_helper.match_string(value, interface_info['fc_stats']['guiCiscoPID']):
+                        return False
+
+            if key == 'optics':
+                if 'fc_stats' in interface_info:
+                    if interface_info['fc_stats'] is None:
+                        return False
+
+                    if not filter_helper.match_string(value, interface_info['fc_stats']['type']):
+                        return False
+
+            if key == 'pc':
+                if interface_info['stats'] is None:
+                    return False
+
+                if value == 'enabled' and len(interface_info['stats']['bundleIndex']) == 0:
+                    return False
+
+                if value == 'enabled' and len(interface_info['stats']['bundleIndex']) > 0:
+                    return False
+
+            if key == 'epg':
+                if 'epg_stats' in interface_info:
+                    if interface_info['epg_stats'] is None:
+                        return False
+
+                    found = False
+                    for epg_stats in interface_info['epg_stats']:
+                        if epg_stats['vlan'] is not None:
+                            if filter_helper.match_string(value, epg_stats['vlan']['epgDn']):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+            if key == 'vlan':
+                if 'epg_stats' in interface_info:
+                    if interface_info['epg_stats'] is None:
+                        return False
+
+                    found = False
+                    for epg_stats in interface_info['epg_stats']:
+                        if epg_stats['vlan'] is not None:
+                            if filter_helper.match_id(epg_stats['vlan']['id'], value):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+            if key == 'evlan':
+                if 'epg_stats' in interface_info:
+                    if interface_info['epg_stats'] is None:
+                        return False
+
+                    found = False
+                    for epg_stats in interface_info['epg_stats']:
+                        if epg_stats['vlan'] is not None:
+                            if filter_helper.match_id(epg_stats['vlan']['evlan'], value):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+            if key == 'fvxlan':
+                if 'epg_stats' in interface_info:
+                    if interface_info['epg_stats'] is None:
+                        return False
+
+                    found = False
+                    for epg_stats in interface_info['epg_stats']:
+                        if epg_stats['vlan'] is not None:
+                            if filter_helper.match_id(epg_stats['vlan']['fvxlan'], value):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+            if key == 'nei':
+                if 'cdp' in interface_info and 'lldp' in interface_info:
+                    found = False
+
+                    if interface_info['cdp'] is not None:
+                        for cdp_info in interface_info['cdp']:
+                            if filter_helper.match_string(value, cdp_info['sysName']):
+                                found = True
+                                break
+
+                    if interface_info['lldp'] is not None:
+                        for lldp_info in interface_info['lldp']:
+                            if filter_helper.match_string(value, lldp_info['sysName']):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+        return True
+
+    def get_interfaces_phy(self, pod_id, node_id, interface_filter=None, ether_stats_info=False, fc_stats_info=False, epg_stats_info=False, load_info=False, eee_info=False, cdp_info=False, lldp_info=False, policy_info=False, qos_info=False, qos_references=None):
+        all_interfaces = self.get_interfaces_phy_info(pod_id, node_id)
+        if all_interfaces is None:
+            return None
+
+        interfaces = []
+
+        for interface_info in all_interfaces:
+            if not self.match_interface_phy(interface_info, interface_filter):
+                continue
+
+            if epg_stats_info:
+                interface_info['epg_stats'] = None
+                if interface_info['stats'] is not None:
+                    interface_info['epg_stats'] = self.get_interface_phy_epg_stats(
+                        interface_info['podId'],
+                        interface_info['nodeId'],
+                        interface_info['id'],
+                        vlan_info=True,
+                        vlans=interface_info['stats']['allowedVlans']
+                    )
+
+                if not self.match_interface_phy(interface_info, interface_filter):
+                    continue
+
+                if interface_info['epg_stats'] is not None:
+                    interface_info['epg_stats'] = self.my_output.merge_output(
+                        self.filter_interface_phy_epg_stats(
+                            interface_info['epg_stats'],
+                            interface_filter
+                        )
+                    )
+
+            if ether_stats_info:
+                interface_info['ether_stats'] = self.get_interface_phy_rmon_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
+
+            if fc_stats_info:
+                interface_info['fc_stats'] = None
+                interface_fc_stats = self.get_interface_phy_fc_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_filter=['dn:%s' % (interface_info['dn'])]
+                )
+                if interface_fc_stats is not None:
+                    if len(interface_fc_stats) != 1:
+                        self.log.error(
+                            'get_interfaces_phy',
+                            'Unexpected fc stats count: %s' % (interface_info['dn'])
+                        )
+                    else:
+                        interface_info['fc_stats'] = interface_fc_stats[0]
+
+                if not self.match_interface_phy(interface_info, interface_filter):
+                    continue
+
+            if load_info:
+                interface_info['load'] = self.get_interface_phy_load_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
+
+            if eee_info:
+                interface_info['eee'] = self.get_interface_phy_eee_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
+
+            if cdp_info:
+                interface_info['cdp'] = self.get_cdp_adjacency_endpoint(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id'],
+                    allow_multiple=True
+                )
+
+            if lldp_info:
+                interface_info['lldp'] = self.get_lldp_adjacency_endpoint(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    lldp_filter=['interface_id:%s' % (interface_info['id'])],
+                    allow_multiple=True
+                )
+
+            if cdp_info or lldp_info:
+                if not self.match_interface_phy(interface_info, interface_filter):
+                    continue
+
+            if policy_info:
+                interface_info['policy_selector'] = self.get_interface_policy_group_selector(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['portName'],
+                    group_info=True
+                )
+
+            if qos_info:
+                qos_filter = ['interface_id:%s' % (interface_info['id'])]
+                if interface_filter is not None:
+                    for value in interface_filter:
+                        if value.startswith('qos:'):
+                            qos_filter.append(value)
+
+                interface_info['qos'] = self.get_interfaces_phy_qos_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    qos_filter=qos_filter,
+                    qos_references=qos_references
+                )
+
+                if len(interface_info['qos']) == 0:
+                    continue
+
+            interfaces.append(
+                interface_info
+            )
+
+        interfaces = sorted(
+            interfaces,
+            key=lambda i: i['portId']
+        )
+
+        return interfaces
+
+    def get_interface_phy(self, pod_id, node_id, interface_id):
+        interfaces = self.get_interfaces_phy(
+            pod_id,
+            node_id,
+            interface_filter=['id:%s' % (interface_id)]
+        )
+
+        if interfaces is None or len(interfaces) != 1:
+            return None
+
+        return interfaces[0]
+
+    # def get_ports_filtered(self, ports, port_filter):
+    #     filtered_ports = []
+
+    #     for port in ports:
+    #         if not self.match_port(port, port_filter):
+    #             continue
+
+    #         if 'qos' in port:
+    #             qos_filtered = []
+    #             for qos in port['qos']:
+    #                 if not self.match_port_qos(qos, port_filter):
+    #                     continue
+    #                 qos_filtered.append(qos)
+
+    #             if len(qos_filtered) == 0:
+    #                 continue
+
+    #             port['qos'] = copy.deepcopy(qos_filtered)
+
+    #         filtered_ports.append(port)
+
+    #     return filtered_ports
+
+    # def get_port_dn(self, pod_id, node_id, port_name):
+    #     ports = self.get_ports(
+    #         pod_id,
+    #         node_id
+    #     )
+
+    #     if ports is None:
+    #         return None
+
+    #     for port in ports:
+    #         if 'port_name'.startswith('eth'):
+    #             if port['portName'] == port_name:
+    #                 return port['dn']
+    #         else:
+    #             if port['id'] == port_name:
+    #                 return port['dn']
+
+    #     return None
+
+    # def get_port_attributes(self, port, scope='base'):
+    #     attributes = {}
+    #     if scope == 'base':
+    #         attributes['__Output'] = {}
+    #         attributes['__Output']['adminSt'] = port['__Output']['adminSt']
+    #         attributes['__Output']['operSt'] = port['stats']['__Output']['operSt']
+    #         attributes['portName'] = port['portName']
+    #         attributes['podId'] = port['podId']
+    #         attributes['nodeId'] = port['nodeId']
+    #         attributes['nodeName'] = port['nodeName']
+    #         attributes['adminSt'] = port['adminSt']
+    #         attributes['portT'] = port['portT']
+    #         attributes['autoNeg'] = port['autoNeg']
+    #         attributes['layerT'] = port['layerT']
+    #         attributes['mtu'] = port['mtu']
+    #         attributes['operSt'] = port['stats']['operSt']
+    #         attributes['bundleIndex'] = port['stats']['bundleIndex']
+    #         attributes['duplex'] = port['stats']['operDuplex']
+    #         attributes['fec'] = port['stats']['operFecMode']
+    #         attributes['mode'] = port['stats']['operMode']
+    #         attributes['speed'] = port['stats']['operSpeed']
+    #         attributes['mac'] = port['stats']['backplaneMac']
+
+    #     return attributes
+
+    # def get_port(self, pod_id, node_id, port_dn, epg=False, vlan=False, qos=False, fc_stats=False, lldp=False, cdp=False, load_interval=False, eee=False, capability=False, pc=False, ether_stats=False):
+    #     ports = self.get_ports(
+    #         pod_id,
+    #         node_id,
+    #         fc_stats=fc_stats
+    #     )
+
+    #     if ports is None:
+    #         return None
+
+    #     for port in ports:
+    #         if port['dn'] == port_dn:
+    #             if load_interval:
+    #                 port['load_interval'] = self.get_port_load_interval_info(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if eee:
+    #                 port['eee'] = self.get_port_eee_info(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if capability:
+    #                 port['capability'] = self.get_port_capability_info(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if pc:
+    #                 port['pc'] = self.get_port_pc_info(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if ether_stats:
+    #                 port['ether_stats'] = self.get_port_ether_stats_info(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if epg:
+    #                 port['epg'] = self.get_port_epg_stats(
+    #                     pod_id,
+    #                     node_id,
+    #                     port['id']
+    #                 )
+
+    #             if vlan:
+    #                 self.initialize_vlan_stats(
+    #                     pod_id=pod_id,
+    #                     node_id=node_id
+    #                 )
+
+    #                 port['vlan'] = self.get_vlan_stats(
+    #                     port['podId'],
+    #                     port['nodeId'],
+    #                     self.get_oper_vlans_list(
+    #                         port['stats']['operVlans']
+    #                     )
+    #                 )
+
+    #             if qos:
+    #                 self.initialize_port_qos_stats(
+    #                     pod_id,
+    #                     node_id
+    #                 )
+
+    #                 port['qos'] = self.get_port_qos_stats(
+    #                     port['podId'],
+    #                     port['nodeId'],
+    #                     port['id']
+    #                 )
+
+    #             if lldp:
+    #                 port['lldp'] = self.get_lldp_adjacency_endpoint(
+    #                     port['podId'],
+    #                     port['nodeId'],
+    #                     interface_id=port['id']
+    #                 )
+
+    #             if cdp:
+    #                 port['cdp'] = self.get_cdp_adjacency_endpoint(
+    #                     port['podId'],
+    #                     port['nodeId'],
+    #                     port['id']
+    #                 )
+
+    #             return port
+
+    #     return None
+
+    # def get_ports(self, pod_id, node_id, port_filter=None, qos=False, qos_reference=None, fc_stats=False):
+    #     if not self.initialize_ports(pod_id, node_id):
+    #         self.log.error(
+    #             'get_ports',
+    #             'Ports initialization failed'
+    #         )
+    #         return None
+
+    #     if fc_stats:
+    #         self.initialize_port_fc_stats(
+    #             pod_id,
+    #             node_id
+    #         )
+
+    #     ports = []
+
+    #     for managed_object in self.mo_port[pod_id][node_id]:
+    #         port_info = self.get_port_info(
+    #             managed_object,
+    #             fc_stats=fc_stats
+    #         )
+
+    #         if pod_id is not None and port_info['podId'] != pod_id:
+    #             continue
+
+    #         if node_id is not None and port_info['nodeId'] != node_id:
+    #             continue
+
+    #         if not self.match_port(port_info, port_filter):
+    #             continue
+
+    #         ports.append(port_info)
+
+    #     if qos:
+    #         if pod_id is not None and node_id is not None:
+    #             self.initialize_port_qos_stats(
+    #                 pod_id,
+    #                 node_id
+    #             )
+
+    #             ports_qos_stats = self.get_ports_qos_stats(
+    #                 pod_id,
+    #                 node_id,
+    #                 qos_filter=port_filter,
+    #                 qos_reference=qos_reference
+    #             )
+    #             qos_ports = []
+    #             for port in ports:
+    #                 port['qos'] = []
+    #                 if ports_qos_stats is not None:
+    #                     for port_qos_stats in ports_qos_stats:
+    #                         if port['id'] == port_qos_stats['interface_id']:
+    #                             port['qos'].append(
+    #                                 port_qos_stats
+    #                             )
+    #                 if len(port['qos']) > 0:
+    #                     qos_ports.append(port)
+
+    #             ports = copy.deepcopy(qos_ports)
+
+    #     ports = sorted(
+    #         ports,
+    #         key=lambda i: i['portId']
+    #     )
+
+    #     self.log.apic_mo(
+    #         'pod-%s.node-%s.l1PhysIf.info' % (pod_id, node_id),
+    #         ports
+    #     )
+
+    #     return ports

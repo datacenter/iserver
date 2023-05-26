@@ -1,0 +1,24 @@
+value: dict
+properties:
+  local_as:
+    mandatory: True
+    type: int
+    check: null
+  remote_as:
+    mandatory: True
+    type: int
+    check: null
+  peer:
+    mandatory: True
+    type: list_of_ip
+    check: null
+  mesh:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  external_ips:
+    mandatory: True
+    type: list_of_str
+    default: null
+    check: null

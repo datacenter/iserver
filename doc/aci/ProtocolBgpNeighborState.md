@@ -1,0 +1,113 @@
+# Node Protocol - BGP
+
+## Filter BGP neighbors by state (established|idle)
+
+Use --output parameter to select neighborship attributes template
+- [summary](./ProtocolBgpNeighborSummary.md)
+- [transport](./ProtocolBgpNeighborTransport.md)
+- [connection](./ProtocolBgpNeighborConnection.md)
+- [af](./ProtocolBgpNeighborAf.md)
+- [verbose](./ProtocolBgpNeighborVerbose.md)
+
+Example: established (up)
+
+```
+# iserver get aci proto bgp --apic apic11 --node rl --state up
+
+Apic: apic11o.emea-sp.cisco.com
+Pod: 1
+- node: rl301-eu-spdc
+- node: rl302-eu-spdc
+
++---------------------+--------------------------+------------------+-------------+-------+------+-----+-----------------+
+| Node                | VRF                      | Neighbor Address | BGP State   | ASN   | Type | TTL | Paths (AF IPv4) |
++---------------------+--------------------------+------------------+-------------+-------+------+-----+-----------------+
+| pod-1/rl301-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.1       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl301-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.2       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl301-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.3       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl301-eu-spdc | overlay-1                | 15.16.3.1        | established | 64001 | ebgp | 1   | 0               | 
+| pod-1/rl301-eu-spdc | overlay-1                | 172.16.11.1      | established | 50000 | ibgp | 1   |                 | 
+| pod-1/rl301-eu-spdc | overlay-1                | 172.16.11.228    | established | 50000 | ibgp | 1   |                 | 
+| pod-1/rl301-eu-spdc | overlay-1                | 172.31.3.35      | established | 64001 | ebgp | 2   |                 | 
+| pod-1/rl302-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.1       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl302-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.2       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl302-eu-spdc | MPC-E:MPC-E-sPBR-OUT_VRF | 172.24.3.3       | established | 64371 | ebgp | 4   | 3               | 
+| pod-1/rl302-eu-spdc | overlay-1                | 15.16.3.5        | established | 64001 | ebgp | 1   | 0               | 
+| pod-1/rl302-eu-spdc | overlay-1                | 172.16.11.1      | established | 50000 | ibgp | 1   |                 | 
+| pod-1/rl302-eu-spdc | overlay-1                | 172.16.11.228    | established | 50000 | ibgp | 1   |                 | 
+| pod-1/rl302-eu-spdc | overlay-1                | 172.31.3.35      | established | 64001 | ebgp | 2   |                 | 
++---------------------+--------------------------+------------------+-------------+-------+------+-----+-----------------+
+```
+
+Example: idle (down)
+
+```
+# iserver get aci proto bgp --apic apic11 --node any --state down
+
+Apic: apic11o.emea-sp.cisco.com
+Pod: 1
+- node: bl205-eu-spdc
+- node: bl206-eu-spdc
+- node: cl201-eu-spdc
+- node: cl202-eu-spdc
+- node: rl301-eu-spdc
+- node: rl302-eu-spdc
+- node: s101-eu-spdc
+- node: s102-eu-spdc
+
++---------------------+-------------------------------+------------------+-----------+-------+------+-----+-----------------+
+| Node                | VRF                           | Neighbor Address | BGP State | ASN   | Type | TTL | Paths (AF IPv4) |
++---------------------+-------------------------------+------------------+-----------+-------+------+-----+-----------------+
+| pod-1/bl205-eu-spdc | MPC-F5T:F5-OUT_VRF            | 172.24.0.1       | idle      | 64271 | ebgp | 4   | 3               | 
+| pod-1/bl206-eu-spdc | MPC-F5T:F5-OUT_VRF            | 172.24.0.1       | idle      | 64271 | ebgp | 4   | 3               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.193   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.194   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.195   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.196   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.193   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.194   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.195   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.196   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.120     | idle      | 65101 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.220     | idle      | 65101 | ebgp | 8   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.221     | idle      | 65101 | ebgp | 10  | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.100.103.41    | idle      | 65101 | ebgp | 5   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.191   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.192   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.193   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.194   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.195   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.196   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.191   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.192   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.193   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.194   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.195   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.136.196   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.100.7.41      | idle      | 65101 | ebgp | 5   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.193   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.194   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.195   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.196   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.193   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.194   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.195   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.196   | idle      | 65066 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.120     | idle      | 65101 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.220     | idle      | 65101 | ebgp | 8   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1_VRF       | 15.100.4.221     | idle      | 65101 | ebgp | 10  | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.100.103.41    | idle      | 65101 | ebgp | 5   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.191   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.193   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.194   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.195   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.191   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.192   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.193   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.194   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.195   | idle      | 65069 | ebgp | 1   | 0               | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.196   | idle      | 65069 | ebgp | 1   | 0               | 
++---------------------+-------------------------------+------------------+-----------+-------+------+-----+-----------------+
+```
+
+[[Back]](./ProtocolBgp.md)

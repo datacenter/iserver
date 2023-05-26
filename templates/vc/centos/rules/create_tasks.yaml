@@ -1,0 +1,3 @@
+value: list_of_str
+validate: True
+check: tasks-yaml

@@ -1,0 +1,9 @@
+# Redfish Template Power
+
+Vendor | Model
+--- | ---
+${TEST_VENDOR} | ${TEST_MODEL}
+
+```
+DOC_TEMPLATE:${TEST_RESULT}.identity:iserver.output.default
+```

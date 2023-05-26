@@ -1,0 +1,32 @@
+value: dict
+properties:
+  base:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  ssh:
+    mandatory: False
+    type: bool
+    check: url
+    default: True
+  k8-nodes:
+    mandatory: False
+    type: bool
+    check: url
+    default: False
+  k8-pods:
+    mandatory: False
+    type: bool
+    check: url
+    default: False
+  k8-services:
+    mandatory: False
+    type: bool
+    check: url
+    default: False
+  linux-nodes:
+    mandatory: False
+    type: bool
+    check: url
+    default: False

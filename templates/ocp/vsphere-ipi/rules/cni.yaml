@@ -1,0 +1,21 @@
+value: dict
+properties:
+  type:
+    mandatory: True
+    type: str
+    check: values:OpenShiftSDN,OVNKubernetes,Calico
+  v4cidr:
+    mandatory: False
+    type: str
+    check: cidrv4
+    default: 10.128.0.0/14
+  v4hostPrefix:
+    mandatory: False
+    type: int
+    check: host-prefix-v4
+    default: 23
+  v4serviceNetwork:
+    mandatory: False
+    type: str
+    check: cidrv4
+    default: 172.30.0.0/16

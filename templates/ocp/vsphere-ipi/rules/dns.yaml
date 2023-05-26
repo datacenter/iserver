@@ -1,0 +1,11 @@
+value: dict
+properties:
+  managed:
+    mandatory: False
+    type: bool
+    check: must-be-true
+    default: True
+  forwarders:
+    mandatory: True
+    type: str
+    check: ipv4s

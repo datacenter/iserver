@@ -1,0 +1,51 @@
+value: dict
+validate: True
+properties:
+  name:
+    mandatory: True
+    type: str
+    check: not-empty
+  ip:
+    mandatory: True
+    type: str
+    check: ipv4
+  port:
+    mandatory: False
+    type: int
+    check: port
+    default: 443
+  username:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  password:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  datacenter:
+    mandatory: True
+    type: str
+    check: not-empty
+  datastore:
+    mandatory: True
+    type: str
+    check: not-empty
+  cluster:
+    mandatory: True
+    type: str
+    check: not-empty
+  vm_folder:
+    mandatory: False
+    type: str
+    check: not-empty-no-spaces
+    default: null
+  iso_folder:
+    mandatory: False
+    type: str
+    check: not-empty-no-spaces
+    default: 'linux-iso'
+  ks_folder:
+    mandatory: False
+    type: str
+    check: not-empty-no-spaces
+    default: '/'

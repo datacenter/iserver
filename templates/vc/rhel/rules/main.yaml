@@ -1,0 +1,31 @@
+main:
+  kickstart_iso_create_script: create-kickstart-iso.sh
+  default_kickstart: ip-static.ks
+  operation:
+    get:
+      mandatory:
+      - vcenter
+      - linux
+      - state
+      optional: null
+    create:
+      mandatory:
+      - vcenter
+      - linux
+      - settings
+      - state
+      optional:
+      - proxy
+      - ssh
+      - create_tasks
+      - variables
+      - jump
+    delete:
+      mandatory:
+      - vcenter
+      - linux
+      - settings
+      optional:
+      - proxy
+      - delete_tasks
+      - variables

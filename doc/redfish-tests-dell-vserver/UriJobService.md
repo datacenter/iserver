@@ -1,0 +1,40 @@
+# Resource: /redfish/v1/JobService
+
+Vendor | Model
+--- | ---
+Dell | vServer
+
+## /redfish/v1/JobService
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#JobService.JobService",
+    "@odata.id": "/redfish/v1/JobService",
+    "@odata.type": "#JobService.v1_0_3.JobService",
+    "DateTime": "2022-10-26T15:52:52-05:00",
+    "Description": "Represent a job service for a Redfish",
+    "Id": "JobService",
+    "Jobs": {
+        "@odata.id": "/redfish/v1/JobService/Jobs"
+    },
+    "Log": {
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices/Lclog"
+    },
+    "Name": "Job Service",
+    "ServiceCapabilities": {
+        "MaxJobs": 256,
+        "MaxSteps": 1,
+        "Scheduling": true
+    },
+    "ServiceEnabled": true,
+    "Status": {
+        "Health": "OK",
+        "State": "Enabled"
+    }
+}
+```
+
+## /redfish/v1/JobService/Jobs
+
+```
+```
+

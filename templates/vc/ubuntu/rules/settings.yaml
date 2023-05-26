@@ -1,0 +1,23 @@
+value: dict
+validate: True
+properties:
+  kickstart_template_variable_replacement_enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  wait_vm_connected:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  sleep_after_vm_connected:
+    mandatory: False
+    type: int
+    check: ge0
+    default: 0
+  remove_cdrom:
+    mandatory: False
+    type: bool
+    check: null
+    default: True

@@ -1,0 +1,53 @@
+class ProtocolIpv6RouteApi():
+    def __init__(self):
+        self.ipv6_routes_mo = {}
+
+    def get_protocol_ipv6_routes_mo(self, pod_id, node_id, ipv6_domain_name):
+        key = '%s.%s.%s' % (pod_id, node_id, ipv6_domain_name)
+        if key in self.ipv6_routes_mo:
+            return self.ipv6_routes_mo[key]
+
+        # url: https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/uribv6/dom-common:smi5Gc-cvim1-N6_VRF.json?query-target=subtree&target-subtree-class=uribv6Route&page=0&page-size=15
+        distinguished_name = 'topology/pod-%s/node-%s/sys/uribv6/dom-%s' % (
+            pod_id,
+            node_id,
+            ipv6_domain_name
+        )
+        query = 'query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop'
+        managed_objects = self.get_managed_object(
+            distinguished_name,
+            query=query
+        )
+
+        if managed_objects is None:
+            self.log.error(
+                'get_protocol_ipv6_routes_mo',
+                'API failed'
+            )
+            return None
+
+        self.ipv6_routes_mo[key] = []
+        for managed_object in managed_objects['imdata']:
+            if 'uribv6Route' in managed_object:
+                self.ipv6_routes_mo[key].append(
+                    managed_object['uribv6Route']['attributes']
+                )
+
+        for managed_object in managed_objects['imdata']:
+            if 'uribv6Nexthop' in managed_object:
+                next_hop_rt = managed_object['uribv6Nexthop']['attributes']['dn'].split('/')[7]
+                for entry in self.ipv6_routes_mo[key]:
+                    if next_hop_rt in entry['dn']:
+                        if 'next_hop' not in entry:
+                            entry['next_hop'] = []
+
+                        entry['next_hop'].append(
+                            managed_object['uribv6Nexthop']['attributes']
+                        )
+
+        self.log.apic_mo(
+            'uribv6Route.%s' % (key),
+            self.ipv6_routes_mo[key]
+        )
+
+        return self.ipv6_routes_mo[key]

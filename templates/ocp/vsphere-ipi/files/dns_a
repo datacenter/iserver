@@ -1,0 +1,13 @@
+$TTL    604800
+@       IN      SOA     ${OCP_BASE_DOMAIN}. root.${OCP_BASE_DOMAIN} (
+      ${DNS_SERIAL}     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+                 NS     ${OCP_BASE_DOMAIN}.
+
+${OCP_BASE_DOMAIN}.         IN    A    ${INTERFACE_0_IP}
+api.${OCP_NAME}.${OCP_BASE_DOMAIN}.        IN    A    ${OCP_API_VIP}
+*.apps.${OCP_NAME}.${OCP_BASE_DOMAIN}.     IN    A    ${OCP_INGRESS_VIP}

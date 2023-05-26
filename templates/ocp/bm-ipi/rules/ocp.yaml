@@ -1,0 +1,40 @@
+value: dict
+properties:
+  installation:
+    mandatory: True
+    type: str
+    check: null
+  source:
+    mandatory: False
+    type: str
+    check: values:web
+    default: web
+  release:
+    mandatory: True
+    type: str
+    check: null
+    default: null
+  cluster.name:
+    mandatory: True
+    type: str
+    check: null
+  cluster.domain:
+    mandatory: True
+    type: str
+    check: null
+  cluster.api_vip:
+    mandatory: True
+    type: str
+    check: ipv4
+  cluster.ingress_vip:
+    mandatory: True
+    type: str
+    check: ipv4
+  cluster.master:
+    mandatory: True
+    type: str
+    check: null
+  cluster.worker:
+    mandatory: True
+    type: str
+    check: null

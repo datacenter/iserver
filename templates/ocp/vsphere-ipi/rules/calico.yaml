@@ -1,0 +1,12 @@
+value: dict
+properties:
+  version:
+    mandatory: False
+    type: str
+    check: none
+    default: "3.20"
+  calicoctl:
+    mandatory: False
+    type: str
+    check: none
+    default: https://github.com/projectcalico/calicoctl/releases/download/v3.20.6/calicoctl-linux-amd64

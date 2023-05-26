@@ -1,0 +1,573 @@
+# Resource: /redfish/v1/Managers
+
+Vendor | Model
+--- | ---
+Cisco | UCSC-C220-M4S
+
+## /redfish/v1/Managers
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers",
+    "@odata.id": "/redfish/v1/Managers",
+    "@odata.type": "#ManagerCollection.ManagerCollection",
+    "Description": "Collection of Managers",
+    "Members": [
+        {
+            "@odata.id": "/redfish/v1/Managers/CIMC"
+        }
+    ],
+    "Members@odata.count": 1,
+    "Name": "Manager Collection"
+}
+```
+
+## /redfish/v1/Managers/CIMC
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC",
+    "@odata.type": "#Manager.v1_5_0.Manager",
+    "Actions": {
+        "#Manager.Reset": {
+            "ResetType@Redfish.AllowableValues": [
+                "ForceRestart"
+            ],
+            "target": "/redfish/v1/Managers/CIMC/Actions/Manager.Reset"
+        },
+        "Oem": {
+            "#CiscoUCSExtensions.BiosFwActivate": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.BiosFwActivate"
+            },
+            "#CiscoUCSExtensions.BmcFwActivate": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.BmcFwActivate"
+            },
+            "#CiscoUCSExtensions.BmcTechSupportExport": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "Protocol@Redfish.AllowableValues": [
+                    "TFTP",
+                    "SCP",
+                    "SFTP",
+                    "FTP",
+                    "HTTP"
+                ],
+                "RemoteHostname@Redfish.AllowableValues": [
+                    "Valid Hostname/IP Address"
+                ],
+                "RemotePassword@Redfish.AllowableValues": [
+                    "Remote Server Password"
+                ],
+                "RemotePath@Redfish.AllowableValues": [
+                    "Valid Remote Share Path and filename with valid extension (tar.gz)"
+                ],
+                "RemoteUsername@Redfish.AllowableValues": [
+                    "Remote Server Username"
+                ],
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.BmcTechSupportExport"
+            },
+            "#CiscoUCSExtensions.ExportBmcConfig": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "Passphrase@Redfish.AllowableValues": [
+                    "Passphrase"
+                ],
+                "Protocol@Redfish.AllowableValues": [
+                    "TFTP",
+                    "SCP",
+                    "SFTP",
+                    "FTP",
+                    "HTTP"
+                ],
+                "RemoteHostname@Redfish.AllowableValues": [
+                    "Valid Hostname/IP Address"
+                ],
+                "RemotePassword@Redfish.AllowableValues": [
+                    "Remote Server Password"
+                ],
+                "RemotePath@Redfish.AllowableValues": [
+                    "Valid Remote Share Path and filename with valid extension (.xml)"
+                ],
+                "RemoteUsername@Redfish.AllowableValues": [
+                    "Remote Server Username"
+                ],
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.ExportBmcConfig"
+            },
+            "#CiscoUCSExtensions.ImportBmcConfig": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "Passphrase@Redfish.AllowableValues": [
+                    "Passphrase"
+                ],
+                "Protocol@Redfish.AllowableValues": [
+                    "TFTP",
+                    "SCP",
+                    "SFTP",
+                    "FTP",
+                    "HTTP"
+                ],
+                "RemoteHostname@Redfish.AllowableValues": [
+                    "Valid Hostname/IP Address"
+                ],
+                "RemotePassword@Redfish.AllowableValues": [
+                    "Remote Server Password"
+                ],
+                "RemotePath@Redfish.AllowableValues": [
+                    "Valid Remote Share Path and filename with valid extension (.xml)"
+                ],
+                "RemoteUsername@Redfish.AllowableValues": [
+                    "Remote Server Username"
+                ],
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.ImportBmcConfig"
+            },
+            "#CiscoUCSExtensions.SigningRequest": {
+                "@odata.type": "CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
+                "HashToSign@Redfish.AllowableValues": [
+                    "SHA-256 hash encoded in base64"
+                ],
+                "RequestID@Redfish.AllowableValues": [
+                    "A unique string generated by the requester to match response, min is 1 and max is 128"
+                ],
+                "RequestedSignatureAlgorithm@Redfish.AllowableValues": [
+                    "Signing algorithm to be used, currently supported algorithm is ECCsecp256r1"
+                ],
+                "target": "/redfish/v1/Managers/CIMC/Actions/Oem/CiscoUCSExtensions.SigningRequest"
+            }
+        }
+    },
+    "AutoDSTEnabled": false,
+    "CommandShell": {
+        "ConnectTypesSupported": [
+            "SSH",
+            "IPMI",
+            "Oem"
+        ],
+        "MaxConcurrentSessions": 4,
+        "ServiceEnabled": true
+    },
+    "DateTime": "Tue Nov 29 11:26:12 2022",
+    "DateTimeLocalOffset": "+01:00",
+    "Description": "comp6-p3b-eu-spdc-FCH2017V24J",
+    "EthernetInterfaces": {
+        "@odata.id": "/redfish/v1/Managers/CIMC/EthernetInterfaces"
+    },
+    "FirmwareVersion": "4.1(2g)",
+    "GraphicalConsole": {
+        "ConnectTypesSupported": [
+            "KVMIP",
+            "Oem"
+        ],
+        "MaxConcurrentSessions": 4,
+        "ServiceEnabled": true
+    },
+    "Id": "CIMC",
+    "Links": {
+        "ManagerForChassis": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/1"
+            }
+        ],
+        "ManagerForServers": [
+            {
+                "@odata.id": "/redfish/v1/Systems/FCH2017V24J"
+            }
+        ],
+        "ManagerInChassis": {
+            "@odata.id": "/redfish/v1/Chassis/1"
+        }
+    },
+    "LogServices": {
+        "@odata.id": "/redfish/v1/Managers/CIMC/LogServices"
+    },
+    "ManagerType": "BMC",
+    "Model": "UCSC-C220-M4S",
+    "Name": "Cisco Integrated Management Controller",
+    "NetworkProtocol": {
+        "@odata.id": "/redfish/v1/Managers/CIMC/NetworkProtocol"
+    },
+    "RemoteAccountService": {
+        "@odata.id": "/redfish/v1/AccountService"
+    },
+    "RemoteRedfishServiceUri": "/redfish/v1",
+    "SerialInterfaces": {
+        "@odata.id": "/redfish/v1/Managers/CIMC/SerialInterfaces"
+    },
+    "ServiceEntryPointUUID": "48753718-3DB4-4502-B2A0-58BC21922BA3",
+    "Status": {
+        "Health": "OK",
+        "State": "Enabled"
+    },
+    "UUID": "48753718-3DB4-4502-B2A0-58BC21922BA3",
+    "VirtualMedia": {
+        "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia"
+    }
+}
+```
+
+## /redfish/v1/Managers/CIMC/EthernetInterfaces
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/EthernetInterfaces",
+    "@odata.id": "/redfish/v1/Managers/CIMC/EthernetInterfaces",
+    "@odata.type": "#EthernetInterfaceCollection.EthernetInterfaceCollection",
+    "Description": "Collection of EthernetInterfaces for this Manager",
+    "Members": [
+        {
+            "@odata.id": "/redfish/v1/Managers/CIMC/EthernetInterfaces/NICs"
+        }
+    ],
+    "Members@odata.count": 1,
+    "Name": "Ethernet Interfaces Collection"
+}
+```
+
+## /redfish/v1/Managers/CIMC/EthernetInterfaces/NICs
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/EthernetInterfaces/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC/EthernetInterfaces/NICs",
+    "@odata.type": "#EthernetInterface.v1_4_1.EthernetInterface",
+    "AutoNeg": true,
+    "DHCPv4": {
+        "DHCPEnabled": false,
+        "UseDNSServers": false,
+        "UseDomainName": false,
+        "UseGateway": false,
+        "UseNTPServers": false,
+        "UseStaticRoutes": false
+    },
+    "DHCPv6": {
+        "OperatingMode": "Disabled",
+        "UseDNSServers": false,
+        "UseDomainName": false,
+        "UseNTPServers": false
+    },
+    "Description": "Manager Network Interface",
+    "FullDuplex": false,
+    "HostName": "comp6-p3b-eu-spdc-FCH2017V24J",
+    "IPv4Addresses": [
+        {
+            "Address": "10.58.50.59",
+            "AddressOrigin": "Static",
+            "Gateway": "10.58.50.62",
+            "SubnetMask": "255.255.255.224"
+        }
+    ],
+    "IPv6Addresses": [
+        {
+            "Address": "::",
+            "AddressOrigin": "Static",
+            "PrefixLength": 64
+        }
+    ],
+    "IPv6DefaultGateway": "::",
+    "IPv6StaticDefaultGateways": [
+        {
+            "Address": "::"
+        }
+    ],
+    "Id": "NICs",
+    "InterfaceEnabled": true,
+    "Links": {
+        "Chassis": {
+            "@odata.id": "/redfish/v1/Chassis/1"
+        }
+    },
+    "MACAddress": "00:62:EC:15:DC:AC",
+    "MTUSize": 1500,
+    "MaxIPv6StaticAddresses": 1,
+    "Name": "Manager Ethernet Interface",
+    "NameServers": [
+        "144.254.71.184",
+        "173.38.200.100"
+    ],
+    "PermanentMACAddress": "00:62:EC:15:DC:AC",
+    "StatelessAddressAutoConfig": {
+        "IPv4AutoConfigEnabled": false,
+        "IPv6AutoConfigEnabled": false
+    },
+    "StaticNameServers": [
+        "144.254.71.184",
+        "173.38.200.100"
+    ],
+    "VLAN": {
+        "VLANEnable": false,
+        "VLANId": 1
+    }
+}
+```
+
+## /redfish/v1/Managers/CIMC/LogServices
+
+```
+```
+
+## /redfish/v1/Managers/CIMC/NetworkProtocol
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/NetworkProtocol",
+    "@odata.id": "/redfish/v1/Managers/CIMC/NetworkProtocol",
+    "@odata.type": "#ManagerNetworkProtocol.v1_5_0.ManagerNetworkProtocol",
+    "DHCP": {
+        "Port": null,
+        "ProtocolEnabled": false
+    },
+    "DHCPv6": {
+        "Port": null,
+        "ProtocolEnabled": false
+    },
+    "Description": "Manager Network Service",
+    "HTTP": {
+        "Port": 80,
+        "ProtocolEnabled": true
+    },
+    "HTTPS": {
+        "Certificates": {
+            "@odata.id": "/redfish/v1/Managers/CIMC/NetworkProtocol/HTTPS/Certificates/1"
+        },
+        "Port": 443,
+        "ProtocolEnabled": true
+    },
+    "HostName": "comp6-p3b-eu-spdc-FCH2017V24J",
+    "IPMI": {
+        "Port": 623,
+        "ProtocolEnabled": true
+    },
+    "Id": "ManagerNetworkProtocol",
+    "KVMIP": {
+        "Port": 2068,
+        "ProtocolEnabled": true
+    },
+    "NTP": {
+        "NTPServers": [
+            "ntp.esl.cisco.com"
+        ],
+        "Port": 123,
+        "ProtocolEnabled": true
+    },
+    "Name": "Manager Network Protocol",
+    "SNMP": {
+        "CommunityStrings": [
+            {
+                "AccessMode": null
+            }
+        ],
+        "HideCommunityStrings": false,
+        "Port": 161,
+        "ProtocolEnabled": false
+    },
+    "SSH": {
+        "Port": 22,
+        "ProtocolEnabled": true
+    },
+    "VirtualMedia": {
+        "Port": 2068,
+        "ProtocolEnabled": true
+    }
+}
+```
+
+## /redfish/v1/Managers/CIMC/NetworkProtocol/HTTPS/Certificates/1
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/NetworkProtocol/HTTPS/Certificates/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC/NetworkProtocol/HTTPS/Certificates/1",
+    "@odata.type": "#Certificate.v1_0_1.Certificate",
+    "CertificateString": "-----BEGIN CERTIFICATE-----\nMIID/DCCAuSgAwIBAgIJAP3BHDyFvmJEMA0GCSqGSIb3DQEBDQUAMIGhMQswCQYD\nVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTERMA8GA1UEBwwIU2FuIEpvc2Ux\nGjAYBgNVBAoMEUNpc2NvIFNlbGYgU2lnbmVkMQwwCgYDVQQLDANQSUQxJjAkBgNV\nBAMMHWNvbXA2LXAzYi1ldS1zcGRjLUZDSDIwMTdWMjRKMRgwFgYJKoZIhvcNAQkB\nFgludWxsQG51bGwwHhcNMjIxMTI0MTExNjU1WhcNMjUwMjI2MTExNjU1WjCBoTEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExETAPBgNVBAcMCFNhbiBK\nb3NlMRowGAYDVQQKDBFDaXNjbyBTZWxmIFNpZ25lZDEMMAoGA1UECwwDUElEMSYw\nJAYDVQQDDB1jb21wNi1wM2ItZXUtc3BkYy1GQ0gyMDE3VjI0SjEYMBYGCSqGSIb3\nDQEJARYJbnVsbEBudWxsMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA\ns8znKiqSyEFbhWTDeZ6GUEEBJchljkjPoSUUThvccRJ+hy+Acnpduv3MKwdeBOZn\nw8l3RV7M8NBvHxMhDLE2zSmNwK0eTs8ECP4uIt4KPRifFWkaVmKYxK+1faZYKOpL\nXpJxGHcVRft9IKXCzIPlclRK7MqcPqMBf8XNT6axveelrCQjAGyg+gNxBL/ZKwop\nLUfnJdmmu54hhefYvh9R4DbrqYnrJtgXY45IiQ/Q99Gp+Bd3ofAA/5Z71wb/Q61c\nbihGUDGRc5WvNJwZT5SyDgFtq1BjgPBpsOQrouLtrxshZr7BbwOp7NCgM4aivz2K\n9L04p1U1hCqic0bHmhmhJQIDAQABozUwMzAJBgNVHRMEAjAAMBMGA1UdJQQMMAoG\nCCsGAQUFBwMBMBEGCWCGSAGG+EIBAQQEAwIGQDANBgkqhkiG9w0BAQ0FAAOCAQEA\nGTgYbepRvCOqzj0Hq3tiKiVoMnhoy43zytqzFfUSeRZYmqSxVhS2GJgTM2JJsbri\n2E74P/7hzxjC/z9QVvSNBFjo4+1IgjGaRSumBln6lCJ7013BTwk9QXST7x4aVS0y\n/2cclQ9Aat74ai5ih5qUd8BsjDMdWuHvnS/a0Rtokv3wfuyhoXIcOECJmZtKGHb/\n+JrZBi3K+H14+31O6FydX+kqmN8YWzEp49hlVO7rOeLUmomAv9q7BzzWgYWALOSG\n0FEBvzpYQqUwdFp4OfA8R7ki4EuTVU0k9uoFaA/IGcmPYMQWrMGRV3FyMil4xjfX\nnP8fZ74J/YxE0GXF62wivw==\n-----END CERTIFICATE-----\n",
+    "CertificateType": "PEM",
+    "Id": "Certificate",
+    "Issuer": {
+        "City": "San Jose",
+        "CommonName": "comp6-p3b-eu-spdc-FCH2017V24J",
+        "Country": "US",
+        "Organization": "Cisco Self Signed",
+        "OrganizationalUnit": "PID",
+        "State": "California"
+    },
+    "KeyUsage": [
+        "ServerAuthentication"
+    ],
+    "Name": "Certificate",
+    "Subject": {
+        "City": "San Jose",
+        "CommonName": "comp6-p3b-eu-spdc-FCH2017V24J",
+        "Country": "US",
+        "Organization": "Cisco Self Signed",
+        "OrganizationalUnit": "PID",
+        "State": "California"
+    },
+    "ValidNotAfter": "Feb 26 11:16:55 2025 GMT",
+    "ValidNotBefore": "Nov 24 11:16:55 2022 GMT"
+}
+```
+
+## /redfish/v1/Managers/CIMC/SerialInterfaces
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/SerialInterfaces",
+    "@odata.id": "/redfish/v1/Managers/CIMC/SerialInterfaces",
+    "@odata.type": "#SerialInterfaceCollection.SerialInterfaceCollection",
+    "Description": "Collection of Serial Interfaces for this System",
+    "Members": [
+        {
+            "@odata.id": "/redfish/v1/Managers/CIMC/SerialInterfaces/TTY0"
+        }
+    ],
+    "Members@odata.count": 1,
+    "Name": "Serial Interface Collection"
+}
+```
+
+## /redfish/v1/Managers/CIMC/SerialInterfaces/TTY0
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/SerialInterfaces/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC/SerialInterfaces/TTY0",
+    "@odata.type": "#SerialInterface.v1_1_3.SerialInterface",
+    "BitRate": "115200",
+    "ConnectorType": "DB9 Female",
+    "DataBits": "8",
+    "Description": "Management for Serial Interface",
+    "FlowControl": "None",
+    "Id": "TTY0",
+    "InterfaceEnabled": true,
+    "Name": "Manager Serial Interface 1",
+    "Parity": "None",
+    "PinOut": "Cisco",
+    "SignalType": "Rs232",
+    "StopBits": "1"
+}
+```
+
+## /redfish/v1/Managers/CIMC/VirtualMedia
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/VirtualMedia",
+    "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia",
+    "@odata.type": "#VirtualMediaCollection.VirtualMediaCollection",
+    "Description": "Redfish-BMC Virtual Media Service Settings",
+    "Members": [
+        {
+            "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia/0"
+        },
+        {
+            "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia/1"
+        }
+    ],
+    "Members@odata.count": 2,
+    "Name": "Virtual Media Services"
+}
+```
+
+## /redfish/v1/Managers/CIMC/VirtualMedia/0
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/VirtualMedia/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia/0",
+    "@odata.type": "#VirtualMedia.v1_3_1.VirtualMedia",
+    "Actions": {
+        "#VirtualMedia.EjectMedia": {
+            "target": "/redfish/v1/Managers/CIMC/VirtualMedia/0/Actions/VirtualMedia.EjectMedia"
+        },
+        "#VirtualMedia.InsertMedia": {
+            "Image@Redfish.AllowableValues": [
+                "This parameter shall specify the string URI of the remote media to be attached to the virtual media. (Required)"
+            ],
+            "Inserted@Redfish.AllowableValues": [
+                "true"
+            ],
+            "Password@Redfish.AllowableValues": [
+                "This parameter shall contain a string representing the password to be used when accessing the URI specified by the Image parameter."
+            ],
+            "TransferMethod@Redfish.AllowableValues": [
+                "Stream"
+            ],
+            "TransferProtocolType@Redfish.AllowableValues": [
+                "CIFS",
+                "HTTP",
+                "HTTPS",
+                "NFS"
+            ],
+            "UserName@Redfish.AllowableValues": [
+                "This parameter shall contain a string representing the username to be used when accessing the URI specified by the Image parameter."
+            ],
+            "WriteProtected@Redfish.AllowableValues": [
+                "true"
+            ],
+            "target": "/redfish/v1/Managers/CIMC/VirtualMedia/0/Actions/VirtualMedia.InsertMedia"
+        }
+    },
+    "ConnectedVia": "NotConnected",
+    "Description": "Virtual Media Settings",
+    "Id": "0",
+    "Image": null,
+    "ImageName": null,
+    "Inserted": false,
+    "MediaTypes": [
+        "CD",
+        "DVD"
+    ],
+    "Name": "Virtual CD",
+    "Password": null,
+    "TransferMethod": null,
+    "TransferProtocolType": null,
+    "UserName": null,
+    "WriteProtected": true
+}
+```
+
+## /redfish/v1/Managers/CIMC/VirtualMedia/1
+
+```{
+    "@odata.context": "/redfish/v1/$metadata#Managers/Members/$entity/VirtualMedia/Members/$entity",
+    "@odata.id": "/redfish/v1/Managers/CIMC/VirtualMedia/1",
+    "@odata.type": "#VirtualMedia.v1_3_1.VirtualMedia",
+    "Actions": {
+        "#VirtualMedia.EjectMedia": {
+            "target": "/redfish/v1/Managers/CIMC/VirtualMedia/1/Actions/VirtualMedia.EjectMedia"
+        },
+        "#VirtualMedia.InsertMedia": {
+            "Image@Redfish.AllowableValues": [
+                "This parameter shall specify the string URI of the remote media to be attached to the virtual media. (Required)"
+            ],
+            "Inserted@Redfish.AllowableValues": [
+                "true"
+            ],
+            "Password@Redfish.AllowableValues": [
+                "This parameter shall contain a string representing the password to be used when accessing the URI specified by the Image parameter."
+            ],
+            "TransferMethod@Redfish.AllowableValues": [
+                "Stream"
+            ],
+            "TransferProtocolType@Redfish.AllowableValues": [
+                "CIFS",
+                "HTTP",
+                "HTTPS",
+                "NFS"
+            ],
+            "UserName@Redfish.AllowableValues": [
+                "This parameter shall contain a string representing the username to be used when accessing the URI specified by the Image parameter."
+            ],
+            "WriteProtected@Redfish.AllowableValues": [
+                "true"
+            ],
+            "target": "/redfish/v1/Managers/CIMC/VirtualMedia/1/Actions/VirtualMedia.InsertMedia"
+        }
+    },
+    "ConnectedVia": "NotConnected",
+    "Description": "Virtual Media Settings",
+    "Id": "1",
+    "Image": null,
+    "ImageName": null,
+    "Inserted": false,
+    "MediaTypes": [
+        "Floppy",
+        "USBStick"
+    ],
+    "Name": "Virtual Removable Disk",
+    "Password": null,
+    "TransferMethod": null,
+    "TransferProtocolType": null,
+    "UserName": null,
+    "WriteProtected": true
+}
+```
+

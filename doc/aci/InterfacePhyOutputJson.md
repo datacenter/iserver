@@ -1,0 +1,222 @@
+# Node Interface - Physical
+
+## JSON output
+
+```
+# iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --id 1/24 -o json
+
+[
+    {
+        "__Output": {
+            "id": "Blue",
+            "adminSt": "Green",
+            "switchingSt": "Green",
+            "stats.bundleIndex": "Yellow",
+            "stats.operSt": "Green"
+        },
+        "adminSt": "up",
+        "autoNeg": "on",
+        "bw": "0",
+        "delay": "1",
+        "descr": "",
+        "dfeDelayMs": "0",
+        "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]",
+        "dot1qEtherType": "0x8100",
+        "fecMode": "inherit",
+        "id": "eth1/24",
+        "layer": "Layer3",
+        "linkDebounce": "100",
+        "mdix": "auto",
+        "medium": "broadcast",
+        "mode": "trunk",
+        "mtu": "9216",
+        "name": "",
+        "portPhyMediaType": "auto",
+        "portT": "leaf",
+        "routerMac": "not-applicable",
+        "spanMode": "not-a-span-dest",
+        "speed": "inherit",
+        "switchingSt": "enabled",
+        "usage": "epg",
+        "portId": 24,
+        "portName": "1/24",
+        "podId": "1",
+        "nodeId": "205",
+        "nodeName": "bl205-eu-spdc",
+        "apic": "apic11",
+        "pod_node_name": "pod-1/bl205-eu-spdc",
+        "uplink": false,
+        "downlink": true,
+        "layerT": "routed",
+        "stats": {
+            "__Output": {
+                "bundleIndex": "Yellow",
+                "operSt": "Green"
+            },
+            "accessVlan": "vlan-1",
+            "allowedVlans": "",
+            "backplaneMac": "4C:71:0D:7E:84:08",
+            "bundleIndex": "",
+            "cfgAccessVlan": "vlan-1",
+            "cfgNativeVlan": "vlan-1",
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/phys",
+            "encap": "3",
+            "intfT": "phy",
+            "lastLinkStChg": "2023-03-03T01:21:41.943+02:00",
+            "media": "2",
+            "nativeVlan": "vlan-1",
+            "operDuplex": "full",
+            "operErrDisQual": "none",
+            "operFecMode": "cl91-rs-fec",
+            "operFlowCtrl": "0",
+            "operMdix": "auto",
+            "operMode": "trunk",
+            "operModeDetail": "unknown",
+            "operPhyEnSt": "unknown",
+            "operRouterMac": "00:00:00:00:00:00",
+            "operSpeed": "100G",
+            "operSt": "up",
+            "operStQual": "connected",
+            "operVlans": "",
+            "osSum": "failed",
+            "resetCtr": "1",
+            "primaryVlan": "vlan-1",
+            "txT": "unknown"
+        },
+        "up": true,
+        "qos": [
+            {
+                "__Output": {},
+                "id": "control-plane",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-control-plane",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 1029803492,
+                "RxAdmitPacketsCount": 11818638,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 126605393651,
+                "TxAdmitPacketsCount": 141601933,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "level1",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level1",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "level2",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level2",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {
+                    "TxDropBytesCount": "Red",
+                    "TxDropPacketsCount": "Red"
+                },
+                "id": "level3",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level3",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 8424562673122,
+                "RxAdmitPacketsCount": 7553707885,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 1822134695012,
+                "TxAdmitPacketsCount": 4348871113,
+                "TxDropBytesCount": 678,
+                "TxDropPacketsCount": 9
+            },
+            {
+                "__Output": {},
+                "id": "level4",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level4",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "level5",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level5",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 23586246938,
+                "TxAdmitPacketsCount": 37938131,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "level6",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level6",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "policy-plane",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-policy-plane",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 9599,
+                "RxAdmitPacketsCount": 51,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            },
+            {
+                "__Output": {},
+                "id": "span",
+                "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-span",
+                "interface_id": "eth1/24",
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
+                "RxDropBytesCount": 0,
+                "RxDropPacketsCount": 0,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
+            }
+        ]
+    }
+]
+```
+
+[[Back]](./InterfacePhy.md)

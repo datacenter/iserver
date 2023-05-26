@@ -1,0 +1,51 @@
+apiVersion: v1
+baseDomain: ${OCP_BASE_DOMAIN}
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: ${OCP_WORKER_COUNT}
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 8192
+      osDisk:
+        diskSizeGB: 120
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: ${OCP_MASTER_COUNT}
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 16384
+      osDisk:
+        diskSizeGB: 120
+metadata:
+  name: ${OCP_NAME}
+networking:
+  clusterNetwork:
+  - cidr: ${CNI_POD_V4}
+    hostPrefix: ${CNI_HOST_PREFIX}
+  machineNetwork:
+  - cidr: ${INTERFACE_0_NETWORK}/${INTERFACE_0_PREFIX}
+  networkType: ${CNI_TYPE}
+  serviceNetwork:
+  - ${CNI_SERVICE_V4}
+platform:
+  vsphere:
+    vcenter: ${VCENTER_NAME}
+    username: ${VCENTER_USERNAME}
+    password: "${VCENTER_PASSWORD}"
+    datacenter: ${VCENTER_DATACENTER}
+    defaultDatastore: ${VCENTER_DATASTORE}
+    folder: ${OCP_CONFIG_FOLDER}
+    diskType: thin
+    network: ${INTERFACE_0_VC_NETWORK_NAME}
+    cluster: ${VCENTER_CLUSTER}
+    apiVIP: ${OCP_API_VIP}
+    ingressVIP: ${OCP_INGRESS_VIP}
+fips: false
+pullSecret: 'PULL_SECRET_FILE'
+sshKey: 'SSH_PUBLIC_KEY'

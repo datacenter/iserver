@@ -1,0 +1,258 @@
+value: dict
+properties:
+  kind:
+    mandatory: True
+    type: str
+    check: values:VirtualMachineDeployment
+  deployment.name:
+    mandatory: True
+    type: str
+    check: null
+  deployment.namespace:
+    mandatory: True
+    type: str
+    check: null
+  deployment.vm:
+    mandatory: True
+    type: str
+    check: null
+  deployment.image.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  deployment.image.ip:
+    mandatory: False
+    type: str
+    check: ipv4
+    default: null
+  deployment.image.username:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.image.password:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.image.key_filename:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.image.path:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.image.size:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.image.dv:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.day0.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  deployment.day0.filename:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.day0.source:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.day0.destination:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.day0.size:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.day0.dv:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.sriov.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  deployment.sriov.policy:
+    mandatory: False
+    type: list_of_str
+    check: null
+    default: null
+  deployment.sriov.network:
+    mandatory: False
+    type: list_of_str
+    check: null
+    default: null
+  deployment.service.ssh:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.service.snmp:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  deployment.service.netconf:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  variables:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  tools.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  tools.ip:
+    mandatory: False
+    type: str
+    check: ipv4
+    default: null
+  tools.username:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  tools.password:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  tools.key_filename:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ssh.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  ssh.type:
+    mandatory: False
+    type: str
+    check: values:cisco,standard
+    default: null
+  ssh.username:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ssh.password:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ssh.key_filename:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  netconf.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  netconf.username:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  netconf.password:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  snmp.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  snmp.version:
+    mandatory: False
+    type: str
+    check: values:2c
+    default: null
+  snmp.community:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ready.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  ready.type:
+    mandatory: False
+    type: str
+    check: values:ssh
+    default: null
+  ready.timeout:
+    mandatory: False
+    type: int
+    check: ge0
+    default: 60
+  ready.sleep:
+    mandatory: False
+    type: int
+    check: ge0
+    default: 0
+  report.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  report.ssh:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  report.snmp:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  report.netconf:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  report.cluster:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  report.node:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null
+  report.aci:
+    mandatory: False
+    type: opaque
+    check: null
+    default: null

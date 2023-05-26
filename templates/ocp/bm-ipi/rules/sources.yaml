@@ -1,0 +1,7 @@
+value: dict
+properties:
+  secret:
+    mandatory: True
+    type: str
+    check: local-file
+    default: null

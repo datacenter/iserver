@@ -1,0 +1,71 @@
+value: dict
+properties:
+  ks.folder:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ks.overwrite:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  iso.source:
+    mandatory: False
+    type: str
+    check: local-file
+    default: null
+  iso.destination:
+    mandatory: True
+    type: str
+    check: null
+  vm.name:
+    mandatory: True
+    type: str
+    check: null
+  vm.suffix:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  vm.cpu:
+    mandatory: True
+    type: int
+    check: ge1
+  vm.memory:
+    mandatory: True
+    type: int
+    check: ge2048
+  vm.disk.size:
+    mandatory: True
+    type: int
+    check: ge50
+  vm.disk.type:
+    mandatory: False
+    type: string
+    check: values:thin,thick,eagerZeroedThick
+    default: thin
+  vm.interface.name:
+    mandatory: False
+    type: str
+    check: values:ens192
+    default: ens192
+  vm.interface.type:
+    mandatory: False
+    type: str
+    check: values:vmxnet3
+    default: vmxnet3
+  vm.ip:
+    mandatory: True
+    type: str
+    check: ipv4
+  vm.username:
+    mandatory: False
+    type: str
+    check: values:root
+    default: root
+  vm.password:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+

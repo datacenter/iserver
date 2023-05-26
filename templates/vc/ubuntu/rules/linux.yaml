@@ -1,0 +1,120 @@
+value: dict
+validate: True
+properties:
+  template:
+    mandatory: True
+    type: str
+    check: values:ubuntu
+  distribution:
+    mandatory: False
+    type: str
+    check: values:ubuntu
+    default: ubuntu
+  version:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  ks.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  ks.template:
+    mandatory: False
+    type: str
+    check: local-file
+    default: null
+  ks.iso:
+    mandatory: False
+    type: str
+    check: must-be-null
+    default: null
+  iso.source:
+    mandatory: False
+    type: str
+    check: local-file
+    default: null
+  iso.filename:
+    mandatory: True
+    type: str
+    check: not-empty
+  vm.name:
+    mandatory: True
+    type: str
+    check: null
+  vm.cpu:
+    mandatory: False
+    type: int
+    check: ge1
+    default: 1
+  vm.memory:
+    mandatory: False
+    type: int
+    check: ge2048
+    default: 2048
+  vm.disk.size:
+    mandatory: False
+    type: int
+    check: ge50
+    default: 50
+  vm.disk.type:
+    mandatory: False
+    type: string
+    check: values:thin,thick,eagerZeroedThick
+    default: thin
+  vm.interface.network:
+    mandatory: True
+    type: str
+    check: null
+  vm.interface.name:
+    mandatory: False
+    type: str
+    check: values:ens192
+    default: ens192
+  vm.interface.type:
+    mandatory: False
+    type: str
+    check: values:vmxnet3
+    default: vmxnet3
+  vm.ip:
+    mandatory: False
+    type: str
+    check: cidrv4
+    default: null
+  vm.gateway:
+    mandatory: False
+    type: str
+    check: ipv4
+    default: null
+  vm.dns.servers:
+    mandatory: False
+    type: str
+    check: ipv4s
+    default: null
+  vm.dns.domain:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  vm.ntp.servers:
+    mandatory: False
+    type: str
+    check: ipv4s
+    default: null
+  vm.ntp.timezone:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  vm.username:
+    mandatory: False
+    type: str
+    check: values:ubuntu
+    default: ubuntu
+  vm.password:
+    mandatory: False
+    type: str
+    check: not-empty-no-spaces
+    default: null
+

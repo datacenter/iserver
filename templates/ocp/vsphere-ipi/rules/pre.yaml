@@ -1,0 +1,12 @@
+value: dict
+properties:
+  vcenter:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  icmp:
+    mandatory: False
+    type: bool
+    check: url
+    default: False

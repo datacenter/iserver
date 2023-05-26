@@ -1,0 +1,2 @@
+value: list_of_str
+check: ssh-public-key

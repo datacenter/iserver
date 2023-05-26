@@ -1,0 +1,54 @@
+apiVersion: v1
+baseDomain: openshift.one
+proxy:
+  httpProxy: http://proxy-wsa.esl.cisco.com:80
+  httpsProxy: http://proxy-wsa.esl.cisco.com:80
+  noProxy: 10.58.25.160/28,10.58.50.0/24
+metadata:
+  name: ocpbm
+networking:
+  machineCIDR: 10.58.25.160/28
+  networkType: OVNKubernetes
+compute:
+- name: worker
+  replicas: 2
+controlPlane:
+  name: master
+  replicas: 1
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: 10.58.25.165
+    ingressVIP: 10.58.25.166
+    bootstrapExternalStaticIP: 10.58.25.164
+    bootstrapExternalStaticGateway: 10.58.25.174
+    bootstrapOSImage: 'BOOTSTRAP_OS_IMAGE_FILE'
+    provisioningNetwork: "Disabled"
+    hosts:
+      - name: openshift-master
+        role: master
+        bmc:
+          address: redfish://10.58.50.43/redfish/v1/Systems/WZP23400AKL
+          username: admin
+          password: '!Cisc0_123'
+          disableCertificateVerification: True
+        bootMACAddress: 3C:57:31:CC:0D:02
+      - name: openshift-worker-1
+        role: worker
+        bmc:
+          address: redfish://10.58.50.44/redfish/v1/Systems/WMP240400FM
+          username: admin
+          password: '!Cisc0_123'
+          disableCertificateVerification: True
+        bootMACAddress: 3C:57:31:CC:0E:46
+      - name: openshift-worker-2
+        role: worker
+        bmc:
+          address: redfish://10.58.50.46/redfish/v1/Systems/WMP24040059
+          username: admin
+          password: '!Cisc0_123'
+          disableCertificateVerification: True
+        bootMACAddress: 3C:57:31:CC:14:0A
+pullSecret: 'PULL_SECRET_FILE'
+sshKey: 'SSH_PUBLIC_KEY'

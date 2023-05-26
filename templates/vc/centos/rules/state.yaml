@@ -1,0 +1,18 @@
+value: dict
+validate: True
+properties:
+  cpu:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  memory:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  disk:
+    mandatory: False
+    type: bool
+    check: null
+    default: True

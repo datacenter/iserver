@@ -1,0 +1,177 @@
+{
+    "filename": ".\\samples\\ocp\\ocp-installer.yaml",
+    "vcenter": {
+        "ip": "10.58.29.66",
+        "port": 443,
+        "username": "administrator@vsphere.local",
+        "password": "!Cisc0_123",
+        "datacenter": "IKS-Kali",
+        "datastore": "datastore1",
+        "folder": "OCP-Kali",
+        "host_ips": [
+            "10.58.29.65"
+        ]
+    },
+    "jump": {
+        "enabled": true,
+        "ip": "10.58.25.162",
+        "username": "root",
+        "password": "cisco"
+    },
+    "iso": {
+        "enabled": true,
+        "destination": "/linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso",
+        "delete_source": false,
+        "source": null,
+        "overwrite": false,
+        "delete_destination": false,
+        "folder_name": "/linux-iso/",
+        "file_name": "Fedora-Server-dvd-x86_64-36-1.5.iso",
+        "is_folder": true,
+        "is_file": true
+    },
+    "variables": {
+        "VCENTER_CLUSTER_HOST_IPS": "10.58.29.65",
+        "HTTP_PROXY_ENABLED": true,
+        "HTTP_PROXY": "http://proxy.esl.cisco.com:80",
+        "HTTPS_PROXY": "http://proxy.esl.cisco.com:80",
+        "OCP_BASE_DOMAIN": "ocp.lan",
+        "OCP_NAME": "cluster",
+        "OCP_API_VIP": "10.58.24.210",
+        "OCP_INGRESS_VIP": "10.58.24.211",
+        "OCP_NODES_DHCP_START": "10.58.24.212",
+        "OCP_NODES_DHCP_END": "10.58.24.218",
+        "OCP_NODES_IPS": "10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218",
+        "OCP_WORKER_COUNT": 3,
+        "OCP_MASTER_COUNT": 3,
+        "VCENTER_NAME": "vc-iks-kali-eu-spdc.cisco.com",
+        "VCENTER_IP": "10.58.29.66",
+        "VCENTER_PORT": 443,
+        "VCENTER_USERNAME": "administrator@vsphere.local",
+        "VCENTER_PASSWORD": "!Cisc0_123",
+        "VCENTER_DATACENTER": "IKS-Kali",
+        "VCENTER_DATASTORE": "datastore1",
+        "VCENTER_CLUSTER": "IKS",
+        "VCENTER_FOLDER": "OCP-Kali",
+        "HOSTNAME": "ocp-installer",
+        "PASSWORD": "cisco",
+        "DNS_NAMESERVER": "144.254.71.184",
+        "DNS_DOMAIN": "cisco.com",
+        "NTP_SERVER": "144.254.15.78",
+        "TIMEZONE": "Europe/Rome",
+        "INTERFACE_0_VC_NETWORK_NAME": "IKS-BGP",
+        "INTERFACE_0_IP": "10.58.24.209",
+        "INTERFACE_0_NETMASK": "255.255.255.240",
+        "INTERFACE_0_PREFIX": 28,
+        "INTERFACE_0_CIDR": "10.58.24.209/28",
+        "INTERFACE_0_NETWORK": "10.58.24.208",
+        "INTERFACE_0_GATEWAY": "10.58.24.222",
+        "INTERFACE_0_NAME": "ens192",
+        "INTERFACE_0_REVDNS": "24.58.10",
+        "DNS_SERIAL": "2022102301",
+        "VCENTER_CLUSTER_HOST_IPS_OCTET_1": "10",
+        "VCENTER_CLUSTER_HOST_IPS_OCTET_2": "58",
+        "VCENTER_CLUSTER_HOST_IPS_OCTET_3": "29",
+        "VCENTER_CLUSTER_HOST_IPS_OCTET_4": "65",
+        "OCP_API_VIP_OCTET_1": "10",
+        "OCP_API_VIP_OCTET_2": "58",
+        "OCP_API_VIP_OCTET_3": "24",
+        "OCP_API_VIP_OCTET_4": "210",
+        "OCP_INGRESS_VIP_OCTET_1": "10",
+        "OCP_INGRESS_VIP_OCTET_2": "58",
+        "OCP_INGRESS_VIP_OCTET_3": "24",
+        "OCP_INGRESS_VIP_OCTET_4": "211",
+        "OCP_NODES_DHCP_START_OCTET_1": "10",
+        "OCP_NODES_DHCP_START_OCTET_2": "58",
+        "OCP_NODES_DHCP_START_OCTET_3": "24",
+        "OCP_NODES_DHCP_START_OCTET_4": "212",
+        "OCP_NODES_DHCP_END_OCTET_1": "10",
+        "OCP_NODES_DHCP_END_OCTET_2": "58",
+        "OCP_NODES_DHCP_END_OCTET_3": "24",
+        "OCP_NODES_DHCP_END_OCTET_4": "218",
+        "VCENTER_IP_OCTET_1": "10",
+        "VCENTER_IP_OCTET_2": "58",
+        "VCENTER_IP_OCTET_3": "29",
+        "VCENTER_IP_OCTET_4": "66",
+        "DNS_NAMESERVER_OCTET_1": "144",
+        "DNS_NAMESERVER_OCTET_2": "254",
+        "DNS_NAMESERVER_OCTET_3": "71",
+        "DNS_NAMESERVER_OCTET_4": "184",
+        "NTP_SERVER_OCTET_1": "144",
+        "NTP_SERVER_OCTET_2": "254",
+        "NTP_SERVER_OCTET_3": "15",
+        "NTP_SERVER_OCTET_4": "78",
+        "INTERFACE_0_IP_OCTET_1": "10",
+        "INTERFACE_0_IP_OCTET_2": "58",
+        "INTERFACE_0_IP_OCTET_3": "24",
+        "INTERFACE_0_IP_OCTET_4": "209",
+        "INTERFACE_0_NETMASK_OCTET_1": "255",
+        "INTERFACE_0_NETMASK_OCTET_2": "255",
+        "INTERFACE_0_NETMASK_OCTET_3": "255",
+        "INTERFACE_0_NETMASK_OCTET_4": "240",
+        "INTERFACE_0_NETWORK_OCTET_1": "10",
+        "INTERFACE_0_NETWORK_OCTET_2": "58",
+        "INTERFACE_0_NETWORK_OCTET_3": "24",
+        "INTERFACE_0_NETWORK_OCTET_4": "208",
+        "INTERFACE_0_GATEWAY_OCTET_1": "10",
+        "INTERFACE_0_GATEWAY_OCTET_2": "58",
+        "INTERFACE_0_GATEWAY_OCTET_3": "24",
+        "INTERFACE_0_GATEWAY_OCTET_4": "222"
+    },
+    "ks": {
+        "enabled": true,
+        "destination": "/linux-ks/ocp-installer-ks.iso",
+        "template": "C:\\kali\\cisco\\devel\\vclinux\\samples\\ocp\\ip-static.ks",
+        "delete_source": true,
+        "overwrite": true,
+        "delete_destination": true,
+        "generate": true,
+        "source": "/tmp/600e140f-68a7-4523-b269-e9ba3da17bd1.iso",
+        "folder_name": "/linux-ks/",
+        "file_name": "ocp-installer-ks.iso",
+        "is_folder": true,
+        "is_file": false
+    },
+    "vm": {
+        "datacenter_name": "IKS-Kali",
+        "datastore_name": "datastore1",
+        "host_ip": null,
+        "name": "ocp-installer",
+        "cpu": 1,
+        "memory": 2048,
+        "disk": [
+            {
+                "size": 50,
+                "thin": true
+            }
+        ],
+        "network": [
+            {
+                "name": "IKS-BGP",
+                "type": "vmxnet3"
+            }
+        ],
+        "cdrom": [
+            {
+                "datastore_name": "datastore1",
+                "iso": "/linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso"
+            },
+            {
+                "datastore_name": "datastore1",
+                "iso": "/linux-ks/ocp-installer-ks.iso"
+            }
+        ],
+        "tasks": [
+            ".\\samples\\ocp\\general\\main.yaml",
+            ".\\samples\\ocp\\bind\\main.yaml",
+            ".\\samples\\ocp\\dhcp\\main.yaml",
+            ".\\samples\\ocp\\openshift\\main.yaml"
+        ],
+        "ssh": {
+            "enabled": true,
+            "username": "root",
+            "password": "cisco",
+            "ip": "10.58.24.209"
+        }
+    }
+}

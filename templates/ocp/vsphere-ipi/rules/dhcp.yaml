@@ -1,0 +1,35 @@
+value: dict
+properties:
+  managed:
+    mandatory: False
+    type: bool
+    check: must-be-true
+    default: True
+  subnet:
+    mandatory: True
+    type: str
+    check: cidrv4
+  gateway:
+    mandatory: True
+    type: str
+    check: ipv4
+  range:
+    mandatory: True
+    type: str
+    check: dhcp-v4-range
+  dns.servers:
+    mandatory: True
+    type: str
+    check: ipv4s
+  dns.domain:
+    mandatory: True
+    type: str
+    check: null
+  ntp.servers:
+    mandatory: True
+    type: str
+    check: ipv4s
+  ntp.timezone:
+    mandatory: True
+    type: str
+    check: null

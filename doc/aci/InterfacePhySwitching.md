@@ -1,0 +1,46 @@
+# Node Interface - Physical
+
+## Filter by switching state
+
+```
+# iserver get aci intf phy
+    --apic apic11
+    --node bl205-eu-spdc
+    --switching disabled
+
+Apic: apic11
+Apic: apic11o.emea-sp.cisco.com
+Pod: 1
+Node: bl205-eu-spdc
+
++---------------------+-----------+-------+-----------+------+--------------------+------+----------+-----+-------------------+-------+-------+--------+------+-------------+
+| Node                | Interface | Admin | Switching | Oper | Reason             | Type | Layer    | PC  | MAC               | Mode  | Speed | Duplex | MTU  | FEC         |
++---------------------+-----------+-------+-----------+------+--------------------+------+----------+-----+-------------------+-------+-------+--------+------+-------------+
+| pod-1/bl205-eu-spdc | 1/3       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F3 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/4       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F4 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/5       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F5 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/6       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F6 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/7       | up    | disabled  | down | link-not-connected | leaf | switched |     | 4C:71:0D:7E:83:F7 | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/8       | up    | disabled  | down | link-not-connected | leaf | switched |     | 4C:71:0D:7E:83:F8 | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/9       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F9 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/10      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FA | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/11      | up    | disabled  | up   | connected          | leaf | switched | po4 | 4C:71:0D:7E:83:FB | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/12      | up    | disabled  | up   | connected          | leaf | switched | po1 | 4C:71:0D:7E:83:FC | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/13      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FD | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/14      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FE | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/20      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:04 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/21      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:05 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/22      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:06 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/23      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:07 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/25      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:09 | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/26      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:0A | trunk | 100G  | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/29      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:0D | trunk | 400G  | full   | 9366 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/30      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:0E | trunk | 400G  | full   | 9366 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/31      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:0F | trunk | 400G  | full   | 9366 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/32      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:10 | trunk | 400G  | full   | 9366 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/33      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:11 | trunk | 400G  | full   | 9366 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/34      | up    | disabled  | down | sfp-missing        | fab  | routed   |     | 4C:71:0D:7E:84:12 | trunk | 400G  | full   | 9366 | disable-fec | 
++---------------------+-----------+-------+-----------+------+--------------------+------+----------+-----+-------------------+-------+-------+--------+------+-------------+
+```
+
+[[Back]](./InterfacePhy.md)

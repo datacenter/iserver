@@ -1,0 +1,32 @@
+main:
+  autoinstall_iso_create_script: create-autoinstall-iso.sh
+  default_user_data_proxy: user-data.proxy
+  default_user_data_no_proxy: user-data.no-proxy
+  operation:
+    get:
+      mandatory:
+      - vcenter
+      - linux
+      - state
+      optional: null
+    create:
+      mandatory:
+      - vcenter
+      - linux
+      - settings
+      - state
+      optional:
+      - proxy
+      - ssh
+      - create_tasks
+      - variables
+      - jump
+    delete:
+      mandatory:
+      - vcenter
+      - linux
+      - settings
+      optional:
+      - proxy
+      - delete_tasks
+      - variables

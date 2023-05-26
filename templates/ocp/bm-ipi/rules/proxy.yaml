@@ -1,0 +1,16 @@
+value: dict
+properties:
+  enabled:
+    mandatory: True
+    type: bool
+    check: null
+  http:
+    mandatory: False
+    type: str
+    check: url
+    default: null
+  https:
+    mandatory: False
+    type: str
+    check: url
+    default: null

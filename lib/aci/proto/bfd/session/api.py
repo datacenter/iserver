@@ -1,0 +1,36 @@
+class ProtocolBfdSessionApi():
+    def __init__(self):
+        self.bfd_sessions_mo = {}
+
+    def get_protocol_bfd_sessions_mo(self, pod_id, node_id):
+        key = '%s.%s' % (pod_id, node_id)
+        if key in self.bfd_sessions_mo:
+            return self.bfd_sessions_mo[key]
+
+        # url: url: https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/bfd/inst.json?query-target=children&target-subtree-class=bfdSess&subscription=yes
+        distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst' % (pod_id, node_id)
+        query = 'query-target=children&target-subtree-class=bfdSess'
+        managed_objects = self.get_managed_object(
+            distinguished_name,
+            query=query
+        )
+
+        if managed_objects is None:
+            self.log.error(
+                'get_protocol_bfd_sessions_mo',
+                'API failed'
+            )
+            return None
+
+        self.bfd_sessions_mo[key] = []
+        for managed_object in managed_objects['imdata']:
+            self.bfd_sessions_mo[key].append(
+                managed_object['bfdSess']['attributes']
+            )
+
+        self.log.apic_mo(
+            'bfd.sessions.%s' % (key),
+            self.bfd_sessions_mo[key]
+        )
+
+        return self.bfd_sessions_mo[key]

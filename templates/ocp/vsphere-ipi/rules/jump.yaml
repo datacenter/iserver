@@ -1,0 +1,14 @@
+value: dict
+properties:
+  ip:
+    mandatory: True
+    type: str
+    check: ipv4
+  username:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  password:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces

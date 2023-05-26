@@ -1,0 +1,40 @@
+# Policy Group
+
+## Access Interface VPC
+
+Filter options:
+  - [name](./PgAccessInterfaceVpcName.md)
+  - [aaep](./PgAccessInterfaceVpcAaep.md)
+
+Output options:
+  - [policy](./PgAccessInterfaceVpcOutputPolicy.md) (default)
+  - [aaep](./PgAccessInterfaceVpcOutputAaep.md)
+  - [node](./PgAccessInterfaceVpcOutputNode.md)
+  - [port](./PgAccessInterfaceVpcOutputPort.md)
+  - [json](./PgAccessInterfaceVpcOutputJson.md)
+
+Command options
+
+```
+# iserver get aci pg access intf vpc --help
+
+Usage: iserver.py get aci pg access intf vpc [OPTIONS]
+
+  Get aci policy group interface vpc
+
+Options:
+  --apic TEXT                     APIC name
+  --ip TEXT                       APIC IP
+  --username TEXT                 APIC Username
+  --password TEXT                 APIC Password
+  --name TEXT                     Filter by name
+  --aaep TEXT                     Filter by aaep
+  -o, --output [policy|aaep|node|port|json]
+                                  [default: policy]
+  --devel                         Developer output
+  --help                          Show this message and exit.
+
+Info: finished in 100 ms and logs saved in /tmp/iserver\d4e6e64081ba
+```
+
+[[Back]](./PgAccessInterface.md)

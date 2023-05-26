@@ -1,0 +1,157 @@
+value: dict
+properties:
+  server.serial:
+    mandatory: False
+    type: str
+    check: null
+    default: ''
+  server.ip:
+    mandatory: False
+    type: str
+    check: ipv4
+    default: ''
+  server.name:
+    mandatory: False
+    type: str
+    check: null
+    default: ''
+  server.username:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  server.password:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  pre.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  pre.rfd:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  pre.bios:
+    mandatory: False
+    type: str
+    check: local-file-null-accepted
+    default: null
+  pre.disks:
+    mandatory: False
+    type: str
+    check: local-file-null-accepted
+    default: null
+  pre.boot.set:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  pre.boot.mode:
+    mandatory: False
+    type: str
+    check: values:uefi,legacy
+    default: uefi
+  pre.boot.secure:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  pre.boot.clean:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  os-install.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
+  os-install.image.create:
+    mandatory: False
+    type: bool
+    check: must-be-true
+    default: True
+  os-install.image.vendor:
+    mandatory: False
+    type: str
+    check: values:Red Hat
+    default: Red Hat
+  os-install.image.version:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  os-install.image.url:
+    mandatory: False
+    type: str
+    check: url
+    default: null
+  os-install.scu.create:
+    mandatory: False
+    type: bool
+    check: must-be-true
+    default: True
+  os-install.scu.version:
+    mandatory: False
+    type: str
+    check: null
+    default: null
+  os-install.scu.url:
+    mandatory: False
+    type: str
+    check: url
+    default: null
+  hostname:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+    default: null
+  username:
+    mandatory: False
+    type: str
+    check: values:root
+    default: root
+  password:
+    mandatory: True
+    type: str
+    check: not-empty-no-spaces
+  interface.mac:
+    mandatory: False
+    type: str
+    check: null
+    default: ''
+  interface.name:
+    mandatory: True
+    type: str
+    check: null
+  interface.ip:
+    mandatory: True
+    type: str
+    check: cidrv4
+  interface.gateway:
+    mandatory: True
+    type: str
+    check: ipv4
+  dns.servers:
+    mandatory: True
+    type: str
+    check: ipv4s
+  dns.domain:
+    mandatory: True
+    type: str
+    check: null
+  ntp.servers:
+    mandatory: True
+    type: str
+    check: ipv4s
+  ntp.timezone:
+    mandatory: True
+    type: str
+    check: null
+  organization:
+    mandatory: False
+    type: str
+    check: null
+    default: null
