@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: csr1kv-01-ssh
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    special: csr1kv-01
+  type: NodePort

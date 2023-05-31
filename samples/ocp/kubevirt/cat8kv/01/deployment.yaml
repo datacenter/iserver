@@ -1,0 +1,59 @@
+kind: VirtualMachineDeployment
+deployment:
+  vm: vm.yaml
+  day0:
+    filename: iosxe_config.txt
+    source: iosxe_config.txt
+    destination: c8000v_config.iso
+    dv: day0.yaml
+  service:
+    ssh: ssh.yaml
+    snmp: snmp.yaml
+    netconf: netconf.yaml
+ssh:
+  enabled: true
+  type: cisco
+  username: admin
+  password: Cisco_123
+snmp:
+  enabled: true
+  version: 2c
+  community: public
+netconf:
+  enabled: true
+  username: admin
+  password: Cisco_123
+ready:
+  enabled: true
+  type: ssh
+  timeout: 600
+  sleep: 120
+report:
+  enabled: true
+  ssh:
+    version:
+    - show version
+    interface:
+    - show ip interface brief
+    - show interface
+    - show ip interface
+    route:
+    - show ip route
+    - show arp
+    configuration:
+    - show running-config
+    http:
+    - show ip http server all
+    snmp:
+    - show snmp
+    netconf:
+    - show netconf-yang datastores
+    - show netconf-yang diagnostics summary
+    - show netconf-yang statistics
+    - show platform software yang-management process
+  snmp:
+    system:
+    - system
+  netconf:
+    - capabilities
+    - configuration

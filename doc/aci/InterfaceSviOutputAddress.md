@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc -o addr
+# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc --view addr
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -56,6 +56,48 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | vlan70    | up          | up         | 70      | 00:22:BD:DD:AA:FF | 10.58.27.126/28   | 
 | pod-1/bl205-eu-spdc | vlan72    | up          | up         | 72      | 00:22:BD:DD:EE:FF | 10.58.27.110/28   | 
 +---------------------+-----------+-------------+------------+---------+-------------------+-------------------+
+```
+
+Developer
+
+```
+# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc --view addr
+
+{
+    "duration": 1800,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 534,
+        "disconnect_time": 0,
+        "mo_time": 1049,
+        "total_time": 1583
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	534	-	connect apic11o.emea-sp.cisco.com
+True	308	11	apic11o.emea-sp.cisco.com class fabricNode
+True	437	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	304	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

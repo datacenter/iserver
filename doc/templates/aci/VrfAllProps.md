@@ -2,7 +2,7 @@
 
 ## Get VRF properties
 
-Use '-o props' to get properties of selected vrfs
+Use '--view props' to get properties of selected vrfs
 - vrf name and tenant
 - data plane learning
 - policy control enforcement preference and direction
@@ -11,6 +11,12 @@ Use '-o props' to get properties of selected vrfs
 
 ```
 DOC_TEMPLATE:get_aci_vrf.all_props:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_vrf.all_props:devel.debug
 ```
 
 [[Back]](./Vrf.md)

@@ -2,7 +2,7 @@
 
 ## Get VRF properties of bridge domains
 
-Use '-o vrf' to get configured VRF related properties of selected bridge domains
+Use '--view vrf' to get configured VRF related properties of selected bridge domains
 - resolved VRF tenant and name
 - data plane learning
 - policy control enforcement preference
@@ -11,6 +11,12 @@ Use '-o vrf' to get configured VRF related properties of selected bridge domains
 
 ```
 DOC_TEMPLATE:get_aci_bd.all_vrf:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_bd.all_vrf:devel.debug
 ```
 
 [[Back]](./BridgeDomain.md)

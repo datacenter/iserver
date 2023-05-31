@@ -1,9 +1,6 @@
-from lib import log_helper
-
-
 class PolicySnoopMld():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def get_policy_snoop_mld_mo(self, tenant, name):
         distinguished_name = 'uni/tn-%s/mldsnoopPol-%s' % (

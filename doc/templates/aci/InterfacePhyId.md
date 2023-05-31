@@ -14,4 +14,10 @@ Example: id pattern
 DOC_TEMPLATE:get_aci_intf_phy.ids:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_intf_phy.id:devel.debug
+```
+
 [[Back]](./InterfacePhy.md)

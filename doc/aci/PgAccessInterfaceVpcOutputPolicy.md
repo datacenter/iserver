@@ -7,12 +7,52 @@
 
 Apic: apic11
 
-+-----------------+-------------------------+------------+-----------+------------+---------+-------------+-------------+---------+--------------+---------------+---------------+
-| Name            | Attached Entity Profile | Link Level | Link Flap | CDP        | MCP     | LACP        | LLDP        | STP     | L2           | Storm Control | Port Security |
-+-----------------+-------------------------+------------+-----------+------------+---------+-------------+-------------+---------+--------------+---------------+---------------+
-| HX1-FI-A_PolGrp | HX1_AAEP                | Inherit    | default   | CDP_enable | default | LACP-active | LLDP_enable | default | L2-local_Pol | default       | default       | 
-| HX1-FI-B_PolGrp | HX1_AAEP                | Inherit    | default   | CDP_enable | default | LACP-active | LLDP_enable | default | L2-local_Pol | default       | default       | 
-+-----------------+-------------------------+------------+-----------+------------+---------+-------------+-------------+---------+--------------+---------------+---------------+
++-----------------+-------------------------+------------+------------+-------------+-------------+-----------+---------+---------+--------------+---------------+---------------+
+| Name            | Attached Entity Profile | CDP        | Link Level | LLDP        | LACP        | Link Flap | MCP     | STP     | L2           | Storm Control | Port Security |
++-----------------+-------------------------+------------+------------+-------------+-------------+-----------+---------+---------+--------------+---------------+---------------+
+| HX1-FI-A_PolGrp | HX1_AAEP                | CDP_enable | Inherit    | LLDP_enable | LACP-active | default   | default | default | L2-local_Pol | default       | default       | 
+| HX1-FI-B_PolGrp | HX1_AAEP                | CDP_enable | Inherit    | LLDP_enable | LACP-active | default   | default | default | L2-local_Pol | default       | default       | 
++-----------------+-------------------------+------------+------------+-------------+-------------+-----------+---------+---------+--------------+---------------+---------------+
+```
+
+Developer
+
+```
+# iserver get aci pg access intf vpc --apic apic11 --name HX*
+
+{
+    "duration": 1092,
+    "apic": {
+        "read": true,
+        "success": 2,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 1,
+        "connect_time": 394,
+        "disconnect_time": 0,
+        "mo_time": 595,
+        "total_time": 989
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	394	-	connect apic11o.emea-sp.cisco.com
+True	595	37	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree=children&rsp-subtree-class=infraRsCdpIfPol,infraRsMcpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsLacpPol,infraRsMonIfInfraPol,infraAccBndlSubgrp,infraRsStpIfPol,infraRsAttEntP,infraRsSpanVSrcGrp,infraRsSpanVDestGrp,infraRsL2IfPol,infraRsStormctrlIfPol,infraRsQosEgressDppIfPol,infraRsQosIngressDppIfPol,infraRsQosSdIfPol,infraRsQosPfcIfPol,infraRsQosEgressDppIfPol,infraRsL2PortSecurityPol,infraRsFcIfPol,infraRsMacsecIfPol
 ```
 
 [[Back]](./PgAccessInterfaceVpc.md)

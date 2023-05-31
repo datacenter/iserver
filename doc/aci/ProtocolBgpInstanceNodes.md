@@ -3,7 +3,7 @@
 ## Show BGP VRF domains for selected nodes
 
 ```
-# iserver get aci proto bgp --apic apic11 --node rl -o vrf
+# iserver get aci proto bgp --apic apic11 --node rl --view vrf
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -50,6 +50,52 @@ Pod: 1
 | pod-1/rl302-eu-spdc | SPN_IntraLab:SPN_VRF1          | up        | fabric | 192.168.0.254   | rd:as2-nn4:302:2883591 | 0         | 0           | 
 | pod-1/rl302-eu-spdc | UC3-CL2023-Demo:default        | up        | fabric | 0.0.0.0         | rd:as2-nn4:302:3014663 | 0         | 0           | 
 +---------------------+--------------------------------+-----------+--------+-----------------+------------------------+-----------+-------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bgp --apic apic11 --node rl --view vrf
+
+{
+    "duration": 2695,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 388,
+        "disconnect_time": 0,
+        "mo_time": 2054,
+        "total_time": 2442
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	388	-	connect apic11o.emea-sp.cisco.com
+True	295	11	apic11o.emea-sp.cisco.com class fabricNode
+True	308	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bgp/inst
+True	282	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom
+True	303	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	285	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bgp/inst
+True	290	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom
+True	291	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

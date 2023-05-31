@@ -1,0 +1,67 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: asav-01
+  namespace: default
+  labels:
+    app: asav-01
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: asav-01
+        namespace: default
+      spec:
+        pvc:
+          storageClassName: thick
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          volumeMode: Block
+        source:
+          pvc:
+            name: asav-dv
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: asav-01
+        special: asav-01
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cdromdisk
+            cdrom:
+              readOnly: True
+              bus: sata
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: asav-01
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - name: rootdisk
+          dataVolume:
+            name: asav-01
+        - name: cdromdisk
+          persistentVolumeClaim:
+            claimName: asav-01-day0

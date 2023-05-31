@@ -13,4 +13,10 @@ Get all bridge domains from selected APIC. Default output shows properties of br
 DOC_TEMPLATE:get_aci_bd.all_default:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_bd.all_default:devel.debug
+```
+
 [[Back]](./BridgeDomain.md)

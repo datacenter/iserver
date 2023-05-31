@@ -1,0 +1,22 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: ${NAME}-sriov-vf
+  namespace: openshift-sriov-network-operator
+  labels:
+    fabric_type: aci
+    fabric_name: apic21o.emea-sp.cisco.com
+spec:
+  resourceName: ${SRIOV_PHY1A_INTERFACE_NAME}dpdk
+  networkNamespace: ${NAMESPACE}
+  vlan: ${SRIOV_VF_VLAN}
+  ipam: |-
+    {
+      "type": "static",
+      "addresses": [
+        {
+          "address": "${SRIOV_VF_IP}/${SRIOV_VF_PREFIX}",
+          "gateway": "${SRIOV_VF_GATEWAY}"
+        }
+      ]
+    }

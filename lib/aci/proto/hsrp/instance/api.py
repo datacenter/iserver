@@ -22,10 +22,13 @@ class ProtocolHsrpInstanceApi():
             )
             return None
 
+        if managed_objects['totalCount'] == '0':
+            return None
+
         if managed_objects['totalCount'] != '1':
             self.log.error(
                 'get_protocol_hsrp_instance_mo',
-                'Unexpected object count'
+                'Unexpected object count: %s' % (managed_objects)
             )
             return None
 

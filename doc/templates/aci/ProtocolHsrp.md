@@ -10,9 +10,13 @@ Node selection options:
 Filter options:
   - [vrf](./ProtocolHsrpInstanceVrf.md)
 
-Output options:
-  - [instance](./ProtocolHsrpNode.md)
+View options:
+  - [default](./ProtocolHsrpNode.md)
   - [vrf](./ProtocolHsrpInstanceVrf.md)
+
+Output options:
+  - [default](./ProtocolHsrpNode.md)
+  - [json](./ProtocolHsrpJson.md)
 
 Command options
 

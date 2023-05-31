@@ -1,0 +1,32 @@
+tasks:
+  - scripts:
+    - packages.sh
+  - commands:
+    - mkdir -p /etc/named/zones
+  - files:
+    - source: dns_a
+      template: True
+      destination: /etc/named/zones/db.${OCP_BASE_DOMAIN}
+      chmod: 644
+    - source: dns_arpa
+      template: True
+      destination: /etc/named/zones/db.reverse
+      chmod: 644
+    - source: named.conf
+      template: True
+      destination: /etc/named.conf
+      chmod: 644
+  - commands:
+    - dos2unix /etc/named.conf
+    - dos2unix /etc/named/zones/db.reverse
+    - dos2unix /etc/named/zones/db.${OCP_BASE_DOMAIN}
+    - systemctl restart named
+    - systemctl status named
+    - rm /etc/resolv.conf
+  - files:
+    - source: resolv.conf
+      template: True
+      destination: /etc/resolv.conf
+      chmod: 644
+  - commands:
+    - dos2unix /etc/resolv.conf

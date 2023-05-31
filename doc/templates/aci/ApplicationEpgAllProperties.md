@@ -2,7 +2,7 @@
 
 ## Get EPGs properties
 
-Use '-o props' to get properties of selected epgs
+Use '--view props' to get properties of selected epgs
 - epg name, application profile and tenant
 - preferred member
 - flood
@@ -13,6 +13,12 @@ Use '-o props' to get properties of selected epgs
 
 ```
 DOC_TEMPLATE:get_aci_epg.all_properties:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.all_properties:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

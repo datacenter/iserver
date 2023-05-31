@@ -2,8 +2,8 @@
 
 ## Get BGP neighbors from all nodes
 
-Use --output parameter to select neighborship attributes template
-- [summary](./ProtocolBgpNeighborSummary.md)
+Use --view parameter to select neighborship attributes template
+- [default](./ProtocolBgpNeighborSummary.md)
 - [transport](./ProtocolBgpNeighborTransport.md)
 - [connection](./ProtocolBgpNeighborConnection.md)
 - [af](./ProtocolBgpNeighborAf.md)
@@ -45,12 +45,12 @@ Pod: 1
 | pod-1/bl205-eu-spdc | overlay-1                     | 15.16.2.1        | established | 64001 | ebgp | 1   | 0               | 
 | pod-1/bl205-eu-spdc | overlay-1                     | 172.31.2.54      | established | 64001 | ebgp | 2   |                 | 
 | pod-1/bl205-eu-spdc | SPIN_InnoLab:SPIN_VRF1        | 192.168.254.41   | established | 64701 | ebgp | 1   | 1               | 
-| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.106     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.102     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.104     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.105     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.101     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.103     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.105     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.106     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.104     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.102     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl205-eu-spdc | UC3-CL2023-Demo:default       | 192.168.254.105  | established | 64701 | ebgp | 1   | 31              | 
 | pod-1/bl206-eu-spdc | common:Infra_BGP_VRF          | 192.168.254.5    | established | 64701 | ebgp | 1   | 31              | 
 | pod-1/bl206-eu-spdc | common:Infra_privIP_VRF       | 192.168.254.70   | established | 64701 | ebgp | 5   | 68              | 
@@ -71,12 +71,12 @@ Pod: 1
 | pod-1/bl206-eu-spdc | overlay-1                     | 15.16.2.5        | established | 64001 | ebgp | 1   | 0               | 
 | pod-1/bl206-eu-spdc | overlay-1                     | 172.31.2.54      | established | 64001 | ebgp | 2   |                 | 
 | pod-1/bl206-eu-spdc | SPIN_InnoLab:SPIN_VRF1        | 192.168.254.45   | established | 64701 | ebgp | 1   | 27              | 
+| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.101     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.103     | established | 65321 | ebgp | 2   | 10              | 
+| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.105     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.106     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.104     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.102     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.105     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.101     | established | 65321 | ebgp | 2   | 10              | 
-| pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 10.58.24.103     | established | 65321 | ebgp | 2   | 10              | 
 | pod-1/bl206-eu-spdc | UC3-CL2023-Demo:default       | 192.168.254.107  | established | 64701 | ebgp | 1   | 1               | 
 | pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.100.7.101     | established | 65100 | ebgp | 5   | 16              | 
 | pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.100.7.41      | established | 65101 | ebgp | 5   | 5               | 
@@ -175,6 +175,70 @@ Pod: 1
 | pod-1/s102-eu-spdc  | overlay-1                     | 172.16.30.160    | established | 50000 | ibgp | 1   |                 | 
 | pod-1/s102-eu-spdc  | overlay-1                     | 172.16.30.120    | established | 50000 | ibgp | 1   |                 | 
 +---------------------+-------------------------------+------------------+-------------+-------+------+-----+-----------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bgp --apic apic11 --node any
+
+{
+    "duration": 8753,
+    "apic": {
+        "read": true,
+        "success": 26,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 25,
+        "connect_time": 390,
+        "disconnect_time": 0,
+        "mo_time": 7835,
+        "total_time": 8225
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	390	-	connect apic11o.emea-sp.cisco.com
+True	304	11	apic11o.emea-sp.cisco.com class fabricNode
+True	587	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bgp/inst
+True	290	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/bgpDom
+True	319	78	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	285	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bgp/inst
+True	301	26	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/bgpDom
+True	305	78	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	314	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bgp/inst
+True	289	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom
+True	315	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	271	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/bgp/inst
+True	321	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/bgpDom
+True	327	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	287	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bgp/inst
+True	312	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom
+True	325	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	301	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bgp/inst
+True	284	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom
+True	293	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	307	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/bgp/inst
+True	294	3	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/bgpDom
+True	296	33	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	322	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/bgp/inst
+True	294	3	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/bgpDom
+True	292	33	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

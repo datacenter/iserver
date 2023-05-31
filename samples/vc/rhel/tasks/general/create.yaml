@@ -1,0 +1,4 @@
+tasks:
+  - scripts:
+    - register.sh
+    - packages.sh

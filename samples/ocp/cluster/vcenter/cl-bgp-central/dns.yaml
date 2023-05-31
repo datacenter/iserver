@@ -1,0 +1,3 @@
+dns:
+  managed: True
+  forwarders: 144.254.71.184

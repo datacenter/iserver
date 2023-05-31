@@ -1,0 +1,8 @@
+linux:
+  template: ubuntu
+  iso:
+    filename: ubuntu-20.04.3-live-server-amd64.iso
+  vm:
+    name: ubuntu-sample-minimum
+    interface:
+      network: VM Network

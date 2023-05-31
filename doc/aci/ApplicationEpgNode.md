@@ -52,4 +52,48 @@ Apic: apic21
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
 ```
 
+Developer
+
+```
+# iserver get aci epg --apic apic21 --node *2207*
+
+{
+    "duration": 3519,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 431,
+        "disconnect_time": 0,
+        "mo_time": 2792,
+        "total_time": 3223
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	431	-	connect apic21o.emea-sp.cisco.com
+True	366	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	1364	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	298	13	apic21o.emea-sp.cisco.com class fabricNode
+True	387	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	377	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+```
+
 [[Back]](./ApplicationEpg.md)

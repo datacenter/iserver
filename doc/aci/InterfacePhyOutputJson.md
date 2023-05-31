@@ -3,7 +3,11 @@
 ## JSON output
 
 ```
-# iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --id 1/24 -o json
+# iserver get aci intf phy
+    --apic apic11
+    --node bl205-eu-spdc
+    --id 1/24
+    --view verbose -o json
 
 [
     {
@@ -84,18 +88,200 @@
             "txT": "unknown"
         },
         "up": true,
+        "epg_stats": [],
+        "ether_stats": {
+            "broadcastPkts": "29765",
+            "cRCAlignErrors": "0",
+            "childAction": "",
+            "clearTs": "never",
+            "collisions": "0",
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/dbgEtherStats",
+            "dropEvents": "0",
+            "fragments": "0",
+            "jabbers": "0",
+            "modTs": "never",
+            "multicastPkts": "766029",
+            "octets": "12163139714342",
+            "oversizePkts": "108903452",
+            "pkts": "14334287161",
+            "pkts1024to1518Octets": "8811255381",
+            "pkts128to255Octets": "444720439",
+            "pkts256to511Octets": "272806016",
+            "pkts512to1023Octets": "448847447",
+            "pkts64Octets": "4232395",
+            "pkts65to127Octets": "4243522031",
+            "rXNoErrors": "9080255213",
+            "rxGiantPkts": "0",
+            "rxOversizePkts": "103539058",
+            "status": "",
+            "tXNoErrors": "5254031948",
+            "txGiantPkts": "0",
+            "txOversizePkts": "5364394",
+            "undersizePkts": "0"
+        },
+        "fc_stats": {
+            "actualType": "qsfp28",
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/phys/fcot",
+            "guiCiscoPID": "QSFP-100G-AOC3M",
+            "guiCiscoPN": "10-3174-03",
+            "guiName": "CISCO-INNOLIGHT",
+            "guiPN": "TF-FC003-NC2",
+            "guiRev": "1B",
+            "guiSN": "INL24358586-A",
+            "isFcotPresent": "yes",
+            "state": "inserted",
+            "type": "qsfp28",
+            "typeName": "QSFP-100G-AOC3M"
+        },
+        "load": {
+            "loadIntvl1": "30",
+            "loadIntvl2": "300",
+            "loadIntvl3": "0"
+        },
+        "eee": {
+            "eeeLat": "variable",
+            "eeeLpi": "aggressive",
+            "eeeState": "not-applicable"
+        },
+        "cdp": [
+            {
+                "cap": "router,stp-dispute,switch",
+                "devId": "ipn-eu-spdc.emea-sp.cisco.com(FOX2115PRJV)",
+                "dn": "topology/pod-1/node-205/sys/cdp/inst/if-[eth1/24]/adj-2",
+                "duplex": "full",
+                "index": "2",
+                "name": "",
+                "nativeVlan": "unspecified",
+                "platId": "N9K-C9504",
+                "portId": "Ethernet3/25",
+                "stQual": "",
+                "status": "",
+                "sysName": "ipn-eu-spdc",
+                "sysObjIdL": "12",
+                "sysObjIdV": "1,3,6,1,4,1,9,12,3,1,3,1507,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "ver": "Cisco Nexus Operating System (NX-OS) Software, Version 9.3(9)",
+                "pod_id": "pod-1",
+                "node_id": "node-205",
+                "interface_id": "eth1/24"
+            }
+        ],
+        "lldp": [
+            {
+                "capability": "bridge,router",
+                "chassisIdT": "mac",
+                "chassisIdV": "ec:ce:13:c0:46:34",
+                "dn": "topology/pod-1/node-205/sys/lldp/inst/if-[eth1/24]/adj-1",
+                "enCap": "bridge,router",
+                "id": "1",
+                "mgmtId": "83886080",
+                "mgmtIp": "10.58.234.128",
+                "mgmtPortMac": "EC:CE:13:C0:46:34",
+                "portDesc": "***** BGP Peering to ACI1 BL205  *******",
+                "portIdT": "if-name",
+                "portIdV": "Ethernet3/25",
+                "portVlan": "",
+                "stQual": "",
+                "status": "",
+                "sysDesc": "Cisco Nexus Operating System (NX-OS) Software 9.3(9)\nTAC support: http://www.cisco.com/tac\nCopyright (c) 2002-2022, Cisco Systems, Inc. All rights reserved.",
+                "sysName": "ipn-eu-spdc.emea-sp.cisco.com",
+                "ttl": "120",
+                "pod_id": "pod-1",
+                "node_id": "node-205",
+                "interface_id": "eth1/24",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "portId": "Ethernet3/25",
+                "mac": "ec:ce:13:c0:46:34"
+            }
+        ],
+        "policy_selector": {
+            "profile": "Infra-BGP_IntProf",
+            "name": "Infra-BGP_IntSel",
+            "dn": "uni/infra/accportprof-Infra-BGP_IntProf/hports-Infra-BGP_IntSel-typ-range",
+            "dn_name": "hports-Infra-BGP_IntSel-typ-range",
+            "block": [
+                {
+                    "fromCard": 1,
+                    "toCard": 1,
+                    "fromPort": 24,
+                    "toPort": 24,
+                    "fromSubPort": null,
+                    "toSubPort": null
+                }
+            ],
+            "policy_group_type": "infraAccPortGrp",
+            "policy_group_type_name": "Access",
+            "policy_group_name": "Infra-BGP_PolGrp",
+            "policy_group_info": {
+                "__Output": {},
+                "annotation": "",
+                "descr": "",
+                "dn": "uni/infra/funcprof/accportgrp-Infra-BGP_PolGrp",
+                "name": "Infra-BGP_PolGrp",
+                "aaep_name": "Infra_L3_AAEP",
+                "policy": {
+                    "infraRsAttEntP": "",
+                    "infraRsCdpIfPol": "CDP_enable",
+                    "infraRsHIfPol": "default",
+                    "infraRsLinkFlapPol": "default",
+                    "infraRsLldpIfPol": "LLDP_enable",
+                    "infraRsMonIfInfraPol": "default",
+                    "infraRsStpIfPol": "default",
+                    "infraRsMcpIfPol": "default",
+                    "infraRsStormctrlIfPol": "default"
+                },
+                "aaep": {
+                    "__Output": {
+                        "infraVlanEnabledTick": "Red"
+                    },
+                    "descr": "",
+                    "dn": "uni/infra/attentp-Infra_L3_AAEP",
+                    "name": "Infra_L3_AAEP",
+                    "infraRtAttEntP": [
+                        {
+                            "__Output": {},
+                            "dn": "uni/infra/funcprof/accportgrp-Infra-BGP_PolGrp",
+                            "type": "infraAccPortGrp",
+                            "typeName": "Leaf Access Port Policy Group",
+                            "name": "Infra-BGP_PolGrp"
+                        }
+                    ],
+                    "infraRsDomP": [
+                        {
+                            "__Output": {},
+                            "forceResolve": "yes",
+                            "state": "formed",
+                            "tCl": "l3extDomP",
+                            "tDn": "uni/l3dom-Infra-BGP_L3Dom",
+                            "domainType": "L3",
+                            "domainName": "Infra-BGP_L3Dom"
+                        },
+                        {
+                            "__Output": {},
+                            "forceResolve": "yes",
+                            "state": "formed",
+                            "tCl": "l3extDomP",
+                            "tDn": "uni/l3dom-Infra_L3Dom",
+                            "domainType": "L3",
+                            "domainName": "Infra_L3Dom"
+                        }
+                    ],
+                    "infraVlanEnabled": false,
+                    "infraVlanEnabledTick": "\u2717"
+                }
+            }
+        },
         "qos": [
             {
                 "__Output": {},
                 "id": "control-plane",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-control-plane",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 1029803492,
-                "RxAdmitPacketsCount": 11818638,
+                "RxAdmitBytesCount": 1161956674,
+                "RxAdmitPacketsCount": 13347177,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
-                "TxAdmitBytesCount": 126605393651,
-                "TxAdmitPacketsCount": 141601933,
+                "TxAdmitBytesCount": 189550911710,
+                "TxAdmitPacketsCount": 231925440,
                 "TxDropBytesCount": 0,
                 "TxDropPacketsCount": 0
             },
@@ -135,12 +321,12 @@
                 "id": "level3",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level3",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 8424562673122,
-                "RxAdmitPacketsCount": 7553707885,
+                "RxAdmitBytesCount": 10049496038263,
+                "RxAdmitPacketsCount": 9066904942,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
-                "TxAdmitBytesCount": 1822134695012,
-                "TxAdmitPacketsCount": 4348871113,
+                "TxAdmitBytesCount": 1899344299017,
+                "TxAdmitPacketsCount": 4984168368,
                 "TxDropBytesCount": 678,
                 "TxDropPacketsCount": 9
             },
@@ -191,8 +377,8 @@
                 "id": "policy-plane",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-policy-plane",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 9599,
-                "RxAdmitPacketsCount": 51,
+                "RxAdmitBytesCount": 11625,
+                "RxAdmitPacketsCount": 61,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
                 "TxAdmitBytesCount": 0,

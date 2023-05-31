@@ -14,9 +14,13 @@ Filter options:
   - [neighbor capabilities](./ProtocolCdpNeighborCapabilities.md)
   - [neighbor node local interface](./ProtocolCdpNeighborInterface.md)
 
-Output options:
-  - [nbr](./ProtocolCdpNeighborNode.md) (default)
+View options:
+  - [default](./ProtocolCdpNeighborNode.md)
   - [intf](./ProtocolCdpInterfaceNode.md)
+  - [instance](./ProtocolCdpNodesAll.md)
+
+Output options:
+  - [default](./ProtocolCdpNeighborNode.md)
   - [instance](./ProtocolCdpNodesAll.md)
 
 Command options

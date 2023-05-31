@@ -1,0 +1,24 @@
+ocp:
+  name: Milan-Kali-Kubevirt
+  installation: vsphere-ipi
+  release: 4.11.3
+  source: web
+  cluster:
+    name: kubevirt
+    domain: ocp.lan
+    api_vip: 10.58.24.210
+    ingress_vip: 10.58.24.211
+    master:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 16384
+      disk:
+        size: 120
+    worker:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 8192
+      disk:
+        size: 120

@@ -3,7 +3,7 @@
 ## Show LLDP neighbor for selected nodes
 
 ```
-# iserver get aci proto lldp --apic apic11 --node bl -o nei
+# iserver get aci proto lldp --apic apic11 --node bl --view nei
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -38,6 +38,52 @@ Pod: 1
 | pod-1/bl206-eu-spdc | eth1/28      | 120       | Lisboa-54                     | 00:8a:96:1c:7c:de | TenGigE0/0/0/44 |      | *** Link to BL-206 for SR Handoff ***    | router        | 
 +---------------------+--------------+-----------+-------------------------------+-------------------+-----------------+------+------------------------------------------+---------------+
 Interface context: lldp
+```
+
+Developer
+
+```
+# iserver get aci proto lldp --apic apic11 --node bl --view nei
+
+{
+    "duration": 4131,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 454,
+        "disconnect_time": 0,
+        "mo_time": 3355,
+        "total_time": 3809
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	454	-	connect apic11o.emea-sp.cisco.com
+True	815	11	apic11o.emea-sp.cisco.com class fabricNode
+True	518	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
+True	415	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
+True	478	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	396	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst
+True	346	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/lldpInstStats
+True	387	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

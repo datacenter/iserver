@@ -1,9 +1,6 @@
-from lib import log_helper
-
-
 class ProtocolNdInterfaceStats():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def get_protocol_nd_interface_stats_info(self, managed_object):
         info = {}

@@ -13,10 +13,13 @@ Filter options:
   - [Peer state](./InterfaceVpcState.md)
   - [Members state](./InterfaceVpcMember.md)
 
-Output options:
-  - [state](./InterfaceVpcOutputState.md) (default)
+View options:
+  - [default](./InterfaceVpcOutputState.md)
   - [address](./InterfaceVpcOutputAddress.md)
   - [verbose](./InterfaceVpcOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceVpcOutputState.md)
   - [json](./InterfaceVpcOutputJson.md)
 
 Command options
@@ -39,12 +42,13 @@ Options:
   --id TEXT                       Filter by vpc domain id
   --state [any|up|down]           [default: any]
   --member [any|up|down]          [default: any]
-  -o, --output [state|address|verbose|json]
-                                  [default: state]
+  -v, --view [default|address|verbose]
+  -o, --output [default|json]     [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\caad786acc49
+Info: finished in 38 ms and logs saved in /tmp/iserver\6dd981470340
 ```
 
 [[Back]](./Interface.md)

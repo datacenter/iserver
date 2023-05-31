@@ -2,14 +2,14 @@
 
 ## Get EPGs' Bridge Domain properties
 
-Use '-o bd' to get bridge domain properties of selected epgs
+Use '--view bd' to get bridge domain properties of selected epgs
 - epg name, application profile and tenant
 - bridge domain name
 - bridge domain subnets with usage
 - associated L3 Out
 
 ```
-# iserver get aci epg --apic apic21 -o bd
+# iserver get aci epg --apic apic21 --view bd
 
 Apic: apic21
 
@@ -54,7 +54,7 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | k8s/k8s_ANP/SRIoV_A                | k8s/SRIoV_A_BD            | 15.20.16.254/24    | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 3/254 |                           | 
+| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.170.254/24 | 1/254 | common/Infra_privIP_L3out | 
 |    |                                    |                           | 169.169.169.254/24 | 1/254 | common/Infra_L3out        | 
@@ -65,7 +65,7 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | k8s/k8s_ANP/vk8s_3                 | k8s/vk8s_3_BD             | 10.58.24.206/28    | 10/14 | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 10/14 | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 11/14 | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
@@ -75,15 +75,11 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | nidemo/streamz/database            | nidemo/database           | 10.0.3.1/24        | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 2/254 |                           | 
+| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 3/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | nidemo/streamz/management          | nidemo/management         | 10.0.4.1/24        | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | TESTING_BRUNO/sdfgd/site2          | TESTING_BRUNO/BDSITE2     | 192.168.2.1/24     | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | TESTING_BRUNO/UntitledAP1/SITE1    | TESTING_BRUNO/BD2         | 192.168.1.1/24     | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | vEPC/vSFO_ANP/WWW                  | vEPC/vSFO_BD              | 15.16.132.254/24   | 1/254 | vEPC/vSFO_L3out           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
@@ -96,6 +92,50 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | vEPC_demo/MGMT_BD         | 10.58.25.158/27    | 1/30  | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
+```
+
+Developer
+
+```
+# iserver get aci epg --apic apic21 --view bd
+
+{
+    "duration": 3004,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 408,
+        "disconnect_time": 0,
+        "mo_time": 2008,
+        "total_time": 2416
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	408	-	connect apic21o.emea-sp.cisco.com
+True	371	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	441	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	298	13	apic21o.emea-sp.cisco.com class fabricNode
+True	461	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	437	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./ApplicationEpg.md)

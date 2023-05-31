@@ -30,4 +30,46 @@ Node: cl201-eu-spdc
 +---------------------+-----------+-------------+------------+--------------------+-------------+---------------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf lb --apic apic11 --node cl201-eu-spdc
+
+{
+    "duration": 1545,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 405,
+        "disconnect_time": 0,
+        "mo_time": 994,
+        "total_time": 1399
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	405	-	connect apic11o.emea-sp.cisco.com
+True	324	11	apic11o.emea-sp.cisco.com class fabricNode
+True	306	15	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	364	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
+```
+
 [[Back]](./InterfaceLoopback.md)

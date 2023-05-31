@@ -2,8 +2,8 @@
 
 ## Get BGP neighbors from selected node
 
-Use --output parameter to select neighborship attributes template
-- [summary](./ProtocolBgpNeighborSummary.md)
+Use --view parameter to select neighborship attributes template
+- [default](./ProtocolBgpNeighborSummary.md)
 - [transport](./ProtocolBgpNeighborTransport.md)
 - [connection](./ProtocolBgpNeighborConnection.md)
 - [af](./ProtocolBgpNeighborAf.md)
@@ -53,6 +53,49 @@ Node: cl201-eu-spdc
 | pod-1/cl201-eu-spdc | overlay-1                     | 10.3.192.65      | established | 50000 | ibgp | 1   |                 | 
 | pod-1/cl201-eu-spdc | overlay-1                     | 10.3.32.65       | established | 50000 | ibgp | 1   |                 | 
 +---------------------+-------------------------------+------------------+-------------+-------+------+-----+-----------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc
+
+{
+    "duration": 2579,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 393,
+        "disconnect_time": 0,
+        "mo_time": 2045,
+        "total_time": 2438
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	393	-	connect apic11o.emea-sp.cisco.com
+True	1091	11	apic11o.emea-sp.cisco.com class fabricNode
+True	283	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bgp/inst
+True	300	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom
+True	371	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

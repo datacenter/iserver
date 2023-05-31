@@ -2,7 +2,7 @@
 
 ## Get EPGs properties
 
-Use '-o props' to get properties of selected epgs
+Use '--view props' to get properties of selected epgs
 - epg name, application profile and tenant
 - preferred member
 - flood
@@ -12,7 +12,7 @@ Use '-o props' to get properties of selected epgs
 - label match
 
 ```
-# iserver get aci epg --apic apic21 -o prop
+# iserver get aci epg --apic apic21 --view prop
 
 Apic: apic21
 
@@ -83,10 +83,6 @@ Apic: apic21
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 | V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | exclude          | disabled | 32770    | level3      | unenforced | AtleastOne  | 
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | TESTING_BRUNO/sdfgd/site2          | exclude          | disabled | 49154    | unspecified | unenforced | None        | 
-+----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | TESTING_BRUNO/UntitledAP1/SITE1    | exclude          | disabled | 49155    | unspecified | unenforced | None        | 
-+----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 | V  | vEPC/vSFO_ANP/WWW                  | exclude          | disabled | 32771    | level3      | unenforced | AtleastOne  | 
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | exclude          | disabled | 16386    | level3      | unenforced | AtleastOne  | 
@@ -97,6 +93,50 @@ Apic: apic21
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | exclude          | disabled | 49158    | level3      | unenforced | AtleastOne  | 
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+```
+
+Developer
+
+```
+# iserver get aci epg --apic apic21 --view prop
+
+{
+    "duration": 2848,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 410,
+        "disconnect_time": 0,
+        "mo_time": 2135,
+        "total_time": 2545
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	410	-	connect apic21o.emea-sp.cisco.com
+True	370	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	464	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	314	13	apic21o.emea-sp.cisco.com class fabricNode
+True	609	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	378	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./ApplicationEpg.md)

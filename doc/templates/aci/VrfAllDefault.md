@@ -13,4 +13,10 @@ Get all vrfs from selected APIC. Default output shows main properties of vrfs as
 DOC_TEMPLATE:get_aci_vrf.all_default:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_vrf.all_default:devel.debug
+```
+
 [[Back]](./Vrf.md)

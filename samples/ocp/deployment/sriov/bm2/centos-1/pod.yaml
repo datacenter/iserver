@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: centos-1
+  annotations:
+    k8s.v1.cni.cncf.io/networks: centos-1-sriov-attach
+spec:
+  containers:
+  - name: centos-1
+    image: centos:8
+    command:
+    - /sbin/init

@@ -14,11 +14,14 @@ Filter options:
 Cross domain filter options:
   - [server](./ProtocolLldpServer.md)
 
-  Output options:
-  - [instances](./ProtocolLldpInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolLldpInstanceNode.md)
   - [nei](./ProtocolLldpNeighborNodes.md)
   - [stats](./ProtocolLldpOutputVerbose.md)
   - [verbose](./ProtocolLldpOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolLldpInstanceNode.md)
   - [json](./ProtocolLldpOutputJson.md)
 
 Command options

@@ -1,0 +1,119 @@
+Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+MIME-Version: 1.0
+
+--==BOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+#cloud-config
+vinitparam:
+ - uuid : $UUID
+ - otp : $OTP
+ - vbond : $VBOND_IP
+ - org : $ORG
+ - rcc : true
+ca-certs:
+  remove-defaults: false
+  trusted:
+  - |
+   -----BEGIN CERTIFICATE-----
+   MIIDZTCCAk2gAwIBAgIUcew65JFpYBfvxc1RGl54zc5pP8YwDQYJKoZIhvcNAQEL
+   BQAwQjELMAkGA1UEBhMCSUUxEzARBgNVBAgMClNvbWUtU3RhdGUxDjAMBgNVBAoM
+   BUNpc2NvMQ4wDAYDVQQDDAVMYWJDQTAeFw0yMzAyMjExMTE5NTVaFw0yODAyMjAx
+   MTE5NTVaMEIxCzAJBgNVBAYTAklFMRMwEQYDVQQIDApTb21lLVN0YXRlMQ4wDAYD
+   VQQKDAVDaXNjbzEOMAwGA1UEAwwFTGFiQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+   DwAwggEKAoIBAQDJCgxzR/zd/VVEDCcve3sPviNxjUEBbb7QsBckxKzdQsIZRaQ5
+   VQF8kJuvfMDqv/AYTe7r3M4cGKxfDYUIC/fC7jvlojUgb78RUwCSioqxnCsjDrPw
+   Ec3s76qOSOSZtapQ7OPelASnMAbcv8TSwIB9EKNInC0zjM6eLEK9YtnW54sPp7aq
+   VehBVHfIie7owuAi7eEiuI9+5B7zsBjNHtZWkhjXXRiWEeH6rmQz6RhUjLKahNFO
+   /NkXWbgO5HdRR99gI/xmFf04yLFySOiKLMXx7wArH4ULswtbPH+f7AHvHKmQUAzM
+   tYUoKv0xHuEvSz0Ydwlbak9SAhnTRSRXA8+zAgMBAAGjUzBRMB0GA1UdDgQWBBT5
+   lPN+Cqy17lPjYzA+AveuXUVwFjAfBgNVHSMEGDAWgBT5lPN+Cqy17lPjYzA+Aveu
+   XUVwFjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQCFtfQbrmQm
+   wgunKeXsf08S6h7V4ajsBx9etesPRcd/TMqJvSRhjHoeUA/AHCY4tzYZZQYslej4
+   VRmKe1NB0lk/C5Pm5x9bCMNV6H9V018OaaPOSMLDNdGA0zKpLwBy2IbNhoCig60+
+   zjqBVKOakOUod0wlznDSlsNpMTTcbuGvBIxk4IFySp+wL/U9hQSBnetuGnv26dGS
+   Uel0z3+dC7uCdlvBtSpGm29Z4eQRMv4XUtMEnsRRHjVTb24qrY+9NzS9tpc02GQZ
+   uY/ysqvm5ATzz4TMk9XqFVDa+f8dZVR/B1+FnHcKVnsjwn3aU4c569pt/CnMwAfU
+   yZJ/4ve5B14t
+   -----END CERTIFICATE-----
+
+--==BOUNDARY==
+Content-Type: text/cloud-boothook; charset="us-ascii"
+
+#cloud-boothook
+
+hostname $HOSTNAME
+!
+username $SSH_USERNAME privilege 15 password $SSH_PASSWORD
+!
+ntp server $NTP_SERVER
+!
+system
+ system-ip             $SYSTEM_IP
+ site-id               $SITE_ID
+ organization-name     "$ORG"
+ sp-organization-name  "$ORG"
+ vbond $VBOND_IP port $VBOND_PORT
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+!
+interface GigabitEthernet1
+ vrf forwarding Mgmt-intf
+ description MANAGEMENT
+ ip address $NICID_0_0_IP_ADDRESS $NICID_0_0_NETMASK
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description TRANSPORT - INET
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2.$TRANSPORT_VLAN_ID
+ description TRANSPORT
+ encapsulation dot1Q $TRANSPORT_VLAN_ID
+ ip address $TRANSPORT_IP_ADDRESS $TRANSPORT_NETMASK
+!
+interface GigabitEthernet3
+ description LAN
+ ip address $NICID_2_0_IP_ADDRESS $NICID_2_0_NETMASK
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface Tunnel1
+ ip unnumbered GigabitEthernet2.$TRANSPORT_VLAN_ID
+ tunnel source GigabitEthernet2.$TRANSPORT_VLAN_ID
+ tunnel mode sdwan
+!
+sdwan
+ interface GigabitEthernet2.$TRANSPORT_VLAN_ID
+  tunnel-interface
+   encapsulation ipsec
+   allow-service all
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   allow-service sshd
+   allow-service netconf
+   allow-service bfd
+   allow-service https
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   no allow-service snmp
+!
+ip route 0.0.0.0 0.0.0.0 $TRANSPORT_GATEWAY
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 $NICID_0_0_GATEWAY
+ip name-server vrf Mgmt-intf $DNS_SERVER
+line vty 0 4
+ transport input ssh
+!
+--==BOUNDARY==

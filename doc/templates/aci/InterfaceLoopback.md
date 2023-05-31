@@ -13,9 +13,12 @@ Filter options:
   - [IP](./InterfaceLoopbackIp.md)
   - [Subnet](./InterfaceLoopbackSubnet.md)
 
-Output options:
-  - [state](./InterfaceLoopbackOutputState.md) (default)
+View options:
+  - [default](./InterfaceLoopbackOutputState.md)
   - [verbose](./InterfaceLoopbackOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceLoopbackOutputState.md)
   - [json](./InterfaceLoopbackOutputJson.md)
 
 Command options

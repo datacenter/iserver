@@ -6,11 +6,14 @@ Filter options:
   - [name](./PgAccessInterfaceVpcName.md)
   - [aaep](./PgAccessInterfaceVpcAaep.md)
 
-Output options:
-  - [policy](./PgAccessInterfaceVpcOutputPolicy.md) (default)
+View options:
+  - [default](./PgAccessInterfaceVpcOutputPolicy.md)
   - [aaep](./PgAccessInterfaceVpcOutputAaep.md)
   - [node](./PgAccessInterfaceVpcOutputNode.md)
   - [port](./PgAccessInterfaceVpcOutputPort.md)
+
+Output options:
+  - [default](./PgAccessInterfaceVpcOutputPolicy.md)
   - [json](./PgAccessInterfaceVpcOutputJson.md)
 
 Command options

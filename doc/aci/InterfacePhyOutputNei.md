@@ -3,9 +3,8 @@
 ## CDP/LLDP focused output
 
 ```
-# iserver get aci intf phy --apic apic11 --node bl205-eu-spdc -o nei
+# iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view nei
 
-Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
 Node: bl205-eu-spdc
@@ -50,6 +49,51 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | 1/35      | up   |                    |                 |                 | s101-eu-spdc                  | Eth1/5            | 
 | pod-1/bl205-eu-spdc | 1/36      | up   |                    |                 |                 | s102-eu-spdc                  | Eth1/5            | 
 +---------------------+-----------+------+--------------------+-----------------+-----------------+-------------------------------+-------------------+
+Interface context: phy
+```
+
+Developer
+
+```
+# iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view nei
+
+{
+    "duration": 2456,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 420,
+        "disconnect_time": 0,
+        "mo_time": 1713,
+        "total_time": 2133
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	420	-	connect apic11o.emea-sp.cisco.com
+True	296	11	apic11o.emea-sp.cisco.com class fabricNode
+True	334	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	348	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	326	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	409	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./InterfacePhy.md)

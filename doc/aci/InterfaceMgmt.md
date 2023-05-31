@@ -8,11 +8,14 @@ Node selection options:
   - [all nodes](./InterfaceMgmtNodesAll.md)
   - [multi APIC](./InterfaceMgmtNodesApics.md)
 
-Output options:
-  - [state](./InterfaceMgmtOutputState.md) (default)
+View options:
+  - [default](./InterfaceMgmtOutputState.md)
   - [address](./InterfaceMgmtOutputAddress.md)
   - [neighbor](./InterfaceMgmtOutputNeighbor.md)
   - [verbose](./InterfaceMgmtOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceMgmtOutputState.md)
   - [json](./InterfaceMgmtOutputJson.md)
 
 Command options
@@ -32,12 +35,13 @@ Options:
   --pod TEXT                      Pod ID
   --node TEXT                     Node name patterns
   --role [any|leaf|spine]         [default: any]
-  -o, --output [state|addr|nei|verbose|json]
-                                  [default: state]
+  -v, --view [default|addr|nei|verbose]
+  -o, --output [default|json]     [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\15e7b2bebbc7
+Info: finished in 31 ms and logs saved in /tmp/iserver\11d7d71dd2bd
 ```
 
 [[Back]](./Interface.md)

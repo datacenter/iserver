@@ -8,11 +8,14 @@ Node selection options:
   - [all nodes](./InterfaceMgmtNodesAll.md)
   - [multi APIC](./InterfaceMgmtNodesApics.md)
 
-Output options:
-  - [state](./InterfaceMgmtOutputState.md) (default)
+View options:
+  - [default](./InterfaceMgmtOutputState.md)
   - [address](./InterfaceMgmtOutputAddress.md)
   - [neighbor](./InterfaceMgmtOutputNeighbor.md)
   - [verbose](./InterfaceMgmtOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceMgmtOutputState.md)
   - [json](./InterfaceMgmtOutputJson.md)
 
 Command options

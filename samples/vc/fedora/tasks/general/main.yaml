@@ -1,0 +1,3 @@
+tasks:
+  - scripts:
+    - packages.sh

@@ -2,7 +2,20 @@ class PolicyInterfaceStpOutput():
     def __init__(self):
         pass
 
-    def print_policy_interface_stp(self, info, verbose=False):
+    def print_policy_interface_stp(self, info):
+        self.print_policy_interface_stp_properties(
+            info
+        )
+
+        self.print_policy_interface_stp_interfaces(
+            info['l1RsStpIfPolCons']
+        )
+
+        self.print_policy_interface_stp_references(
+            info['relnFrom']
+        )
+
+    def print_policy_interface_stp_properties(self, info):
         order = [
             'name',
             'tf',
@@ -21,51 +34,144 @@ class PolicyInterfaceStpOutput():
             'Ref Policies'
         ]
 
-        self.print_policy_interface(
+        self.my_output.dictionary(
             info,
-            'STP Policy Properties',
-            order,
-            headers,
-            verbose
+            title='CDP Policy Properties',
+            underline=True,
+            prefix="- ",
+            justify=True,
+            keys=order,
+            title_keys=headers
         )
 
-    def print_policies_interface_stp(self, info, verbose=False):
+    def print_policy_interface_stp_interfaces(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId'
+        ]
+
+        headers = [
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policy_interface_stp_references(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'policyName',
+            'policyType',
+            'tCl'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Policy Type',
+            'Policy Class'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_stp_summary(self, info):
         order = [
             'name',
             'tfTick',
-            'bpduFilterTick',
-            'bpduGuardTick'
+            'bpduFilter',
+            'bpduGuard',
+            'interfaces',
+            'references'
         ]
 
         headers = [
             'Policy Name',
             'TF',
             'BPDU Filter',
-            'BPDU Guard'
+            'BPDU Guard',
+            'Interfaces',
+            'Ref Policies'
         ]
 
-        self.print_policies_interface(
+        self.my_output.my_table(
             info,
-            order,
-            headers,
-            verbose
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )
 
-    def print_policy_interface_stp_node(self, info):
+    def print_policies_interface_stp_usage(self, info):
         order = [
-            'policy.name',
-            'policy.bpduFilterTick',
-            'policy.bpduGuardTick'
+            'name',
+            'nodeInterfaces.pod_node_name',
+            'nodeInterfaces.interfaces',
+            'relnFrom.policyType',
+            'relnFrom.policyName'
         ]
 
         headers = [
-            'STP Policy Name',
-            'BPDU Filter',
-            'BPDU Guard'
+            'Policy Name',
+            'Node',
+            'Interface Count',
+            'Ref Policy Type',
+            'Ref Policy Name'
         ]
 
-        self.print_policy_interface_node(
-            info,
-            order,
-            headers
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['nodeInterfaces', 'relnFrom']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_stp_interfaces(self, info):
+        order = [
+            'name',
+            'l1RsStpIfPolCons.pod_node_name',
+            'l1RsStpIfPolCons.interfaceId'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['l1RsStpIfPolCons']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )

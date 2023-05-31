@@ -179,16 +179,13 @@ class PoolVlanInfo():
         return True
 
     def get_pool_vlans(self, pool_vlan_filter=None):
+        all_pools = self.get_pool_vlan_mo()
+        if all_pools is None:
+            return None
+
         pool_vlans = []
 
-        if not self.initialize_pool_vlan():
-            self.log.error(
-                'get_pool_vlans',
-                'Application EPG initialization failed'
-            )
-            return pool_vlans
-
-        for managed_object in self.mo_pool_vlan:
+        for managed_object in all_pools:
             pool_vlan_info = self.get_pool_vlan_info(
                 managed_object
             )

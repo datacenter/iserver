@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci proto arp --apic apic11 --node bl205-eu-spdc -o verbose
+# iserver get aci proto arp --apic apic11 --node bl205-eu-spdc --view verbose
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -60,6 +60,48 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | vlan61     | 7         | 
 | pod-1/bl205-eu-spdc | vlan63     | 1         | 
 +---------------------+------------+-----------+
+```
+
+Developer
+
+```
+# iserver get aci proto arp --apic apic11 --node bl205-eu-spdc --view verbose
+
+{
+    "duration": 1373,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 380,
+        "disconnect_time": 0,
+        "mo_time": 880,
+        "total_time": 1260
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	380	-	connect apic11o.emea-sp.cisco.com
+True	298	11	apic11o.emea-sp.cisco.com class fabricNode
+True	295	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom
+True	287	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom query query-target=subtree&target-subtree-class=arpAdjEp
 ```
 
 [[Back]](./ProtocolArp.md)

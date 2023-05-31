@@ -1,0 +1,12 @@
+linux:
+  template: rhel
+  iso:
+    filename: rhel-8.2-x86_64-dvd.iso
+  vm:
+    name: rhel-sample-iso
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network

@@ -53,10 +53,6 @@ Apic: apic21
 +------------------------------+-----------------------+-------------+
 | SPN_IntraLab/SPN_Connect_ANP | SPN_IntraLab/TEST2    | unspecified | 
 +------------------------------+-----------------------+-------------+
-| TESTING_BRUNO/sdfgd          | TESTING_BRUNO/site2   | unspecified | 
-+------------------------------+-----------------------+-------------+
-| TESTING_BRUNO/UntitledAP1    | TESTING_BRUNO/SITE1   | unspecified | 
-+------------------------------+-----------------------+-------------+
 | vEPC/vSFO_ANP                | vEPC/WWW              | unspecified | 
 +------------------------------+-----------------------+-------------+
 | vEPC_demo/vEPG_ANP           | vEPC_demo/vEPG_ACC    | unspecified | 
@@ -64,6 +60,47 @@ Apic: apic21
 |                              | vEPC_demo/vEPG_INT    |             | 
 |                              | vEPC_demo/vEPG_MGMT   |             | 
 +------------------------------+-----------------------+-------------+
+```
+
+Developer
+
+```
+# iserver get aci ap --apic apic21
+
+{
+    "duration": 1206,
+    "apic": {
+        "read": true,
+        "success": 3,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 2,
+        "connect_time": 385,
+        "disconnect_time": 0,
+        "mo_time": 663,
+        "total_time": 1048
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	385	-	connect apic21o.emea-sp.cisco.com
+True	317	12	apic21o.emea-sp.cisco.com class fvAp
+True	346	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
 ```
 
 [[Back]](./ApplicationProfile.md)

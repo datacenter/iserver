@@ -14,13 +14,13 @@ class Policy(
     PolicySwitch,
     PolicyTroubleshooting
     ):
-    def __init__(self, log_id=None):
+    def __init__(self):
         PolicyGeneral.__init__(self)
-        PolicyInterface.__init__(self, log_id=log_id)
-        PolicyMonitoring.__init__(self, log_id=log_id)
-        PolicySnoop.__init__(self, log_id=log_id)
-        PolicySwitch.__init__(self, log_id=log_id)
-        PolicyTroubleshooting.__init__(self, log_id=log_id)
+        PolicyInterface.__init__(self)
+        PolicyMonitoring.__init__(self)
+        PolicySnoop.__init__(self)
+        PolicySwitch.__init__(self)
+        PolicyTroubleshooting.__init__(self)
 
     def get_policy_type_from_tcl(self, policy_type):
         mapping = {}

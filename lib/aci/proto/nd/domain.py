@@ -1,9 +1,6 @@
-from lib import log_helper
-
-
 class ProtocolNdDomain():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def add_protocol_nd_domain_neighbor_info(self, domains, neighbors):
         for domain in domains:

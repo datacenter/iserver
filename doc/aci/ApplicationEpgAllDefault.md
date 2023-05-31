@@ -2,7 +2,7 @@
 
 ## Get EPGs
 
-Get all epgs from selected APIC. Default output shows main properties of epgs as well as associated objects.
+Get all epgs from selected APIC. Default view shows main properties of epgs as well as associated objects.
 - epg name, application profile and tenant
 - bridge domain name and subnets
 - endpoints count
@@ -81,10 +81,6 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 0         |          | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | TESTING_BRUNO/sdfgd/site2          | TESTING_BRUNO/BDSITE2     | 192.168.2.1/24     | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | TESTING_BRUNO/UntitledAP1/SITE1    | TESTING_BRUNO/BD2         | 192.168.1.1/24     | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | vEPC/vSFO_ANP/WWW                  | vEPC/vSFO_BD              | 15.16.132.254/24   | 1         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | vEPC_demo/ACC_BD          | 15.20.0.254/24     | 0         | V        | 
@@ -95,6 +91,50 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | vEPC_demo/MGMT_BD         | 10.58.25.158/27    | 6         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
+```
+
+Developer
+
+```
+# iserver get aci epg --apic apic21
+
+{
+    "duration": 2552,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 415,
+        "disconnect_time": 0,
+        "mo_time": 1824,
+        "total_time": 2239
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	415	-	connect apic21o.emea-sp.cisco.com
+True	369	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	381	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	316	13	apic21o.emea-sp.cisco.com class fabricNode
+True	395	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	363	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./ApplicationEpg.md)

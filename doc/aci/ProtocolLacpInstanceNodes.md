@@ -19,4 +19,54 @@ Pod: 1
 +---------------------+-------------+-------------------+----------------+---------------+-------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci proto lacp --apic apic11 --node rl
+
+{
+    "duration": 4347,
+    "apic": {
+        "read": true,
+        "success": 12,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 11,
+        "connect_time": 501,
+        "disconnect_time": 0,
+        "mo_time": 3385,
+        "total_time": 3886
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	501	-	connect apic11o.emea-sp.cisco.com
+True	340	11	apic11o.emea-sp.cisco.com class fabricNode
+True	288	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lacp/inst
+True	300	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	288	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/lacpIf query rsp-subtree=children&rsp-subtree-class=lacpIfStats
+True	292	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lacp/inst/if-[eth1/4] query query-target=children&target-subtree-class=lacpAdjEp
+True	278	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lacp/inst/if-[eth1/3] query query-target=children&target-subtree-class=lacpAdjEp
+True	303	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lacp/inst
+True	287	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	431	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/lacpIf query rsp-subtree=children&rsp-subtree-class=lacpIfStats
+True	294	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lacp/inst/if-[eth1/4] query query-target=children&target-subtree-class=lacpAdjEp
+True	284	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lacp/inst/if-[eth1/3] query query-target=children&target-subtree-class=lacpAdjEp
+```
+
 [[Back]](./ProtocolLacp.md)

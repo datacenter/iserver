@@ -1,5 +1,3 @@
-from lib import log_helper
-
 from lib.aci.proto.nd.instance import ProtocolNdInstance
 from lib.aci.proto.nd.domain import ProtocolNdDomain
 from lib.aci.proto.nd.interface import ProtocolNdInterface
@@ -7,12 +5,11 @@ from lib.aci.proto.nd.neighbor import ProtocolNdNeighbor
 
 
 class ProtocolNd(ProtocolNdInstance, ProtocolNdDomain, ProtocolNdInterface, ProtocolNdNeighbor):
-    def __init__(self, log_id=None):
-        ProtocolNdInstance.__init__(self, log_id=log_id)
-        ProtocolNdDomain.__init__(self, log_id=log_id)
-        ProtocolNdInterface.__init__(self, log_id=log_id)
-        ProtocolNdNeighbor.__init__(self, log_id=log_id)
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        ProtocolNdInstance.__init__(self)
+        ProtocolNdDomain.__init__(self)
+        ProtocolNdInterface.__init__(self)
+        ProtocolNdNeighbor.__init__(self)
 
     def get_protocol_nd(self, pod_id, node_id):
         info = {}

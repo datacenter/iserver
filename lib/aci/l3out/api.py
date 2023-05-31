@@ -1,13 +1,10 @@
 class L3OutApi():
     def __init__(self):
-        self.mo_l3out = None
+        self.l3out_mo = None
 
-    def initialize_l3out(self):
-        if not self.initialize_l3out_node_profile():
-            return False
-
-        if self.mo_l3out is not None:
-            return True
+    def get_l3out_mo(self):
+        if self.l3out_mo is not None:
+            return self.l3out_mo
 
         children = [
             'bgpExtP',
@@ -23,9 +20,9 @@ class L3OutApi():
             query=query
         )
         if managed_objects is None:
-            return False
+            return None
 
-        self.mo_l3out = []
+        self.l3out_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['l3extOut']['attributes']
             attributes['l3extLNodeP'] = self.get_mo_children_attributes(
@@ -45,13 +42,13 @@ class L3OutApi():
                     child_name
                 )
 
-            self.mo_l3out.append(
+            self.l3out_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'l3extOut',
-            self.mo_l3out
+            self.l3out_mo
         )
 
-        return True
+        return self.l3out_mo

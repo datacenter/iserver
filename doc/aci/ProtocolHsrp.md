@@ -10,9 +10,13 @@ Node selection options:
 Filter options:
   - [vrf](./ProtocolHsrpInstanceVrf.md)
 
-Output options:
-  - [instance](./ProtocolHsrpNode.md)
+View options:
+  - [default](./ProtocolHsrpNode.md)
   - [vrf](./ProtocolHsrpInstanceVrf.md)
+
+Output options:
+  - [default](./ProtocolHsrpNode.md)
+  - [json](./ProtocolHsrpJson.md)
 
 Command options
 
@@ -24,21 +28,21 @@ Usage: iserver.py get aci proto hsrp [OPTIONS]
   Get aci node protocol hsrp
 
 Options:
-  --apic TEXT                     APIC name
-  --ip TEXT                       APIC IP
-  --username TEXT                 APIC Username
-  --password TEXT                 APIC Password
-  --pod TEXT                      Pod ID
-  --node TEXT                     Node name patterns
-  --role [any|leaf|spine]         [default: any]
-  --vrf TEXT                      Filter by VRF name
-  --id TEXT                       Neighbor
-  -o, --output [instance|vrf|intf|json]
-                                  [default: instance]
-  --devel                         Developer output
-  --help                          Show this message and exit.
+  --apic TEXT                    APIC name
+  --ip TEXT                      APIC IP
+  --username TEXT                APIC Username
+  --password TEXT                APIC Password
+  --pod TEXT                     Pod ID
+  --node TEXT                    Node name patterns
+  --role [any|leaf|spine]        [default: any]
+  --vrf TEXT                     Filter by VRF name
+  --id TEXT                      Filter by neighbor
+  -v, --view [default|vrf|intf]
+  -o, --output [default|json]    [default: default]
+  --devel                        Developer output
+  --help                         Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\3e30521777bb
+Info: finished in 54 ms and logs saved in /tmp/iserver\7fbed1c0ee6e
 ```
 
 [[Back]](./Protocol.md)

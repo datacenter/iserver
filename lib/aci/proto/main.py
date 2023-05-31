@@ -24,7 +24,7 @@ class Protocol(
     ProtocolLldp,
     ProtocolNd
     ):
-    def __init__(self, log_id=None):
+    def __init__(self):
         ProtocolArp.__init__(self)
         ProtocolBfd.__init__(self)
         ProtocolBgp.__init__(self)
@@ -35,7 +35,7 @@ class Protocol(
         ProtocolIsis.__init__(self)
         ProtocolLacp.__init__(self)
         ProtocolLldp.__init__(self)
-        ProtocolNd.__init__(self, log_id=log_id)
+        ProtocolNd.__init__(self)
 
         self.protocols = [
             'arp',

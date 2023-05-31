@@ -16,11 +16,14 @@ Filter options:
   - [IP address](./InterfaceSviIp.md)
   - [IP subnet](./InterfaceSviSubnet.md)
 
-Output options:
-  - [state](./InterfaceSviOutputState.md) (default)
+View options:
+  - [default](./InterfaceSviOutputState.md)
   - [address](./InterfaceSviOutputAddress.md)
   - [counter](./InterfaceSviOutputCounter.md)
   - [verbose](./InterfaceSviOutputVerbose.md)
+
+Output options:
+  - [state](./InterfaceSviOutputState.md)
   - [json](./InterfaceSviOutputJson.md)
 
 Command options
@@ -48,12 +51,13 @@ Options:
   --vlan TEXT                     VLAN filter
   --ip TEXT                       IP Address filter
   --subnet TEXT                   IP Subnet filter
-  -o, --output [state|addr|counter|verbose|json]
-                                  [default: state]
+  -v, --view [default|addr|counter|verbose]
+  -o, --output [default|json]     [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\78d826590b85
+Info: finished in 30 ms and logs saved in /tmp/iserver\add795d0604b
 ```
 
 [[Back]](./Interface.md)

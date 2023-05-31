@@ -1,0 +1,110 @@
+kind: VirtualMachineDeployment
+deployment:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+  vm: vm.yaml
+  image:
+    enabled: true
+    ip: ${TOOLS_IP}
+    username: ${TOOLS_USERNAME}
+    password: "${TOOLS_PASSWORD}"
+    path: ${IMAGE_PATH}${IMAGE_FILENAME}
+    size: ${IMAGE_SIZE}
+    dv: image.yaml
+  day0:
+    enabled: true
+    filename: iosxe_config.txt
+    source: iosxe_config.txt
+    destination: c8000v_config.iso
+    size: ${DAY0_SIZE}
+    dv: day0.yaml
+  sriov:
+    enabled: true
+    policy:
+    - policy.yaml
+    network:
+    - network.yaml
+  service:
+    ssh: ssh.yaml
+    snmp: snmp.yaml
+    netconf: netconf.yaml
+variables:
+  NAME: cat8kv-a
+  NAMESPACE: default
+  NODE: ocp-bm2
+  CORES: 1
+  SOCKETS: 1
+  THREADS: 1
+  MEMORY: 4Gi
+  IMAGE_NAME: cat8kv-17.06.05-image
+  IMAGE_NAMESPACE: default
+  IMAGE_PATH: /home/cisco/image/
+  IMAGE_FILENAME: c8000v-universalk9_8G_vga.17.06.05.qcow2
+  IMAGE_SIZE: 10Gi
+  DAY0_SIZE: 1Gi
+  SSH_USERNAME: admin
+  SSH_PASSWORD: Cisco_123
+  DOMAIN_NAME: cisco.com
+  SRIOV_PHY1A_INTERFACE_NAME: ens1f0
+  SRIOV_PHY1A_INTERFACE_VFS: 8-15
+  SRIOV_VF_IP: 15.20.16.15
+  SRIOV_VF_PREFIX: 24
+  SRIOV_VF_NETMASK: 255.255.255.0
+  SRIOV_VF_GATEWAY: 15.20.16.254
+  SRIOV_VF_VLAN: 808
+  TOOLS_IP: 10.58.28.207
+  TOOLS_USERNAME: cisco
+  TOOLS_PASSWORD: "!Cisc0_123"
+tools:
+  enabled: true
+  ip: ${TOOLS_IP}
+  username: ${TOOLS_USERNAME}
+  password: "${TOOLS_PASSWORD}"
+ssh:
+  enabled: true
+  type: cisco
+  username: ${SSH_USERNAME}
+  password: ${SSH_PASSWORD}
+snmp:
+  enabled: true
+  version: 2c
+  community: public
+netconf:
+  enabled: true
+  username: ${SSH_USERNAME}
+  password: ${SSH_PASSWORD}
+ready:
+  enabled: true
+  type: ssh
+  timeout: 600
+  sleep: 120
+report:
+  enabled: true
+  ssh:
+    version:
+    - show version
+    interface:
+    - show ip interface brief
+    - show interface
+    - show ip interface
+    - ping ${SRIOV_VF_GATEWAY}
+    route:
+    - show ip route
+    - show arp
+    configuration:
+    - show running-config
+    http:
+    - show ip http server all
+    snmp:
+    - show snmp
+    netconf:
+    - show netconf-yang datastores
+    - show netconf-yang diagnostics summary
+    - show netconf-yang statistics
+    - show platform software yang-management process
+  snmp:
+    system:
+    - 1.3.6.1.2.1.1
+  netconf:
+  - capabilities
+  - configuration

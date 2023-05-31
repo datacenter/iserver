@@ -11,4 +11,10 @@ Use '--type all' (default) to get all contracts related details
 DOC_TEMPLATE:get_aci_contract.all:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_contract.all:devel.debug
+```
+
 [[Back]](./Contract.md)

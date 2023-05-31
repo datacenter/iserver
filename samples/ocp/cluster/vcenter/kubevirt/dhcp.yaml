@@ -1,0 +1,10 @@
+dhcp:
+  subnet: 10.58.24.208/28
+  gateway: 10.58.24.222
+  range: 10.58.24.212-10.58.24.218
+  dns:
+    servers: 144.254.71.184
+    domain: cisco.com
+  ntp:
+    servers: 144.254.15.78
+    timezone: Europe/Rome

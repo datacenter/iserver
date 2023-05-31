@@ -15,4 +15,45 @@ Apic: apic21
 +----------------+-----------------+----------------------+----------+-------------+-----------+
 ```
 
+Developer
+
+```
+# iserver get aci pool vlan --apic apic21 --name HX*
+
+{
+    "duration": 1118,
+    "apic": {
+        "read": true,
+        "success": 3,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 2,
+        "connect_time": 396,
+        "disconnect_time": 0,
+        "mo_time": 658,
+        "total_time": 1054
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	396	-	connect apic21o.emea-sp.cisco.com
+True	325	13	apic21o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	333	32	apic21o.emea-sp.cisco.com class vmmEpPD
+```
+
 [[Back]](./PoolVlan.md)

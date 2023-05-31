@@ -1,0 +1,5 @@
+proxy:
+  enabled: True
+  http: http://proxy.esl.cisco.com:80
+  https: http://proxy.esl.cisco.com:80
+  no_proxy: .cisco.com

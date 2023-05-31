@@ -2,7 +2,7 @@
 
 ## Get EPGs' deployed nodes properties
 
-Use '-o node' to get deployed node properties of selected epgs
+Use '--view node' to get deployed node properties of selected epgs
 - epg name, application profile and tenant
 - node properties
     - name
@@ -15,6 +15,12 @@ Use '-o node' to get deployed node properties of selected epgs
 
 ```
 DOC_TEMPLATE:get_aci_epg.all_node:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.all_node:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

@@ -9,10 +9,14 @@ Filter options:
   - [name](./ContractName.md)
   - [tenant](./ContractTenant.md)
 
-Output options:
-  - [properties and usage](./ContractName.md)
+View options:
+  - [default](./ContractName.md)
   - [prop](./ContractOutputProp.md)
   - [usage](./ContractOutputUsage.md)
+
+Output options:
+  - [default](./ContractName.md)
+  - [json](./ContractOutputJson.md)
 
 Command options
 

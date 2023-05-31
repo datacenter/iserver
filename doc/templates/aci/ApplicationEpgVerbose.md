@@ -17,4 +17,10 @@ Note: All selected EPGs will be shown in verbose mode
 DOC_TEMPLATE:get_aci_epg.verbose:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.verbose:devel.debug
+```
+
 [[Back]](./ApplicationEpg.md)

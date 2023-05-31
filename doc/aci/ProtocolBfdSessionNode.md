@@ -21,4 +21,47 @@ Node: cl201-eu-spdc
 +---------------------+----------------+-------+------------+----------------+-------+------------+-----------+-------------------------------+-----------+
 ```
 
+Developer
+
+```
+# iserver get aci proto bfd --apic apic11 --node cl201-eu-spdc
+
+{
+    "duration": 1644,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 375,
+        "disconnect_time": 0,
+        "mo_time": 1167,
+        "total_time": 1542
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	375	-	connect apic11o.emea-sp.cisco.com
+True	301	11	apic11o.emea-sp.cisco.com class fabricNode
+True	278	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst
+True	284	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	304	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+```
+
 [[Back]](./ProtocolBfd.md)

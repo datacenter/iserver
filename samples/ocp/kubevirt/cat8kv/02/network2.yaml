@@ -1,0 +1,19 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: ${NAME}-sriov-vf2
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: ${SRIOV_PHY1B_INTERFACE_NAME}dpdk
+  networkNamespace: ${NAMESPACE}
+  vlan: ${SRIOV_VF2_VLAN}
+  ipam: |-
+    {
+      "type": "static",
+      "addresses": [
+        {
+          "address": "${SRIOV_VF2_IP}/${SRIOV_VF2_PREFIX}",
+          "gateway": "${SRIOV_VF2_GATEWAY}"
+        }
+      ]
+    }

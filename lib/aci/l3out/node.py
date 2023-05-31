@@ -1,10 +1,14 @@
+from lib import filter_helper
+
+
 class L3OutNode():
     def __init__(self):
-        self.mo_l3out_node_profile = None
+        self.l3out_node_profile_mo = None
+        self.l3out_node_profile = None
 
-    def initialize_l3out_node_profile(self):
-        if self.mo_l3out_node_profile is not None:
-            return True
+    def get_l3out_node_profile_mo(self):
+        if self.l3out_node_profile_mo is not None:
+            return self.l3out_node_profile_mo
 
         children = [
             'l3extRsNodeL3OutAtt'
@@ -16,9 +20,9 @@ class L3OutNode():
         )
 
         if managed_objects is None:
-            return False
+            return None
 
-        self.mo_l3out_node_profile = []
+        self.l3out_node_profile_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['l3extLNodeP']['attributes']
             for child_name in children:
@@ -28,16 +32,16 @@ class L3OutNode():
                     child_name
                 )
 
-            self.mo_l3out_node_profile.append(
+            self.l3out_node_profile_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'l3extLNodeP',
-            self.mo_l3out_node_profile
+            self.l3out_node_profile_mo
         )
 
-        return True
+        return self.l3out_node_profile_mo
 
     def get_l3out_node_profile_info(self, managed_object):
         keys = [
@@ -59,7 +63,7 @@ class L3OutNode():
         # Dn format
         # uni/tn-SPIN_InnoLab/out-Calico_L3Out/lnodep-Calico_L3Out_nodeProfile
         info['tenant'] = info['dn'].split('/')[1][3:]
-        info['l3out'] = info['dn'].split('/')[2][5:]
+        info['l3out'] = info['dn'].split('/')[2][4:]
 
         info['nodes'] = []
         for item in managed_object['l3extRsNodeL3OutAtt']:
@@ -75,14 +79,58 @@ class L3OutNode():
 
         return info
 
-    def get_l3out_node_profiles_info(self, tenant_name, l3out_name):
+    def get_l3out_node_profiles_info(self):
+        if self.l3out_node_profile is not None:
+            return self.l3out_node_profile
+
+        managed_objects = self.get_l3out_node_profile_mo()
+        if managed_objects is None:
+            return None
+
+        self.l3out_node_profile = []
+        for managed_object in managed_objects:
+            self.l3out_node_profile.append(
+                self.get_l3out_node_profile_info(
+                    managed_object
+                )
+            )
+
+        self.log.apic_mo(
+            'l3extLNodeP.info',
+            self.l3out_node_profile
+        )
+
+        return self.l3out_node_profile
+
+    def match_l3out_node_profile(self, profile_info, profile_filter):
+        if profile_filter is None or len(profile_filter) == 0:
+            return True
+
+        for aepg_rule in profile_filter:
+            (key, value) = aepg_rule.split(':')
+
+            if key == 'tenant':
+                if not filter_helper.match_string(value, profile_info['tenant']):
+                    return False
+
+            if key == 'l3out':
+                if not filter_helper.match_string(value, profile_info['l3out']):
+                    return False
+
+        return True
+
+    def get_l3out_node_profiles(self, profile_filter=None):
+        all_profiles = self.get_l3out_node_profiles_info()
+        if all_profiles is None:
+            return None
+
         node_profiles_info = []
-        for mo_l3out_node_profile in self.mo_l3out_node_profile:
-            if tenant_name == mo_l3out_node_profile['dn'].split('/')[1][3:]:
-                if l3out_name == mo_l3out_node_profile['dn'].split('/')[2][4:]:
-                    node_profiles_info.append(
-                        self.get_l3out_node_profile_info(
-                            mo_l3out_node_profile
-                        )
-                    )
+        for profile_info in all_profiles:
+            if not self.match_l3out_node_profile(profile_info, profile_filter):
+                continue
+
+            node_profiles_info.append(
+                profile_info
+            )
+
         return node_profiles_info

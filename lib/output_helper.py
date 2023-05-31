@@ -27,6 +27,7 @@ class OutputHelper():
         self.debug_filename = os.path.join(self.output_directory, 'iserver.output.debug')
         self.json_filename = os.path.join(self.output_directory, 'iserver.output.json')
         self.devel_filename = os.path.join(self.output_directory, 'devel.debug')
+        self.duration_filename = os.path.join(self.output_directory, 'duration.debug')
 
         colorama.init()
 
@@ -212,6 +213,9 @@ class OutputHelper():
                 print(output)
 
         self.append(self.debug_filename, output)
+
+    def duration(self, output):
+        self.append(self.duration_filename, output)
 
     def devel(self, output):
         self.append(self.devel_filename, output)

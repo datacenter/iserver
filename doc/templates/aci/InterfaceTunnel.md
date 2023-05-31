@@ -16,9 +16,12 @@ Filter options:
   - [IP address](./InterfaceTunnelIp.md)
   - [IP subnet](./InterfaceTunnelSubnet.md)
 
-Output options:
-  - [state](./InterfaceTunnelOutputState.md) (default)
+View options:
+  - [default](./InterfaceTunnelOutputState.md)
   - [verbose](./InterfaceTunnelOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceTunnelOutputState.md)
   - [json](./InterfaceTunnelOutputJson.md)
 
 Command options

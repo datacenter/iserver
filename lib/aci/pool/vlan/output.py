@@ -7,19 +7,8 @@ class PoolVlanOutput():
             [info]
         )
 
-        if len(info['epg']) > 0:
-            self.print_domain_vmm_epg(
-                info['epg']
-            )
-
-    def print_pool_vlans(self, pool_vlans, verbose=False):
-        if len(pool_vlans) == 0:
-            self.my_output.default('No vlan pool found')
-            return
-
-        if verbose:
-            for pool_vlan in pool_vlans:
-                self.print_pool_vlan(pool_vlan)
+    def print_pool_vlans(self, info):
+        if len(info) == 0:
             return
 
         order = [
@@ -42,7 +31,7 @@ class PoolVlanOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                pool_vlans,
+                info,
                 order,
                 ['fvnsEncapBlk', 'fvnsRtVlanNs']
             ),

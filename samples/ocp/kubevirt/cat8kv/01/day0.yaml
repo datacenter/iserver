@@ -1,0 +1,18 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: cat8kv-01-day0
+  namespace: default
+  labels:
+    special: cat8kv-01
+    type: day0
+spec:
+  source:
+      upload: {}
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+    volumeMode: Block

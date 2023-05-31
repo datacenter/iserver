@@ -7,7 +7,7 @@ Filter options:
 
 Output options:
   - [default](./DomainPhyAll.md)
-  - [json](./DomainPhyOutputJson.md) output
+  - [json](./DomainPhyOutputJson.md)
 
 Command options
 

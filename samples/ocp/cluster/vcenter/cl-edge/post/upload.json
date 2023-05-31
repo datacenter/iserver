@@ -1,0 +1,26 @@
+[
+    {
+        "source": "deployment/twamp-secure.yaml",
+        "template": false,
+        "destination": "/root/deployment/twamp-secure.yaml",
+        "chmod": 644
+    },
+    {
+        "source": "deployment/twamp-insecure.yaml",
+        "template": false,
+        "destination": "/root/deployment/twamp-insecure.yaml",
+        "chmod": 644
+    },
+    {
+        "source": "deployment/twamp-up.sh",
+        "template": false,
+        "destination": "/root/twamp-up.sh",
+        "chmod": 744
+    },
+    {
+        "source": "deployment/twamp-down.sh",
+        "template": false,
+        "destination": "/root/twamp-down.sh",
+        "chmod": 744
+    }
+]

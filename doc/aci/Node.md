@@ -12,7 +12,7 @@ Filter options:
   - [ip](./NodeIp.md)
   - [subnet](./NodeSubnet.md)
 
-Output options:
+View options:
   - [default](./NodeAll.md)
   - [intf](./NodeOutputIntf.md)
   - [ip](./NodeOutputIp.md)
@@ -20,6 +20,9 @@ Output options:
   - [psu](./NodeOutputPsu.md)
   - [sensor](./NodeOutputSensor.md)
   - [temp](./NodeOutputTemp.md)
+
+Output options:
+  - [default](./NodeAll.md)
   - [json](./NodeOutputJson.md)
 
 Command options
@@ -44,12 +47,12 @@ Options:
   --model TEXT                    Filter by model
   --node-ip TEXT                  Filter by subnet with IP
   --node-subnet TEXT              Filter by subnet within subnet
-  -o, --output [default|intf|ip|power|psu|sensor|temp|json]
-                                  [default: default]
+  -v, --view [default|intf|ip|power|psu|sensor|temp]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 27 ms and logs saved in /tmp/iserver\3fcace495bb5
+Info: finished in 40 ms and logs saved in /tmp/iserver\2dd468e4b455
 ```
 
 [[Back]](./README.md)

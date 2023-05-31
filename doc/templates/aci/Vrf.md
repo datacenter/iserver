@@ -11,13 +11,16 @@ Filter options:
   - [IP address](./VrfIp.md)
   - [l3out](./VrfL3Out.md)
 
-Output options:
-  - [default output](./VrfAllDefault.md)
+View options:
+  - [default](./VrfAllDefault.md)
   - [properties](./VrfAllProps.md)
   - [references](./VrfAllRefs.md)
   - [verbose](./VrfVerbose.md)
   - [route](./VrfRoute.md) output to get route table of selected VRF
-  - [json](./VrfJson.md) output
+
+Output options:
+  - [default](./VrfAllDefault.md)
+  - [json](./VrfJson.md)
 
 Command options
 

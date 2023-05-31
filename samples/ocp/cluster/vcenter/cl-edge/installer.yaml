@@ -1,0 +1,16 @@
+installer:
+  iso:
+    source: C:\Users\akaliwod\Downloads\ocp\Fedora-Server-dvd-x86_64-36-1.5.iso
+    destination: linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso
+  ks:
+    folder: linux-ks
+    overwrite: False
+  vm:
+    name: ocp-edge-cl
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    ip: 10.58.24.113
+    username: root
+    password: cisco

@@ -1,0 +1,11 @@
+ocp:
+  installation: bm-ipi
+  release: 4.11.3
+  source: web
+  cluster:
+    name: cluster
+    domain: ocp.lan
+    api_vip: 10.58.24.210
+    ingress_vip: 10.58.24.211
+    master: WZP23400AKL
+    worker: WMP2404000R,WMP24040059

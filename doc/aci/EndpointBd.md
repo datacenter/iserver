@@ -60,4 +60,44 @@ Apic: apic11
 +----+-------------------+------------+--------+-------------------------+-------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci ep --apic apic11 --bd *sPBR-ASA*
+
+{
+    "duration": 1132,
+    "apic": {
+        "read": true,
+        "success": 2,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 1,
+        "connect_time": 379,
+        "disconnect_time": 0,
+        "mo_time": 580,
+        "total_time": 959
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	379	-	connect apic11o.emea-sp.cisco.com
+True	580	322	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+```
+
 [[Back]](./Endpoint.md)

@@ -3,7 +3,7 @@
 ## Show LLDP neighbors for all leaf nodes
 
 ```
-# iserver get aci proto lldp --apic apic11 --role leaf -o nei
+# iserver get aci proto lldp --apic apic11 --role leaf --view nei
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -81,7 +81,6 @@ Pod: 1
 | pod-1/cl201-eu-spdc | eth1/81      | 120       | Napoli-45                       | e4:1f:7b:cf:a1:81 | TenGigE0/0/0/27.905 |      |                                               | router        | 
 | pod-1/cl201-eu-spdc | eth1/91      | 120       | apic1                           | 5c:71:0d:ed:e4:0b |                     |      | eth2-1                                        |               | 
 | pod-1/cl201-eu-spdc | eth1/92      | 120       | apic2                           | 5c:71:0d:ee:0c:4b |                     |      | eth2-1                                        |               | 
-| pod-1/cl201-eu-spdc | eth1/93      | 120       | apic3                           | 5c:71:0d:ee:99:03 |                     |      | eth2-1                                        |               | 
 | pod-1/cl201-eu-spdc | eth1/96      | 120       | ipn21-eu-spdc.emea-sp.cisco.com | 70:df:2f:d7:8a:07 | Ethernet1/48        | 1    | ***** Infra to ACI1 vPC *****                 | bridge,router | 
 | pod-1/cl202-eu-spdc | eth1/107     | 120       | s101-eu-spdc                    | 4c:71:0d:55:d1:ce | Eth1/2              |      | topology/pod-1/paths-101/pathep-[eth1/2]      | bridge,router | 
 | pod-1/cl202-eu-spdc | eth1/108     | 120       | s102-eu-spdc                    | 8c:94:1f:fa:54:22 | Eth1/2              |      | topology/pod-1/paths-102/pathep-[eth1/2]      | bridge,router | 
@@ -124,7 +123,6 @@ Pod: 1
 | pod-1/cl202-eu-spdc | eth1/67      | 121       |                                 | 3c:fd:fe:ef:6f:4b |                     |      |                                               |               | 
 | pod-1/cl202-eu-spdc | eth1/91      | 120       | apic1                           | 5c:71:0d:ed:e4:0b |                     |      | eth2-2                                        |               | 
 | pod-1/cl202-eu-spdc | eth1/92      | 120       | apic2                           | 5c:71:0d:ee:0c:4b |                     |      | eth2-2                                        |               | 
-| pod-1/cl202-eu-spdc | eth1/93      | 120       | apic3                           | 5c:71:0d:ee:99:03 |                     |      | eth2-2                                        |               | 
 | pod-1/cl202-eu-spdc | eth1/96      | 120       | ipn22-eu-spdc.emea-sp.cisco.com | 70:df:2f:96:e2:b7 | Ethernet1/48        | 1    | ***** Infra to ACI1 vPC *****                 | bridge,router | 
 | pod-1/rl301-eu-spdc | eth1/33      | 120       | rl302-eu-spdc                   | a0:b4:39:4a:2d:39 | Eth1/33             |      | topology/pod-1/paths-302/pathep-[eth1/33]     | bridge,router | 
 | pod-1/rl301-eu-spdc | eth1/34      | 120       | rl302-eu-spdc                   | a0:b4:39:4a:2d:3a | Eth1/34             |      | topology/pod-1/paths-302/pathep-[eth1/34]     | bridge,router | 
@@ -170,6 +168,64 @@ Pod: 1
 | pod-1/rl302-eu-spdc | eth1/29      | 120       | Berlin-35.cisco.com             | 00:8a:96:9a:c0:e0 | TenGigE0/0/0/28     |      | *** Link to RL-302 for SR Handoff ***         | router        | 
 +---------------------+--------------+-----------+---------------------------------+-------------------+---------------------+------+-----------------------------------------------+---------------+
 Interface context: lldp
+```
+
+Developer
+
+```
+# iserver get aci proto lldp --apic apic11 --role leaf --view nei
+
+{
+    "duration": 7305,
+    "apic": {
+        "read": true,
+        "success": 20,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 19,
+        "connect_time": 481,
+        "disconnect_time": 0,
+        "mo_time": 6312,
+        "total_time": 6793
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	481	-	connect apic11o.emea-sp.cisco.com
+True	354	11	apic11o.emea-sp.cisco.com class fabricNode
+True	329	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
+True	355	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
+True	324	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	351	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst
+True	332	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/lldpInstStats
+True	331	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	295	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lldp/inst
+True	324	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/lldpInstStats
+True	318	42	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	356	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/lldp/inst
+True	341	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/lldpInstStats
+True	340	42	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	320	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lldp/inst
+True	350	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/lldpInstStats
+True	332	21	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	308	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lldp/inst
+True	303	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/lldpInstStats
+True	349	21	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

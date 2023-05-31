@@ -1,0 +1,57 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: cirros03
+  namespace: default
+  labels:
+    app: cirros03
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: cirros03
+        namespace: default
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+          volumeMode: Filesystem
+        source:
+          registry:
+            url: "docker://quay.io/kubevirt/cirros-container-disk-demo"
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: cirros03
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: cirros03
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - dataVolume:
+            name: cirros03
+          name: rootdisk

@@ -1,0 +1,17 @@
+metadata:
+vnf_product_name: CAT8000V-SDWAN
+vnf_provider_id: Cisco
+vnf_package_version: 2.0
+vnf_release_data_time: 2019-06-20T19:56:14+0900
+
+Source: ./CAT8000V-SDWAN/Definitions/CAT8000V-SDWAN.yaml
+Algorithm: SHA-256
+Hash: 149bea41b644955eced5606ebe4ecbe9a94159e735a661c352ac1f99a9c53909
+
+Source: ./CAT8000V-SDWAN/Files/ChangeLog.txt
+Algorithm: SHA-256
+Hash: 04b1227eae8fdcfe8028ddceedfee41c455e1882076ee00f405f95653d407994
+
+Source: ./CAT8000V-SDWAN/TOSCA-Metadata/TOSCA.meta
+Algorithm: SHA-256
+Hash: 79562ed815a9abeb3bbb6e5174e10652e1564b680bd6d69090548bd3a399d2c3

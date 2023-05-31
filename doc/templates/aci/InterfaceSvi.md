@@ -16,11 +16,14 @@ Filter options:
   - [IP address](./InterfaceSviIp.md)
   - [IP subnet](./InterfaceSviSubnet.md)
 
-Output options:
-  - [state](./InterfaceSviOutputState.md) (default)
+View options:
+  - [default](./InterfaceSviOutputState.md)
   - [address](./InterfaceSviOutputAddress.md)
   - [counter](./InterfaceSviOutputCounter.md)
   - [verbose](./InterfaceSviOutputVerbose.md)
+
+Output options:
+  - [state](./InterfaceSviOutputState.md)
   - [json](./InterfaceSviOutputJson.md)
 
 Command options

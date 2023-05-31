@@ -19,4 +19,48 @@ Pod: 1
 +---------------------+-------------+------------+-------------+------------+-------------------+------+----------+--------+----------+--------------+------+
 ```
 
+Developer
+
+```
+# iserver get aci proto isis --apic apic11 --node rl
+
+{
+    "duration": 2093,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 462,
+        "disconnect_time": 0,
+        "mo_time": 1511,
+        "total_time": 1973
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	462	-	connect apic11o.emea-sp.cisco.com
+True	323	11	apic11o.emea-sp.cisco.com class fabricNode
+True	288	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis
+True	301	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	290	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis
+True	309	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis query query-target=subtree&target-subtree-class=isisDom
+```
+
 [[Back]](./ProtocolIsis.md)

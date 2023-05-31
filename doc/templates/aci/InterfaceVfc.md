@@ -1,6 +1,6 @@
 # Node Interface
 
-## FC
+## VFC
 
 Note: Feature *should* work. No environment available to test it (yet).
 
@@ -15,9 +15,12 @@ Filter options:
   - Admin State
   - Oper State
 
-Output options:
-  - state
+View options:
+  - default
   - verbose
+
+Output options:
+  - default
   - json
 
 Command options

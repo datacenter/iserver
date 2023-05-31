@@ -1,9 +1,6 @@
-from lib import log_helper
-
-
 class PolicyTroubleshootingSpanSource():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def get_policy_troubleshooting_span_source_info(self, managed_object):
         keys = [

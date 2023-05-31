@@ -15,10 +15,13 @@ Filter options:
   - [Speed](./InterfacePcSpeed.md)
   - [State](./InterfacePcState.md)
 
-Output options:
-  - [state](./InterfacePcOutputState.md) (default)
+View options:
+  - [default](./InterfacePcOutputState.md)
   - [port](./InterfacePcOutputPort.md)
   - [verbose](./InterfacePcOutputVerbose.md)
+
+Output options:
+  - [default](./InterfacePcOutputState.md)
   - [json](./InterfacePcOutputJson.md)
 
 Command options
@@ -43,12 +46,13 @@ Options:
   --speed TEXT                    Filter by speed
   --domain TEXT                   Filter by domain id
   --state [any|up|down]           Filter by state  [default: any]
-  -o, --output [state|port|verbose|json]
-                                  [default: state]
+  -v, --view [default|port|verbose]
+  -o, --output [default|json]     [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\81441bbaf9e7
+Info: finished in 29 ms and logs saved in /tmp/iserver\92326e887828
 ```
 
 [[Back]](./Interface.md)

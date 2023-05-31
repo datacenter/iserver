@@ -1,0 +1,18 @@
+hostname $HOST_NAME
+ip domain name $DOMAIN_NAME
+aaa new-model
+aaa authorization exec default local
+username $MGMT_USER_NAME privilege 15 secret $MGMT_PASSWORD
+no ip http secure-server
+ip ssh version 2
+crypto key generate rsa modulus 2048
+interface GigabitEthernet1
+  ip address $NICID_0_0_IP_ADDRESS $NICID_0_0_NETMASK
+  no shutdown
+interface GigabitEthernet2
+  ip address $NICID_1_0_IP_ADDRESS $NICID_1_0_NETMASK
+  no shutdown
+interface GigabitEthernet3
+  ip address $NICID_2_0_IP_ADDRESS $NICID_2_0_NETMASK
+  no shutdown
+ip route 0.0.0.0 0.0.0.0 $NICID_0_0_GATEWAY

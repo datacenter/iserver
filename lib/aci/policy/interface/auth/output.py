@@ -2,10 +2,96 @@ class PolicyInterfaceAuthOutput():
     def __init__(self):
         pass
 
-    def print_policy_interface_auth(self, info, verbose=False):
+    def print_policy_interface_auth(self, info):
+        self.print_policy_interface_auth_properties(
+            info
+        )
+
+        self.print_policy_interface_auth_interfaces(
+            info['l1RsL2PortAuthCons']
+        )
+
+        self.print_policy_interface_auth_references(
+            info['relnFrom']
+        )
+
+    def print_policy_interface_auth_properties(self, info):
         order = [
             'name',
             'tf',
+            'adminSt',
+            'hostMode'
+        ]
+
+        headers = [
+            'Policy Name',
+            'TF',
+            'Admin State',
+            'Host Mode'
+        ]
+
+        self.my_output.dictionary(
+            info,
+            title='802.1x Policy Properties',
+            underline=True,
+            prefix="- ",
+            justify=True,
+            keys=order,
+            title_keys=headers
+        )
+
+    def print_policy_interface_auth_interfaces(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId'
+        ]
+
+        headers = [
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policy_interface_auth_references(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'policyName',
+            'policyType',
+            'tCl'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Policy Type',
+            'Policy Class'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_auth_summary(self, info):
+        order = [
+            'name',
+            'tfTick',
             'adminSt',
             'hostMode',
             'interfaces',
@@ -21,51 +107,79 @@ class PolicyInterfaceAuthOutput():
             'Ref Policies'
         ]
 
-        self.print_policy_interface(
+        self.my_output.my_table(
             info,
-            '802.1x Policy Properties',
-            order,
-            headers,
-            verbose
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )
 
-    def print_policies_interface_auth(self, info, verbose=False):
+    def print_policies_interface_auth_usage(self, info):
         order = [
             'name',
             'tfTick',
             'adminSt',
-            'hostMode'
+            'hostMode',
+            'nodeInterfaces.pod_node_name',
+            'nodeInterfaces.interfaces',
+            'relnFrom.policyType',
+            'relnFrom.policyName'
         ]
 
         headers = [
             'Policy Name',
             'TF',
             'Admin State',
-            'Host Mode'
+            'Host Mode',
+            'Node',
+            'Interface Count',
+            'Ref Policy Type',
+            'Ref Policy Name'
         ]
 
-        self.print_policies_interface(
-            info,
-            order,
-            headers,
-            verbose
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['nodeInterfaces', 'relnFrom']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )
 
-    def print_policy_interface_auth_node(self, info):
+    def print_policies_interface_auth_interfaces(self, info):
         order = [
-            'policy.name',
-            'policy.adminSt',
-            'policy.hostMode'
+            'name',
+            'tfTick',
+            'adminSt',
+            'hostMode',
+            'l1RsL2PortAuthCons.pod_node_name',
+            'l1RsL2PortAuthCons.interfaceId'
         ]
 
         headers = [
-            '802.1x Policy Name',
-            '802.1x Admin State',
-            '802.1x Host Mode'
+            'Policy Name',
+            'TF',
+            'Admin State',
+            'Host Mode',
+            'Node',
+            'Interface'
         ]
 
-        self.print_policy_interface_node(
-            info,
-            order,
-            headers
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['l1RsL2PortAuthCons']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )

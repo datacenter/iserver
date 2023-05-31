@@ -2,8 +2,8 @@ from lib import log_helper
 
 
 class BridgeDomainHealth():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def get_bridge_domain_health_info(self, managed_object):
         info = {}

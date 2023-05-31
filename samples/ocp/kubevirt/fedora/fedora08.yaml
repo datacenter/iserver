@@ -1,0 +1,78 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora08
+  namespace: default
+  labels:
+    app: fedora08
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora08
+        namespace: default
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 30Gi
+          volumeMode: Filesystem
+        source:
+          pvc:
+            name: fedora-registry
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora08
+        special: fedora08
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - disk: {}
+            name: app-secret-disk
+            serial: D23YZ9W6WA5DJ487
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: fedora08
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - dataVolume:
+            name: fedora08
+          name: rootdisk
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              password: fedora
+              chpasswd: { expire: False }
+              ssh_pwauth: True
+              bootcmd:
+              - "mkdir /mnt/my-secret"
+              - "mount /dev/$(lsblk --nodeps -no name,serial | grep D23YZ9W6WA5DJ487 | cut -f1 -d' ') /mnt/my-secret"
+        - secret:
+            secretName: default-token-4c8xg
+          name: app-secret-disk

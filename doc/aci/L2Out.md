@@ -7,7 +7,7 @@ Filter options:
   - [tenant](./L2OutTenant.md)
 
 Output options:
-  - [default output](./L2OutAll.md)
+  - [default](./L2OutAll.md)
   - [json](./L2OutJson.md)
 
 Command options
@@ -30,7 +30,7 @@ Options:
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 86 ms and logs saved in /tmp/iserver\6dc6561b76c7
+Info: finished in 34 ms and logs saved in /tmp/iserver\9d62c0ca2d37
 ```
 
 [[Back]](./README.md)

@@ -7,9 +7,12 @@ Node selection options:
   - [selected nodes](./ProtocolNdNodes.md)
   - [leaf nodes](./ProtocolNdLeaf.md)
 
-Output options:
-  - [instance](./ProtocolNdNode.md) (default)
+View options:
+  - [default](./ProtocolNdNode.md)
   - [verbose](./ProtocolNdOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolNdNode.md)
   - [json](./ProtocolNdOutputJson.md)
 
 Command options

@@ -1,0 +1,38 @@
+[
+    {
+        "source": "deployment/twamp-secure-reflector.yaml",
+        "template": false,
+        "destination": "/root/deployment/twamp-secure-reflector.yaml",
+        "chmod": 644
+    },
+    {
+        "source": "deployment/twamp-insecure-reflector.yaml",
+        "template": false,
+        "destination": "/root/deployment/twamp-insecure-reflector.yaml",
+        "chmod": 644
+    },
+    {
+        "source": "deployment/twamp-up.sh",
+        "template": false,
+        "destination": "/root/twamp-up.sh",
+        "chmod": 744
+    },
+    {
+        "source": "deployment/twamp-down.sh",
+        "template": false,
+        "destination": "/root/twamp-down.sh",
+        "chmod": 744
+    },
+    {
+        "source": "deployment/enable_secure_server.sh",
+        "template": false,
+        "destination": "/root/enable_secure_server.sh",
+        "chmod": 744
+    },
+    {
+        "source": "deployment/restore_default.sh",
+        "template": false,
+        "destination": "/root/restore_default.sh",
+        "chmod": 744
+    }
+]

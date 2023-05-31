@@ -3,7 +3,7 @@
 ## Show all details for selected node
 
 ```
-# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc -o verbose
+# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc --view verbose
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -50,12 +50,12 @@ LSP Records
 +---------------------+---------+-------------------+--------+------+------+-------------------------------+--------+
 | Node                | Domain  | Sys Id            | Lan Id | Frag | Type | Lifetime                      | Seqnum |
 +---------------------+---------+-------------------+--------+------+------+-------------------------------+--------+
-| pod-1/cl201-eu-spdc | overlay | 40:20:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:46:21.000+02:00 | 53747  | 
-| pod-1/cl201-eu-spdc | overlay | 40:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:42:27.000+02:00 | 53725  | 
-| pod-1/cl201-eu-spdc | overlay | 41:20:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:42:28.000+02:00 | 53806  | 
-| pod-1/cl201-eu-spdc | overlay | 41:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:45:32.000+02:00 | 53793  | 
-| pod-1/cl201-eu-spdc | overlay | 43:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:32:08.000+02:00 | 53743  | 
-| pod-1/cl201-eu-spdc | overlay | 44:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-24T11:42:19.000+02:00 | 53767  | 
+| pod-1/cl201-eu-spdc | overlay | 40:20:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:20:33.000+02:00 | 54739  | 
+| pod-1/cl201-eu-spdc | overlay | 40:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:16:39.000+02:00 | 54714  | 
+| pod-1/cl201-eu-spdc | overlay | 41:20:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:18:08.000+02:00 | 54793  | 
+| pod-1/cl201-eu-spdc | overlay | 41:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:15:51.000+02:00 | 54785  | 
+| pod-1/cl201-eu-spdc | overlay | 43:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:08:40.000+02:00 | 54733  | 
+| pod-1/cl201-eu-spdc | overlay | 44:C0:03:0A:00:00 | 0      | 0    | l1   | 2023-05-30T20:20:33.000+02:00 | 54757  | 
 +---------------------+---------+-------------------+--------+------+------+-------------------------------+--------+
 
 Neighbors
@@ -216,5 +216,54 @@ Discovered Tunnel Endpoints
 | pod-1/cl201-eu-spdc | overlay | 10.3.48.64  | leaf  | physical                 | 
 +---------------------+---------+-------------+-------+--------------------------+
 ```
+
+Developer
+
+```
+# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc --view verbose
+
+{
+    "duration": 3748,
+    "apic": {
+        "read": true,
+        "success": 10,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 9,
+        "connect_time": 427,
+        "disconnect_time": 0,
+        "mo_time": 2989,
+        "total_time": 3416
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	427	-	connect apic11o.emea-sp.cisco.com
+True	336	11	apic11o.emea-sp.cisco.com class fabricNode
+True	327	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis
+True	317	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	304	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisDTEp
+True	306	6	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisLspRec
+True	359	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisIf
+True	326	2	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisAdjEp&rsp-subtree=children&rsp-subtree-class=isisPeerIpAddr
+True	341	16	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisFmcastTree
+True	373	132	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisRoute&target-subtree-class=isisRsNhAtt
+```
+
 
 [[Back]](./ProtocolIsis.md)

@@ -15,10 +15,13 @@ Filter options:
   - [ip](./ProtocolBfdSessionIp.md)
   - [subnet](./ProtocolBfdSessionSubnet.md)
 
-Output options:
-  - [session](./ProtocolBfdSessionNode.md) (default)
+View options:
+  - [default](./ProtocolBfdSessionNode.md)
   - [instance](./ProtocolBfdInstanceNodes.md)
   - [verbose](./ProtocolBfdSessionVerbose.md)
+
+Output options:
+  - [default](./ProtocolBfdSessionNode.md)
   - [json](./ProtocolBfdOutputJson.md)
 
 Command options

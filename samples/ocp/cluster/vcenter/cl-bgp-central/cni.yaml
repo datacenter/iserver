@@ -1,0 +1,5 @@
+cni:
+  type: Calico
+  v4cidr: 10.128.0.0/14
+  v4hostPrefix: 23
+  v4serviceNetwork: 172.30.0.0/16

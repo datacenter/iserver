@@ -11,14 +11,17 @@ Filter options:
   - [IP address](./BridgeDomainIp.md)
   - [l3out](./BridgeDomainL3Out.md)
 
-Output options:
-  - [default output](./BridgeDomainAllDefault.md)
+View options:
+  - [default](./BridgeDomainAllDefault.md)
   - [l2 properties](./BridgeDomainAllL2.md)
   - [l3 properties](./BridgeDomainAllL3.md)
   - [mcast properties](./BridgeDomainAllMcast.md)
   - [vrf properties](./BridgeDomainAllVrf.md)
   - [verbose](./BridgeDomainVerbose.md)
-  - [json](./BridgeDomainJson.md) output
+
+Output options:
+  - [default](./BridgeDomainAllDefault.md)
+  - [json](./BridgeDomainJson.md)
 
 Command options
 

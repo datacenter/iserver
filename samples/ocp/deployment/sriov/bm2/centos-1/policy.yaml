@@ -1,0 +1,13 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-intel-xxv710-net
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: xxv710nic1net
+  nodeSelector:
+    topology.topolvm.io/node: "ocp-bm2"
+  numVfs: 64
+  nicSelector:
+    pfNames: ["ens1f1#0-7"]
+  deviceType: netdevice

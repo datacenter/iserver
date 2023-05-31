@@ -30,4 +30,68 @@ Pod: 1
 +---------------------+-------+-------------+-----------------+-----------+------------------+--------+------+-------+-------------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf mgmt --apic apic11 --node any
+
+{
+    "duration": 8583,
+    "apic": {
+        "read": true,
+        "success": 26,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 25,
+        "connect_time": 482,
+        "disconnect_time": 0,
+        "mo_time": 7750,
+        "total_time": 8232
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	482	-	connect apic11o.emea-sp.cisco.com
+True	317	11	apic11o.emea-sp.cisco.com class fabricNode
+True	321	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/mgmtMgmtIf
+True	313	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	318	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	310	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/mgmtMgmtIf
+True	301	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	294	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	294	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/mgmtMgmtIf
+True	307	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	285	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	290	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/mgmtMgmtIf
+True	351	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	305	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	291	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/mgmtMgmtIf
+True	353	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	299	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	302	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/mgmtMgmtIf
+True	307	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	291	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	305	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/mgmtMgmtIf
+True	318	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	301	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+True	294	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/mgmtMgmtIf
+True	330	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/mgmt-[mgmt0] query query-target=children&target-subtree-class=imMgmtIf
+True	353	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/ipv4/inst/dom-management/if-[mgmt0] query query-target=children&target-subtree-class=ipv4Addr
+```
+
 [[Back]](./InterfaceMgmt.md)

@@ -7,7 +7,7 @@ Filter options:
   - [tenant](./L2OutTenant.md)
 
 Output options:
-  - [default output](./L2OutAll.md)
+  - [default](./L2OutAll.md)
   - [json](./L2OutJson.md)
 
 Command options

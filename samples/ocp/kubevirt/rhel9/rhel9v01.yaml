@@ -1,0 +1,70 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: rhel9v01
+  namespace: default
+  labels:
+    app: rhel9v01
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: rhel9v01
+        namespace: default
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: rhel9-9d0d9575e03e
+          namespace: openshift-virtualization-os-images
+        storage:
+          resources:
+            requests:
+              storage: 30Gi
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: rhel9v01
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 2
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        features:
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi: {}
+        resources:
+          requests:
+            memory: 8Gi
+      evictionStrategy: LiveMigrate
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+      - dataVolume:
+          name: rhel9v01
+        name: rootdisk
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: cloud-user
+            password: cisco
+            chpasswd: { expire: False }
+        name: cloudinitdisk

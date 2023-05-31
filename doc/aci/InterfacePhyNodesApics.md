@@ -5,7 +5,6 @@
 ```
 # iserver get aci intf phy --apic dom:milan --node any --speed 400G
 
-Apic: apic11,apic21
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
 - node: bl205-eu-spdc
@@ -91,7 +90,6 @@ Pod: 1
 | apic21 | pod-1/s2101-eu-spdc  | 1/4       | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:00 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/5       | up    | enabled   | up   | connected   | fab  | routed |    | F0:4A:02:A9:3B:01 | trunk | 400G  | full   | 9366 | kp-fec      | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/6       | up    | enabled   | up   | connected   | fab  | routed |    | F0:4A:02:A9:3B:02 | trunk | 400G  | full   | 9366 | kp-fec      | 
-| apic21 | pod-1/s2101-eu-spdc  | 1/9       | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:05 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/10      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:06 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/11      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:07 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/12      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:08 | trunk | 400G  | full   | 9366 | disable-fec | 
@@ -100,7 +98,6 @@ Pod: 1
 | apic21 | pod-1/s2101-eu-spdc  | 1/15      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:0B | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/17      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:0D | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/18      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:0E | trunk | 400G  | full   | 9366 | disable-fec | 
-| apic21 | pod-1/s2101-eu-spdc  | 1/19      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:0F | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/20      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:10 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/21      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:11 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2101-eu-spdc  | 1/22      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:3B:12 | trunk | 400G  | full   | 9366 | disable-fec | 
@@ -127,7 +124,6 @@ Pod: 1
 | apic21 | pod-1/s2102-eu-spdc  | 1/15      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:B9 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/17      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:BB | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/18      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:BC | trunk | 400G  | full   | 9366 | disable-fec | 
-| apic21 | pod-1/s2102-eu-spdc  | 1/20      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:BE | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/22      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:C0 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/24      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:C2 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/26      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:C4 | trunk | 400G  | full   | 9366 | disable-fec | 
@@ -138,6 +134,85 @@ Pod: 1
 | apic21 | pod-1/s2102-eu-spdc  | 1/31      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:C9 | trunk | 400G  | full   | 9366 | disable-fec | 
 | apic21 | pod-1/s2102-eu-spdc  | 1/32      | up    | enabled   | down | sfp-missing | fab  | routed |    | F0:4A:02:A9:32:CA | trunk | 400G  | full   | 9366 | disable-fec | 
 +--------+----------------------+-----------+-------+-----------+------+-------------+------+--------+----+-------------------+-------+-------+--------+------+-------------+
+Interface context: phy
+```
+
+Developer
+
+```
+# iserver get aci intf phy --apic dom:milan --node any --speed 400G
+
+{
+    "duration": 16352,
+    "apic": {
+        "read": true,
+        "success": 40,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 38,
+        "connect_time": 858,
+        "disconnect_time": 0,
+        "mo_time": 13507,
+        "total_time": 14365
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	430	-	connect apic11o.emea-sp.cisco.com
+True	428	-	connect apic21o.emea-sp.cisco.com
+True	324	11	apic11o.emea-sp.cisco.com class fabricNode
+True	325	13	apic21o.emea-sp.cisco.com class fabricNode
+True	328	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	326	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	370	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
+True	321	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
+True	358	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
+True	370	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
+True	392	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
+True	426	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
+True	316	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
+True	320	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
+True	358	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
+True	362	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
+True	323	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
+True	346	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
+True	354	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
+True	338	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
+True	376	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/l1PhysIf
+True	343	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/ethpmPhysIf
+True	334	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/l1PhysIf
+True	348	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/ethpmPhysIf
+True	349	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/l1PhysIf
+True	388	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/ethpmPhysIf
+True	358	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/l1PhysIf
+True	363	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/ethpmPhysIf
+True	352	60	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/l1PhysIf
+True	376	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/ethpmPhysIf
+True	326	60	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/l1PhysIf
+True	377	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/ethpmPhysIf
+True	328	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/l1PhysIf
+True	359	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/ethpmPhysIf
+True	343	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/l1PhysIf
+True	407	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/ethpmPhysIf
+True	352	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/l1PhysIf
+True	323	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/ethpmPhysIf
+True	449	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/l1PhysIf
+True	399	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/ethpmPhysIf
 ```
 
 [[Back]](./InterfacePhy.md)

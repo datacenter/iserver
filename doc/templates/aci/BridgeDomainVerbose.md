@@ -15,4 +15,10 @@ Get selected bridge domain details
 DOC_TEMPLATE:get_aci_bd.verbose:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_bd.verbose:devel.debug
+```
+
 [[Back]](./BridgeDomain.md)

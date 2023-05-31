@@ -1,0 +1,19 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: centos-1-sriov-attach
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: xxv710nic1net
+  networkNamespace: default
+  vlan: 807
+  ipam: |-
+    {
+      "type": "static",
+      "addresses": [
+        {
+          "address": "15.20.17.10/24",
+          "gateway": "15.20.17.254"
+        }
+      ]
+    }

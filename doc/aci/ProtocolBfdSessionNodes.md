@@ -25,4 +25,53 @@ Pod: 1
 +---------------------+----------------+-------+------------+----------------+-------+------------+-----------+-------------------------------+-----------+
 ```
 
+Developer
+
+```
+# iserver get aci proto bfd --apic apic11 --node cl201-eu-spdc --node bl
+
+{
+    "duration": 3391,
+    "apic": {
+        "read": true,
+        "success": 11,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 10,
+        "connect_time": 387,
+        "disconnect_time": 0,
+        "mo_time": 2886,
+        "total_time": 3273
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	387	-	connect apic11o.emea-sp.cisco.com
+True	300	11	apic11o.emea-sp.cisco.com class fabricNode
+True	279	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst
+True	274	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	297	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	278	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst
+True	289	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	284	12	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	294	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst
+True	305	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	286	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+```
+
 [[Back]](./ProtocolBfd.md)

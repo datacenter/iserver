@@ -3,7 +3,7 @@
 ## Show CDP neighbors details for selected node
 
 ```
-# iserver get aci proto cdp --apic apic11 --node cl201-eu-spdc -o nbr
+# iserver get aci proto cdp --apic apic11 --node cl201-eu-spdc
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -31,6 +31,49 @@ Node: cl201-eu-spdc
 | pod-1/cl201-eu-spdc | eth1/96         | ipn21-eu-spdc          | N9K-C93180YC-EX | Ethernet1/48 | full   | 1500 | 1           | igmp-filter,router,stp-dispute,switch | 
 | pod-1/cl201-eu-spdc | mgmt0           | r22-eu-spdc            | N9K-C92348GC-X  | Ethernet1/25 | full   | 1500 | 12          | igmp-filter,router,stp-dispute,switch | 
 +---------------------+-----------------+------------------------+-----------------+--------------+--------+------+-------------+---------------------------------------+
+```
+
+Developer
+
+```
+# iserver get aci proto cdp --apic apic11 --node cl201-eu-spdc
+
+{
+    "duration": 1782,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 393,
+        "disconnect_time": 0,
+        "mo_time": 1241,
+        "total_time": 1634
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	393	-	connect apic11o.emea-sp.cisco.com
+True	300	11	apic11o.emea-sp.cisco.com class fabricNode
+True	286	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst
+True	292	17	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	363	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
 ```
 
 [[Back]](./ProtocolCdp.md)

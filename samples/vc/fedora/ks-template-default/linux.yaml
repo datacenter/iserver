@@ -1,0 +1,20 @@
+linux:
+  template: fedora
+  ks:
+    enabled: True
+  iso:
+    filename: Fedora-Server-dvd-x86_64-36-1.5.iso
+  vm:
+    name: fedora-sample-ks-default
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network
+    ip: 10.58.29.76/28
+    gateway: 10.58.29.78
+    dns:
+      servers: 144.254.71.184
+      domain: cisco.com
+    password: cisco

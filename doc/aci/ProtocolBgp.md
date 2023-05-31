@@ -24,15 +24,19 @@ Filter options:
     - [source interface](./ProtocolBgpNeighborInterface.md)
     - [state](./ProtocolBgpNeighborState.md)
 
-Output options:
-  - [summary](./ProtocolBgpNeighborSummary.md)
+View options:
+  - [default](./ProtocolBgpNeighborSummary.md)
   - [transport](./ProtocolBgpNeighborTransport.md)
   - [connection](./ProtocolBgpNeighborConnection.md)
   - [af](./ProtocolBgpNeighborAf.md)
   - [bgp routes](./ProtocolBgpRoute.md)
   - [verbose](./ProtocolBgpNeighborVerbose.md)
 
-### Command options
+Output options:
+  - [default](./ProtocolBgpNeighborSummary.md)
+  - [json](./ProtocolBgpJson.md)
+
+Command options
 
 ```
 # iserver get aci proto bgp --help
@@ -58,12 +62,12 @@ Options:
   --nbr-subnet TEXT               Filter by BPG Neighbor IP subnet
   --state [any|up|down]           Filter by BGP neighbor state  [default: any]
   --intf TEXT                     Filter by BGP Neighbor source interface
-  -o, --output [node|vrf|summary|trans|conn|af|verbose|route|json]
-                                  [default: summary]
+  -v, --view [default|node|vrf|trans|conn|af|verbose|route]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 78 ms and logs saved in /tmp/iserver\de01cddd9b0a
+Info: finished in 30 ms and logs saved in /tmp/iserver\60d1ab5c6ec2
 ```
 
 [[Back]](./Protocol.md)

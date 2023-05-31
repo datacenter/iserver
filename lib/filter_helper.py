@@ -1,3 +1,13 @@
+def get_tenant_name(value):
+    if len(value.split('/')) == 1:
+        return (None, value)
+
+    if len(value.split('/')) == 2:
+        return value.split('/')
+
+    return None
+
+
 def match_string(key, value, strict=False):
     if key is None and value is None:
         return True

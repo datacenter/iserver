@@ -3,7 +3,7 @@
 ## Address focused output
 
 ```
-# iserver get aci intf vpc --apic dom:milan --node any -o address
+# iserver get aci intf vpc --apic dom:milan --node any --view address
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -46,6 +46,66 @@ Pod: 1
 | apic21 | pod-1/rl2701-eu-spdc | 227           | master    | configured-master,vpcs-reinited | up         | 172.16.70.232/32 | 00:23:04:EE:BE:E3 | 00:2C:C8:9E:58:7D | 2701       | 172.16.70.25/32  | 2C:33:11:39:FC:AF | 2702      | 
 | apic21 | pod-1/rl2702-eu-spdc | 227           | slave     | vpcs-reinited                   | up         | 172.16.70.232/32 | 00:23:04:EE:BE:E3 | 2C:33:11:39:FC:AF | 2702       | 172.16.70.209/32 | 00:2C:C8:9E:58:7D | 2701      | 
 +--------+----------------------+---------------+-----------+---------------------------------+------------+------------------+-------------------+-------------------+------------+------------------+-------------------+-----------+
+```
+
+Developer
+
+```
+# iserver get aci intf vpc --apic dom:milan --node any --view address
+
+{
+    "duration": 7935,
+    "apic": {
+        "read": true,
+        "success": 22,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 20,
+        "connect_time": 815,
+        "disconnect_time": 0,
+        "mo_time": 6706,
+        "total_time": 7521
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	410	-	connect apic11o.emea-sp.cisco.com
+True	405	-	connect apic21o.emea-sp.cisco.com
+True	352	11	apic11o.emea-sp.cisco.com class fabricNode
+True	310	13	apic21o.emea-sp.cisco.com class fabricNode
+True	308	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	327	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	343	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	358	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	341	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	422	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
+True	346	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
+True	331	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
+True	334	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/vpcDom
+True	377	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/vpcDom
+True	330	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/vpcDom
+True	349	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/vpcDom
+True	304	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/vpcDom
+True	274	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/vpcDom
+True	292	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/vpcDom
+True	320	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/vpcDom
+True	338	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/vpcDom
+True	350	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/vpcDom
 ```
 
 [[Back]](./InterfaceVpc.md)

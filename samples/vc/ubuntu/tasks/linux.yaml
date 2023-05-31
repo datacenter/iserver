@@ -1,0 +1,23 @@
+linux:
+  template: ubuntu
+  ks:
+    enabled: True
+  iso:
+    filename: ubuntu-20.04.3-live-server-amd64.iso
+  vm:
+    name: ubuntu-sample-tasks
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network
+    ip: 10.58.29.76/28
+    gateway: 10.58.29.78
+    dns:
+      servers: 144.254.71.184
+      domain: cisco.com
+    ntp:
+      servers: 144.254.15.78
+      timezone: Europe/Rome
+    password: cisco

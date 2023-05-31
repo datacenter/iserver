@@ -1,0 +1,35 @@
+hostname ${NAME}
+ip domain name ${DOMAIN_NAME}
+!
+aaa new-model
+aaa authorization exec default local
+username ${SSH_USERNAME} privilege 15 secret ${SSH_PASSWORD}
+!
+no ip http secure-server
+crypto key generate rsa modulus 2048
+ip ssh version 2
+interface GigabitEthernet1
+    ip address dhcp
+    no shutdown
+!
+interface GigabitEthernet2
+    ip address ${SRIOV_VF1_IP} ${SRIOV_VF1_NETMASK}
+    no shutdown
+!
+interface GigabitEthernet3
+    ip address ${SRIOV_VF2_IP} ${SRIOV_VF2_NETMASK}
+    no shutdown
+!
+ip http secure-server
+!
+restconf
+!
+netconf-yang
+!
+snmp-server community public RO
+snmp-server manager
+!
+line con 0
+    length 0
+line vty 0 4
+    length 0

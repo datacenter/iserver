@@ -1,9 +1,6 @@
-from lib import log_helper
-
-
 class PolicyMonitoring():
-    def __init__(self, log_id=None):
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        pass
 
     def get_policy_monitoring_info(self, managed_object):
         # "annotation": "",

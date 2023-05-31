@@ -1,0 +1,4 @@
+sources:
+  ocp: C:\Users\akaliwod\Downloads\ocp\openshift-install-linux.tar.gz
+  oc: C:\Users\akaliwod\Downloads\ocp\oc-4.11.3-linux.tar.gz
+  secret: C:\Users\akaliwod\Downloads\ocp\pull-secret.txt

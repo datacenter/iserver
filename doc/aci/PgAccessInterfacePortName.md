@@ -20,4 +20,44 @@ Apic: apic11
 +-------------------------+-------------------------+------------+-----------+---------+---------+-------------+---------+---------------+
 ```
 
+Developer
+
+```
+# iserver get aci pg access intf port --apic apic11 --name P5G*
+
+{
+    "duration": 1136,
+    "apic": {
+        "read": true,
+        "success": 2,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 1,
+        "connect_time": 408,
+        "disconnect_time": 0,
+        "mo_time": 599,
+        "total_time": 1007
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	408	-	connect apic11o.emea-sp.cisco.com
+True	599	46	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccPortGrp&rsp-subtree=children&rsp-subtree-class=infraRsAttEntP,infraRsCdpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsMonIfInfraPol,infraRsStpIfPol,infraRsMcpIfPol,infraRsStormctrlIfPol
+```
+
 [[Back]](./PgAccessInterfacePort.md)

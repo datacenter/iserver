@@ -1,0 +1,357 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+description: CAT8000V-SDWAN VNFD - 1 VDU (SOL001 v0.10.0) for Openstack
+
+imports:
+  - cisco_nfv_sol001_types.yaml
+  - etsi_nfv_sol001_vnfd_2_7_1_types.yaml
+
+metadata:
+  template_name: cat8000v_3ports
+  template_author: Cisco Systems
+  template_version: '1.0'
+
+dsl_definitions:
+  descriptor_id: &descriptor_id CAT8000V-SDWAN
+  provider: &provider Cisco
+  product_name: &product_name Cat8000V
+  software_version: &software_version '17.06'
+  descriptor_version: &descriptor_version '1.0'
+  flavour_id: &flavour_id default
+  flavour_description: &flavour_description 'Default VNF Deployment Flavour'
+  vnfm: &vnfm 'Cisco Elastic Services Controller:v5.0'
+  recovery_action: &recovery_action 'REBOOT_THEN_REDEPLOY'
+  recovery_wait_time: &recovery_wait_time 30
+
+
+node_types:
+  cisco.CAT8000V-SDWAN:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        type: string
+        constraints: [ valid_values: [ *descriptor_id ]]
+        default: *descriptor_id
+      provider:
+        type: string
+        constraints: [ valid_values: [ *provider ] ]
+        default: *provider
+      product_name:
+        type: string
+        constraints: [ valid_values: [ *product_name ] ]
+        default: *product_name
+      software_version:
+        type: string
+        constraints: [ valid_values: [ *software_version ] ]
+        default: *software_version
+      descriptor_version:
+        type: string
+        constraints: [ valid_values: [ *descriptor_version ] ]
+        default: *descriptor_version
+      flavour_id:
+        type: string
+        constraints: [ valid_values: [ *flavour_id ] ]
+        default: *flavour_id
+      flavour_description:
+        type: string
+        constraints: [ valid_values: [ *flavour_description ] ]
+        default: *flavour_description
+      vnfm_info:
+        type: list
+        entry_schema:
+          type: string
+        constraints: [ valid_values: [ *vnfm ] ]
+        default: [ *vnfm ]
+      recovery_action:
+        type: string
+        required: true
+        constraints: [ valid_values: [ *recovery_action ] ]
+        default: *recovery_action
+      recovery_wait_time:
+        type: integer
+        required: true
+        constraints: [ valid_values: [ *recovery_wait_time ] ]
+        default: *recovery_wait_time
+      configurable_properties:
+        type: tosca.datatypes.nfv.VnfConfigurableProperties
+        description: Describes the configurable properties of the VNF
+        required: false
+      lcm_operations_configuration:
+        type: cisco.datatypes.nfv.VnfLcmOperationsConfiguration
+        required: false
+    interfaces:
+      Vnflcm:
+        type: cisco.interfaces.nfv.Vnflcm
+    requirements:
+      - virtual_link:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+          occurrences: [ 0, 0 ]
+      - nic0:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+      - nic1:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+      - nic2:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+
+topology_template:
+###################
+# Template Inputs #
+###################
+  inputs:
+
+    FLAVOUR_NAME:
+      description: VIM Flavour for CAT8000V-SDWAN VDUs
+      type: string
+    IMAGE_NAME:
+      description: Cat8000V Image name
+    INSTANCE_NAME:
+      description: Custom VM name on the VIM
+    BOOTUP_TIME:
+      description: The time taken in seconds for the image to boot
+      type: integer
+    NIC0_TYPE:
+      description: SRIOV port or not.
+    NIC1_TYPE:
+      description: SRIOV port or not.
+    NIC2_TYPE:
+      description: SRIOV port or not.
+    HOSTNAME:
+      description: Host Name for Day0
+    SSH_USERNAME:
+      description: Management User Name for Day0
+    SSH_PASSWORD:
+      description: Management Password for Day0
+    DOMAIN_NAME:
+      description: Domain Name for Day0
+    DNS_SERVER:
+      description: Name server for Day0
+    NTP_SERVER:
+      description: Time server for Day0
+    TRANSPORT_VLAN_ID:
+      description: VLAN ID for Day0
+    TRANSPORT_IP_ADDRESS:
+      description: Transport IP for Day0
+    TRANSPORT_NETMASK:
+      description: Transport netmask for Day0
+    TRANSPORT_GATEWAY:
+      description: Transport gateway for Day0
+    OTP:
+      description: SD-WAN OTP
+    SYSTEM_IP:
+      description: SD-WAN System IP
+    SITE_ID:
+      description: SD-WAN Site ID
+    ORG_NAME:
+      description: SD-WAN Organization Name
+    VBOND_IP:
+      description: SD-WAN vBond IP
+    VBOND_PORT:
+      description: SD-WAN vBond Port
+    ORG:
+      description: SD-WAN ORG
+    UUID:
+      description: SD-WAN UUID
+
+
+########################
+# Substitution Mapping #
+########################
+  substitution_mappings:
+    node_type: cisco.CAT8000V-SDWAN
+    requirements:
+      nic0: [ nic0, virtual_link ]
+      nic1: [ nic1, virtual_link ]
+      nic2: [ nic2, virtual_link ]
+
+##########
+# Nodes: #
+##########
+  node_templates:
+
+#####################
+# VNF configuration #
+#####################
+    vnf:
+      type: cisco.CAT8000V-SDWAN
+      properties:
+        descriptor_id: CAT8000V-SDWAN
+        descriptor_version: '1.0'
+        provider: Cisco
+        product_info_name: CAT8000V-SDWAN
+        product_name: CAT8000V-SDWAN
+        recovery_action: REBOOT_THEN_REDEPLOY
+        recovery_wait_time: 30
+        software_version: '17.06'
+        vnfm_info:
+          - 'Cisco Elastic Services Controller:v5.0'
+        configurable_properties:
+          is_autoscale_enabled: false
+          is_autoheal_enabled: false
+        flavour_id: default
+        flavour_description: 'Default VNF Deployment Flavour'
+
+#####################
+# VDU configuration #
+#####################
+    CAT8000V-SDWAN:
+      type: cisco.nodes.nfv.Vdu.Compute
+      properties:
+        name: CAT8000V-SDWAN
+        description: Cat8000v 1VDU  no redundancy
+        sw_image_data:
+          name: { get_input: IMAGE_NAME }
+          version: 17.09.03a
+          checksum: 81cc6d404ab57c7f64423c7acd173da7
+          container_format: bare
+          disk_format: qcow2
+          min_disk: 8GB
+          size: 16GB
+        configurable_properties:
+          additional_vnfc_configurable_properties:
+            vim_flavor: { get_input: FLAVOUR_NAME }
+            bootup_time: { get_input: BOOTUP_TIME }
+            vm_name_override: { concat: ['cEdge-',{ get_input: INSTANCE_NAME } ] }
+        vdu_profile:
+          min_number_of_instances: 1
+          max_number_of_instances: 1
+        kpi_data:
+          VM_ALIVE:
+            event_name: 'VM_ALIVE'
+            metric_value: 1
+            metric_cond: 'GT'
+            metric_type: 'UINT32'
+            metric_occurrences_true: 1
+            metric_occurrences_false: 30
+            metric_collector:
+              type: 'ICMPPing'
+              nicid: 0
+              address_id: 0
+              poll_frequency: 10
+              polling_unit: 'seconds'
+              continuous_alarm: false
+        admin_rules:
+          VM_ALIVE-1:
+            event_name: 'VM_ALIVE'
+            action:
+              - 'ALWAYS log'
+              - 'FALSE recover autohealing'
+              - 'TRUE esc_vm_alive_notification'
+        vendor_section:
+          cisco_esc:
+            config_data:
+              user-data:
+                file: ../Files/Scripts/cloud_init.txt
+                variables:
+                  HOSTNAME: { get_input: HOSTNAME }
+                  DOMAIN_NAME: { get_input: DOMAIN_NAME }
+                  DNS_SERVER: { get_input: DNS_SERVER }
+                  NTP_SERVER: { get_input: NTP_SERVER }
+                  SSH_USERNAME: { get_input: SSH_USERNAME }
+                  SSH_PASSWORD: { get_input: SSH_PASSWORD }
+                  TRANSPORT_VLAN_ID: { get_input: TRANSPORT_VLAN_ID }
+                  TRANSPORT_IP_ADDRESS: { get_input: TRANSPORT_IP_ADDRESS }
+                  TRANSPORT_NETMASK: { get_input: TRANSPORT_NETMASK }
+                  TRANSPORT_GATEWAY: { get_input: TRANSPORT_GATEWAY }
+                  OTP: { get_input: OTP }
+                  ORG: { get_input: ORG }
+                  UUID: { get_input: UUID }
+                  SYSTEM_IP: { get_input: SYSTEM_IP }
+                  SITE_ID: { get_input: SITE_ID }
+                  ORG_NAME: { get_input: ORG_NAME }
+                  VBOND_IP: { get_input: VBOND_IP }
+                  VBOND_PORT: { get_input: VBOND_PORT }
+      artifacts:
+        sw_image:
+          type: tosca.artifacts.nfv.SwImage
+          file: ../Files/Images/c8000v.qcow2
+
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_cpu:
+              num_virtual_cpu: 1
+            virtual_memory:
+              virtual_mem_size: 4 GB
+
+
+######################################
+# Connection points for "CAT8000V-SDWAN" #
+######################################
+    nic0:
+      type: cisco.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ ipv4 ]
+        protocol:
+          - associated_layer_protocol: ipv4
+        trunk_mode: false
+        order: 0
+        management: true
+        iface_type: { get_input: NIC0_TYPE }
+        name_override: { concat: ['cEdge-',{ get_input: INSTANCE_NAME },'-nic0' ] }
+      requirements:
+        - virtual_binding: CAT8000V-SDWAN
+
+    nic1:
+      type: cisco.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ ipv4 ]
+        protocol:
+          - associated_layer_protocol: ipv4
+        trunk_mode: false
+        order: 1
+        management: false
+        iface_type: { get_input: NIC1_TYPE }
+        name_override: { concat: ['cEdge-',{ get_input: INSTANCE_NAME },'-nic1' ] }
+      requirements:
+        - virtual_binding: CAT8000V-SDWAN
+
+    nic2:
+      type: cisco.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ ipv4 ]
+        protocol:
+          - associated_layer_protocol: ipv4
+        trunk_mode: false
+        order: 2
+        management: false
+        iface_type: { get_input: NIC2_TYPE }
+        name_override: { concat: ['cEdge-',{ get_input: INSTANCE_NAME },'-nic2' ] }
+      requirements:
+        - virtual_binding: CAT8000V-SDWAN
+
+
+########################
+  policies:
+    - scaling_aspects:
+        type: tosca.policies.nfv.ScalingAspects
+        properties:
+          aspects:
+            CAT8000V-SDWAN:
+              name: 'CAT8000V-SDWAN'
+              description: 'Controller tasks, Local context VPNMGR, System boot image and configuration storage on vHDD, etc.'
+              max_scale_level: 0
+
+    - instantiation_levels:
+        type: tosca.policies.nfv.InstantiationLevels
+        properties:
+          levels:
+            default:
+              description: 'Default instantiation level'
+              scale_info:
+                CAT8000V-SDWAN:
+                  scale_level: 0
+          default_level: default
+
+    - initial_delta:
+        type: tosca.policies.nfv.VduInitialDelta
+        properties:
+          initial_delta:
+            number_of_instances: 1
+        targets: [ CAT8000V-SDWAN ]
+
+    - CAT8000V-SDWAN_instantiation_levels:
+        type: tosca.policies.nfv.VduInstantiationLevels
+        properties:
+          levels:
+            default:
+              number_of_instances: 1
+        targets: [ CAT8000V-SDWAN ]

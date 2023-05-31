@@ -87,7 +87,7 @@
                 "targetDscp": "unspecified",
                 "userdom": "",
                 "tenant": "infra",
-                "l3out": "ultipodL3Out",
+                "l3out": "multipodL3Out",
                 "nodes": [
                     {
                         "rtrId": "101.101.101.101",
@@ -106,7 +106,7 @@
                 "targetDscp": "unspecified",
                 "userdom": "",
                 "tenant": "infra",
-                "l3out": "ultipodL3Out",
+                "l3out": "multipodL3Out",
                 "nodes": [
                     {
                         "rtrId": "102.102.102.102",

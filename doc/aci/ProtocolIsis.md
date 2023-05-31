@@ -7,8 +7,8 @@ Node selection options:
   - [selected nodes](./ProtocolIsisInstanceNodes.md)
   - [all nodes](./ProtocolIsisInstanceNodesAll.md)
 
-Output options:
-  - [instance](./ProtocolIsisInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolIsisInstanceNode.md)
   - [intf](./ProtocolIsisInterfaceNode.md)
   - [lsp](./ProtocolIsisLspNode.md)
   - [neighbor](./ProtocolIsisNeighborNode.md)
@@ -16,6 +16,10 @@ Output options:
   - [tree](./ProtocolIsisTreeNode.md)
   - [tunnel](./ProtocolIsisTunnelNode.md)
   - [verbose](./ProtocolIsisVerbose.md)
+
+Output options:
+  - [default](./ProtocolIsisInstanceNode.md)
+  - [json](./ProtocolIsisJson.md)
 
 Command options
 
@@ -35,12 +39,12 @@ Options:
   --node TEXT                     Node name patterns
   --role [any|leaf|spine]         [default: any]
   --domain TEXT                   Filter by domain name
-  -o, --output [instance|intf|lsp|neighbor|route|tree|tunnel|verbose|json]
-                                  [default: instance]
+  -v, --view [default|intf|lsp|neighbor|route|tree|tunnel|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 72 ms and logs saved in /tmp/iserver\8c630be71c0f
+Info: finished in 28 ms and logs saved in /tmp/iserver\ffcbd77aeec3
 ```
 
 [[Back]](./Protocol.md)

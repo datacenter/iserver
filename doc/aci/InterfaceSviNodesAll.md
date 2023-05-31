@@ -263,4 +263,60 @@ Pod: 1
 +---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf svi --apic apic11 --node any
+
+{
+    "duration": 7634,
+    "apic": {
+        "read": true,
+        "success": 18,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 17,
+        "connect_time": 602,
+        "disconnect_time": 0,
+        "mo_time": 6150,
+        "total_time": 6752
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	602	-	connect apic11o.emea-sp.cisco.com
+True	298	11	apic11o.emea-sp.cisco.com class fabricNode
+True	473	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	298	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
+True	397	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	312	63	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4Addr
+True	452	56	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	357	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
+True	437	55	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	321	90	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4Addr
+True	380	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	313	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4Addr
+True	452	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	313	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4Addr
+True	295	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	352	23	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4Addr
+True	353	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	347	22	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4Addr
+```
+
 [[Back]](./InterfaceSvi.md)

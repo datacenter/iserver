@@ -1,0 +1,67 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: cat8kv-01
+  namespace: default
+  labels:
+    app: cat8kv-01
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: cat8kv-01
+        namespace: default
+      spec:
+        pvc:
+          storageClassName: thick
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 16Gi
+          volumeMode: Block
+        source:
+          pvc:
+            name: cat8kv-dv
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: cat8kv-01
+        special: cat8kv-01
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cdromdisk
+            cdrom:
+              readOnly: True
+              bus: sata
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 4Gi
+      evictionStrategy: LiveMigrate
+      hostname: cat8kv-01
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - name: rootdisk
+          dataVolume:
+            name: cat8kv-01
+        - name: cdromdisk
+          persistentVolumeClaim:
+            claimName: cat8kv-01-day0

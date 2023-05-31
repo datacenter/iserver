@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${NAME}-snmp
+  namespace: ${NAMESPACE}
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - port: 161
+    protocol: UDP
+    targetPort: 161
+  selector:
+    special: ${NAME}
+  type: NodePort

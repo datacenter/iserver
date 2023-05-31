@@ -1,0 +1,31 @@
+#cloud-config
+autoinstall:
+  version: 1
+  early-commands:
+    - systemctl stop ssh
+  identity:
+    hostname: ${HOSTNAME}
+    password: "${ENCRYPTED_PASSWORD}"
+    username: ubuntu
+  user-data:
+    ssh_deletekeys: false
+    disable_root: false
+    chpasswd:
+      list: |
+        root: "${ENCRYPTED_PASSWORD}"
+      expire: false
+  proxy: ${HTTP_PROXY}
+  late-commands:
+    - sudo ssh-keygen -A
+    - sudo systemctl start ssh
+  ssh:
+    install-server: yes
+  network:
+    network:
+      version: 2
+      ethernets:
+        ${INTERFACE_0_NAME}:
+          addresses: ['${INTERFACE_0_IP}/${INTERFACE_0_PREFIX}']
+          gateway4: ${INTERFACE_0_GATEWAY}
+          nameservers:
+            addresses: ['${DNS_NAMESERVER}']

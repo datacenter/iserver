@@ -2,10 +2,6 @@
 
 ## IPv4
 
-### IPv4 Route Table
-
-Show IPv4 route table entries for selected nodes.
-
 Node selection options:
   - [single node](./ProtocolIpv4Node.md)
   - [selected nodes](./ProtocolIpv4Nodes.md)
@@ -16,15 +12,15 @@ Filter options:
   - [IP subnet](./ProtocolIpv4Subnet.md)
   - [vrf](./ProtocolIpv4Vrf.md)
 
-### IPv4 Route Table Summary
+View options:
+  - [default](./ProtocolIpv4Node.md)
+  - [summary](./ProtocolIpv4SummaryNode.md)
 
-Show IPv4 route table summary for selected nodes.
+Output options:
+  - [default](./ProtocolIpv4Node.md)
+  - [json](./ProtocolIpv4Json.md)
 
-Node selection options:
-  - [single node](./ProtocolIpv4SummaryNode.md)
-  - [selected nodes](./ProtocolIpv4SummaryNodes.md)
-
-### Command options
+Command options
 
 ```
 DOC_TEMPLATE:get_aci_proto_ipv4.help:output

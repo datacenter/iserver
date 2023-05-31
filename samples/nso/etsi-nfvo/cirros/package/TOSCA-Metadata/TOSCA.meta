@@ -1,0 +1,9 @@
+TOSCA-Meta-File-Version: 1.0
+CSAR-Version: 1.0
+Created-by: Cisco
+Entry-Manifest: CIRROS.MF
+Entry-Change-Log: Files/ChangeLog.txt
+Entry-Tests: Files/Tests
+Entry-Licenses: Files/Licenses
+Entry-Certificate: Files/
+Entry-Definitions: Definitions/CIRROS.yaml

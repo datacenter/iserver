@@ -14,4 +14,11 @@ State 'down'
 DOC_TEMPLATE:get_aci_proto_bfd.state_down:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_proto_bfd.state_up:devel.debug
+```
+
+
 [[Back]](./ProtocolBfd.md)

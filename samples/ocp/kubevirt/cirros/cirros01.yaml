@@ -1,0 +1,58 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: cirros01
+  namespace: default
+  labels:
+    app: cirros01
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: cirros01
+        namespace: default
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+          volumeMode: Filesystem
+        source:
+          pvc:
+            name: cirros-dv
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: cirros01
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: cirros01
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - dataVolume:
+            name: cirros01
+          name: rootdisk

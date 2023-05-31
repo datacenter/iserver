@@ -1,0 +1,12 @@
+linux:
+  template: ubuntu
+  iso:
+    filename: ubuntu-20.04.3-live-server-amd64.iso
+  vm:
+    name: ubuntu-sample-iso
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network

@@ -7,11 +7,14 @@ Node selection options:
   - [selected nodes](./ProtocolLacpInstanceNodes.md)
   - [leaf nodes](./ProtocolLacpInstanceLeaf.md)
 
-Output options:
-  - [instances](./ProtocolLacpInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolLacpInstanceNode.md)
   - [intf](./ProtocolLacpInterfaceNode.md)
   - [stats](./ProtocolLacpOutputVerbose.md)
   - [verbose](./ProtocolLacpOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolLacpInstanceNode.md)
   - [json](./ProtocolLacpOutputJson.md)
 
 Command options

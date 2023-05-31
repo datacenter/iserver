@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci proto lldp --apic apic11 --node bl205-eu-spdc -o verbose
+# iserver get aci proto lldp --apic apic11 --node bl205-eu-spdc --view verbose
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -20,8 +20,8 @@ LLDP Instance
 
 LLDP Instance Stats
 -------------------
-- Packets Sent        : 3032792
-- Packets Received    : 3036197
+- Packets Sent        : 3273994
+- Packets Received    : 3277675
 - Packets Discarded   : 0
 - Error Packets       : 0
 - Adjacencies Added   : 26
@@ -46,6 +46,49 @@ LLDP Instance Stats
 | pod-1/bl205-eu-spdc | eth1/27      | 120       | Yavin-129                     | e0:0e:da:a3:38:28 | Ethernet1/21    | 1    | Ethernet1/21                             | bridge,router | 
 | pod-1/bl205-eu-spdc | eth1/28      | 120       | Lisboa-54                     | 00:8a:96:1c:7c:de | TenGigE0/0/0/45 |      | *** Link to BL-205 for SR Handoff ***    | router        | 
 +---------------------+--------------+-----------+-------------------------------+-------------------+-----------------+------+------------------------------------------+---------------+
+```
+
+Developer
+
+```
+# iserver get aci proto lldp --apic apic11 --node bl205-eu-spdc --view verbose
+
+{
+    "duration": 1885,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 443,
+        "disconnect_time": 0,
+        "mo_time": 1267,
+        "total_time": 1710
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	443	-	connect apic11o.emea-sp.cisco.com
+True	339	11	apic11o.emea-sp.cisco.com class fabricNode
+True	315	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
+True	303	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
+True	310	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

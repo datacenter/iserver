@@ -24,7 +24,6 @@
             "infraRsMonIfInfraPol": "",
             "infraAccBndlSubgrp": "",
             "infraRsStpIfPol": "default",
-            "infraRsAttEntP": "",
             "infraRsSpanVSrcGrp": "",
             "infraRsSpanVDestGrp": "",
             "infraRsL2IfPol": "L2-local_Pol",
@@ -36,7 +35,93 @@
             "infraRsL2PortSecurityPol": "default",
             "infraRsFcIfPol": "default",
             "infraRsMacsecIfPol": "default"
-        }
+        },
+        "policies": [
+            {
+                "type": "infraRsCdpIfPol",
+                "name": "CDP_enable"
+            },
+            {
+                "type": "infraRsMcpIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsHIfPol",
+                "name": "Inherit"
+            },
+            {
+                "type": "infraRsLinkFlapPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsLldpIfPol",
+                "name": "LLDP_enable"
+            },
+            {
+                "type": "infraRsLacpPol",
+                "name": "LACP-active"
+            },
+            {
+                "type": "infraRsMonIfInfraPol",
+                "name": null
+            },
+            {
+                "type": "infraAccBndlSubgrp",
+                "name": null
+            },
+            {
+                "type": "infraRsStpIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsSpanVSrcGrp",
+                "name": null
+            },
+            {
+                "type": "infraRsSpanVDestGrp",
+                "name": null
+            },
+            {
+                "type": "infraRsL2IfPol",
+                "name": "L2-local_Pol"
+            },
+            {
+                "type": "infraRsStormctrlIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsQosEgressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosIngressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosSdIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosPfcIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosEgressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsL2PortSecurityPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsFcIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsMacsecIfPol",
+                "name": "default"
+            }
+        ]
     },
     {
         "__Output": {},
@@ -56,7 +141,6 @@
             "infraRsMonIfInfraPol": "",
             "infraAccBndlSubgrp": "",
             "infraRsStpIfPol": "default",
-            "infraRsAttEntP": "",
             "infraRsSpanVSrcGrp": "",
             "infraRsSpanVDestGrp": "",
             "infraRsL2IfPol": "L2-local_Pol",
@@ -68,7 +152,93 @@
             "infraRsL2PortSecurityPol": "default",
             "infraRsFcIfPol": "default",
             "infraRsMacsecIfPol": "default"
-        }
+        },
+        "policies": [
+            {
+                "type": "infraRsCdpIfPol",
+                "name": "CDP_enable"
+            },
+            {
+                "type": "infraRsMcpIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsHIfPol",
+                "name": "Inherit"
+            },
+            {
+                "type": "infraRsLinkFlapPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsLldpIfPol",
+                "name": "LLDP_enable"
+            },
+            {
+                "type": "infraRsLacpPol",
+                "name": "LACP-active"
+            },
+            {
+                "type": "infraRsMonIfInfraPol",
+                "name": null
+            },
+            {
+                "type": "infraAccBndlSubgrp",
+                "name": null
+            },
+            {
+                "type": "infraRsStpIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsSpanVSrcGrp",
+                "name": null
+            },
+            {
+                "type": "infraRsSpanVDestGrp",
+                "name": null
+            },
+            {
+                "type": "infraRsL2IfPol",
+                "name": "L2-local_Pol"
+            },
+            {
+                "type": "infraRsStormctrlIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsQosEgressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosIngressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosSdIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosPfcIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsQosEgressDppIfPol",
+                "name": null
+            },
+            {
+                "type": "infraRsL2PortSecurityPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsFcIfPol",
+                "name": "default"
+            },
+            {
+                "type": "infraRsMacsecIfPol",
+                "name": "default"
+            }
+        ]
     }
 ]
 ```

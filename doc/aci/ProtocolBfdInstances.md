@@ -3,7 +3,7 @@
 ## Get BFD instance summary from all nodes
 
 ```
-# iserver get aci proto bfd --apic apic11 --node any -o instance
+# iserver get aci proto bfd --apic apic11 --node any --view instance
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -30,6 +30,70 @@ Pod: 1
 | pod-1/s101-eu-spdc  | enabled | unspecified | 0/0             |           |                 |                    | 
 | pod-1/s102-eu-spdc  | enabled | unspecified | 0/0             |           |                 |                    | 
 +---------------------+---------+-------------+-----------------+-----------+-----------------+--------------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bfd --apic apic11 --node any --view instance
+
+{
+    "duration": 27056,
+    "apic": {
+        "read": true,
+        "success": 26,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 25,
+        "connect_time": 387,
+        "disconnect_time": 0,
+        "mo_time": 26398,
+        "total_time": 26785
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	387	-	connect apic11o.emea-sp.cisco.com
+True	284	11	apic11o.emea-sp.cisco.com class fabricNode
+True	284	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst
+True	19335	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	327	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	312	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst
+True	271	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	284	12	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	334	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst
+True	285	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	285	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	287	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/bfd/inst
+True	300	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	286	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	284	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bfd/inst
+True	277	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	280	7	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	282	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bfd/inst
+True	278	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	294	7	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	384	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/bfd/inst
+True	313	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	282	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	272	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/bfd/inst
+True	291	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	287	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
 ```
 
 [[Back]](./ProtocolBfd.md)

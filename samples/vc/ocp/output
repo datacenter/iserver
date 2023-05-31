@@ -1,0 +1,1009 @@
+```
+# vclinux create --debug .\samples\ocp\ocp-installer.yaml
+
+Validate vcenter section
+------------------------
+vcenter.ip required and defined: 10.58.29.66
+vcenter.port required and defined: 443
+vcenter.username required and defined: administrator@vsphere.local
+vcenter.password required and defined: !Cisc0_123
+vcenter.datacenter required and defined: IKS-Kali
+vcenter.datastore required and defined: datastore1
+Datacenter found: IKS-Kali
+Datastore found: datastore1
+Folder found: OCP-Kali
+vcenter hosts: 10.58.29.65
+Completed
+
+Validate jump section
+---------------------
+jump.ip required and defined: 10.58.25.162
+jump.username required and defined: root
+jump.password required and defined: cisco
+jump ssh access verified
+Completed
+
+Validate vm.cdrom.iso section
+-----------------------------
+vm.cdrom.iso.destination required and defined: linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso
+vm.cdrom.iso.delete_source set to False
+vm.cdrom.iso.source optional attribute defaults to None
+vm.cdrom.iso.overwrite optional attribute defaults to False
+vm.cdrom.iso.delete_destination optional attribute defaults to False
+iso destination verified: /linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso
+datastore folder found: /linux-iso/
+datastore file found: Fedora-Server-dvd-x86_64-36-1.5.iso
+Completed
+
+Variables generation
+--------------------
+Completed
+{
+    "VCENTER_CLUSTER_HOST_IPS": "10.58.29.65",
+    "HTTP_PROXY_ENABLED": true,
+    "HTTP_PROXY": "http://proxy.esl.cisco.com:80",
+    "HTTPS_PROXY": "http://proxy.esl.cisco.com:80",
+    "OCP_BASE_DOMAIN": "ocp.lan",
+    "OCP_NAME": "cluster",
+    "OCP_API_VIP": "10.58.24.210",
+    "OCP_INGRESS_VIP": "10.58.24.211",
+    "OCP_NODES_DHCP_START": "10.58.24.212",
+    "OCP_NODES_DHCP_END": "10.58.24.218",
+    "OCP_NODES_IPS": "10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218",
+    "OCP_WORKER_COUNT": 3,
+    "OCP_MASTER_COUNT": 3,
+    "VCENTER_NAME": "vc-iks-kali-eu-spdc.cisco.com",
+    "VCENTER_IP": "10.58.29.66",
+    "VCENTER_PORT": 443,
+    "VCENTER_USERNAME": "administrator@vsphere.local",
+    "VCENTER_PASSWORD": "!Cisc0_123",
+    "VCENTER_DATACENTER": "IKS-Kali",
+    "VCENTER_DATASTORE": "datastore1",
+    "VCENTER_CLUSTER": "IKS",
+    "VCENTER_FOLDER": "OCP-Kali",
+    "HOSTNAME": "ocp-installer",
+    "PASSWORD": "cisco",
+    "DNS_NAMESERVER": "144.254.71.184",
+    "DNS_DOMAIN": "cisco.com",
+    "NTP_SERVER": "144.254.15.78",
+    "TIMEZONE": "Europe/Rome",
+    "INTERFACE_0_VC_NETWORK_NAME": "IKS-BGP",
+    "INTERFACE_0_IP": "10.58.24.209",
+    "INTERFACE_0_NETMASK": "255.255.255.240",
+    "INTERFACE_0_PREFIX": 28,
+    "INTERFACE_0_CIDR": "10.58.24.209/28",
+    "INTERFACE_0_NETWORK": "10.58.24.208",
+    "INTERFACE_0_GATEWAY": "10.58.24.222",
+    "INTERFACE_0_NAME": "ens192",
+    "INTERFACE_0_REVDNS": "24.58.10",
+    "DNS_SERIAL": "2022101901",
+    "VCENTER_CLUSTER_HOST_IPS_OCTET_1": "10",
+    "VCENTER_CLUSTER_HOST_IPS_OCTET_2": "58",
+    "VCENTER_CLUSTER_HOST_IPS_OCTET_3": "29",
+    "VCENTER_CLUSTER_HOST_IPS_OCTET_4": "65",
+    "OCP_API_VIP_OCTET_1": "10",
+    "OCP_API_VIP_OCTET_2": "58",
+    "OCP_API_VIP_OCTET_3": "24",
+    "OCP_API_VIP_OCTET_4": "210",
+    "OCP_INGRESS_VIP_OCTET_1": "10",
+    "OCP_INGRESS_VIP_OCTET_2": "58",
+    "OCP_INGRESS_VIP_OCTET_3": "24",
+    "OCP_INGRESS_VIP_OCTET_4": "211",
+    "OCP_NODES_DHCP_START_OCTET_1": "10",
+    "OCP_NODES_DHCP_START_OCTET_2": "58",
+    "OCP_NODES_DHCP_START_OCTET_3": "24",
+    "OCP_NODES_DHCP_START_OCTET_4": "212",
+    "OCP_NODES_DHCP_END_OCTET_1": "10",
+    "OCP_NODES_DHCP_END_OCTET_2": "58",
+    "OCP_NODES_DHCP_END_OCTET_3": "24",
+    "OCP_NODES_DHCP_END_OCTET_4": "218",
+    "VCENTER_IP_OCTET_1": "10",
+    "VCENTER_IP_OCTET_2": "58",
+    "VCENTER_IP_OCTET_3": "29",
+    "VCENTER_IP_OCTET_4": "66",
+    "DNS_NAMESERVER_OCTET_1": "144",
+    "DNS_NAMESERVER_OCTET_2": "254",
+    "DNS_NAMESERVER_OCTET_3": "71",
+    "DNS_NAMESERVER_OCTET_4": "184",
+    "NTP_SERVER_OCTET_1": "144",
+    "NTP_SERVER_OCTET_2": "254",
+    "NTP_SERVER_OCTET_3": "15",
+    "NTP_SERVER_OCTET_4": "78",
+    "INTERFACE_0_IP_OCTET_1": "10",
+    "INTERFACE_0_IP_OCTET_2": "58",
+    "INTERFACE_0_IP_OCTET_3": "24",
+    "INTERFACE_0_IP_OCTET_4": "209",
+    "INTERFACE_0_NETMASK_OCTET_1": "255",
+    "INTERFACE_0_NETMASK_OCTET_2": "255",
+    "INTERFACE_0_NETMASK_OCTET_3": "255",
+    "INTERFACE_0_NETMASK_OCTET_4": "240",
+    "INTERFACE_0_NETWORK_OCTET_1": "10",
+    "INTERFACE_0_NETWORK_OCTET_2": "58",
+    "INTERFACE_0_NETWORK_OCTET_3": "24",
+    "INTERFACE_0_NETWORK_OCTET_4": "208",
+    "INTERFACE_0_GATEWAY_OCTET_1": "10",
+    "INTERFACE_0_GATEWAY_OCTET_2": "58",
+    "INTERFACE_0_GATEWAY_OCTET_3": "24",
+    "INTERFACE_0_GATEWAY_OCTET_4": "222"
+}
+
+Validate vm.cdrom.ks section
+----------------------------
+vm.cdrom.ks.template section found
+vm.cdrom.ks.delete_source set to True
+vm.cdrom.ks.overwrite optional attribute defaults to True
+vm.cdrom.ks.delete_destination optional attribute defaults to True
+Kickstart template verified: C:\kali\cisco\devel\linux-ova\samples\ocp\ip-static.ks
+Generated kickstart iso target location: /tmp/6b474988-dc94-43fa-a67b-c8b63bd1517d.iso
+kickstart destination value verified: /linux-ks/ocp-installer-ks.iso
+datastore folder found: /linux-ks/
+datastore file found: ocp-installer-ks.iso
+Completed
+
+Validate vm section
+-------------------
+vm.name required and defined: ocp-installer
+vm.cpu required and defined: 1
+vm.memory required and defined: 2048
+vm.disk required and defined: [{'size': 50, 'thin': True}]
+vm.network required and defined: [{'name': 'IKS-BGP', 'type': 'vmxnet3', 'ip': '10.58.24.209', 'netmask': '255.255.255.240', 'gateway': '10.58.24.222', 'interface': 'ens192'}]
+disk #0 attribute size required and defined: 50
+disk #0 thin attribute set to True
+network #0 attribute name required and defined: IKS-BGP
+network #0 type attribute set to vmxnet3
+Completed
+
+Validate task: .\samples\ocp\general\main.yaml
+----------------------------------------------
+
+Script: .\samples\ocp\general\yum.sh
+Verified
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum update -y
+yum install -y unzip
+yum install -y dos2unix
+
+Validate task: .\samples\ocp\bind\main.yaml
+-------------------------------------------
+
+Script: .\samples\ocp\bind\packages.sh
+Verified
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum install -y bind bind-utils
+
+File: .\samples\ocp\bind\dns_a
+$TTL    604800
+@       IN      SOA     ocp.lan. root.ocp.lan (
+      2022101901     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+                 NS     ocp.lan.
+
+ocp.lan.         IN    A    10.58.24.209
+api.cluster.ocp.lan.        IN    A    10.58.24.210
+*.apps.cluster.ocp.lan.     IN    A    10.58.24.211
+Verifed
+
+File: .\samples\ocp\bind\dns_arpa
+$TTL    604800
+@       IN      SOA     ocp.lan. root.ocp.lan (
+      2022101901     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+                 NS     ocp.lan.
+
+210               PTR    api.cluster.ocp.lan.
+Verifed
+
+File: .\samples\ocp\bind\named.conf
+options {
+        listen-on port 53 { 127.0.0.1; 10.58.24.209; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        recursing-file  "/var/named/data/named.recursing";
+        secroots-file   "/var/named/data/named.secroots";
+        allow-query     { localhost; 10.58.24.208/28; };
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable no;
+        dnssec-validation no;
+
+        # Using Google DNS
+        forwarders {
+                144.254.71.184;
+        };
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.root.key";
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+zone "ocp.lan" {
+    type master;
+    file "/etc/named/zones/db.ocp.lan";
+};
+
+zone "24.58.10.in-addr.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+Verifed
+
+File: .\samples\ocp\bind\resolv.conf
+nameserver 10.58.24.209
+search ocp.lan
+Verifed
+
+Validate task: .\samples\ocp\dhcp\main.yaml
+-------------------------------------------
+
+Script: .\samples\ocp\dhcp\packages.sh
+Verified
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum install -y dhcp-server
+
+File: .\samples\ocp\dhcp\dhcpd.conf
+authoritative;
+ddns-update-style interim;
+allow booting;
+allow bootp;
+allow unknown-clients;
+ignore client-updates;
+default-lease-time 14400;
+max-lease-time 14400;
+
+subnet 10.58.24.208 netmask 255.255.255.240 {
+    range                           10.58.24.212 10.58.24.218;
+    option routers                  10.58.24.222;
+    option subnet-mask              255.255.255.240;
+    option domain-name              "ocp.lan";
+    option domain-name-servers      10.58.24.209;
+    option ntp-servers              144.254.15.78;
+}
+
+Verifed
+
+File: .\samples\ocp\dhcp\dhcpd.leases
+Verifed
+
+Validate task: .\samples\ocp\openshift\main.yaml
+------------------------------------------------
+
+Script: .\samples\ocp\openshift\ssh-key-generation.sh
+Verified
+#!/bin/bash
+
+KEYFILE=/root/.ssh/id_ed25519
+if [ -f "$KEYFILE" ]; then
+    exit 0
+fi
+
+ssh-keygen -t ed25519 -N "" -f $KEYFILE
+
+File: C:\\Users\\akaliwod\\Downloads\\ocp\\openshift-install-linux.tar.gz
+Verifed
+
+File: C:\\Users\\akaliwod\\Downloads\\ocp\\oc-4.11.3-linux.tar.gz
+Verifed
+
+File: C:\\Users\\akaliwod\\Downloads\\ocp\\pull-secret.txt
+Verifed
+
+File: .\samples\ocp\openshift\config.yaml
+apiVersion: v1
+baseDomain: ocp.lan
+proxy:
+  httpProxy: http://proxy.esl.cisco.com:80
+  httpsProxy: http://proxy.esl.cisco.com:80
+  noProxy: localhost,.ocp.lan,vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65,10.58.24.209,10.58.24.210,10.58.24.211,10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 3
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 8192
+      osDisk:
+        diskSizeGB: 120
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 16384
+      osDisk:
+        diskSizeGB: 120
+metadata:
+  name: cluster
+platform:
+  vsphere:
+    vcenter: vc-iks-kali-eu-spdc.cisco.com
+    username: administrator@vsphere.local
+    password: "!Cisc0_123"
+    datacenter: IKS-Kali
+    defaultDatastore: datastore1
+    folder: /IKS-Kali/vm/OCP-Kali
+    diskType: thin
+    network: IKS-BGP
+    cluster: IKS
+    apiVIP: 10.58.24.210
+    ingressVIP: 10.58.24.211
+fips: false
+pullSecret: 'PULL_SECRET_FILE'
+sshKey: 'SSH_PUBLIC_KEY'
+Verifed
+
+File: .\samples\ocp\openshift\patch.py
+import os
+import sys
+import traceback
+
+
+def get_file(filename):
+    if os.path.isfile(filename):
+        try:
+            with open(filename, 'r', encoding='utf-8') as file_handler:
+                return file_handler.read()
+        except BaseException:
+            print(traceback.format_exc())
+
+    return None
+
+
+def set_file(filename, content):
+    try:
+        with open(filename, 'w', encoding='utf-8') as file_handler:
+            file_handler.write(content)
+    except BaseException:
+        print(traceback.format_exc())
+        return False
+
+    return True
+
+
+config_content = get_file('/root/config.yaml')
+if config_content is None:
+    print('Failed to read config file')
+    sys.exit(1)
+config_content = config_content.rstrip('\n')
+
+secret_content = get_file('/root/pull-secret.txt')
+if secret_content is None:
+    print('Failed to read secret file')
+    sys.exit(1)
+secret_content = secret_content.rstrip('\n')
+
+ssh_key_filename = get_file('/root/.ssh/id_ed25519.pub')
+if ssh_key_filename is None:
+    print('Failed to read ssh key file')
+    sys.exit(1)
+ssh_key_filename = ssh_key_filename.rstrip('\n')
+
+config_content = config_content.replace('PULL_SECRET_FILE', secret_content)
+config_content = config_content.replace('SSH_PUBLIC_KEY', ssh_key_filename)
+if not set_file('/root/config.yaml', config_content):
+    sys.exit(1)
+
+print('Config variables replaced with files content')
+
+sys.exit(0)
+
+Verifed
+
+Script: .\samples\ocp\openshift\certs.sh
+Verified
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+    export NO_PROXY=vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65
+fi
+
+cd /root/
+rm -rf certs
+mkdir -p certs
+curl --insecure https://vc-iks-kali-eu-spdc.cisco.com/certs/download.zip --output certs/download.zip
+cd certs
+unzip -o download.zip
+cp certs/lin/* /etc/pki/ca-trust/source/anchors
+update-ca-trust extract
+cd /root/
+rm -rf certs
+
+
+Script: .\samples\ocp\openshift\install.sh
+Verified
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+    export NO_PROXY=localhost,10.58.24.209,.ocp.lan,vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65,10.58.24.210,10.58.24.211,10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218
+fi
+
+cd /root
+rm -rf install
+mkdir -p install
+cp /root/config.yaml /root/install/install-config.yaml
+cd /root/
+./openshift-install create cluster --log-level debug --dir install
+
+
+Input parameters verified
+VM already created: ocp-installer
+Wait for SSH access with 1800 seconds timeout
+{
+    "enabled": true,
+    "username": "root",
+    "password": "cisco",
+    "ip": "10.58.24.209"
+}
+Task: .\samples\ocp\general\main.yaml
+-------------------------------------
+Run script: .\samples\ocp\general\yum.sh
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum update -y
+yum install -y unzip
+yum install -y dos2unix
+Local script prepared: /tmp/522b609d-37ed-4109-81e9-a37453c1980a
+Script uploaded: 3272b5b8-d8c4-4a9a-a780-6606b13a74d5
+Chmod set to 755
+Run script...
+Remote script execution finished
+Waiting for process with pid 29929 to finish.
+Last metadata expiration check: 1:43:55 ago on Wed 19 Oct 2022 05:55:17 PM CEST.
+Dependencies resolved.
+Nothing to do.
+Complete!
+Last metadata expiration check: 1:43:57 ago on Wed 19 Oct 2022 05:55:17 PM CEST.
+Package unzip-6.0-57.fc36.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+Last metadata expiration check: 1:43:59 ago on Wed 19 Oct 2022 05:55:17 PM CEST.
+Package dos2unix-7.4.2-4.fc36.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+
+Remote script deleted
+Task: .\samples\ocp\bind\main.yaml
+----------------------------------
+Run script: .\samples\ocp\bind\packages.sh
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum install -y bind bind-utils
+Local script prepared: /tmp/de3e3010-cf03-4b5a-9837-0b600be5c3f7
+Script uploaded: 592df44d-3fbf-48c8-a51d-07bafc4e8980
+Chmod set to 755
+Run script...
+Remote script execution finished
+Last metadata expiration check: 1:44:15 ago on Wed 19 Oct 2022 05:55:17 PM CEST.
+Package bind-32:9.16.33-1.fc36.x86_64 is already installed.
+Package bind-utils-32:9.16.33-1.fc36.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+
+Remote script deleted
+Run command: mkdir -p /etc/named/zones
+Command successful
+$TTL    604800
+@       IN      SOA     ocp.lan. root.ocp.lan (
+      2022101901     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+                 NS     ocp.lan.
+
+ocp.lan.         IN    A    10.58.24.209
+api.cluster.ocp.lan.        IN    A    10.58.24.210
+*.apps.cluster.ocp.lan.     IN    A    10.58.24.211
+Local file prepared: /tmp/d96f2b85-6f57-44a1-8779-2c806de1b18a
+Copy file: /tmp/d96f2b85-6f57-44a1-8779-2c806de1b18a => /etc/named/zones/db.ocp.lan
+Local file found: /tmp/d96f2b85-6f57-44a1-8779-2c806de1b18a
+Checksum (md5) match and upload skipped
+$TTL    604800
+@       IN      SOA     ocp.lan. root.ocp.lan (
+      2022101901     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+                 NS     ocp.lan.
+
+210               PTR    api.cluster.ocp.lan.
+Local file prepared: /tmp/59fb9302-4192-4543-9525-7a1b58cc2138
+Copy file: /tmp/59fb9302-4192-4543-9525-7a1b58cc2138 => /etc/named/zones/db.reverse
+Local file found: /tmp/59fb9302-4192-4543-9525-7a1b58cc2138
+Checksum (md5) match and upload skipped
+options {
+        listen-on port 53 { 127.0.0.1; 10.58.24.209; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        recursing-file  "/var/named/data/named.recursing";
+        secroots-file   "/var/named/data/named.secroots";
+        allow-query     { localhost; 10.58.24.208/28; };
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable no;
+        dnssec-validation no;
+
+        # Using Google DNS
+        forwarders {
+                144.254.71.184;
+        };
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.root.key";
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+zone "ocp.lan" {
+    type master;
+    file "/etc/named/zones/db.ocp.lan";
+};
+
+zone "24.58.10.in-addr.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+Local file prepared: /tmp/cdc47910-dbd5-4328-a1e4-596cf1f590a6
+Copy file: /tmp/cdc47910-dbd5-4328-a1e4-596cf1f590a6 => /etc/named.conf
+Local file found: /tmp/cdc47910-dbd5-4328-a1e4-596cf1f590a6
+Checksum (md5) match and upload skipped
+Run command: dos2unix /etc/named.conf
+Command successful
+Run command: dos2unix /etc/named/zones/db.reverse
+Command successful
+Run command: dos2unix /etc/named/zones/db.ocp.lan
+Command successful
+Run command: systemctl restart named
+Command successful
+Run command: systemctl status named
+Command successful
+● named.service - Berkeley Internet Name Domain (DNS)
+     Loaded: loaded (/usr/lib/systemd/system/named.service; disabled; vendor preset: disabled)
+     Active: active (running) since Wed 2022-10-19 19:40:13 CEST; 3s ago
+    Process: 30320 ExecStartPre=/bin/bash -c if [ ! "$DISABLE_ZONE_CHECKING" == "yes" ]; then /usr/sbin/named-checkconf -z "$NAMEDCONF"; else echo "Checking of zone files is disabled"; fi (code=exited, status=0/SUCCESS)
+    Process: 30322 ExecStart=/usr/sbin/named -u named -c ${NAMEDCONF} $OPTIONS (code=exited, status=0/SUCCESS)
+   Main PID: 30323 (named)
+      Tasks: 4 (limit: 2331)
+     Memory: 13.7M
+        CPU: 53ms
+     CGroup: /system.slice/named.service
+             └─ 30323 /usr/sbin/named -u named -c /etc/named.conf
+
+Oct 19 19:40:13 ocp-installer named[30323]: zone 1.0.0.127.in-addr.arpa/IN: loaded serial 0
+Oct 19 19:40:13 ocp-installer named[30323]: zone localhost.localdomain/IN: loaded serial 0
+Oct 19 19:40:13 ocp-installer named[30323]: zone 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa/IN: loaded serial 0
+Oct 19 19:40:13 ocp-installer named[30323]: /etc/named/zones/db.ocp.lan:13: file does not end with newline
+Oct 19 19:40:13 ocp-installer named[30323]: zone ocp.lan/IN: loaded serial 2022101901
+Oct 19 19:40:13 ocp-installer named[30323]: zone localhost/IN: loaded serial 0
+Oct 19 19:40:13 ocp-installer named[30323]: all zones loaded
+Oct 19 19:40:13 ocp-installer systemd[1]: Started named.service - Berkeley Internet Name Domain (DNS).
+Oct 19 19:40:13 ocp-installer named[30323]: running
+Oct 19 19:40:13 ocp-installer named[30323]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+
+Run command: rm /etc/resolv.conf
+Command successful
+nameserver 10.58.24.209
+search ocp.lan
+Local file prepared: /tmp/7cd66574-77f6-462d-a074-5ce952e9544e
+Copy file: /tmp/7cd66574-77f6-462d-a074-5ce952e9544e => /etc/resolv.conf
+Local file found: /tmp/7cd66574-77f6-462d-a074-5ce952e9544e
+Run command: dos2unix /etc/resolv.conf
+Command successful
+Task: .\samples\ocp\dhcp\main.yaml
+----------------------------------
+Run script: .\samples\ocp\dhcp\packages.sh
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+fi
+yum install -y dhcp-server
+Local script prepared: /tmp/48413a43-51f8-4f1b-83a5-49489b689ffb
+Script uploaded: 879e3108-7107-4e6a-91b9-8b1834750c2d
+Chmod set to 755
+Run script...
+Remote script execution finished
+Last metadata expiration check: 1:45:29 ago on Wed 19 Oct 2022 05:55:17 PM CEST.
+Package dhcp-server-12:4.4.3-4.P1.fc36.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+
+Remote script deleted
+authoritative;
+ddns-update-style interim;
+allow booting;
+allow bootp;
+allow unknown-clients;
+ignore client-updates;
+default-lease-time 14400;
+max-lease-time 14400;
+
+subnet 10.58.24.208 netmask 255.255.255.240 {
+    range                           10.58.24.212 10.58.24.218;
+    option routers                  10.58.24.222;
+    option subnet-mask              255.255.255.240;
+    option domain-name              "ocp.lan";
+    option domain-name-servers      10.58.24.209;
+    option ntp-servers              144.254.15.78;
+}
+
+Local file prepared: /tmp/f3ac1860-2c89-4c06-b1d9-9f589ffd00c1
+Copy file: /tmp/f3ac1860-2c89-4c06-b1d9-9f589ffd00c1 => /etc/dhcp/dhcpd.conf
+Local file found: /tmp/f3ac1860-2c89-4c06-b1d9-9f589ffd00c1
+Copy file: .\samples\ocp\dhcp\dhcpd.leases => /var/lib/dhcpd/dhcpd.leases
+Local file found: .\samples\ocp\dhcp\dhcpd.leases
+Run command: dos2unix /etc/dhcp/dhcpd.conf
+Command successful
+Run command: dos2unix /var/lib/dhcpd/dhcpd.leases
+Command successful
+Run command: chown dhcpd:dhcpd /var/lib/dhcpd/dhcpd.leases
+Command successful
+Run command: systemctl restart dhcpd
+Command successful
+Run command: systemctl status dhcpd
+Command successful
+● dhcpd.service - DHCPv4 Server Daemon
+     Loaded: loaded (/usr/lib/systemd/system/dhcpd.service; disabled; vendor preset: disabled)
+     Active: active (running) since Wed 2022-10-19 19:41:24 CEST; 3s ago
+       Docs: man:dhcpd(8)
+             man:dhcpd.conf(5)
+   Main PID: 30711 (dhcpd)
+     Status: "Dispatching packets..."
+      Tasks: 1 (limit: 2331)
+     Memory: 10.6M
+        CPU: 19ms
+     CGroup: /system.slice/dhcpd.service
+             └─ 30711 /usr/sbin/dhcpd -f -cf /etc/dhcp/dhcpd.conf -user dhcpd -group dhcpd --no-pid
+
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Config file: /etc/dhcp/dhcpd.conf
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Database file: /var/lib/dhcpd/dhcpd.leases
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: PID file: /var/run/dhcpd.pid
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Source compiled to use binary-leases
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Wrote 0 leases to leases file.
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Listening on LPF/ens192/00:50:56:b4:e5:8f/10.58.24.208/28
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Sending on   LPF/ens192/00:50:56:b4:e5:8f/10.58.24.208/28
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Sending on   Socket/fallback/fallback-net
+Oct 19 19:41:24 ocp-installer dhcpd[30711]: Server starting service.
+Oct 19 19:41:24 ocp-installer systemd[1]: Started dhcpd.service - DHCPv4 Server Daemon.
+
+Task: .\samples\ocp\openshift\main.yaml
+---------------------------------------
+Run script: .\samples\ocp\openshift\ssh-key-generation.sh
+#!/bin/bash
+
+KEYFILE=/root/.ssh/id_ed25519
+if [ -f "$KEYFILE" ]; then
+    exit 0
+fi
+
+ssh-keygen -t ed25519 -N "" -f $KEYFILE
+Local script prepared: /tmp/ca85aff5-8e95-4fa5-b8c7-487d4275cea3
+Script uploaded: 14efd3e3-3c00-4380-8573-671474e40128
+Chmod set to 755
+Run script...
+Remote script execution finished
+
+Remote script deleted
+Copy file: C:\\Users\\akaliwod\\Downloads\\ocp\\openshift-install-linux.tar.gz => /root/openshift-install-linux.tar.gz
+Local file found: C:\\Users\\akaliwod\\Downloads\\ocp\\openshift-install-linux.tar.gz
+Checksum (md5) match and upload skipped
+Copy file: C:\\Users\\akaliwod\\Downloads\\ocp\\oc-4.11.3-linux.tar.gz => /root/oc-4.11.3-linux.tar.gz
+Local file found: C:\\Users\\akaliwod\\Downloads\\ocp\\oc-4.11.3-linux.tar.gz
+Checksum (md5) match and upload skipped
+Copy file: C:\\Users\\akaliwod\\Downloads\\ocp\\pull-secret.txt => /root/pull-secret.txt
+Local file found: C:\\Users\\akaliwod\\Downloads\\ocp\\pull-secret.txt
+Checksum (md5) match and upload skipped
+apiVersion: v1
+baseDomain: ocp.lan
+proxy:
+  httpProxy: http://proxy.esl.cisco.com:80
+  httpsProxy: http://proxy.esl.cisco.com:80
+  noProxy: localhost,.ocp.lan,vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65,10.58.24.209,10.58.24.210,10.58.24.211,10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 3
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 8192
+      osDisk:
+        diskSizeGB: 120
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+  platform:
+    vsphere:
+      cpus: 4
+      coresPerSocket: 2
+      memoryMB: 16384
+      osDisk:
+        diskSizeGB: 120
+metadata:
+  name: cluster
+platform:
+  vsphere:
+    vcenter: vc-iks-kali-eu-spdc.cisco.com
+    username: administrator@vsphere.local
+    password: "!Cisc0_123"
+    datacenter: IKS-Kali
+    defaultDatastore: datastore1
+    folder: /IKS-Kali/vm/OCP-Kali
+    diskType: thin
+    network: IKS-BGP
+    cluster: IKS
+    apiVIP: 10.58.24.210
+    ingressVIP: 10.58.24.211
+fips: false
+pullSecret: 'PULL_SECRET_FILE'
+sshKey: 'SSH_PUBLIC_KEY'
+Local file prepared: /tmp/ac3be8ba-6e1c-42b5-96d4-1d28a1a0e6d6
+Copy file: /tmp/ac3be8ba-6e1c-42b5-96d4-1d28a1a0e6d6 => /root/config.yaml
+Local file found: /tmp/ac3be8ba-6e1c-42b5-96d4-1d28a1a0e6d6
+import os
+import sys
+import traceback
+
+
+def get_file(filename):
+    if os.path.isfile(filename):
+        try:
+            with open(filename, 'r', encoding='utf-8') as file_handler:
+                return file_handler.read()
+        except BaseException:
+            print(traceback.format_exc())
+
+    return None
+
+
+def set_file(filename, content):
+    try:
+        with open(filename, 'w', encoding='utf-8') as file_handler:
+            file_handler.write(content)
+    except BaseException:
+        print(traceback.format_exc())
+        return False
+
+    return True
+
+
+config_content = get_file('/root/config.yaml')
+if config_content is None:
+    print('Failed to read config file')
+    sys.exit(1)
+config_content = config_content.rstrip('\n')
+
+secret_content = get_file('/root/pull-secret.txt')
+if secret_content is None:
+    print('Failed to read secret file')
+    sys.exit(1)
+secret_content = secret_content.rstrip('\n')
+
+ssh_key_filename = get_file('/root/.ssh/id_ed25519.pub')
+if ssh_key_filename is None:
+    print('Failed to read ssh key file')
+    sys.exit(1)
+ssh_key_filename = ssh_key_filename.rstrip('\n')
+
+config_content = config_content.replace('PULL_SECRET_FILE', secret_content)
+config_content = config_content.replace('SSH_PUBLIC_KEY', ssh_key_filename)
+if not set_file('/root/config.yaml', config_content):
+    sys.exit(1)
+
+print('Config variables replaced with files content')
+
+sys.exit(0)
+
+Local file prepared: /tmp/e01e9f1e-3238-4d12-acb2-e391756b1f8a
+Copy file: /tmp/e01e9f1e-3238-4d12-acb2-e391756b1f8a => /root/patch.py
+Local file found: /tmp/e01e9f1e-3238-4d12-acb2-e391756b1f8a
+Checksum (md5) match and upload skipped
+Run command: dos2unix /root/config.yaml
+Command successful
+Run command: dos2unix /root/patch.py
+Command successful
+Run command: dos2unix /root/pull-secret.txt
+Command successful
+Run command: tar xzvf /root/openshift-install-linux.tar.gz
+Command successful
+README.md
+openshift-install
+
+Run command: tar xzvf /root/oc-4.11.3-linux.tar.gz
+Command successful
+README.md
+kubectl
+oc
+
+Run command: mv /root/kubectl /usr/local/bin
+Command successful
+Run command: mv /root/oc /usr/local/bin
+Command successful
+Run command: rm -f README.md
+Command successful
+Run command: python3 /root/patch.py
+Command successful
+Config variables replaced with files content
+
+Run script: .\samples\ocp\openshift\certs.sh
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+    export NO_PROXY=vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65
+fi
+
+cd /root/
+rm -rf certs
+mkdir -p certs
+curl --insecure https://vc-iks-kali-eu-spdc.cisco.com/certs/download.zip --output certs/download.zip
+cd certs
+unzip -o download.zip
+cp certs/lin/* /etc/pki/ca-trust/source/anchors
+update-ca-trust extract
+cd /root/
+rm -rf certs
+
+Local script prepared: /tmp/2e3e2e56-801f-42ec-baa3-fc857e3cbe48
+Script uploaded: 8fe73c81-645b-4784-8dda-f88eb3318a60
+Chmod set to 755
+Run script...
+Remote script execution finished
+Archive:  download.zip
+  inflating: certs/lin/000a5c04.0
+  inflating: certs/mac/000a5c04.0
+  inflating: certs/win/000a5c04.0.crt
+  inflating: certs/lin/000a5c04.r0
+  inflating: certs/mac/000a5c04.r0
+  inflating: certs/win/000a5c04.r0.crl
+
+Remote script deleted
+Run script: .\samples\ocp\openshift\install.sh
+#!/bin/bash
+
+HTTP_PROXY_ENABLED=True
+if [ $HTTP_PROXY_ENABLED = "True" ]; then
+    export HTTP_PROXY=http://proxy.esl.cisco.com:80
+    export HTTPS_PROXY=http://proxy.esl.cisco.com:80
+    export NO_PROXY=localhost,10.58.24.209,.ocp.lan,vc-iks-kali-eu-spdc.cisco.com,10.58.29.66,10.58.29.65,10.58.24.210,10.58.24.211,10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218
+fi
+
+cd /root
+rm -rf install
+mkdir -p install
+cp /root/config.yaml /root/install/install-config.yaml
+cd /root/
+./openshift-install create cluster --log-level debug --dir install
+
+Local script prepared: /tmp/0dfbc58c-1ebf-440e-b51e-7ca575d1ffde
+Script uploaded: f4947f93-3cf7-4bb4-ae25-3d6e59f67999
+Chmod set to 755
+Run script...
+Remote script execution finished
+
+Remote script deleted
+```

@@ -147,52 +147,78 @@ class BridgeDomainInfo():
 
         for aepg_rule in bridge_domain_filter:
             (key, value) = aepg_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_string(value, bridge_domain_info['name']):
                     return False
 
             if key == 'dn':
+                key_found = True
                 if not filter_helper.match_string(value, bridge_domain_info['dn']):
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, bridge_domain_info['tenant']):
                     return False
 
             if key == 'vrf':
+                key_found = True
                 if bridge_domain_info['fvRsCtx'] is None or 'name' not in bridge_domain_info['fvRsCtx']:
                     return False
 
-                if not filter_helper.match_string(value, bridge_domain_info['fvRsCtx']['name']):
+                (vrf_tenant, vrf_name) = filter_helper.get_tenant_name(value)
+                if not filter_helper.match_string(vrf_name, bridge_domain_info['fvRsCtx']['name']):
                     return False
 
+                if vrf_tenant is not None:
+                    if not filter_helper.match_string(vrf_tenant, bridge_domain_info['fvRsCtx']['tenant']):
+                        return False
+
             if key == 'epg':
+                key_found = True
                 if 'fvAEPg' not in bridge_domain_info or bridge_domain_info['fvAEPg'] is None:
                     return False
 
                 found = False
+                (epg_tenant, epg_name) = filter_helper.get_tenant_name(value)
                 for epg_info in bridge_domain_info['fvAEPg']:
-                    if filter_helper.match_string(value, epg_info['name']):
-                        found = True
-                        break
+                    if filter_helper.match_string(epg_name, epg_info['name']):
+                        if epg_tenant is None:
+                            found = True
+                            break
+
+                        if filter_helper.match_string(epg_tenant, epg_info['tenant']):
+                            found = True
+                            break
 
                 if not found:
                     return False
 
             if key == 'l3out':
+                key_found = True
                 if bridge_domain_info['fvRsBDToOut'] is None:
                     return False
 
                 found = False
+                (l3out_tenant, l3out_name) = filter_helper.get_tenant_name(value)
                 for l3out_info in bridge_domain_info['fvRsBDToOut']:
-                    if filter_helper.match_string(value, l3out_info['name']):
-                        found = True
-                        break
+                    if filter_helper.match_string(l3out_name, l3out_info['name']):
+                        if l3out_tenant is None:
+                            found = True
+                            break
+
+                        if filter_helper.match_string(l3out_tenant, l3out_info['tenant']):
+                            found = True
+                            break
 
                 if not found:
                     return False
 
             if key == 'subnet':
+                key_found = True
                 if bridge_domain_info['fvSubnet'] is None:
                     return False
 
@@ -206,6 +232,7 @@ class BridgeDomainInfo():
                     return False
 
             if key == 'ip':
+                key_found = True
                 if bridge_domain_info['fvSubnet'] is None:
                     return False
 
@@ -217,6 +244,12 @@ class BridgeDomainInfo():
 
                 if not found:
                     return False
+
+            if not key_found:
+                self.log.error(
+                    'match_epg',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 
@@ -272,6 +305,7 @@ class BridgeDomainInfo():
                 bridge_domain_info['fvAEPg'] = copy.deepcopy(
                     self.get_epgs(
                         epg_filter=epg_filter,
+                        bd_info=True,
                         endpoint_info=True
                     )
                 )
@@ -330,11 +364,6 @@ class BridgeDomainInfo():
         self.log.apic_mo(
             'fvBD.info',
             bridge_domains
-        )
-
-        self.log.trace(
-            'get_bridge_domains',
-            start_time
         )
 
         return bridge_domains

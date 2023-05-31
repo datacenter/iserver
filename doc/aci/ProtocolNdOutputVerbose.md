@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci proto nd --apic apic11 --node bl205-eu-spdc -o verbose
+# iserver get aci proto nd --apic apic11 --node bl205-eu-spdc --view verbose
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -49,6 +49,50 @@ Neighbor Discovery Instance
 | TESTING_BRUNO:default         | 1          | 0         | 
 | UC3-CL2023-Demo:default       | 0          | 0         | 
 +-------------------------------+------------+-----------+
+```
+
+Developer
+
+```
+# iserver get aci proto nd --apic apic11 --node bl205-eu-spdc --view verbose
+
+{
+    "duration": 2280,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 447,
+        "disconnect_time": 0,
+        "mo_time": 1566,
+        "total_time": 2013
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	447	-	connect apic11o.emea-sp.cisco.com
+True	378	11	apic11o.emea-sp.cisco.com class fabricNode
+True	316	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst
+True	292	26	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndDom
+True	290	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst query query-target=subtree&target-subtree-class=ndAdjEp
+True	290	35	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndIf query rsp-subtree=children&rsp-subtree-class=ndIf,ndIfStats&rsp-subtree-include=required
 ```
 
 [[Back]](./ProtocolNd.md)

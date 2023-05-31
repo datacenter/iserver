@@ -14,10 +14,13 @@ Filter options:
   - [pim](./L3OutPim.md)
   - [mpls](./L3OutMpls.md)
 
-Output options:
-  - [default output](./L3OutAllDefault.md)
+View options:
+  - [default](./L3OutAllDefault.md)
   - [epg](./L3OutAllEpg.md)
-  - [node](./L3OutAllNode.md)
+  - [node](./L3OutAllNode.md])
+
+Output options:
+  - [default](./L3OutAllDefault.md)
   - [json](./L3OutJson.md)
 
 Command options

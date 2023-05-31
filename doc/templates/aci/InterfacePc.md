@@ -15,10 +15,13 @@ Filter options:
   - [Speed](./InterfacePcSpeed.md)
   - [State](./InterfacePcState.md)
 
-Output options:
-  - [state](./InterfacePcOutputState.md) (default)
+View options:
+  - [default](./InterfacePcOutputState.md)
   - [port](./InterfacePcOutputPort.md)
   - [verbose](./InterfacePcOutputVerbose.md)
+
+Output options:
+  - [default](./InterfacePcOutputState.md)
   - [json](./InterfacePcOutputJson.md)
 
 Command options

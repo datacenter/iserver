@@ -2,7 +2,7 @@
 
 ## Get L3 properties of bridge domains
 
-Use '-o l3' to get L3 forwarding related properties of selected bridge domains
+Use '--view l3' to get L3 forwarding related properties of selected bridge domains
 - unicast routing
 - bridge domain MAC address
 - bridge domain virtual MAC address (if applicable)
@@ -12,7 +12,7 @@ Use '-o l3' to get L3 forwarding related properties of selected bridge domains
 - endpoint move detection mode
 
 ```
-# iserver get aci bd --apic apic21 -o l3
+# iserver get aci bd --apic apic21 --view l3
 
 Apic: apic21
 
@@ -79,10 +79,6 @@ Apic: apic21
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
 | SPN_IntraLab/SPN_BD1      | yes           | 00:22:BD:F8:88:FF | yes         | yes                     | no              |                        | 
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
-| TESTING_BRUNO/BD2         | yes           | 00:22:BD:F8:19:FF | yes         | yes                     | no              |                        | 
-+---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
-| TESTING_BRUNO/BDSITE2     | yes           | 00:22:BD:F8:19:FF | yes         | yes                     | no              |                        | 
-+---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
 | vEPC/Leaking_BD           | yes           | 00:22:BD:F8:AB:FF | yes         | yes                     | no              |                        | 
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
 | vEPC/vSFO_BD              | yes           | 00:22:BD:F8:19:FF | yes         | yes                     | no              |                        | 
@@ -95,6 +91,48 @@ Apic: apic21
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
 | vEPC_demo/vEPC-CTRL-SX_BD | yes           | 00:22:BD:F8:25:03 | yes         | yes                     | no              |                        | 
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
+```
+
+Developer
+
+```
+# iserver get aci bd --apic apic21 --view l3
+
+{
+    "duration": 1905,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 397,
+        "disconnect_time": 0,
+        "mo_time": 1154,
+        "total_time": 1551
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	397	-	connect apic21o.emea-sp.cisco.com
+True	427	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	349	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	378	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./BridgeDomain.md)

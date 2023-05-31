@@ -14,7 +14,7 @@ Get selected EPG details
 Note: All selected EPGs will be shown in verbose mode
 
 ```
-# iserver get aci epg --apic apic21 --name vk8s_1 -o verbose
+# iserver get aci epg --apic apic21 --name vk8s_1 --view verbose
 
 Apic: apic21
 
@@ -50,20 +50,20 @@ Contract Consumed
 Standard Contracts
 ------------------
 
-+---------------+--------+--------+---------+-------------+---------------+------------+
-| Contract Name | Tenant | Scope  | Intent  | Target DSCP | Subject       | Filter     |
-+---------------+--------+--------+---------+-------------+---------------+------------+
-| k8s_vm        | common | global | install | unspecified | k8s/k8s_tn_bm | common/any | 
-+---------------+--------+--------+---------+-------------+---------------+------------+
++---------------+--------+---------+-------------+---------------+------------+
+| Contract      | Scope  | Intent  | Target DSCP | Subject       | Filter     |
++---------------+--------+---------+-------------+---------------+------------+
+| common/k8s_vm | global | install | unspecified | k8s/k8s_tn_bm | common/any | 
++---------------+--------+---------+-------------+---------------+------------+
 
 Contract Filters
 ----------------
 
-+-------------+--------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| Filter Name | Tenant | Entry | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
-+-------------+--------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| any         | common | any   | ipv4  |          |       | no        | no       |        |             |       | 
-+-------------+--------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
++------------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
+| Filter     | Entry | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
++------------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
+| common/any | any   | ipv4  |          |       | no        | no       |        |             |       | 
++------------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 
 Bridge Domain Properties
 ------------------------
@@ -83,7 +83,7 @@ Bridge Domain Properties
 +-----------------+--------------+-----------+---------+--------+------------------------+----------+--------------+
 | Network         | Gateway      | Preferred | Virtual | Scope  | IP Data Plane Learning | IP Usage | IP Available |
 +-----------------+--------------+-----------+---------+--------+------------------------+----------+--------------+
-| 10.58.24.160/28 | 10.58.24.174 | no        | no      | public | enabled                | 10/14    | 4            | 
+| 10.58.24.160/28 | 10.58.24.174 | no        | no      | public | enabled                | 11/14    | 3            | 
 +-----------------+--------------+-----------+---------+--------+------------------------+----------+--------------+
 
 VRF Properties
@@ -99,17 +99,22 @@ VRF Properties
 
 Associated L3 Out
 -----------------
-No L3Out found
+
++--------------------+------+-----+-----+------+-------+------------------+-------------+
+| L3Out              | MPLS | PIM | BGP | OSPF | EIGRP | VRF              | L3 Domain   |
++--------------------+------+-----+-----+------+-------+------------------+-------------+
+| common/Infra_L3out | X    | X   | V   | X    | X     | common/Infra_VRF | Infra_L3Dom | 
++--------------------+------+-----+-----+------+-------+------------------+-------------+
 
 Deployed Nodes
 --------------
 
-+------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
-| Apic | Node Name            | Node ID | Pod ID | IP Address  | Admin State | Fabric State | Role | Model          | Serial      | Version        |
-+------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
-| None | pod-1/cl2207-eu-spdc | 2207    | 1      | 10.5.240.34 | on          | active       | leaf | N9K-C9336C-FX2 | FDO23490E4G | n9000-15.2(7f) | 
-| None | pod-1/cl2208-eu-spdc | 2208    | 1      | 10.5.240.35 | on          | active       | leaf | N9K-C9336C-FX2 | FDO234807ED | n9000-15.2(7f) | 
-+------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
++--------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
+| Apic   | Node Name            | Node ID | Pod ID | IP Address  | Admin State | Fabric State | Role | Model          | Serial      | Version        |
++--------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
+| apic21 | pod-1/cl2207-eu-spdc | 2207    | 1      | 10.5.240.34 | on          | active       | leaf | N9K-C9336C-FX2 | FDO23490E4G | n9000-15.2(7f) | 
+| apic21 | pod-1/cl2208-eu-spdc | 2208    | 1      | 10.5.240.35 | on          | active       | leaf | N9K-C9336C-FX2 | FDO234807ED | n9000-15.2(7f) | 
++--------+----------------------+---------+--------+-------------+-------------+--------------+------+----------------+-------------+----------------+
 
 EPG Endpoints
 -------------
@@ -121,10 +126,10 @@ EPG Endpoints
 +----+-------------------+--------------+--------+--------+---------+------------------+
 | LV | 00:50:56:B4:3D:19 | 10.58.24.170 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 +----+-------------------+--------------+--------+--------+---------+------------------+
-| LV | 00:50:56:B4:67:1F | 10.58.24.162 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
-|    |                   | 10.58.24.167 |        |        |         |                  | 
+| LV | 00:50:56:B4:67:1F | 10.58.24.167 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 +----+-------------------+--------------+--------+--------+---------+------------------+
-| LV | 00:50:56:B4:85:73 | 10.58.24.165 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+| LV | 00:50:56:B4:85:73 | 10.58.24.162 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+|    |                   | 10.58.24.165 |        |        |         |                  | 
 +----+-------------------+--------------+--------+--------+---------+------------------+
 | LV | 00:50:56:B4:9C:81 | 10.58.24.163 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 |    |                   | 10.58.24.168 |        |        |         |                  | 
@@ -133,8 +138,63 @@ EPG Endpoints
 +----+-------------------+--------------+--------+--------+---------+------------------+
 | V  | 00:50:56:B4:D2:45 |              | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 +----+-------------------+--------------+--------+--------+---------+------------------+
-| LV | 00:50:56:B4:EB:6A | 10.58.24.166 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+| LV | 00:50:56:B4:EB:6A | 10.58.24.163 | k8s    | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+|    |                   | 10.58.24.166 |        |        |         |                  | 
 +----+-------------------+--------------+--------+--------+---------+------------------+
+```
+
+Developer
+
+```
+# iserver get aci epg --apic apic21 --name vk8s_1 --view verbose
+
+{
+    "duration": 8295,
+    "apic": {
+        "read": true,
+        "success": 16,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 15,
+        "connect_time": 397,
+        "disconnect_time": 0,
+        "mo_time": 7466,
+        "total_time": 7863
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	397	-	connect apic21o.emea-sp.cisco.com
+True	361	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	376	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	365	13	apic21o.emea-sp.cisco.com class fabricNode
+True	396	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	371	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	380	638	apic21o.emea-sp.cisco.com class fabricPathEp
+True	2105	19	apic21o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree-include=full-deployment&target-path=AccBaseGrpToEthIf
+True	458	1	apic21o.emea-sp.cisco.com mo uni/infra/funcprof/accbundle-k8s_esx71_PolGrp query rsp-subtree-include=full-deployment&target-node=2207&target-path=AccBaseGrpToEthIf
+True	412	1	apic21o.emea-sp.cisco.com mo uni/infra/funcprof/accbundle-k8s_esx71_PolGrp query rsp-subtree-include=full-deployment&target-node=2208&target-path=AccBaseGrpToEthIf
+True	330	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	560	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	358	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	322	23	apic21o.emea-sp.cisco.com class fvCtx
+True	329	14	apic21o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	343	17	apic21o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./ApplicationEpg.md)

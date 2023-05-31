@@ -1,0 +1,37 @@
+tasks:
+  - scripts:
+    - ssh-key-generation.sh
+  - files:
+    - source: C:\\Users\\akaliwod\\Downloads\\ocp\\openshift-install-linux.tar.gz
+      template: False
+      destination: /root/openshift-install-linux.tar.gz
+      chmod: 644
+    - source: C:\\Users\\akaliwod\\Downloads\\ocp\\oc-4.11.3-linux.tar.gz
+      template: False
+      destination: /root/oc-4.11.3-linux.tar.gz
+      chmod: 644
+    - source: C:\\Users\\akaliwod\\Downloads\\ocp\\pull-secret.txt
+      template: False
+      destination: /root/pull-secret.txt
+      chmod: 644
+    - source: config.yaml
+      template: True
+      destination: /root/config.yaml
+      chmod: 644
+    - source: patch.py
+      template: True
+      destination: /root/patch.py
+      chmod: 644
+  - commands:
+    - dos2unix /root/config.yaml
+    - dos2unix /root/patch.py
+    - dos2unix /root/pull-secret.txt
+    - tar xzvf /root/openshift-install-linux.tar.gz
+    - tar xzvf /root/oc-4.11.3-linux.tar.gz
+    - mv /root/kubectl /usr/local/bin
+    - mv /root/oc /usr/local/bin
+    - rm -f README.md
+    - python3 /root/patch.py
+  - scripts:
+    - certs.sh
+    - install.sh

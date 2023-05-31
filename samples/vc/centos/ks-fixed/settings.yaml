@@ -1,0 +1,3 @@
+settings:
+  kickstart_template_variable_replacement_enabled: False
+  sleep_after_vm_connected: 300

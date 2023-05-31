@@ -1,0 +1,17 @@
+kind: VirtualMachineDeployment
+deployment:
+  vm: vm.yaml
+  day0:
+    source: day0-config
+    destination: day0.iso
+    dv: day0.yaml
+  service:
+    ssh: svc.yaml
+ready:
+  enabled: true
+  type: ssh
+  username: admin
+  password: Cisco_123
+  timeout: 600
+report:
+  enabled: true

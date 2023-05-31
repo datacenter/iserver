@@ -44,7 +44,7 @@ Resolve xd server...
 - Use -o fabric option to get interface related information for get_aci_endpoint.server
 
 ```
-# iserver get aci ep --apic apic11 --xd server:10.58.29.58 -o fabric
+# iserver get aci ep --apic apic11 --xd server:10.58.29.58 --view fabric
 
 Apic: apic11
 Resolve xd server...

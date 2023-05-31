@@ -182,9 +182,4 @@ class FilterInfo():
             filters
         )
 
-        self.log.trace(
-            'get_filters',
-            start_time
-        )
-
         return filters

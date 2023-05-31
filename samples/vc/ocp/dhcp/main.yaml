@@ -1,0 +1,18 @@
+tasks:
+  - scripts:
+    - packages.sh
+  - files:
+    - source: dhcpd.conf
+      template: True
+      destination: /etc/dhcp/dhcpd.conf
+      chmod: 644
+    - source: dhcpd.leases
+      template: False
+      destination: /var/lib/dhcpd/dhcpd.leases
+      chmod: 644
+  - commands:
+    - dos2unix /etc/dhcp/dhcpd.conf
+    - dos2unix /var/lib/dhcpd/dhcpd.leases
+    - chown dhcpd:dhcpd /var/lib/dhcpd/dhcpd.leases
+    - systemctl restart dhcpd
+    - systemctl status dhcpd

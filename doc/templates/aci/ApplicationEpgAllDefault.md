@@ -2,7 +2,7 @@
 
 ## Get EPGs
 
-Get all epgs from selected APIC. Default output shows main properties of epgs as well as associated objects.
+Get all epgs from selected APIC. Default view shows main properties of epgs as well as associated objects.
 - epg name, application profile and tenant
 - bridge domain name and subnets
 - endpoints count
@@ -10,6 +10,12 @@ Get all epgs from selected APIC. Default output shows main properties of epgs as
 
 ```
 DOC_TEMPLATE:get_aci_epg.all_default:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.all_default:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

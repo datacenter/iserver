@@ -3,7 +3,7 @@
 ## Show IS-IS routes for selected node
 
 ```
-# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc -o route
+# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc --view route
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -112,6 +112,49 @@ Node: cl201-eu-spdc
 | pod-1/cl201-eu-spdc | overlay | 192.168.32.0/30    | 64     | 115        | eth1/107.7   | 10.3.192.65 | 
 |                     |         |                    |        |            | eth1/108.504 | 10.3.32.65  | 
 +---------------------+---------+--------------------+--------+------------+--------------+-------------+
+```
+
+Developer
+
+```
+# iserver get aci proto isis --apic apic11 --node cl201-eu-spdc --view route
+
+{
+    "duration": 2026,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 407,
+        "disconnect_time": 0,
+        "mo_time": 1422,
+        "total_time": 1829
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	407	-	connect apic11o.emea-sp.cisco.com
+True	354	11	apic11o.emea-sp.cisco.com class fabricNode
+True	313	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis
+True	323	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	432	132	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisRoute&target-subtree-class=isisRsNhAtt
 ```
 
 [[Back]](./ProtocolIsis.md)

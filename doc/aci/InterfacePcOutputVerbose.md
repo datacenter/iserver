@@ -3,7 +3,11 @@
 ## Verbose output
 
 ```
-# iserver get aci intf pc --apic apic11 --node cl201-eu-spdc --id po1 -o verbose
+# iserver get aci intf pc
+    --apic apic11
+    --node cl201-eu-spdc
+    --id po1
+    --view verbose
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -61,13 +65,64 @@ LACP Interface
 - Local Activity Flags : active,aggregate,collect,distribute,sync
 - Last Active          : 2023-03-03T01:23:45.000+02:00
 - Key                  : 33119
-- PDU Sent             : 216798
-- PDU Rcvd             : 216799
+- PDU Sent             : 255324
+- PDU Rcvd             : 255325
 - PDU Timeout          : 0
 - Marker Sent          : 0
 - Marker Rcvd          : 0
 - Marker Rsp Sent      : 0
 - Marker Rsp Rcvd      : 0
+```
+
+Developer
+
+```
+# iserver get aci intf pc
+    --apic apic11
+    --node cl201-eu-spdc
+    --id po1
+    --view verbose
+
+{
+    "duration": 3363,
+    "apic": {
+        "read": true,
+        "success": 9,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 8,
+        "connect_time": 417,
+        "disconnect_time": 0,
+        "mo_time": 2638,
+        "total_time": 3055
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	417	-	connect apic11o.emea-sp.cisco.com
+True	322	11	apic11o.emea-sp.cisco.com class fabricNode
+True	351	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	293	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lacp/inst/if-[eth1/68] query query-target=children&target-subtree-class=lacpAdjEp
+True	397	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/lacpIf query rsp-subtree=children&rsp-subtree-class=lacpIfStats
+True	340	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lacp/inst/if-[eth1/68] query query-target=children&target-subtree-class=lacpIfStats
+True	315	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/lacpInst
+True	318	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	302	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
 ```
 
 [[Back]](./InterfacePc.md)

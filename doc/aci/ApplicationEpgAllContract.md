@@ -2,14 +2,14 @@
 
 ## Get EPGs' contract properties
 
-Use '-o contract' to get contract properties of selected epgs
+Use '--view contract' to get contract properties of selected epgs
 - epg name, application profile and tenant
 - contracts consumed and provided
 
 Following with contract and filter details of all related objects.
 
 ```
-# iserver get aci epg --apic apic21 -o contract
+# iserver get aci epg --apic apic21 --view contract
 
 Apic: apic21
 
@@ -83,10 +83,6 @@ Apic: apic21
 +----+------------------------------------+-----------------------------+-----------------------------+
 | V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 |                             |                             | 
 +----+------------------------------------+-----------------------------+-----------------------------+
-| V  | TESTING_BRUNO/sdfgd/site2          |                             |                             | 
-+----+------------------------------------+-----------------------------+-----------------------------+
-| V  | TESTING_BRUNO/UntitledAP1/SITE1    |                             |                             | 
-+----+------------------------------------+-----------------------------+-----------------------------+
 | V  | vEPC/vSFO_ANP/WWW                  | vEPC/vEPC_alltraffic        |                             | 
 +----+------------------------------------+-----------------------------+-----------------------------+
 | V  | vEPC_demo/vEPG_ANP/vEPG_ACC        |                             | vEPC_demo/vEPG_ACC          | 
@@ -101,73 +97,120 @@ Apic: apic21
 Standard Contracts
 ------------------
 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| Contract Name        | Tenant           | Scope   | Intent  | Target DSCP | Subject                       | Filter               |
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| app-service          | nidemo           | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
-|                      |                  |         |         |             | nidemo/database-service       | nidemo/icmp          | 
-|                      |                  |         |         |             | nidemo/frontend-service       | nidemo/http          | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| BT-Demo              | k8s              | context | install | unspecified | k8s/Any                       | k8s/alltraffic       | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| database-service     | nidemo           | tenant  | install | unspecified | nidemo/database-service       | nidemo/icmp          | 
-|                      |                  |         |         |             | nidemo/database-service       | nidemo/sql           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| default              | common           | context | install | unspecified | hefernan_ni-demo/PERMIT_ALL   | common/default       | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| ESX_mgmt             | common           | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| frontend-service     | nidemo           | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
-|                      |                  |         |         |             | nidemo/database-service       | nidemo/icmp          | 
-|                      |                  |         |         |             | nidemo/frontend-service       | nidemo/http          | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| k8s_bm               | common           | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| k8s_prov             | common           | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| k8s_vm               | common           | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| management-access    | nidemo           | tenant  | install | unspecified | nidemo/management-access      | nidemo/any           | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| PERMIT_ALL           | hefernan_ni-demo | context | install | unspecified | hefernan_ni-demo/PERMIT_ALL   | common/default       | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| vEPC_alltraffic      | vEPC             | tenant  | install | unspecified | vEPC/vEPC_alltraffic          | vEPC/vEPC_alltraffic | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| vEPG-MGMT_alltraffic | common           | global  | install | unspecified | common/IKSHS-alltraffic       | common/alltraffic    | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| vEPG_ACC             | vEPC_demo        | context | install | unspecified | vEPC_demo/vEPC_INT_alltraffic | vEPC_demo/alltraffic | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
-| vEPG_INT             | vEPC_demo        | context | install | unspecified | vEPC_demo/vEPC_INT_alltraffic | vEPC_demo/alltraffic | 
-+----------------------+------------------+---------+---------+-------------+-------------------------------+----------------------+
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| Contract                    | Scope   | Intent  | Target DSCP | Subject                       | Filter               |
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/default              | context | install | unspecified | Ericsson_PACO/PERMIT_ALL      | common/default       | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/ESX_mgmt             | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/k8s_bm               | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/k8s_prov             | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/k8s_vm               | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| common/vEPG-MGMT_alltraffic | global  | install | unspecified | common/IKSHS-alltraffic       | common/alltraffic    | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| hefernan_ni-demo/PERMIT_ALL | context | install | unspecified | Ericsson_PACO/PERMIT_ALL      | common/default       | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| k8s/BT-Demo                 | context | install | unspecified | k8s/Any                       | k8s/alltraffic       | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| nidemo/app-service          | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
+|                             |         |         |             | nidemo/database-service       | nidemo/icmp          | 
+|                             |         |         |             | nidemo/frontend-service       | nidemo/http          | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| nidemo/database-service     | tenant  | install | unspecified | nidemo/database-service       | nidemo/icmp          | 
+|                             |         |         |             | nidemo/database-service       | nidemo/sql           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| nidemo/frontend-service     | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
+|                             |         |         |             | nidemo/database-service       | nidemo/icmp          | 
+|                             |         |         |             | nidemo/frontend-service       | nidemo/http          | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| nidemo/management-access    | tenant  | install | unspecified | nidemo/management-access      | nidemo/any           | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| vEPC/vEPC_alltraffic        | tenant  | install | unspecified | vEPC/vEPC_alltraffic          | vEPC/vEPC_alltraffic | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| vEPC_demo/vEPG_ACC          | context | install | unspecified | vEPC_demo/vEPC_INT_alltraffic | vEPC_demo/alltraffic | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
+| vEPC_demo/vEPG_INT          | context | install | unspecified | vEPC_demo/vEPC_INT_alltraffic | vEPC_demo/alltraffic | 
++-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 
 Contract Filters
 ----------------
 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| Filter Name     | Tenant    | Entry      | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination   | Rules |
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| https           | nidemo    | https      | ipv4  |          | tcp   | no        | no       |        | https - https |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| icmp            | nidemo    | icmp       | ipv4  |          | icmp  | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| http            | nidemo    | http       | ipv4  |          | tcp   | no        | no       |        | http - http   |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| alltraffic      | k8s       | alltraffic |       |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| sql             | nidemo    | sql        | ipv4  |          | tcp   | no        | no       |        | 3306 - 3306   |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| default         | common    | default    |       |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| any             | common    | any        | ipv4  |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| any             | nidemo    | any        | ipv4  |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| vEPC_alltraffic | vEPC      | alltraffic |       |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| alltraffic      | common    | alltraffic |       |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| alltraffic      | vEPC_demo | alltraffic |       |          |       | no        | no       |        |               |       | 
-+-----------------+-----------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| Filter               | Entry      | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination   | Rules |
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| common/default       | default    |       |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| common/any           | any        | ipv4  |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| common/alltraffic    | alltraffic |       |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| k8s/alltraffic       | alltraffic |       |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| nidemo/https         | https      | ipv4  |          | tcp   | no        | no       |        | https - https |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| nidemo/icmp          | icmp       | ipv4  |          | icmp  | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| nidemo/http          | http       | ipv4  |          | tcp   | no        | no       |        | http - http   |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| nidemo/sql           | sql        | ipv4  |          | tcp   | no        | no       |        | 3306 - 3306   |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| nidemo/any           | any        | ipv4  |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| vEPC/vEPC_alltraffic | alltraffic |       |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+| vEPC_demo/alltraffic | alltraffic |       |          |       | no        | no       |        |               |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
+```
+
+Developer
+
+```
+# iserver get aci epg --apic apic21 --view contract
+
+{
+    "duration": 4095,
+    "apic": {
+        "read": true,
+        "success": 9,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 8,
+        "connect_time": 410,
+        "disconnect_time": 0,
+        "mo_time": 3105,
+        "total_time": 3515
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	410	-	connect apic21o.emea-sp.cisco.com
+True	365	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	568	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	375	13	apic21o.emea-sp.cisco.com class fabricNode
+True	379	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	378	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	353	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	345	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	342	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./ApplicationEpg.md)

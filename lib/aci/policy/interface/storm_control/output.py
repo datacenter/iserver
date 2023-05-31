@@ -2,17 +2,32 @@ class PolicyInterfaceStormControlOutput():
     def __init__(self):
         pass
 
-    def print_policy_interface_storm_control(self, info, verbose=False):
+    def print_policy_interface_storm_control(self, info):
+        self.print_policy_interface_storm_control_properties(
+            info
+        )
+
+        self.print_policy_interface_storm_control_interfaces(
+            info['l1RsStormctrlIfPolCons']
+        )
+
+        self.print_policy_interface_storm_control_references(
+            info['relnFrom']
+        )
+
+    def print_policy_interface_storm_control_properties(self, info):
         order = [
             'name',
-            'tfTick',
+            'tf',
             'packetType.type',
             'packetType.rate',
             'packetType.burstRate',
             'packetType.ratePps',
             'packetType.burstPps',
             'packetType.stormCtrlAction',
-            'packetType.stormCtrlSoakInstCount'
+            'packetType.stormCtrlSoakInstCount',
+            'interfaces',
+            'references'
         ]
 
         headers = [
@@ -24,8 +39,9 @@ class PolicyInterfaceStormControlOutput():
             'Rate [pps]',
             'Burst Rate [pps]',
             'Storm Control Action',
-            'Instances'
-
+            'Storm Soak',
+            'Instances',
+            'Ref Policies'
         ]
 
         self.my_output.my_table(
@@ -41,20 +57,67 @@ class PolicyInterfaceStormControlOutput():
             table=True
         )
 
-        self.print_policy_interface_reln_from(info['relnFrom'])
-        self.print_policy_interface_node_interfaces(info['nodeInterfaces'], verbose)
+    def print_policy_interface_storm_control_interfaces(self, info):
+        if info is None or len(info) == 0:
+            return
 
-    def print_policies_interface_storm_control(self, info, verbose=False):
+        order = [
+            'pod_node_name',
+            'interfaceId'
+        ]
+
+        headers = [
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policy_interface_storm_control_references(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'policyName',
+            'policyType',
+            'tCl'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Policy Type',
+            'Policy Class'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_storm_control_summary(self, info):
         order = [
             'name',
-            'tfTick',
+            'tf',
             'packetType.type',
             'packetType.rate',
             'packetType.burstRate',
             'packetType.ratePps',
             'packetType.burstPps',
             'packetType.stormCtrlAction',
-            'packetType.stormCtrlSoakInstCount'
+            'packetType.stormCtrlSoakInstCount',
+            'interfaces',
+            'references'
         ]
 
         headers = [
@@ -66,87 +129,76 @@ class PolicyInterfaceStormControlOutput():
             'Rate [pps]',
             'Burst Rate [pps]',
             'Storm Control Action',
-            'Instances'
-
+            'Storm Soak',
+            'Instances',
+            'Ref Policies'
         ]
 
-        if not verbose:
-            order.append('interfaces')
-            headers.append('Interfaces')
-            order.append('references')
-            headers.append('Ref Policies')
-
-            self.my_output.my_table(
-                self.my_output.expand_list(
-                    info,
-                    order,
-                    'packetType'
-                ),
-                order=order,
-                headers=headers,
-                allow_order_subkeys=True,
-                underline=True,
-                table=True
-            )
-
-        if verbose:
-            order.append('nodeInterfaces.node_name')
-            headers.append('Node Name')
-            order.append('nodeInterfaces.interfacesCount')
-            headers.append('Interfaces')
-            order.append('relnFrom.policyType')
-            headers.append('Ref Policy Type')
-            order.append('relnFrom.policyName')
-            headers.append('Ref Policy Name')
-
-            self.my_output.my_table(
-                self.my_output.expand_lists(
-                    info,
-                    order,
-                    ['packetType', 'relnFrom', 'nodeInterfaces']
-                ),
-                order=order,
-                headers=headers,
-                allow_order_subkeys=True,
-                underline=True,
-                table=True
-            )
-
-    def print_policy_interface_storm_control_node(self, info):
-        for item in info:
-            if 'packetType' in item['policy']:
-                item['packetType'] = item['policy']['packetType']
-            else:
-                item['packetType'] = []
-
-        order = [
-            'policy.name',
-            'packetType.type',
-            'packetType.rate',
-            'packetType.burstRate',
-            'packetType.ratePps',
-            'packetType.burstPps',
-            'packetType.stormCtrlAction',
-            'packetType.stormCtrlSoakInstCount'
-        ]
-
-        headers = [
-            'Storm Control Policy Name',
-            'Packet Type',
-            'Rate [%]',
-            'Burst Rate [%]',
-            'Rate [pps]',
-            'Burst Rate [pps]',
-            'Storm Control Action',
-            'Instances'
-        ]
-
-        self.print_policy_interface_node(
+        self.my_output.my_table(
             self.my_output.expand_list(
                 info,
                 order,
                 'packetType'
             ),
-            order,
-            headers
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_storm_control_usage(self, info):
+        order = [
+            'name',
+            'nodeInterfaces.pod_node_name',
+            'nodeInterfaces.interfaces',
+            'relnFrom.policyType',
+            'relnFrom.policyName'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Node',
+            'Interface Count',
+            'Ref Policy Type',
+            'Ref Policy Name'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['nodeInterfaces', 'relnFrom']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_storm_control_interfaces(self, info):
+        order = [
+            'name',
+            'l1RsStormctrlIfPolCons.pod_node_name',
+            'l1RsStormctrlIfPolCons.interfaceId'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['l1RsStormctrlIfPolCons']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )

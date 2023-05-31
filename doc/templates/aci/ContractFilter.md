@@ -18,4 +18,10 @@ Use '--type filter' to get contract filters details
 DOC_TEMPLATE:get_aci_contract.filter:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_contract.filter:devel.debug
+```
+
 [[Back]](./Contract.md)

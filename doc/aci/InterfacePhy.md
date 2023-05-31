@@ -26,8 +26,8 @@ Filter options:
   - [CDP/LLDP Neighbor](./InterfacePhyNei.md)
   - [QoS Stats](./InterfacePhyQos.md)
 
-Output options:
-  - [state](./InterfacePhyOutputState.md) (default)
+View options:
+  - [default](./InterfacePhyOutputState.md)
   - [ether](./InterfacePhyOutputEther.md)
   - [err](./InterfacePhyOutputErr.md)
   - [qos](./InterfacePhyOutputQos.md)
@@ -43,6 +43,9 @@ Output options:
   - [aaep](./InterfacePhyOutputAaep.md)
   - [pol](./InterfacePhyOutputPol.md)
   - [verbose](./InterfacePhyOutputVerbose.md)
+
+Output options:
+  - [default](./InterfacePhyOutputState.md)
   - [json](./InterfacePhyOutputJson.md)
 
 Command options
@@ -81,12 +84,14 @@ Options:
   --evlan TEXT                    Filter by encapsulation vlan value
   --fvxlan TEXT                   Filter by fabric vxlan value
   --nei TEXT                      Filter by cdp/lldp neight system name
-  -o, --output [default|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|verbose|json]
-                                  [default: default]
+  --ctx TEXT                      Filter by context
+  -v, --view [default|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|live|verbose]
+  -o, --output [default|json]     [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 46 ms and logs saved in /tmp/iserver\aae974eb17ab
+Info: finished in 32 ms and logs saved in /tmp/iserver\a15293fcfe49
 ```
 
 [[Back]](./Interface.md)

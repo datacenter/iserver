@@ -1,0 +1,3 @@
+tasks:
+  - commands:
+    - cat /etc/resolv.conf

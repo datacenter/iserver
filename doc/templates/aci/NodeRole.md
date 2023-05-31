@@ -20,4 +20,10 @@ Example: leaf
 DOC_TEMPLATE:get_aci_node.leaf:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_node.leaf:devel.debug
+```
+
 [[Back]](./Node.md)

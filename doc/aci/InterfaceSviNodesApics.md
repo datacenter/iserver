@@ -95,9 +95,95 @@ Pod: 1
 | apic21 | pod-1/cl2202-eu-spdc | vlan4     | up          | up         |           | bd-external | bcast  | no        | 9000 | vxlan-15269820 | 
 | apic21 | pod-1/cl2207-eu-spdc | vlan27    | up          | down       | vlan-down | bd-external | bcast  | no        | 9000 | vxlan-15105996 | 
 | apic21 | pod-1/cl2207-eu-spdc | vlan28    | up          | up         |           | bd-external | bcast  | no        | 9000 | vxlan-15269817 | 
+| apic21 | pod-1/cl2207-eu-spdc | vlan44    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15040476 | 
+| apic21 | pod-1/cl2207-eu-spdc | vlan45    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-14942183 | 
+| apic21 | pod-1/cl2207-eu-spdc | vlan46    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15237056 | 
+| apic21 | pod-1/cl2207-eu-spdc | vlan47    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15269821 | 
 | apic21 | pod-1/cl2208-eu-spdc | vlan25    | up          | up         |           | bd-external | bcast  | no        | 9000 | vxlan-15269817 | 
 | apic21 | pod-1/cl2208-eu-spdc | vlan26    | up          | down       | vlan-down | bd-external | bcast  | no        | 9000 | vxlan-15105996 | 
+| apic21 | pod-1/cl2208-eu-spdc | vlan42    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15237056 | 
+| apic21 | pod-1/cl2208-eu-spdc | vlan43    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15269821 | 
+| apic21 | pod-1/cl2208-eu-spdc | vlan44    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-14942183 | 
+| apic21 | pod-1/cl2208-eu-spdc | vlan45    | up          | up         |           | bd-external | bcast  | no        | 1500 | vxlan-15040476 | 
 +--------+----------------------+-----------+-------------+------------+-----------+-------------+--------+-----------+------+----------------+
+```
+
+Developer
+
+```
+# iserver get aci intf svi --apic dom:milan --node any --type ext
+
+{
+    "duration": 15900,
+    "apic": {
+        "read": true,
+        "success": 40,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 38,
+        "connect_time": 834,
+        "disconnect_time": 0,
+        "mo_time": 13909,
+        "total_time": 14743
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	423	-	connect apic11o.emea-sp.cisco.com
+True	411	-	connect apic21o.emea-sp.cisco.com
+True	311	11	apic11o.emea-sp.cisco.com class fabricNode
+True	324	13	apic21o.emea-sp.cisco.com class fabricNode
+True	424	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	304	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
+True	388	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	322	63	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4Addr
+True	573	56	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	346	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
+True	600	55	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	403	90	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4Addr
+True	384	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	299	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4Addr
+True	388	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	316	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4Addr
+True	443	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	539	23	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4Addr
+True	330	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	308	22	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4Addr
+True	453	10	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	290	23	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/ipv4Addr
+True	339	10	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	332	23	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/ipv4Addr
+True	416	19	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	345	29	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/ipv4Addr
+True	361	19	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	314	29	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/ipv4Addr
+True	396	21	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	333	30	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/ipv4Addr
+True	364	20	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	315	29	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/ipv4Addr
+True	398	5	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	310	13	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/ipv4Addr
+True	351	6	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	313	14	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/ipv4Addr
+True	288	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	346	21	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/ipv4Addr
+True	321	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	322	21	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

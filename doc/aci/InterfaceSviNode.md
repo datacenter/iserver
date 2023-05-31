@@ -53,4 +53,46 @@ Node: bl205-eu-spdc
 +---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc
+
+{
+    "duration": 1898,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 646,
+        "disconnect_time": 0,
+        "mo_time": 1066,
+        "total_time": 1712
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	646	-	connect apic11o.emea-sp.cisco.com
+True	306	11	apic11o.emea-sp.cisco.com class fabricNode
+True	465	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	295	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
+```
+
 [[Back]](./InterfaceSvi.md)

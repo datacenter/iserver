@@ -2,7 +2,7 @@
 
 ## Get VRF properties of bridge domains
 
-Use '-o vrf' to get configured VRF related properties of selected bridge domains
+Use '--view vrf' to get configured VRF related properties of selected bridge domains
 - resolved VRF tenant and name
 - data plane learning
 - policy control enforcement preference
@@ -10,7 +10,7 @@ Use '-o vrf' to get configured VRF related properties of selected bridge domains
 - bridge domain enforcement
 
 ```
-# iserver get aci bd --apic apic21 -o vrf
+# iserver get aci bd --apic apic21 --view vrf
 
 Apic: apic21
 
@@ -77,10 +77,6 @@ Apic: apic21
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
 | SPN_IntraLab/SPN_BD1      | SPN_IntraLab/SPN_VRF1    | enabled  | ingress       | enforced       | no             | 
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
-| TESTING_BRUNO/BD2         | TESTING_BRUNO/default    | enabled  | ingress       | enforced       | no             | 
-+---------------------------+--------------------------+----------+---------------+----------------+----------------+
-| TESTING_BRUNO/BDSITE2     | TESTING_BRUNO/default    | enabled  | ingress       | enforced       | no             | 
-+---------------------------+--------------------------+----------+---------------+----------------+----------------+
 | vEPC/Leaking_BD           | vEPC/Leaking_VRF         | enabled  | ingress       | enforced       | no             | 
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
 | vEPC/vSFO_BD              | vEPC/VSFO                | enabled  | ingress       | enforced       | no             | 
@@ -93,6 +89,49 @@ Apic: apic21
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
 | vEPC_demo/vEPC-CTRL-SX_BD | vEPC_demo/ACC_VRF        | enabled  | ingress       | unenforced     | no             | 
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
+```
+
+Developer
+
+```
+# iserver get aci bd --apic apic21 --view vrf
+
+{
+    "duration": 3273,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 379,
+        "disconnect_time": 0,
+        "mo_time": 2557,
+        "total_time": 2936
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	379	-	connect apic21o.emea-sp.cisco.com
+True	471	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	1336	23	apic21o.emea-sp.cisco.com class fvCtx
+True	363	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	387	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./BridgeDomain.md)

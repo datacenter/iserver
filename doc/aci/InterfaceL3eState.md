@@ -50,4 +50,60 @@ Pod: 1
 +---------------------+------------+-------------+------------+-------------+--------+---------+------+
 ```
 
+Developer
+
+```
+# iserver get aci intf l3e --apic apic11 --node any --oper down
+
+{
+    "duration": 6358,
+    "apic": {
+        "read": true,
+        "success": 18,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 17,
+        "connect_time": 441,
+        "disconnect_time": 0,
+        "mo_time": 5424,
+        "total_time": 5865
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	441	-	connect apic11o.emea-sp.cisco.com
+True	357	11	apic11o.emea-sp.cisco.com class fabricNode
+True	300	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	308	66	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4If
+True	290	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	380	68	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4If
+True	288	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	316	75	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4If
+True	299	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	319	74	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4If
+True	306	6	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	302	49	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4If
+True	315	6	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	306	49	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4If
+True	295	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	347	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4If
+True	360	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	336	42	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4If
+```
+
 [[Back]](./InterfaceL3e.md)

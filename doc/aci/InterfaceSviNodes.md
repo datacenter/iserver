@@ -127,4 +127,48 @@ Pod: 1
 +---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf svi --apic apic11 --node cl
+
+{
+    "duration": 2820,
+    "apic": {
+        "read": true,
+        "success": 6,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 5,
+        "connect_time": 414,
+        "disconnect_time": 0,
+        "mo_time": 2043,
+        "total_time": 2457
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	414	-	connect apic11o.emea-sp.cisco.com
+True	329	11	apic11o.emea-sp.cisco.com class fabricNode
+True	598	56	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	322	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
+True	478	55	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	316	90	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4Addr
+```
+
 [[Back]](./InterfaceSvi.md)

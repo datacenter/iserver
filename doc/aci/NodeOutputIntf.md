@@ -3,7 +3,7 @@
 ## Physical interface summary output
 
 ```
-# iserver get aci node --apic apic11 -o intf
+# iserver get aci node --apic apic11 --view intf
 
 Apic: apic11
 
@@ -19,6 +19,62 @@ Apic: apic11
 | pod-1/s101-eu-spdc  | 5/11/16               | 5/11/16 | 0/0/0     | 0/0/0 | 0/0/0 | 0/0/0   | 0/0/0   | 0/0/0  | 3/0/3   | 2/11/13 | 
 | pod-1/s102-eu-spdc  | 5/11/16               | 5/11/16 | 0/0/0     | 0/0/0 | 0/0/0 | 0/0/0   | 0/0/0   | 0/0/0  | 3/0/3   | 2/11/13 | 
 +---------------------+-----------------------+---------+-----------+-------+-------+---------+---------+--------+---------+---------+
+```
+
+Developer
+
+```
+# iserver get aci node --apic apic11 --view intf
+
+{
+    "duration": 7019,
+    "apic": {
+        "read": true,
+        "success": 18,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 17,
+        "connect_time": 437,
+        "disconnect_time": 0,
+        "mo_time": 5753,
+        "total_time": 6190
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	437	-	connect apic11o.emea-sp.cisco.com
+True	307	11	apic11o.emea-sp.cisco.com class fabricNode
+True	315	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
+True	322	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
+True	402	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
+True	409	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
+True	316	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
+True	304	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
+True	323	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
+True	328	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
+True	313	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
+True	325	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
+True	355	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
+True	345	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
+True	350	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
+True	392	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
+True	322	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	325	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
 ```
 
 [[Back]](./Node.md)

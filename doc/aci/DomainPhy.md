@@ -7,7 +7,7 @@ Filter options:
 
 Output options:
   - [default](./DomainPhyAll.md)
-  - [json](./DomainPhyOutputJson.md) output
+  - [json](./DomainPhyOutputJson.md)
 
 Command options
 
@@ -25,11 +25,10 @@ Options:
   --password TEXT              APIC Password
   --name TEXT                  Filter by pool name
   -o, --output [default|json]  [default: default]
-  --verbose                    Verbose output
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\49b73d9fc12b
+Info: finished in 29 ms and logs saved in /tmp/iserver\0b429838d56d
 ```
 
 [[Back]](./README.md)

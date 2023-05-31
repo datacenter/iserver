@@ -6,7 +6,8 @@
 # iserver get aci intf macsec
     --apic apic11
     --node bl205-eu-spdc
-    --id eth1/28 -o verbose
+    --id eth1/28
+    --view verbose
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -48,6 +49,57 @@ SecY Stats
 - Tx Encrypted Packets : 0
 - Tx Protected Octets  : 0
 - Tx Protected Packets : 0
+```
+
+Developer
+
+```
+# iserver get aci intf macsec
+    --apic apic11
+    --node bl205-eu-spdc
+    --id eth1/28
+    --view verbose
+
+{
+    "duration": 3545,
+    "apic": {
+        "read": true,
+        "success": 9,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 8,
+        "connect_time": 596,
+        "disconnect_time": 0,
+        "mo_time": 2524,
+        "total_time": 3120
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	596	-	connect apic11o.emea-sp.cisco.com
+True	315	11	apic11o.emea-sp.cisco.com class fabricNode
+True	319	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	296	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	323	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	378	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsectx
+True	285	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsecrx
+True	295	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecIfStats
+True	313	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecCAStats
 ```
 
 [[Back]](./InterfaceMacSec.md)

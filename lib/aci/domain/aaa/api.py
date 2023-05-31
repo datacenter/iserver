@@ -1,10 +1,10 @@
 class DomainAaaApi():
     def __init__(self):
-        self.mo_domain_aaa = None
+        self.domain_aaa_mo = None
 
-    def initialize_domain_aaa(self):
-        if self.mo_domain_aaa is not None:
-            return True
+    def get_domain_aaa_mo(self):
+        if self.domain_aaa_mo is not None:
+            return self.domain_aaa_mo
 
         managed_objects = self.get_class(
             'aaaDomain',
@@ -12,18 +12,18 @@ class DomainAaaApi():
         )
 
         if managed_objects is None:
-            return False
+            return None
 
-        self.mo_domain_aaa = []
+        self.domain_aaa_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['aaaDomain']['attributes']
-            self.mo_domain_aaa.append(
+            self.domain_aaa_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'aaaDomain',
-            self.mo_domain_aaa
+            self.domain_aaa_mo
         )
 
-        return True
+        return self.domain_aaa_mo

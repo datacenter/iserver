@@ -125,10 +125,8 @@ class EpgInfo():
             )
             return None
 
-        info['fvBD'] = self.get_bridge_domain(
-            managed_object['fvBD'][0]['tDn'].split('/')[1][3:],
-            managed_object['fvBD'][0]['tDn'].split('/')[2][3:]
-        )
+        info['bd_tenant_name'] = managed_object['fvBD'][0]['tDn'].split('/')[1][3:]
+        info['bd_name'] = managed_object['fvBD'][0]['tDn'].split('/')[2][3:]
 
         return info
 
@@ -179,23 +177,30 @@ class EpgInfo():
 
         for aepg_rule in epg_filter:
             (key, value) = aepg_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_string(value, epg_info['name']):
                     return False
 
             if key == 'dn':
+                key_found = True
                 if not filter_helper.match_string(value, epg_info['dn']):
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, epg_info['tenant']):
                     return False
 
             if key == 'profile':
+                key_found = True
                 if not filter_helper.match_string(value, epg_info['application_profile']):
                     return False
 
             if key == 'node':
+                key_found = True
                 found = False
                 for node_info in epg_info['fabricNode']:
                     if filter_helper.match_string(value, node_info['name']):
@@ -206,6 +211,7 @@ class EpgInfo():
                     return False
 
             if key == 'contract':
+                key_found = True
                 found = False
                 for contract in epg_info['contractConsumed']:
                     if filter_helper.match_string(value, contract['nameTenant']):
@@ -221,34 +227,49 @@ class EpgInfo():
                     return False
 
             if key == 'bd':
-                if not filter_helper.match_string(value, epg_info['fvBD']['nameTenant']):
-                    return False
+                key_found = True
+                if 'fvBD' in epg_info:
+                    if epg_info['fvBD'] is None:
+                        return False
+
+                    if not filter_helper.match_string(value, epg_info['fvBD']['nameTenant']):
+                        return False
 
             if key == 'subnet':
-                if epg_info['fvBD'] is None:
-                    return False
+                key_found = True
+                if 'fvBD' in epg_info:
+                    if epg_info['fvBD'] is None:
+                        return False
 
-                found = False
-                for bd_subnet in epg_info['fvBD']['fvSubnet']:
-                    if ip_helper.is_subnet_in_subnet(value, bd_subnet['network']):
-                        found = True
-                        break
+                    found = False
+                    for bd_subnet in epg_info['fvBD']['fvSubnet']:
+                        if ip_helper.is_subnet_in_subnet(value, bd_subnet['network']):
+                            found = True
+                            break
 
-                if not found:
-                    return False
+                    if not found:
+                        return False
 
             if key == 'ip':
-                if epg_info['fvBD'] is None:
-                    return False
+                key_found = True
+                if 'fvBD' in epg_info:
+                    if epg_info['fvBD'] is None:
+                        return False
 
-                found = False
-                for bd_subnet in epg_info['fvBD']['fvSubnet']:
-                    if ip_helper.is_ipv4_in_cidr(value, bd_subnet['network']):
-                        found = True
-                        break
+                    found = False
+                    for bd_subnet in epg_info['fvBD']['fvSubnet']:
+                        if ip_helper.is_ipv4_in_cidr(value, bd_subnet['network']):
+                            found = True
+                            break
 
-                if not found:
-                    return False
+                    if not found:
+                        return False
+
+            if not key_found:
+                self.log.error(
+                    'match_epg',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 
@@ -290,7 +311,7 @@ class EpgInfo():
         l3outs = []
         for l3out in epg_info['fvBD']['fvRsBDToOut']:
             l3outs.append(
-                l3out['name']
+                l3out['nameTenant']
             )
 
         l3out_filter = ''
@@ -299,7 +320,7 @@ class EpgInfo():
 
         return l3out_filter
 
-    def get_epgs(self, epg_filter=None, deployed_leaves_info=False, endpoint_info=False, endpoint_vm_info=False, endpoint_fabric_info=False, contract_info=False, vrf_info=False, l3out_info=False):
+    def get_epgs(self, epg_filter=None, bd_info=False, deployed_leaves_info=False, endpoint_info=False, endpoint_vm_info=False, endpoint_fabric_info=False, contract_info=False, vrf_info=False, l3out_info=False):
         start_time = int(time.time() * 1000)
 
         all_epgs = self.get_epgs_info(
@@ -313,6 +334,12 @@ class EpgInfo():
         for epg_info in all_epgs:
             if not self.match_epg(epg_info, epg_filter):
                 continue
+
+            if bd_info:
+                epg_info['fvBD'] = self.get_bridge_domain(
+                    epg_info['bd_tenant_name'],
+                    epg_info['bd_name']
+                )
 
             if endpoint_info:
                 endpoint_filter = ['epg:%s' % (epg_info['name'])]
@@ -386,11 +413,6 @@ class EpgInfo():
         self.log.apic_mo(
             'fvAEPg.info',
             epgs
-        )
-
-        self.log.trace(
-            'get_epgs',
-            start_time
         )
 
         return epgs

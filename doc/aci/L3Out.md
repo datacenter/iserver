@@ -14,10 +14,13 @@ Filter options:
   - [pim](./L3OutPim.md)
   - [mpls](./L3OutMpls.md)
 
-Output options:
-  - [default output](./L3OutAllDefault.md)
+View options:
+  - [default](./L3OutAllDefault.md)
   - [epg](./L3OutAllEpg.md)
-  - [node](./L3OutAllNode.md)
+  - [node](./L3OutAllNode.md])
+
+Output options:
+  - [default](./L3OutAllDefault.md)
   - [json](./L3OutJson.md)
 
 Command options
@@ -44,12 +47,14 @@ Options:
   --ospf                          Filter osfp protocol
   --pim                           Filter pim enabled
   --mpls                          Filter mpls enabled
+  -v, --view [default|epg|node]
   -o, --output [default|json|epg|node]
                                   [default: default]
+  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\c47393da9e07
+Info: finished in 30 ms and logs saved in /tmp/iserver\552d29b40f30
 ```
 
 [[Back]](./README.md)

@@ -14,4 +14,10 @@ Example: down
 DOC_TEMPLATE:get_aci_intf_vpc.member_down:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_intf_vpc.member_up:devel.debug
+```
+
 [[Back]](./InterfaceVpc.md)

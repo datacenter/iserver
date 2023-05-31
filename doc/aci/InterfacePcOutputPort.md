@@ -1,9 +1,9 @@
 # Node Interface - Port Channel (PC)
 
-## Port focused output
+## Port focused view
 
 ```
-# iserver get aci intf pc --apic apic11 --node cl201-eu-spdc -o port
+# iserver get aci intf pc --apic apic11 --node cl201-eu-spdc --view port
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -41,6 +41,49 @@ Node: cl201-eu-spdc
 | pod-1/cl201-eu-spdc | po27 | pod1a-COMP-1-PET_PolGrp  | up    | trunk  | 10G   | eth1/11 | 
 | pod-1/cl201-eu-spdc | po28 | pod4a-AIO-3-PET_PolGrp   | up    | trunk  | 10G   | eth1/56 | 
 +---------------------+------+--------------------------+-------+--------+-------+---------+
+```
+
+Developer
+
+```
+# iserver get aci intf pc --apic apic11 --node cl201-eu-spdc --view port
+
+{
+    "duration": 2801,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 384,
+        "disconnect_time": 0,
+        "mo_time": 2073,
+        "total_time": 2457
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	384	-	connect apic11o.emea-sp.cisco.com
+True	1027	11	apic11o.emea-sp.cisco.com class fabricNode
+True	397	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	317	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	332	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
 ```
 
 [[Back]](./InterfacePc.md)

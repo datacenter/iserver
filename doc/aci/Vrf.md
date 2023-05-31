@@ -11,13 +11,16 @@ Filter options:
   - [IP address](./VrfIp.md)
   - [l3out](./VrfL3Out.md)
 
-Output options:
-  - [default output](./VrfAllDefault.md)
+View options:
+  - [default](./VrfAllDefault.md)
   - [properties](./VrfAllProps.md)
   - [references](./VrfAllRefs.md)
   - [verbose](./VrfVerbose.md)
   - [route](./VrfRoute.md) output to get route table of selected VRF
-  - [json](./VrfJson.md) output
+
+Output options:
+  - [default](./VrfAllDefault.md)
+  - [json](./VrfJson.md)
 
 Command options
 
@@ -40,12 +43,12 @@ Options:
   --ip TEXT                       Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -o, --output [default|json|verbose|route|props|refs]
-                                  [default: default]
+  -v, --view [default|route|props|refs|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\192a46014050
+Info: finished in 32 ms and logs saved in /tmp/iserver\e6631f16bb40
 ```
 
 [[Back]](./README.md)

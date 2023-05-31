@@ -14,13 +14,15 @@ Each interface command supports custom set of rules to filter the interfaces fro
 
 Check the options with --help or in the documentation below.
 
+## View options
+
+Selected interfaces are shown in table format. Check --view for different groups of interface attributes.
+
+Verbose view is flat and provides complete collected information for every interface matching node selection and filtering criteria.
+
 ## Output options
 
-Selected interfaces are shown in table format. Check -o option for different groups of interface attributes.
-
-Verbose option is flat and provides complete collected information for every interface matching node selection and filtering criteria.
-
-Option json prints properly formatted output that can be further analyzed with e.g. jq tool.
+Option default prints table or flat data while option json prints properly formatted output that can be further analyzed with e.g. jq tool.
 
 ## Supported interfaces
 

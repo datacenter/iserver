@@ -842,4 +842,100 @@ Pod: 1
 +--------+----------------------+-----------+-------------+------------+------------+-----------------+-------+-----------------+---------------+-----------------+---------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf macsec --apic dom:milan --node any
+
+{
+    "duration": 25483,
+    "apic": {
+        "read": true,
+        "success": 58,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 56,
+        "connect_time": 815,
+        "disconnect_time": 0,
+        "mo_time": 19977,
+        "total_time": 20792
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	413	-	connect apic11o.emea-sp.cisco.com
+True	402	-	connect apic21o.emea-sp.cisco.com
+True	313	11	apic11o.emea-sp.cisco.com class fabricNode
+True	855	13	apic21o.emea-sp.cisco.com class fabricNode
+True	316	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	320	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	374	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	319	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/macsecIf
+True	301	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
+True	314	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
+True	330	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/macsecIf
+True	321	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
+True	416	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
+True	350	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/macsecIf
+True	351	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
+True	367	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
+True	437	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/macsecIf
+True	350	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
+True	339	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
+True	318	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/macsecIf
+True	330	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
+True	383	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
+True	310	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/macsecIf
+True	303	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
+True	362	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
+True	577	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/macsecIf
+True	309	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
+True	311	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
+True	368	28	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/macsecIf
+True	308	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/l1PhysIf
+True	315	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/ethpmPhysIf
+True	309	28	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/macsecIf
+True	303	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/l1PhysIf
+True	365	36	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/ethpmPhysIf
+True	435	102	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/macsecIf
+True	366	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/l1PhysIf
+True	348	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/ethpmPhysIf
+True	336	102	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/macsecIf
+True	327	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/l1PhysIf
+True	376	108	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/ethpmPhysIf
+True	437	48	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/macsecIf
+True	321	60	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/l1PhysIf
+True	347	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/ethpmPhysIf
+True	292	48	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/macsecIf
+True	298	60	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/l1PhysIf
+True	332	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/ethpmPhysIf
+True	310	51	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/macsecIf
+True	313	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/l1PhysIf
+True	371	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/ethpmPhysIf
+True	387	51	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/macsecIf
+True	463	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/l1PhysIf
+True	321	54	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/ethpmPhysIf
+True	316	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/macsecIf
+True	430	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/l1PhysIf
+True	338	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/ethpmPhysIf
+True	337	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/macsecIf
+True	317	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/l1PhysIf
+True	315	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/ethpmPhysIf
+```
+
 [[Back]](./InterfaceMacSec.md)

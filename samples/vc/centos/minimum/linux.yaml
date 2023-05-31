@@ -1,0 +1,8 @@
+linux:
+  template: centos
+  iso:
+    filename: CentOS-Stream-8-x86_64-20220915-dvd1.iso
+  vm:
+    name: centos-sample-minimum
+    interface:
+      network: VM Network

@@ -2,7 +2,7 @@
 
 ## Get EPGs' Bridge Domain properties
 
-Use '-o bd' to get bridge domain properties of selected epgs
+Use '--view bd' to get bridge domain properties of selected epgs
 - epg name, application profile and tenant
 - bridge domain name
 - bridge domain subnets with usage
@@ -10,6 +10,12 @@ Use '-o bd' to get bridge domain properties of selected epgs
 
 ```
 DOC_TEMPLATE:get_aci_epg.all_bd:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.all_bd:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

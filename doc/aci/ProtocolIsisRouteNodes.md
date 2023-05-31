@@ -3,7 +3,7 @@
 ## Show IS-IS routes for selected nodes
 
 ```
-# iserver get aci proto isis --apic apic11 --node rl -o route
+# iserver get aci proto isis --apic apic11 --node rl --view route
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -37,8 +37,6 @@ Pod: 1
 | pod-1/rl301-eu-spdc | overlay | 10.5.0.1/32        | 64     | 250        | eth1/33.47   | 172.16.30.120 | 
 |                     |         |                    |        |            | eth1/34.48   | 172.16.30.120 | 
 | pod-1/rl301-eu-spdc | overlay | 10.5.0.2/32        | 64     | 250        | eth1/33.47   | 172.16.30.120 | 
-|                     |         |                    |        |            | eth1/34.48   | 172.16.30.120 | 
-| pod-1/rl301-eu-spdc | overlay | 10.5.0.3/32        | 64     | 250        | eth1/33.47   | 172.16.30.120 | 
 |                     |         |                    |        |            | eth1/34.48   | 172.16.30.120 | 
 | pod-1/rl301-eu-spdc | overlay | 10.5.0.33/32       | 64     | 250        | eth1/33.47   | 172.16.30.120 | 
 |                     |         |                    |        |            | eth1/34.48   | 172.16.30.120 | 
@@ -164,8 +162,6 @@ Pod: 1
 |                     |         |                    |        |            | eth1/34.8    | 172.16.30.160 | 
 | pod-1/rl302-eu-spdc | overlay | 10.5.0.2/32        | 64     | 250        | eth1/33.7    | 172.16.30.160 | 
 |                     |         |                    |        |            | eth1/34.8    | 172.16.30.160 | 
-| pod-1/rl302-eu-spdc | overlay | 10.5.0.3/32        | 64     | 250        | eth1/33.7    | 172.16.30.160 | 
-|                     |         |                    |        |            | eth1/34.8    | 172.16.30.160 | 
 | pod-1/rl302-eu-spdc | overlay | 10.5.0.33/32       | 64     | 250        | eth1/33.7    | 172.16.30.160 | 
 |                     |         |                    |        |            | eth1/34.8    | 172.16.30.160 | 
 | pod-1/rl302-eu-spdc | overlay | 10.5.0.34/32       | 64     | 250        | eth1/33.7    | 172.16.30.160 | 
@@ -268,5 +264,52 @@ Pod: 1
 |                     |         |                    |        |            | eth1/34.8    | 172.16.30.160 | 
 +---------------------+---------+--------------------+--------+------------+--------------+---------------+
 ```
+
+Developer
+
+```
+# iserver get aci proto isis --apic apic11 --node rl --view route
+
+{
+    "duration": 3468,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 423,
+        "disconnect_time": 0,
+        "mo_time": 2503,
+        "total_time": 2926
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	423	-	connect apic11o.emea-sp.cisco.com
+True	321	11	apic11o.emea-sp.cisco.com class fabricNode
+True	364	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis
+True	315	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	452	186	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisRoute&target-subtree-class=isisRsNhAtt
+True	303	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis
+True	331	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	417	186	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis/inst-default/dom-overlay-1 query query-target=subtree&target-subtree-class=isisRoute&target-subtree-class=isisRsNhAtt
+```
+
 
 [[Back]](./ProtocolIsis.md)

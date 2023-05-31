@@ -18,10 +18,13 @@ Filter options:
 Cross domain filter options:
   - [server](./EndpointServer.md)
 
-Output options:
+View options:
   - [default](./EndpointAll.md)
   - [fabric](./EndpointOutputFabric.md)
   - [vm](./EndpointOutputVm.md)
+
+Output options:
+  - [default](./EndpointAll.md)
   - [json](./EndpointOutputJson.md)
 
 Command options
@@ -51,12 +54,12 @@ Options:
   --hv TEXT                       Hypevisor filter
   --vm TEXT                       VM filter
   --xd TEXT                       Cross domain filter
-  -o, --output [default|vm|fabric|json]
-                                  [default: default]
+  -v, --view [default|vm|fabric]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 28 ms and logs saved in /tmp/iserver\f4daeda3cbe0
+Info: finished in 23 ms and logs saved in /tmp/iserver\585c8268ec6d
 ```
 
 [[Back]](./README.md)

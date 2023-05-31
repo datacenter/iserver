@@ -92,4 +92,64 @@ Pod: 1
 +---------------------+------+--------------------------+-------+-----------+-------+---------------------------+-----------+------------+--------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf pc --apic apic11 --node any
+
+{
+    "duration": 8216,
+    "apic": {
+        "read": true,
+        "success": 22,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 21,
+        "connect_time": 408,
+        "disconnect_time": 0,
+        "mo_time": 7137,
+        "total_time": 7545
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	408	-	connect apic11o.emea-sp.cisco.com
+True	318	11	apic11o.emea-sp.cisco.com class fabricNode
+True	365	5	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	296	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	300	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/vpc/inst/dom-105 query query-target=children&target-subtree-class=vpcIf
+True	354	5	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	340	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	289	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/vpc/inst/dom-105 query query-target=children&target-subtree-class=vpcIf
+True	384	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	302	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	419	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	388	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	373	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	388	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	314	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	306	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	337	2	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/vpc/inst/dom-300 query query-target=children&target-subtree-class=vpcIf
+True	340	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	357	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
+True	325	2	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/vpc/inst/dom-300 query query-target=children&target-subtree-class=vpcIf
+True	341	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	301	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+```
+
 [[Back]](./InterfacePc.md)

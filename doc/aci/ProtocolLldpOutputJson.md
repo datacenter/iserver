@@ -42,8 +42,8 @@
             "numAdjAdded": "26",
             "numAdjRemoved": "0",
             "pktDiscarded": "0",
-            "pktRcvd": "3036197",
-            "pktSent": "3032792",
+            "pktRcvd": "3277677",
+            "pktSent": "3273994",
             "status": "",
             "unrecogTLV": "0"
         },

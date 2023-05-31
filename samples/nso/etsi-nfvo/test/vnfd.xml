@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vnfd xmlns="urn:etsi:nfv:yang:etsi-nfv-descriptors">
+    <id>TEST</id>
+    <provider>Cisco</provider>
+    <product-name>Cirros</product-name>
+    <software-version>1.0</software-version>
+    <version>VNF_VERSION</version>
+    <product-info-name>Cirros</product-info-name>
+    <product-info-description>Cirros</product-info-description>
+    <vnfm-info>Cisco Elastic Services Controller:v5.0</vnfm-info>
+	<vdu>
+		<id>Cirros</id>
+		<name>Cirros</name>
+		<description>Cirros</description>
+        <int-cpd>
+            <id>nic0</id>
+            <int-virtual-link-desc>VIM_NETWORK_MANAGEMENT-VL</int-virtual-link-desc>
+            <layer-protocol>ipv4</layer-protocol>
+            <interface-id xmlns="http://cisco.com/ns/nso/cfp/cisco-etsi-nfvo">0</interface-id>
+        </int-cpd>
+        <virtual-compute-desc>cirros</virtual-compute-desc>
+        <sw-image-desc>cirros</sw-image-desc>
+	</vdu>
+    <virtual-compute-desc>
+        <id>cirros</id>
+        <virtual-memory>
+            <size>1.0</size>
+        </virtual-memory>
+        <virtual-cpu>
+            <num-virtual-cpu>1</num-virtual-cpu>
+        </virtual-cpu>
+        <flavour-name-variable xmlns="http://cisco.com/ns/nso/cfp/cisco-etsi-nfvo-sol1-extensions">FLAVOUR_NAME</flavour-name-variable>
+    </virtual-compute-desc>
+    <sw-image-desc>
+        <id>cirros</id>
+        <name>cirros</name>
+        <version>1.0</version>
+        <checksum>
+            <algorithm>sha-256</algorithm>
+            <hash>9af30fce37a4c5c831e095745744d6d2</hash>
+        </checksum>
+        <container-format>bare</container-format>
+        <disk-format>qcow2</disk-format>
+        <min-disk>10</min-disk>
+        <size>10</size>
+        <image>cirros.qcow2</image>
+        <image-name-variable xmlns="http://cisco.com/ns/nso/cfp/cisco-etsi-nfvo-sol1-extensions">IMAGE_NAME</image-name-variable>
+    </sw-image-desc>
+    <int-virtual-link-desc>
+        <id>VIM_NETWORK_MANAGEMENT-VL</id>
+        <connectivity-type>
+            <layer-protocol>ipv4</layer-protocol>
+        </connectivity-type>
+        <description>VIM_NETWORK_MANAGEMENT VL</description>
+    </int-virtual-link-desc>
+    <ext-cpd>
+        <id>VIM_NETWORK_MANAGEMENT</id>
+        <int-virtual-link-desc>VIM_NETWORK_MANAGEMENT-VL</int-virtual-link-desc>
+        <layer-protocol>ipv4</layer-protocol>
+    </ext-cpd>
+    <df>
+		<id>default</id>
+		<description>Default VNF Deployment Flavour</description>
+		<vdu-profile>
+			<id>Cirros</id>
+			<min-number-of-instances>1</min-number-of-instances>
+			<max-number-of-instances>1</max-number-of-instances>
+		</vdu-profile>
+		<instantiation-level>
+			<id>default</id>
+			<description>Default instantiation level</description>
+			<vdu-level>
+			<vdu-id>Cirros</vdu-id>
+			<number-of-instances>1</number-of-instances>
+			</vdu-level>
+			<scaling-info>
+			<scaling-aspect-id>Cirros</scaling-aspect-id>
+			<scale-level>0</scale-level>
+			</scaling-info>
+		</instantiation-level>
+		<default-instantiation-level>default</default-instantiation-level>
+		<scaling-aspect>
+			<id>Cirros</id>
+			<name>Cirros</name>
+			<description>Cirros</description>
+			<max-scale-level>1</max-scale-level>
+			<aspect-delta-details>
+			<deltas>
+				<id>delta-1</id>
+			</deltas>
+			</aspect-delta-details>
+		</scaling-aspect>
+    </df>
+</vnfd>

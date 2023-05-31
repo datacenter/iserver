@@ -11,7 +11,7 @@ from lib.aci.intf.management.main import InterfaceMgmt
 from lib.aci.intf.phy.main import InterfacePhy
 from lib.aci.intf.policy.main import InterfacePolicy
 from lib.aci.intf.port_channel.main import InterfacePortChannel
-from lib.aci.intf.summary import InterfaceSummary
+from lib.aci.intf.summary.main import InterfaceSummary
 from lib.aci.intf.svi.main import InterfaceSvi
 from lib.aci.intf.tunnel.main import InterfaceTunnel
 from lib.aci.intf.vfc.main import InterfaceVfc
@@ -40,7 +40,7 @@ class Interface(
     InterfaceVfc,
     InterfaceVlanStats
     ):
-    def __init__(self, log_id=None):
+    def __init__(self):
         InterfaceAdjacency.__init__(self)
         InterfaceCloudSec.__init__(self)
         InterfaceEncapsulatedRouted.__init__(self)
@@ -55,49 +55,8 @@ class Interface(
         InterfacePolicy.__init__(self)
         InterfacePortChannel.__init__(self)
         InterfaceVirtualPortChannel.__init__(self)
-        InterfaceSummary.__init__(self, log_id=log_id)
+        InterfaceSummary.__init__(self)
         InterfaceSvi.__init__(self)
         InterfaceTunnel.__init__(self)
         InterfaceVfc.__init__(self)
         InterfaceVlanStats.__init__(self)
-
-        self.interface_types = [
-            'cloudsec',
-            'fc',
-            'fcpc',
-            'l3e',
-            'lb',
-            'macsec',
-            'mgmt',
-            'pc',
-            'phy',
-            'svi',
-            'tun',
-            'vfc',
-            'vpc'
-        ]
-
-    def get_interface_summary_output(self, port_up, port_down, port_count):
-        if port_up == 0 and port_down == 0 and port_count == 0:
-            return ('0/0/0', '')
-
-        output = ''
-        color = ':'
-
-        output = '%s%s/' % (output, port_up)
-        port_color = ''.join(['G' * len(str(port_up))])
-        color = '%s%s.' % (color, port_color)
-
-        output = '%s%s/' % (output, port_down)
-        if port_down == 0:
-            port_color = '.'
-            color = '%s%s.' % (color, port_color)
-        else:
-            port_color = ''.join(['R' * len(str(port_down))])
-            color = '%s%s.' % (color, port_color)
-
-        output = '%s%s' % (output, port_count)
-        port_color = ''.join(['.' * len(str(port_up))])
-        color = '%s%s' % (color, port_color)
-
-        return (output, color)

@@ -172,9 +172,4 @@ class TabooInfo():
             taboos
         )
 
-        self.log.trace(
-            'get_taboos',
-            start_time
-        )
-
         return taboos

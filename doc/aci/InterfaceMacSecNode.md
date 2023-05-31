@@ -43,4 +43,47 @@ Node: bl205-eu-spdc
 +---------------------+-----------+-------------+------------+------------+-----------------+-------+--------------+---------------+-----------------+---------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf macsec --apic apic11 --node bl205-eu-spdc
+
+{
+    "duration": 2007,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 413,
+        "disconnect_time": 0,
+        "mo_time": 1289,
+        "total_time": 1702
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	413	-	connect apic11o.emea-sp.cisco.com
+True	371	11	apic11o.emea-sp.cisco.com class fabricNode
+True	300	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	289	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	329	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+```
+
 [[Back]](./InterfaceMacSec.md)

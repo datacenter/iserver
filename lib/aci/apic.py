@@ -1,5 +1,6 @@
 from lib import output_helper
 from lib import log_helper
+from lib import context
 
 from lib.aci.api import Api
 from lib.aci.cache import Cache
@@ -19,7 +20,7 @@ from lib.aci.pg.main import PolicyGroup
 from lib.aci.policy.main import Policy
 from lib.aci.pool.main import Pool
 from lib.aci.proto.main import Protocol
-from lib.aci.tenant import Tenant
+from lib.aci.tenant.main import Tenant
 from lib.aci.vrf.main import Vrf
 
 
@@ -52,6 +53,7 @@ class Apic(
         )
         self.log = log_helper.Log(log_id=log_id)
 
+        self.context_handler = context.Context(log_id=log_id)
         self.apic_label = label
         Api.__init__(
             self,
@@ -67,14 +69,14 @@ class Apic(
         Domain.__init__(self)
         Endpoint.__init__(self)
         Epg.__init__(self)
-        FabricPath.__init__(self, log_id=log_id)
-        Interface.__init__(self, log_id=log_id)
+        FabricPath.__init__(self)
+        Interface.__init__(self)
         L2Out.__init__(self)
         L3Out.__init__(self)
         Node.__init__(self)
-        Policy.__init__(self, log_id=log_id)
+        Policy.__init__(self)
         Pool.__init__(self)
         PolicyGroup.__init__(self)
-        Protocol.__init__(self, log_id=log_id)
-        Tenant.__init__(self, log_id=log_id)
+        Protocol.__init__(self)
+        Tenant.__init__(self)
         Vrf.__init__(self)

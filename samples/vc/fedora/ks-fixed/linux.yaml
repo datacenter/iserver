@@ -1,0 +1,14 @@
+linux:
+  template: fedora
+  ks:
+    template: fixed.ks
+  iso:
+    filename: Fedora-Server-dvd-x86_64-36-1.5.iso
+  vm:
+    name: fedora-ks-fixed
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network

@@ -41,4 +41,46 @@ Taboo Contracts Usage
 +---------------------+---------------------+
 ```
 
+Developer
+
+```
+# iserver get aci contract --apic apic21 --type taboo --tenant k8s
+
+{
+    "duration": 1920,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 715,
+        "disconnect_time": 0,
+        "mo_time": 1090,
+        "total_time": 1805
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	715	-	connect apic21o.emea-sp.cisco.com
+True	322	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	327	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	441	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+```
+
 [[Back]](./Contract.md)

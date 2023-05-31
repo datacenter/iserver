@@ -12,14 +12,17 @@ Filter options:
   - [deployed node](./ApplicationEpgNode.md)
   - [contract](./ApplicationEpgContract.md)
 
-Output options:
-  - [default output](./ApplicationEpgAllDefault.md)
+View options:
+  - [default](./ApplicationEpgAllDefault.md)
   - [properties](./ApplicationEpgAllProperties.md)
   - [with bridge domain details](./ApplicationEpgAllBridgeDomain.md)
   - [with contract details](./ApplicationEpgAllContract.md)
   - [with deployed node details](./ApplicationEpgAllNode.md)
   - [verbose](./ApplicationEpgVerbose.md)
-  - [json](./ApplicationEpg.md) output
+
+Output options:
+  - [default](./ApplicationEpgAllDefault.md)
+  - [json](./ApplicationEpg.md)
 
 Command options
 

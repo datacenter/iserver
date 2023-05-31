@@ -1,10 +1,10 @@
 class PolicyGeneralAaeApi():
     def __init__(self):
-        self.mo_policy_global_aae = None
+        self.policy_global_aae_mo = None
 
-    def initialize_policy_global_aae(self):
-        if self.mo_policy_global_aae is not None:
-            return True
+    def get_policy_global_aae_mo(self):
+        if self.policy_global_aae_mo is not None:
+            return self.policy_global_aae_mo
 
         query = 'rsp-subtree=children&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP'
         managed_objects = self.get_class(
@@ -13,14 +13,9 @@ class PolicyGeneralAaeApi():
         )
 
         if managed_objects is None:
-            return False
+            return None
 
-        self.log.apic_mo(
-            'infraAttEntityP.mo',
-            managed_objects
-        )
-
-        self.mo_policy_global_aae = []
+        self.policy_global_aae_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['infraAttEntityP']['attributes']
             attributes['infraRtAttEntP'] = self.get_mo_children_attributes(
@@ -39,13 +34,13 @@ class PolicyGeneralAaeApi():
                 'infraProvAcc'
             )
 
-            self.mo_policy_global_aae.append(
+            self.policy_global_aae_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'infraAttEntityP',
-            self.mo_policy_global_aae
+            self.policy_global_aae_mo
         )
 
-        return True
+        return self.policy_global_aae_mo

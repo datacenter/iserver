@@ -2,7 +2,7 @@
 
 ## Get L2 properties of bridge domains
 
-Use '-o l2' to get L2 forwarding related properties of selected bridge domains
+Use '--view l2' to get L2 forwarding related properties of selected bridge domains
 - L2 unknown unicast
 - ARP flooding
 - multi destination flooding
@@ -10,7 +10,7 @@ Use '-o l2' to get L2 forwarding related properties of selected bridge domains
 - scaled L2 only (legacy) mode
 
 ```
-# iserver get aci bd --apic apic21 -o l2
+# iserver get aci bd --apic apic21 --view l2
 
 Apic: apic21
 
@@ -77,10 +77,6 @@ Apic: apic21
 +---------------------------+------------------+--------------+---------------------+------------------+----------------+
 | SPN_IntraLab/SPN_BD1      | flood            | yes          | encap-flood         | no               | no             | 
 +---------------------------+------------------+--------------+---------------------+------------------+----------------+
-| TESTING_BRUNO/BD2         | proxy            | yes          | bd-flood            | no               | yes            | 
-+---------------------------+------------------+--------------+---------------------+------------------+----------------+
-| TESTING_BRUNO/BDSITE2     | proxy            | yes          | bd-flood            | no               | yes            | 
-+---------------------------+------------------+--------------+---------------------+------------------+----------------+
 | vEPC/Leaking_BD           | proxy            | yes          | bd-flood            | no               | no             | 
 +---------------------------+------------------+--------------+---------------------+------------------+----------------+
 | vEPC/vSFO_BD              | proxy            | yes          | bd-flood            | no               | no             | 
@@ -93,6 +89,48 @@ Apic: apic21
 +---------------------------+------------------+--------------+---------------------+------------------+----------------+
 | vEPC_demo/vEPC-CTRL-SX_BD | proxy            | yes          | bd-flood            | no               | no             | 
 +---------------------------+------------------+--------------+---------------------+------------------+----------------+
+```
+
+Developer
+
+```
+# iserver get aci bd --apic apic21 --view l2
+
+{
+    "duration": 1911,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 390,
+        "disconnect_time": 0,
+        "mo_time": 1182,
+        "total_time": 1572
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	390	-	connect apic21o.emea-sp.cisco.com
+True	465	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	344	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	373	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
 ```
 
 [[Back]](./BridgeDomain.md)

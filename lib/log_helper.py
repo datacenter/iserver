@@ -194,10 +194,10 @@ class Log():
         result['read'] = True
         for line in content.split('\n'):
             if len(line) > 0:
-                if len(line.split('\t')) != 5:
+                if len(line.split('\t')) != 4:
                     print(line)
 
-                (when, success, duration, count, command) = line.split('\t')
+                (success, duration, count, command) = line.split('\t')
                 if success == 'True':
                     result['success'] = result['success'] + 1
                 else:
@@ -810,14 +810,11 @@ class Log():
 
     def apic(self, command, success, duration, item_count=None):
         try:
-            current_time = datetime.datetime.now()
-
             count = '-'
             if item_count is not None:
                 count = int(item_count)
 
-            msg = "%s\t%s\t%s\t%s\t%s\n" % (
-                current_time,
+            msg = "%s\t%s\t%s\t%s\n" % (
                 success,
                 duration,
                 count,

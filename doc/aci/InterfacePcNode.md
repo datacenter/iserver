@@ -43,4 +43,47 @@ Node: cl201-eu-spdc
 +---------------------+------+--------------------------+-------+-----------+-------+---------------------------+-----------+------------+--------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf pc --apic apic11 --node cl201-eu-spdc
+
+{
+    "duration": 2037,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 439,
+        "disconnect_time": 0,
+        "mo_time": 1324,
+        "total_time": 1763
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	439	-	connect apic11o.emea-sp.cisco.com
+True	327	11	apic11o.emea-sp.cisco.com class fabricNode
+True	361	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/pcAggrIf query rsp-subtree=children&rsp-subtree-class=ethpmAggrIf
+True	309	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	327	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+```
+
 [[Back]](./InterfacePc.md)

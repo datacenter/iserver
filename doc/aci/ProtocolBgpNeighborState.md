@@ -2,8 +2,8 @@
 
 ## Filter BGP neighbors by state (established|idle)
 
-Use --output parameter to select neighborship attributes template
-- [summary](./ProtocolBgpNeighborSummary.md)
+Use --view parameter to select neighborship attributes template
+- [default](./ProtocolBgpNeighborSummary.md)
 - [transport](./ProtocolBgpNeighborTransport.md)
 - [connection](./ProtocolBgpNeighborConnection.md)
 - [af](./ProtocolBgpNeighborAf.md)
@@ -108,6 +108,52 @@ Pod: 1
 | pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.195   | idle      | 65069 | ebgp | 1   | 0               | 
 | pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | 15.254.137.196   | idle      | 65069 | ebgp | 1   | 0               | 
 +---------------------+-------------------------------+------------------+-----------+-------+------+-----+-----------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bgp --apic apic11 --node rl --state up
+
+{
+    "duration": 2599,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 395,
+        "disconnect_time": 0,
+        "mo_time": 2025,
+        "total_time": 2420
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	395	-	connect apic11o.emea-sp.cisco.com
+True	293	11	apic11o.emea-sp.cisco.com class fabricNode
+True	292	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bgp/inst
+True	290	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom
+True	290	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	283	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bgp/inst
+True	290	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom
+True	287	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

@@ -26,8 +26,8 @@ Filter options:
   - [CDP/LLDP Neighbor](./InterfacePhyNei.md)
   - [QoS Stats](./InterfacePhyQos.md)
 
-Output options:
-  - [state](./InterfacePhyOutputState.md) (default)
+View options:
+  - [default](./InterfacePhyOutputState.md)
   - [ether](./InterfacePhyOutputEther.md)
   - [err](./InterfacePhyOutputErr.md)
   - [qos](./InterfacePhyOutputQos.md)
@@ -43,6 +43,9 @@ Output options:
   - [aaep](./InterfacePhyOutputAaep.md)
   - [pol](./InterfacePhyOutputPol.md)
   - [verbose](./InterfacePhyOutputVerbose.md)
+
+Output options:
+  - [default](./InterfacePhyOutputState.md)
   - [json](./InterfacePhyOutputJson.md)
 
 Command options

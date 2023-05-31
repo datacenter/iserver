@@ -3,6 +3,6 @@ from lib.aci.policy.troubleshooting.span.destination import PolicyTroubleshootin
 
 
 class PolicyTroubleshootingSpan(PolicyTroubleshootingSpanSource, PolicyTroubleshootingSpanDestination):
-    def __init__(self, log_id=None):
-        PolicyTroubleshootingSpanSource.__init__(self, log_id=log_id)
-        PolicyTroubleshootingSpanDestination.__init__(self, log_id=log_id)
+    def __init__(self):
+        PolicyTroubleshootingSpanSource.__init__(self)
+        PolicyTroubleshootingSpanDestination.__init__(self)

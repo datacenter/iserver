@@ -3,7 +3,7 @@
 ## Show BGP state summary for selected node
 
 ```
-# iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc -o vrf
+# iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc --view vrf
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -43,6 +43,49 @@ Node: cl201-eu-spdc
 | pod-1/cl201-eu-spdc | SPN_IntraLab:SPN_VRF1         | up        | fabric | 192.168.0.254   | rd:as2-nn4:201:2883591 | 0         | 0           | 
 | pod-1/cl201-eu-spdc | TESTING_BRUNO:default         | up        | fabric | 192.168.1.1     | rd:as2-nn4:201:2457600 | 0         | 0           | 
 +---------------------+-------------------------------+-----------+--------+-----------------+------------------------+-----------+-------------+
+```
+
+Developer
+
+```
+# iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc --view vrf
+
+{
+    "duration": 1732,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 378,
+        "disconnect_time": 0,
+        "mo_time": 1224,
+        "total_time": 1602
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	378	-	connect apic11o.emea-sp.cisco.com
+True	290	11	apic11o.emea-sp.cisco.com class fabricNode
+True	277	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bgp/inst
+True	288	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom
+True	369	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

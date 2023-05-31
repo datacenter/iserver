@@ -1,0 +1,24 @@
+ocp:
+  name: Milan-Kali-Devel
+  installation: vsphere-ipi
+  release: 4.11.3
+  source: web
+  cluster:
+    name: devel
+    domain: ocp.lan
+    api_vip: 10.58.24.162
+    ingress_vip: 10.58.24.163
+    master:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 16384
+      disk:
+        size: 120
+    worker:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 8192
+      disk:
+        size: 120

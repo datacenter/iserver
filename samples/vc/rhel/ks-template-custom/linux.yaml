@@ -1,0 +1,25 @@
+linux:
+  template: rhel
+  ks:
+    template: custom.ks
+  iso:
+    filename: rhel-8.2-x86_64-dvd.iso
+  vm:
+    name: rhel-sample-ks-custom
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network
+      name: ens192
+      type: vmxnet3
+    ip: 10.58.29.76/28
+    gateway: 10.58.29.78
+    dns:
+      servers: 144.254.71.184
+      domain: cisco.com
+    ntp:
+      servers: 144.254.15.78
+      timezone: Europe/Rome
+    password: cisco

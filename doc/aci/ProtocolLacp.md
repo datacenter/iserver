@@ -7,11 +7,14 @@ Node selection options:
   - [selected nodes](./ProtocolLacpInstanceNodes.md)
   - [leaf nodes](./ProtocolLacpInstanceLeaf.md)
 
-Output options:
-  - [instances](./ProtocolLacpInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolLacpInstanceNode.md)
   - [intf](./ProtocolLacpInterfaceNode.md)
   - [stats](./ProtocolLacpOutputVerbose.md)
   - [verbose](./ProtocolLacpOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolLacpInstanceNode.md)
   - [json](./ProtocolLacpOutputJson.md)
 
 Command options
@@ -31,12 +34,12 @@ Options:
   --pod TEXT                      Pod ID
   --node TEXT                     Node name patterns
   --role [any|leaf|spine]         [default: any]
-  -o, --output [instance|intf|stats|verbose|json]
-                                  [default: instance]
+  -v, --view [default|intf|stats|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\4f521cfcea56
+Info: finished in 35 ms and logs saved in /tmp/iserver\eed96a0a99cb
 ```
 
 [[Back]](./Protocol.md)

@@ -12,7 +12,9 @@ from lib.aci.l3out.output import L3OutOutput
 from lib.aci.node.output import NodeOutput
 from lib.aci.pg.output import PolicyGroupOutput
 from lib.aci.policy.output import PolicyOutput
+from lib.aci.pool.output import PoolOutput
 from lib.aci.proto.output import ProtocolOutput
+from lib.aci.tenant.output import TenantOutput
 from lib.aci.vrf.output import VrfOutput
 
 
@@ -29,7 +31,9 @@ class ApicOutput(
     NodeOutput,
     PolicyGroupOutput,
     PolicyOutput,
+    PoolOutput,
     ProtocolOutput,
+    TenantOutput,
     VrfOutput
     ):
     def __init__(self, verbose=False, debug=False, log_id=None):
@@ -52,7 +56,9 @@ class ApicOutput(
         NodeOutput.__init__(self)
         PolicyGroupOutput.__init__(self)
         PolicyOutput.__init__(self)
+        PoolOutput.__init__(self)
         ProtocolOutput.__init__(self)
+        TenantOutput.__init__(self)
         VrfOutput.__init__(self)
 
     def set_apic_off(self):

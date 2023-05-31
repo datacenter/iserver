@@ -12,7 +12,7 @@ Get selected bridge domain details
 - Endpoints with fabric and vmm information
 
 ```
-# iserver get aci bd --apic apic21 --name vk8s_1* -o verbose
+# iserver get aci bd --apic apic21 --name vk8s_1* --view verbose
 
 Apic: apic21
 
@@ -126,10 +126,10 @@ Bridge Domain Endpoints
 +----+-------------------+--------------+--------+---------------+--------+---------+------------------+
 | LV | 00:50:56:B4:3D:19 | 10.58.24.170 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 +----+-------------------+--------------+--------+---------------+--------+---------+------------------+
-| LV | 00:50:56:B4:67:1F | 10.58.24.162 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
-|    |                   | 10.58.24.167 |        |               |        |         |                  | 
+| LV | 00:50:56:B4:67:1F | 10.58.24.167 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 +----+-------------------+--------------+--------+---------------+--------+---------+------------------+
-| LV | 00:50:56:B4:85:73 | 10.58.24.165 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+| LV | 00:50:56:B4:85:73 | 10.58.24.162 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
+|    |                   | 10.58.24.165 |        |               |        |         |                  | 
 +----+-------------------+--------------+--------+---------------+--------+---------+------------------+
 | LV | 00:50:56:B4:9C:81 | 10.58.24.163 | k8s    | k8s/vk8s_1_BD | vk8s_1 | k8s_ANP | common/Infra_VRF | 
 |    |                   | 10.58.24.168 |        |               |        |         |                  | 
@@ -151,10 +151,10 @@ Bridge Domain Endpoints with VMM information
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
 |      | LV | 00:50:56:B4:3D:19 | 10.58.24.170 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-worker-ggl7q | poweredOn  | Network adapter 1 | up         | 
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
-|      | LV | 00:50:56:B4:67:1F | 10.58.24.162 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-master-2     | poweredOn  | Network adapter 1 | up         | 
-|      |    |                   | 10.58.24.167 |               |                         |                          |            |                   |            | 
+|      | LV | 00:50:56:B4:67:1F | 10.58.24.167 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-master-2     | poweredOn  | Network adapter 1 | up         | 
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
-|      | LV | 00:50:56:B4:85:73 | 10.58.24.165 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-master-0     | poweredOn  | Network adapter 1 | up         | 
+|      | LV | 00:50:56:B4:85:73 | 10.58.24.162 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-master-0     | poweredOn  | Network adapter 1 | up         | 
+|      |    |                   | 10.58.24.165 |               |                         |                          |            |                   |            | 
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
 |      | LV | 00:50:56:B4:9C:81 | 10.58.24.163 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-worker-d6c8p | poweredOn  | Network adapter 1 | up         | 
 |      |    |                   | 10.58.24.168 |               |                         |                          |            |                   |            | 
@@ -165,6 +165,59 @@ Bridge Domain Endpoints with VMM information
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
 |      | LV | 00:50:56:B4:EB:6A | 10.58.24.166 | EU-SPDC-POD2B | esx71.emea-sp.cisco.com | devel-5tt4q-master-1     | poweredOn  | Network adapter 1 | up         | 
 +------+----+-------------------+--------------+---------------+-------------------------+--------------------------+------------+-------------------+------------+
+```
+
+Developer
+
+```
+# iserver get aci bd --apic apic21 --name vk8s_1* --view verbose
+
+{
+    "duration": 9090,
+    "apic": {
+        "read": true,
+        "success": 15,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 14,
+        "connect_time": 433,
+        "disconnect_time": 0,
+        "mo_time": 7922,
+        "total_time": 8355
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	433	-	connect apic21o.emea-sp.cisco.com
+True	444	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	304	23	apic21o.emea-sp.cisco.com class fvCtx
+True	355	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	376	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	801	1016	apic21o.emea-sp.cisco.com class compVm
+True	1022	2852	apic21o.emea-sp.cisco.com class compVNic
+True	320	104	apic21o.emea-sp.cisco.com class compHv
+True	371	638	apic21o.emea-sp.cisco.com class fabricPathEp
+True	2112	19	apic21o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree-include=full-deployment&target-path=AccBaseGrpToEthIf
+True	368	13	apic21o.emea-sp.cisco.com class fabricNode
+True	412	1	apic21o.emea-sp.cisco.com mo uni/infra/funcprof/accbundle-k8s_esx71_PolGrp query rsp-subtree-include=full-deployment&target-node=2207&target-path=AccBaseGrpToEthIf
+True	423	1	apic21o.emea-sp.cisco.com mo uni/infra/funcprof/accbundle-k8s_esx71_PolGrp query rsp-subtree-include=full-deployment&target-node=2208&target-path=AccBaseGrpToEthIf
+True	303	1	apic21o.emea-sp.cisco.com mo uni/tn-common/snPol-default
+True	311	1	apic21o.emea-sp.cisco.com mo uni/tn-common/mldsnoopPol-default
 ```
 
 [[Back]](./BridgeDomain.md)

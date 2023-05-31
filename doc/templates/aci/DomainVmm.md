@@ -5,10 +5,13 @@ Get default properties of [all](./DomainVmmAll.md) Vmm Domains in selected APIC.
 Filter options:
   - [name](./DomainVmmName.md)
 
-Output options:
+View options:
   - [default](./DomainVmmAll.md)
   - [prop](./DomainVmmOutputProp.md)
   - [vc](./DomainVmmOutputVc.md)
+
+Output options:
+  - [default](./DomainVmmAll.md)
   - [json](./DomainVmmOutputJson.md)
 
 Command options

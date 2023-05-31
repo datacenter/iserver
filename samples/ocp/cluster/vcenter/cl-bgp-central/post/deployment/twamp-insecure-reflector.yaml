@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: twamp-insecure-config
+  namespace: default
+data:
+  config.json: |
+    {
+      "agent_id": "Enterprise_insecure_reflector",
+      "log_level": "WARNING",
+      "probes": [],
+      "reflector": {
+         "listener": "0.0.0.0:20862"
+      },
+      "collectors": []
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-twamp-insecure
+spec:
+  selector:
+    matchLabels:
+      app: my-twamp-insecure
+  template:
+    metadata:
+      labels:
+        app: my-twamp-insecure
+    spec:
+      volumes:
+      - name: twamp-insecure-config-volume
+        configMap:
+          name: twamp-insecure-config
+      containers:
+      - name: agent
+        image: containers.cisco.com/adt_emear/twamp-agent
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - mountPath: /app/config.json
+          subPath: config.json
+          name: twamp-insecure-config-volume
+        ports:
+        - containerPort: 20862
+        - containerPort: 20001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-twamp-insecure
+spec:
+  type: LoadBalancer
+  selector:
+    app: my-twamp-insecure
+  ports:
+  - protocol: UDP
+    name: data
+    port: 20862
+    targetPort: 20862
+  - protocol: UDP
+    name: reporting
+    port: 20001
+    targetPort: 20001
+  externalIPs:
+    - 172.70.66.67

@@ -24,15 +24,19 @@ Filter options:
     - [source interface](./ProtocolBgpNeighborInterface.md)
     - [state](./ProtocolBgpNeighborState.md)
 
-Output options:
-  - [summary](./ProtocolBgpNeighborSummary.md)
+View options:
+  - [default](./ProtocolBgpNeighborSummary.md)
   - [transport](./ProtocolBgpNeighborTransport.md)
   - [connection](./ProtocolBgpNeighborConnection.md)
   - [af](./ProtocolBgpNeighborAf.md)
   - [bgp routes](./ProtocolBgpRoute.md)
   - [verbose](./ProtocolBgpNeighborVerbose.md)
 
-### Command options
+Output options:
+  - [default](./ProtocolBgpNeighborSummary.md)
+  - [json](./ProtocolBgpJson.md)
+
+Command options
 
 ```
 DOC_TEMPLATE:get_aci_proto_bgp.help:output

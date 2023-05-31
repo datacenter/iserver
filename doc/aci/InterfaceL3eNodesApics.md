@@ -137,7 +137,7 @@ Pod: 1
 | apic21 | pod-1/s2101-eu-spdc  | eth1/16.16   | up          | up         |             | vlan-4  | no      | 9216 |                    | 
 | apic21 | pod-1/s2101-eu-spdc  | eth1/17.17   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2101-eu-spdc  | eth1/18.18   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
-| apic21 | pod-1/s2101-eu-spdc  | eth1/19.19   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
+| apic21 | pod-1/s2101-eu-spdc  | eth1/19.8    | up          | up         |             | vlan-2  | no      | 9366 | lo0                | 
 | apic21 | pod-1/s2101-eu-spdc  | eth1/2.5     | up          | up         |             | vlan-2  | no      | 9366 | lo0                | 
 | apic21 | pod-1/s2101-eu-spdc  | eth1/20.20   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2101-eu-spdc  | eth1/21.21   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
@@ -173,7 +173,7 @@ Pod: 1
 | apic21 | pod-1/s2102-eu-spdc  | eth1/18.18   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/19.19   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/2.39    | up          | up         |             | vlan-2  | no      | 9366 | lo0                | 
-| apic21 | pod-1/s2102-eu-spdc  | eth1/20.20   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
+| apic21 | pod-1/s2102-eu-spdc  | eth1/20.2    | up          | up         |             | vlan-2  | no      | 9366 | lo0                | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/21.21   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/22.22   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/23.23   | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
@@ -196,6 +196,84 @@ Pod: 1
 | apic21 | pod-1/s2102-eu-spdc  | eth1/8.40    | up          | up         |             | vlan-2  | no      | 9366 | lo0                | 
 | apic21 | pod-1/s2102-eu-spdc  | eth1/9.9     | up          | down       | parent-down | vlan-4  | no      | 9150 |                    | 
 +--------+----------------------+--------------+-------------+------------+-------------+---------+---------+------+--------------------+
+```
+
+Developer
+
+```
+# iserver get aci intf l3e --apic dom:milan --node any
+
+{
+    "duration": 14710,
+    "apic": {
+        "read": true,
+        "success": 40,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 38,
+        "connect_time": 786,
+        "disconnect_time": 0,
+        "mo_time": 12523,
+        "total_time": 13309
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	382	-	connect apic11o.emea-sp.cisco.com
+True	404	-	connect apic21o.emea-sp.cisco.com
+True	310	11	apic11o.emea-sp.cisco.com class fabricNode
+True	305	13	apic21o.emea-sp.cisco.com class fabricNode
+True	319	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	398	66	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4If
+True	295	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	308	68	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4If
+True	288	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	385	75	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4If
+True	513	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	325	74	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4If
+True	299	6	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	396	49	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4If
+True	357	6	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	311	49	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4If
+True	314	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	318	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4If
+True	328	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	401	42	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4If
+True	343	5	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	305	32	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/ipv4If
+True	320	5	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	301	32	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/ipv4If
+True	317	2	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	302	35	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/ipv4If
+True	309	2	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	320	35	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/ipv4If
+True	310	2	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	334	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/ipv4If
+True	311	2	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	311	33	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/ipv4If
+True	318	4	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	320	18	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/ipv4If
+True	363	4	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	299	19	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/ipv4If
+True	315	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	306	62	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/ipv4If
+True	342	34	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	307	62	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/ipv4If
 ```
 
 [[Back]](./InterfaceL3e.md)

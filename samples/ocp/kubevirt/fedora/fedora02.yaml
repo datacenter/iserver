@@ -1,0 +1,13 @@
+kind: VirtualMachineDeployment
+deployment:
+  vm: fedora02-vm.yaml
+  service:
+    ssh: fedora02-svc.yaml
+ready:
+  enabled: true
+  type: ssh
+  username: fedora
+  password: fedora
+  timeout: 180
+report:
+  enabled: true

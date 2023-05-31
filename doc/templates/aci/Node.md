@@ -12,7 +12,7 @@ Filter options:
   - [ip](./NodeIp.md)
   - [subnet](./NodeSubnet.md)
 
-Output options:
+View options:
   - [default](./NodeAll.md)
   - [intf](./NodeOutputIntf.md)
   - [ip](./NodeOutputIp.md)
@@ -20,6 +20,9 @@ Output options:
   - [psu](./NodeOutputPsu.md)
   - [sensor](./NodeOutputSensor.md)
   - [temp](./NodeOutputTemp.md)
+
+Output options:
+  - [default](./NodeAll.md)
   - [json](./NodeOutputJson.md)
 
 Command options

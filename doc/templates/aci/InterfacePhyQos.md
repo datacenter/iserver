@@ -20,5 +20,10 @@ Example: ports with transmit drops
 DOC_TEMPLATE:get_aci_intf_phy.qos_drops_tx:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_intf_phy.qos_data:devel.debug
+```
 
 [[Back]](./InterfacePhy.md)

@@ -8,4 +8,10 @@ EPGs associated with bridge domain with IP subnet that contains provided IP addr
 DOC_TEMPLATE:get_aci_epg.ip:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_epg.ip:devel.debug
+```
+
 [[Back]](./ApplicationEpg.md)

@@ -15,4 +15,45 @@ Apic: apic21
 +----------+-------------+---------------+---------------+----------------+-----------------------------------------------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci l2out --apic apic21 --tenant k8s
+
+{
+    "duration": 1220,
+    "apic": {
+        "read": true,
+        "success": 3,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 2,
+        "connect_time": 426,
+        "disconnect_time": 0,
+        "mo_time": 702,
+        "total_time": 1128
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	426	-	connect apic21o.emea-sp.cisco.com
+True	369	2	apic21o.emea-sp.cisco.com class l2extOut query rsp-subtree=children&rsp-subtree-class=l2extLNodeP,l2extInstP,l2extRsEBd,l2extRsL2DomAtt
+True	333	2	apic21o.emea-sp.cisco.com class l2extRsPathL2OutAtt
+```
+
 [[Back]](./L2Out.md)

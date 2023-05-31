@@ -143,16 +143,13 @@ class PolicyGeneralAaeInfo():
         return True
 
     def get_policy_global_aae(self, policy_global_aae_filter=None):
+        all_policies = self.get_policy_global_aae_mo()
+        if all_policies is None:
+            return None
+
         policy_global_aae = []
 
-        if not self.initialize_policy_global_aae():
-            self.log.error(
-                'get_policy_global_aae',
-                'Initialization failed'
-            )
-            return policy_global_aae
-
-        for managed_object in self.mo_policy_global_aae:
+        for managed_object in all_policies:
             policy_global_aae_info = self.get_policy_global_aae_info(
                 managed_object
             )

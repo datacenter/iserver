@@ -13,9 +13,12 @@ Filter options:
   - [IP](./InterfaceLoopbackIp.md)
   - [Subnet](./InterfaceLoopbackSubnet.md)
 
-Output options:
-  - [state](./InterfaceLoopbackOutputState.md) (default)
+View options:
+  - [default](./InterfaceLoopbackOutputState.md)
   - [verbose](./InterfaceLoopbackOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceLoopbackOutputState.md)
   - [json](./InterfaceLoopbackOutputJson.md)
 
 Command options
@@ -28,22 +31,23 @@ Usage: iserver.py get aci intf lb [OPTIONS]
   Get aci node loobpack interface
 
 Options:
-  --apic TEXT                     APIC name
-  --ip TEXT                       APIC IP
-  --username TEXT                 APIC Username
-  --password TEXT                 APIC Password
-  --pod TEXT                      Pod ID
-  --node TEXT                     Node name patterns
-  --role [any|leaf|spine]         [default: any]
-  --id TEXT                       Port name
-  --ip TEXT                       Filter by IP
-  --subnet TEXT                   Filter by subnet
-  -o, --output [default|verbose|json]
-                                  [default: default]
-  --devel                         Developer output
-  --help                          Show this message and exit.
+  --apic TEXT                   APIC name
+  --ip TEXT                     APIC IP
+  --username TEXT               APIC Username
+  --password TEXT               APIC Password
+  --pod TEXT                    Pod ID
+  --node TEXT                   Node name patterns
+  --role [any|leaf|spine]       [default: any]
+  --id TEXT                     Port name
+  --ip TEXT                     Filter by IP
+  --subnet TEXT                 Filter by subnet
+  -v, --view [default|verbose]
+  -o, --output [default|json]   [default: default]
+  --empty                       No error on empty result
+  --devel                       Developer output
+  --help                        Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\76d41fe2587d
+Info: finished in 37 ms and logs saved in /tmp/iserver\5f8e0149ec03
 ```
 
 [[Back]](./Interface.md)

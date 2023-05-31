@@ -1,0 +1,15 @@
+apiVersion: cdi.kubevirt.io/v1
+kind: DataVolume
+metadata:
+  name: cirros-registry
+spec:
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 500Mi
+    volumeMode: Filesystem
+  source:
+    registry:
+      url: "docker://quay.io/kubevirt/cirros-container-disk-demo"

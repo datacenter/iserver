@@ -1,0 +1,10 @@
+hostname csr1kv-01
+ip domain name cisco.com
+crypto key generate rsa modulus 2048
+aaa new-model
+aaa authorization exec default local
+username admin privilege 15 secret Cisco_123
+interface GigabitEthernet1
+    ip address dhcp
+    no shutdown
+!

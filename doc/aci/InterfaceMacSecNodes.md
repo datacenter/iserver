@@ -220,4 +220,50 @@ Pod: 1
 +---------------------+-----------+-------------+------------+------------+-----------------+-------+-----------------+---------------+-----------------+---------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf macsec --apic apic11 --node cl
+
+{
+    "duration": 3792,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 407,
+        "disconnect_time": 0,
+        "mo_time": 2613,
+        "total_time": 3020
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	407	-	connect apic11o.emea-sp.cisco.com
+True	320	11	apic11o.emea-sp.cisco.com class fabricNode
+True	380	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/macsecIf
+True	450	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
+True	384	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
+True	341	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/macsecIf
+True	370	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
+True	368	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
+```
+
 [[Back]](./InterfaceMacSec.md)

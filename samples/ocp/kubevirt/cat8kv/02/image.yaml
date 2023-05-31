@@ -1,0 +1,19 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: ${IMAGE_NAME}
+  namespace: ${IMAGE_NAMESPACE}
+  labels:
+    type: image
+    filename: ${IMAGE_FILENAME}
+  annotations:
+    cdi.kubevirt.io/storage.bind.immediate.requested: "true"
+spec:
+  source:
+      upload: {}
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${IMAGE_SIZE}

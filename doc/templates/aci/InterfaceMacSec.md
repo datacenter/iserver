@@ -11,9 +11,12 @@ Node selection options:
 Filter options:
   - [Interface ID](./InterfaceMacSecId.md)
 
-Output options:
-  - [state](./InterfaceMacSecOutputState.md) (default)
+View options:
+  - [default](./InterfaceMacSecOutputState.md)
   - [verbose](./InterfaceMacSecOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceMacSecOutputState.md)
   - [json](./InterfaceMacSecOutputJson.md)
 
 Command options

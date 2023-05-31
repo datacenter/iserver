@@ -1,0 +1,12 @@
+vcenter:
+  name: vc-eu-spdc.cisco.com
+  ip: 10.58.28.18
+  port: 443
+  username: admin@admin.local
+  password: "Cisco123!"
+  datacenter: eu-spdc-dc
+  datastore: EU-SPDC-Datastore-WNAS
+  cluster: eu-spdc-dc-A-blades
+  folder: OCP-Central-CL
+  host_ip: esx51-eu-spdc.cisco.com
+  network: UC3-CL2023-Demo|K8S|519

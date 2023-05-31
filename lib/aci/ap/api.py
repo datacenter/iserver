@@ -1,27 +1,27 @@
 class ApplicationProfileApi():
     def __init__(self):
-        self.mo_application_profile = None
+        self.application_profile_mo = None
 
-    def initialize_application_profile(self):
-        if self.mo_application_profile is not None:
-            return True
+    def get_application_profile_mo(self):
+        if self.application_profile_mo is not None:
+            return self.application_profile_mo
 
         managed_objects = self.get_class(
             'fvAp'
         )
         if managed_objects is None:
-            return False
+            return None
 
-        self.mo_application_profile = []
+        self.application_profile_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvAp']['attributes']
-            self.mo_application_profile.append(
+            self.application_profile_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'fvAp',
-            self.mo_application_profile
+            self.application_profile_mo
         )
 
-        return True
+        return self.application_profile_mo

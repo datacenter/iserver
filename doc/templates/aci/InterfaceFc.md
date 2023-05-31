@@ -15,9 +15,12 @@ Filter options:
   - Admin State
   - Oper State
 
-Output options:
+View options:
   - state
   - verbose
+
+Output options:
+  - default
   - json
 
 Command options

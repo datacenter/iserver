@@ -1,14 +1,11 @@
-import json
 import copy
-from lib import log_helper
 
 from lib.aci.proto.nd.interface_stats import ProtocolNdInterfaceStats
 
 
 class ProtocolNdInterface(ProtocolNdInterfaceStats):
-    def __init__(self, log_id=None):
-        ProtocolNdInterfaceStats.__init__(self, log_id=log_id)
-        self.log = log_helper.Log(log_id=log_id)
+    def __init__(self):
+        ProtocolNdInterfaceStats.__init__(self)
 
     def get_nd_active_interface_count(self, interfaces):
         count = 0

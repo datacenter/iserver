@@ -169,4 +169,44 @@ Apic: apic11
 +----+-------------------+---------------+---------+-----------------------------------+--------------------+--------------------+--------------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci ep --apic apic11 --vrf *MPC*
+
+{
+    "duration": 3476,
+    "apic": {
+        "read": true,
+        "success": 2,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 1,
+        "connect_time": 720,
+        "disconnect_time": 0,
+        "mo_time": 640,
+        "total_time": 1360
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	720	-	connect apic11o.emea-sp.cisco.com
+True	640	323	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+```
+
 [[Back]](./Endpoint.md)

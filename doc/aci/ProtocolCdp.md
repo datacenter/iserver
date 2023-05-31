@@ -14,9 +14,13 @@ Filter options:
   - [neighbor capabilities](./ProtocolCdpNeighborCapabilities.md)
   - [neighbor node local interface](./ProtocolCdpNeighborInterface.md)
 
-Output options:
-  - [nbr](./ProtocolCdpNeighborNode.md) (default)
+View options:
+  - [default](./ProtocolCdpNeighborNode.md)
   - [intf](./ProtocolCdpInterfaceNode.md)
+  - [instance](./ProtocolCdpNodesAll.md)
+
+Output options:
+  - [default](./ProtocolCdpNeighborNode.md)
   - [instance](./ProtocolCdpNodesAll.md)
 
 Command options
@@ -40,12 +44,12 @@ Options:
   --platform TEXT                 Filter by platform name
   --cap TEXT                      Filter by capabilities
   --intf TEXT                     Filter by interface name
-  -o, --output [nbr|intf|instance|json]
-                                  [default: nbr]
+  -v, --view [default|intf|instance]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 34 ms and logs saved in /tmp/iserver\a11071786566
+Info: finished in 30 ms and logs saved in /tmp/iserver\1eb7f33483fe
 ```
 
 [[Back]](./Protocol.md)

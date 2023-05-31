@@ -401,74 +401,6 @@
             {
                 "__Output": {},
                 "allocMode": "dynamic",
-                "bdDn": "uni/tn-TESTING_BRUNO/BD-BDSITE2",
-                "bindingType": "none",
-                "blockAllPorts": "Disabled",
-                "cfgdDelimiter": "",
-                "childAction": "",
-                "classPref": "encap",
-                "configFlags": "",
-                "crtrnEnabled": "no",
-                "ctxDn": "uni/tn-TESTING_BRUNO/ctx-default",
-                "customEpgName": "",
-                "deployIssues": "",
-                "descr": "",
-                "dn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22/eppd-[uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2]",
-                "encap": "vlan-2709",
-                "encapAllocKey": "uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2",
-                "encapChanged": "no",
-                "encapCtx": "ESX-CDC-22_VlanPool",
-                "encapMode": "access",
-                "encapModeOverride": "auto",
-                "epgCos": "Cos0",
-                "epgCosPref": "disabled",
-                "epgPKey": "uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2",
-                "eppDn": "uni/epp/fv-[uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2]",
-                "faultDKey": "uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2",
-                "forgedTransmit": "Disabled",
-                "id": "0",
-                "idConsumerDn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22/eppd-[uni/tn-TESTING_BRUNO/ap-sdfgd/epg-site2]",
-                "instrImedcy": "immediate",
-                "intraSecConf": "",
-                "issues": "",
-                "lagPolicyName": "",
-                "lbAlgo": "ip-hash",
-                "lcOwn": "local",
-                "macChange": "Disabled",
-                "mcastAddr": "0.0.0.0",
-                "modTs": "2023-02-09T16:39:32.859+02:00",
-                "monPolDn": "uni/tn-common/monepg-default",
-                "name": "6711114c-a11f-47a0-b97b-a2629137f8b6",
-                "nameAlias": "",
-                "netflowDir": "both",
-                "netflowPref": "disabled",
-                "numPorts": "0",
-                "operDelimiter": "|",
-                "pcEnfPref": "unenforced",
-                "portAllocation": "none",
-                "primaryEncap": "unknown",
-                "primaryEncapInner": "unknown",
-                "promMode": "Disabled",
-                "resImedcy": "pre-provision",
-                "secondaryEncapInner": "unknown",
-                "statsCollectionState": "yes",
-                "status": "",
-                "switchingMode": "native",
-                "txId": "10952754293792700702",
-                "type": "Tenant",
-                "untagged": "no",
-                "updateTs": "0",
-                "vnetOnly": "no",
-                "vlanId": 2709,
-                "tenant": "TESTING_BRUNO",
-                "appName": "sdfgd",
-                "epgName": "site2",
-                "domainType": "VMM Domain",
-                "domainName": "VMware/EU-SPDC-CDC-22"
-            },
-            {
-                "__Output": {},
-                "allocMode": "dynamic",
                 "bdDn": "uni/tn-nidemo/BD-management",
                 "bindingType": "none",
                 "blockAllPorts": "Disabled",
@@ -875,8 +807,8 @@
                 "domainName": "VMware/EU-SPDC-CDC-22"
             }
         ],
-        "epgCount": 12,
-        "epgUsage": "12/309",
+        "epgCount": 11,
+        "epgUsage": "11/309",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -1197,20 +1129,6 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
-                "allocMode": "static",
-                "descr": "Managed by Terraform",
-                "dn": null,
-                "from": "vlan-800",
-                "name": "",
-                "rn": "from-[vlan-800]-to-[vlan-809]",
-                "role": "external",
-                "to": "vlan-809",
-                "fromVlan": "800",
-                "toVlan": "809",
-                "blockInfo": "[800-809] (static)"
-            },
-            {
-                "__Output": {},
                 "allocMode": "inherit",
                 "descr": "Managed by Terraform",
                 "dn": null,
@@ -1224,7 +1142,7 @@
                 "blockInfo": "[1300-1499] (inherit)"
             }
         ],
-        "vlanCount": 210,
+        "vlanCount": 200,
         "epg": [
             {
                 "__Output": {},
@@ -2248,7 +2166,7 @@
             }
         ],
         "epgCount": 15,
-        "epgUsage": "15/210",
+        "epgUsage": "15/200",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2286,13 +2204,34 @@
                 "fromVlan": "800",
                 "toVlan": "809",
                 "blockInfo": "[800-809] (inherit)"
+            },
+            {
+                "__Output": {},
+                "allocMode": "static",
+                "descr": "Used for Ericsson 5GC. Manual config.",
+                "dn": null,
+                "from": "vlan-810",
+                "name": "",
+                "rn": "from-[vlan-810]-to-[vlan-813]",
+                "role": "external",
+                "to": "vlan-813",
+                "fromVlan": "810",
+                "toVlan": "813",
+                "blockInfo": "[810-813] (static)"
             }
         ],
-        "vlanCount": 10,
+        "vlanCount": 14,
         "epg": [],
         "epgCount": 0,
-        "epgUsage": "0/10",
+        "epgUsage": "0/14",
         "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "l3extDomP",
+                "tDn": "uni/l3dom-k8s_phys_L3Dom",
+                "domainName": "k8s_phys_L3Dom"
+            },
             {
                 "__Output": {},
                 "dn": null,

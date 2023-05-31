@@ -14,11 +14,14 @@ Filter options:
 Cross domain filter options:
   - [server](./ProtocolLldpServer.md)
 
-  Output options:
-  - [instances](./ProtocolLldpInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolLldpInstanceNode.md)
   - [nei](./ProtocolLldpNeighborNodes.md)
   - [stats](./ProtocolLldpOutputVerbose.md)
   - [verbose](./ProtocolLldpOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolLldpInstanceNode.md)
   - [json](./ProtocolLldpOutputJson.md)
 
 Command options
@@ -41,12 +44,12 @@ Options:
   --device TEXT                   Filter neighbor by device name
   --mac TEXT                      Filter neighbor by mac address
   --xd TEXT                       Cross domain filter
-  -o, --output [instance|nei|stats|verbose|json]
-                                  [default: instance]
+  -v, --view [default|nei|stats|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 41 ms and logs saved in /tmp/iserver\a4a54de83b9a
+Info: finished in 49 ms and logs saved in /tmp/iserver\0461e2de387e
 ```
 
 [[Back]](./Protocol.md)

@@ -1,0 +1,24 @@
+console serial
+interface management0/0
+  nameif management
+  security-level 100
+  ip address dhcp
+  no shutdown
+interface gigabitethernet0/0
+  nameif inside
+  security-level 100
+  ip address 10.1.1.2 255.255.255.0
+  no shutdown
+interface gigabitethernet0/1
+  nameif outside
+  security-level 0
+  ip address 198.51.100.2 255.255.255.0
+  no shutdown
+crypto key generate rsa modulus 1024
+username admin password Cisco_123 privilige_15
+aaa authentication ssh console LOCAL
+ssh 0.0.0.0 0.0.0.0 management
+ssh timeout 60
+ssh version 2
+!
+crypto key generate rsa modulus 2048

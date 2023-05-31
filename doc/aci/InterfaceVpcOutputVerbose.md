@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci intf vpc --apic apic11 --node any --id 100 -o verbose
+# iserver get aci intf vpc --apic apic11 --node any --id 100 --view verbose
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -141,6 +141,56 @@ Interface Virtual Port Channel
 | 14  | pod4a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
 | 27  | pod1a-AIO-2-PET_PolGrp   | active  | up          | up           | 
 +-----+--------------------------+---------+-------------+--------------+
+```
+
+Developer
+
+```
+# iserver get aci intf vpc --apic apic11 --node any --id 100 --view verbose
+
+{
+    "duration": 4157,
+    "apic": {
+        "read": true,
+        "success": 12,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 11,
+        "connect_time": 416,
+        "disconnect_time": 0,
+        "mo_time": 3472,
+        "total_time": 3888
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	416	-	connect apic11o.emea-sp.cisco.com
+True	319	11	apic11o.emea-sp.cisco.com class fabricNode
+True	283	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	315	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	334	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	345	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	306	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	314	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	309	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	293	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
+True	356	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
+True	298	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
 ```
 
 [[Back]](./InterfaceVpc.md)

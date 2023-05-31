@@ -22,4 +22,46 @@ Apic: apic11
 +--------------+-----------------+-------------------+-----------------------+-----------+---------+
 ```
 
+Developer
+
+```
+# iserver get aci domain vmm --apic apic11
+
+{
+    "duration": 1954,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 446,
+        "disconnect_time": 0,
+        "mo_time": 1291,
+        "total_time": 1737
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	446	-	connect apic11o.emea-sp.cisco.com
+True	403	2	apic11o.emea-sp.cisco.com class vmmDomP query rsp-subtree=children&rsp-subtree-class=infraRtDomP,vmmUplinkPCont,infraRsVlanNs,vmmUsrAccP,vmmCtrlrP,vmmVSwitchPolicyCont
+True	422	25	apic11o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	466	39	apic11o.emea-sp.cisco.com class vmmEpPD
+```
+
 [[Back]](./DomainVmm.md)

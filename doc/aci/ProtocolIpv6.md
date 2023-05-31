@@ -2,15 +2,25 @@
 
 ## IPv6
 
-### IPv6 Route Table Summary
-
-Show IPv6 route table summary for selected nodes.
-
 Node selection options:
   - [single node](./ProtocolIpv6SummaryNode.md)
   - [selected nodes](./ProtocolIpv6SummaryNodes.md)
 
-### Command options
+Filter options:
+  - route type
+  - IP address
+  - IP subnet
+  - vrf
+
+View options:
+  - default
+  - [summary](./ProtocolIpv6SummaryNode.md)
+
+Output options:
+  - [default](./ProtocolIpv6SummaryNode.md)
+  - [json](./ProtocolIpv6Json.md)
+
+Command options
 
 ```
 # iserver get aci proto ipv6 --help
@@ -32,12 +42,12 @@ Options:
   --ip TEXT                       IP Address filter
   --subnet TEXT                   IP Subnet filter
   --longer                        Match longer prefixes
-  -o, --output [route|summary|json]
-                                  [default: route]
+  -v, --view [default|summary]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\dc0442209a60
+Info: finished in 31 ms and logs saved in /tmp/iserver\e7e83ea9465b
 ```
 
 [[Back]](./Protocol.md)

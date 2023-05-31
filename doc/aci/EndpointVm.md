@@ -3,7 +3,7 @@
 ## Filter by vm name
 
 ```
-# iserver get aci ep --apic apic11 --vm *cnc* -o vm
+# iserver get aci ep --apic apic11 --vm *cnc* --view vm
 
 Apic: apic11
 
@@ -50,6 +50,49 @@ Apic: apic11
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
 | V  | 00:50:56:B2:FA:79 |              | EU-SPDC-CDC | esx5-eu-spdc.cisco.com  | cnc50-dg-1     | poweredOn | Network adapter 4 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
+```
+
+Developer
+
+```
+# iserver get aci ep --apic apic11 --vm *cnc* --view vm
+
+{
+    "duration": 3221,
+    "apic": {
+        "read": true,
+        "success": 5,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 4,
+        "connect_time": 396,
+        "disconnect_time": 0,
+        "mo_time": 2102,
+        "total_time": 2498
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	396	-	connect apic11o.emea-sp.cisco.com
+True	567	323	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	534	656	apic11o.emea-sp.cisco.com class compVm
+True	700	1872	apic11o.emea-sp.cisco.com class compVNic
+True	301	68	apic11o.emea-sp.cisco.com class compHv
 ```
 
 [[Back]](./Endpoint.md)

@@ -17,6 +17,9 @@ class ProtocolHsrp(ProtocolHsrpInstance, ProtocolHsrpDomain, ProtocolHsrpInterfa
             node_id=node_id
         )
 
+        if info['instance'] is None:
+            return None
+
         info['domains'] = self.get_protocol_hsrp_domains(
             pod_id=pod_id,
             node_id=node_id,

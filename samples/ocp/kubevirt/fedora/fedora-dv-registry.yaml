@@ -1,0 +1,15 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: fedora-registry
+spec:
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 30Gi
+    volumeMode: Filesystem
+  source:
+    registry:
+      url: "docker://quay.io/containerdisks/fedora@sha256:56ccabc01cbecf05c267580e77c73563222ec7b9cd64508c26481fba032c1193"

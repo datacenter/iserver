@@ -291,9 +291,4 @@ class ContractInfo():
             contracts
         )
 
-        self.log.trace(
-            'get_contracts',
-            start_time
-        )
-
         return contracts

@@ -2,7 +2,20 @@ class PolicyInterfaceLinkLevelFcOutput():
     def __init__(self):
         pass
 
-    def print_policy_interface_link_level_fc(self, info, verbose=False):
+    def print_policy_interface_link_level_fc(self, info):
+        self.print_policy_interface_link_level_fc_properties(
+            info
+        )
+
+        self.print_policy_interface_link_level_fc_interfaces(
+            info['l1RsQosLlfcIfPolCons']
+        )
+
+        self.print_policy_interface_link_level_fc_references(
+            info['relnFrom']
+        )
+
+    def print_policy_interface_link_level_fc_properties(self, info):
         order = [
             'name',
             'tf',
@@ -21,51 +34,144 @@ class PolicyInterfaceLinkLevelFcOutput():
             'Ref Policies'
         ]
 
-        self.print_policy_interface(
+        self.my_output.dictionary(
             info,
-            'Link Level Flow Control Policy Properties',
-            order,
-            headers,
-            verbose
+            title='Link Level Flow Control Policy Properties',
+            underline=True,
+            prefix="- ",
+            justify=True,
+            keys=order,
+            title_keys=headers
         )
 
-    def print_policies_interface_link_level_fc(self, info, verbose=False):
+    def print_policy_interface_link_level_fc_interfaces(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId'
+        ]
+
+        headers = [
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policy_interface_link_level_fc_references(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'policyName',
+            'policyType',
+            'tCl'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Policy Type',
+            'Policy Class'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_link_level_fc_summary(self, info):
         order = [
             'name',
             'tfTick',
             'llfcRcvAdminSt',
-            'llfcSendAdminSt'
+            'llfcSendAdminSt',
+            'interfaces',
+            'references'
         ]
 
         headers = [
             'Policy Name',
             'TF',
             'Receive Flow Control',
-            'Send Flow Control'
+            'Send Flow Control',
+            'Interfaces',
+            'Ref Policies'
         ]
 
-        self.print_policies_interface(
+        self.my_output.my_table(
             info,
-            order,
-            headers,
-            verbose
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )
 
-    def print_policy_interface_link_level_fc_node(self, info):
+    def print_policies_interface_link_level_fc_usage(self, info):
         order = [
-            'policy.name',
-            'policy.llfcRcvAdminSt',
-            'policy.llfcSendAdminSt'
+            'name',
+            'nodeInterfaces.pod_node_name',
+            'nodeInterfaces.interfaces',
+            'relnFrom.policyType',
+            'relnFrom.policyName'
         ]
 
         headers = [
-            'Link Level Policy Name',
-            'Receive Flow Control',
-            'Send Flow Control'
+            'Policy Name',
+            'Node',
+            'Interface Count',
+            'Ref Policy Type',
+            'Ref Policy Name'
         ]
 
-        self.print_policy_interface_node(
-            info,
-            order,
-            headers
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['nodeInterfaces', 'relnFrom']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_link_level_fc_interfaces(self, info):
+        order = [
+            'name',
+            'l1RsQosLlfcIfPolCons.pod_node_name',
+            'l1RsQosLlfcIfPolCons.interfaceId'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['l1RsQosLlfcIfPolCons']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )

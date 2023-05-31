@@ -15,7 +15,7 @@ Note:
 Example:
 
 ```
-# iserver get aci proto cdp --apic apic11 --node rl -o intf
+# iserver get aci proto cdp --apic apic11 --node rl --view intf
 
 Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
@@ -26,14 +26,14 @@ Pod: 1
 +---------------------+--------------+-------------+------------+-------+---------------------+---------+-------------+---------+-------------+-------------+----------------+-----------+---------------------+
 | Node                | Interface ID | Admin State | Oper State | Count | Neighbors           | v2 Sent | v2 Received | v1 Sent | v2 Received | Failed Sent | Checksum Error | Malformed | Unsupported Version |
 +---------------------+--------------+-------------+------------+-------+---------------------+---------+-------------+---------+-------------+-------------+----------------+-----------+---------------------+
-| pod-1/rl301-eu-spdc | eth1/29      | enabled     | up         | 1     | Berlin-35.cisco.com | 53147   | 53144       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl301-eu-spdc | eth1/3       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-B  | 53138   | 53142       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl301-eu-spdc | eth1/4       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-A  | 53139   | 53132       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl301-eu-spdc | mgmt0        | enabled     | up         | 1     | r23-eu-spdc         | 53146   | 53148       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl302-eu-spdc | eth1/29      | enabled     | up         | 1     | Berlin-35.cisco.com | 52589   | 52580       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl302-eu-spdc | eth1/3       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-B  | 52588   | 52586       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl302-eu-spdc | eth1/4       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-A  | 52588   | 52575       | 0       | 0           | 0           | 0              | 0         | 0                   | 
-| pod-1/rl302-eu-spdc | mgmt0        | enabled     | up         | 1     | r23-eu-spdc         | 52588   | 52585       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl301-eu-spdc | eth1/29      | enabled     | up         | 1     | Berlin-35.cisco.com | 62235   | 62232       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl301-eu-spdc | eth1/3       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-B  | 62225   | 62230       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl301-eu-spdc | eth1/4       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-A  | 62226   | 62219       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl301-eu-spdc | mgmt0        | enabled     | up         | 1     | r23-eu-spdc         | 62234   | 62236       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl302-eu-spdc | eth1/29      | enabled     | up         | 1     | Berlin-35.cisco.com | 61676   | 61668       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl302-eu-spdc | eth1/3       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-B  | 61675   | 61674       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl302-eu-spdc | eth1/4       | enabled     | up         | 1     | FI-ucsb1-eu-spdc-A  | 61675   | 61662       | 0       | 0           | 0           | 0              | 0         | 0                   | 
+| pod-1/rl302-eu-spdc | mgmt0        | enabled     | up         | 1     | r23-eu-spdc         | 61676   | 61672       | 0       | 0           | 0           | 0              | 0         | 0                   | 
 +---------------------+--------------+-------------+------------+-------+---------------------+---------+-------------+---------+-------------+-------------+----------------+-----------+---------------------+
 ```
 

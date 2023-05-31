@@ -6,9 +6,12 @@ Filter options:
   - [name](./PgAccessInterfacePortName.md)
   - [aaep](./PgAccessInterfacePortAaep.md)
 
-Output options:
-  - [policy](./PgAccessInterfacePortOutputPolicy.md) (default)
+View options:
+  - [default](./PgAccessInterfacePortOutputPolicy.md)
   - [aaep](./PgAccessInterfacePortOutputAaep.md)
+
+Output options:
+  - [default](./PgAccessInterfacePortOutputPolicy.md)
   - [json](./PgAccessInterfacePortOutputJson.md)
 
 Command options

@@ -31,4 +31,60 @@ Pod: 1
 +---------------------+-------------+------------+-------------+------------+-------------------+------+----------+--------+----------+--------------+------+
 ```
 
+Developer
+
+```
+# iserver get aci proto isis --apic apic11 --node any
+
+{
+    "duration": 6586,
+    "apic": {
+        "read": true,
+        "success": 18,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 17,
+        "connect_time": 490,
+        "disconnect_time": 0,
+        "mo_time": 5782,
+        "total_time": 6272
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	490	-	connect apic11o.emea-sp.cisco.com
+True	298	11	apic11o.emea-sp.cisco.com class fabricNode
+True	312	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/isis
+True	347	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	331	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/isis
+True	391	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	329	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis
+True	355	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	338	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/isis
+True	348	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	345	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis
+True	349	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	443	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis
+True	332	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	343	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/isis
+True	307	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	314	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/isis
+True	300	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/isis query query-target=subtree&target-subtree-class=isisDom
+```
+
 [[Back]](./ProtocolIsis.md)

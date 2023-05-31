@@ -3,7 +3,7 @@
 ## PSU specific output
 
 ```
-# iserver get aci node --apic apic11 -o psu
+# iserver get aci node --apic apic11 --view psu
 
 Apic: apic11
 
@@ -33,6 +33,47 @@ Apic: apic11
 | pod-1/s102-eu-spdc  | 1           | PSU             | NXA-PAC-1100W-PE2 | ART2329F96C   | 0.0     | 12.0    | ok         | 
 | pod-1/s102-eu-spdc  | 2           | PSU             | NXA-PAC-1100W-PE2 | ART2329F90C   | 0.0     | 12.0    | ok         | 
 +---------------------+-------------+-----------------+-------------------+---------------+---------+---------+------------+
+```
+
+Developer
+
+```
+# iserver get aci node --apic apic11 --view psu
+
+{
+    "duration": 1426,
+    "apic": {
+        "read": true,
+        "success": 3,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 2,
+        "connect_time": 669,
+        "disconnect_time": 0,
+        "mo_time": 612,
+        "total_time": 1281
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	669	-	connect apic11o.emea-sp.cisco.com
+True	313	11	apic11o.emea-sp.cisco.com class fabricNode
+True	299	22	apic11o.emea-sp.cisco.com class eqptPsu
 ```
 
 [[Back]](./Node.md)

@@ -7,8 +7,8 @@ Node selection options:
   - [selected nodes](./ProtocolIsisInstanceNodes.md)
   - [all nodes](./ProtocolIsisInstanceNodesAll.md)
 
-Output options:
-  - [instance](./ProtocolIsisInstanceNode.md) (default)
+View options:
+  - [default](./ProtocolIsisInstanceNode.md)
   - [intf](./ProtocolIsisInterfaceNode.md)
   - [lsp](./ProtocolIsisLspNode.md)
   - [neighbor](./ProtocolIsisNeighborNode.md)
@@ -16,6 +16,10 @@ Output options:
   - [tree](./ProtocolIsisTreeNode.md)
   - [tunnel](./ProtocolIsisTunnelNode.md)
   - [verbose](./ProtocolIsisVerbose.md)
+
+Output options:
+  - [default](./ProtocolIsisInstanceNode.md)
+  - [json](./ProtocolIsisJson.md)
 
 Command options
 

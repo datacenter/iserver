@@ -3,7 +3,7 @@
 ## Verbose output
 
 ```
-# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc -o counter
+# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc --view counter
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -29,7 +29,7 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | vlan30    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan32    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan34    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
-| pod-1/bl205-eu-spdc | vlan35    | up          | up         | 58571760   | 82864264   | 0        | 0         | 0       | 0        | 0      | 0       | 
+| pod-1/bl205-eu-spdc | vlan35    | up          | up         | 71250295   | 107484666  | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan37    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan39    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan4     | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
@@ -44,13 +44,55 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | vlan55    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan57    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan59    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
-| pod-1/bl205-eu-spdc | vlan61    | up          | up         | 3732452734 | 2991666515 | 0        | 0         | 0       | 0        | 0      | 0       | 
-| pod-1/bl205-eu-spdc | vlan63    | up          | up         | 50772453   | 40522670   | 0        | 0         | 0       | 0        | 0      | 0       | 
+| pod-1/bl205-eu-spdc | vlan61    | up          | up         | 4395942297 | 3523875933 | 0        | 0         | 0       | 0        | 0      | 0       | 
+| pod-1/bl205-eu-spdc | vlan63    | up          | up         | 50783561   | 40546197   | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan69    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan7     | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan70    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 | pod-1/bl205-eu-spdc | vlan72    | up          | up         | 0          | 0          | 0        | 0         | 0       | 0        | 0      | 0       | 
 +---------------------+-----------+-------------+------------+------------+------------+----------+-----------+---------+----------+--------+---------+
+```
+
+Developer
+
+```
+# iserver get aci intf svi --apic apic11 --node bl205-eu-spdc --view counter
+
+{
+    "duration": 2638,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 778,
+        "disconnect_time": 0,
+        "mo_time": 1535,
+        "total_time": 2313
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	778	-	connect apic11o.emea-sp.cisco.com
+True	474	11	apic11o.emea-sp.cisco.com class fabricNode
+True	750	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
+True	311	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

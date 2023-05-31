@@ -6,9 +6,9 @@
 # iserver get aci intf phy
     --apic apic11
     --node bl205-eu-spdc
-    --id 1/1 -o verbose
+    --id 1/1
+    --view verbose
 
-Apic: apic11
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
 Node: bl205-eu-spdc
@@ -83,49 +83,49 @@ LLDP
 - Capability         : bridge,router
 
 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| Up | EPG Name           | App Profile           | Tenant            | Preferred Member | Flood    | Class ID | QoS Class   | Isolation  | Label Match |
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | CNC_bus            | CNC_ANP               | CNC_demo          | exclude          | disabled | 32779    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | Data               | DT-EPNM               | DT-EPNM           | exclude          | disabled | 16414    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | Device             | DT-EPNM               | DT-EPNM           | exclude          | disabled | 16415    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | EPG1               | TEST                  | NXOS-HandOff_Test | exclude          | disabled | 16388    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | EU-SPDC-ERSPAN     | EU-SPDC_ANP           | mgmt              | exclude          | disabled | 16386    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | F5_IN              | F5_ANP                | MPC-F5T           | exclude          | disabled | 32770    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | F5_OUT             | F5_ANP                | MPC-F5T           | exclude          | disabled | 16387    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | MGMT               | DT-EPNM               | DT-EPNM           | exclude          | disabled | 16413    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | MPC-CDC-2          | AP-ECMP-demo_ANP      | ECMP-demo         | exclude          | disabled | 32771    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | P5G-F1C-NGC-N2     | P5G_App               | P5G               | exclude          | disabled | 17       | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | P5G-mgmt           | P5G_App               | P5G               | exclude          | disabled | 32785    | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | PrivateIP-MGMT     | Infra_ANP             | common            | exclude          | disabled | 18       | unspecified | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SITE1              | UntitledAP1           | TESTING_BRUNO     | exclude          | disabled | 16386    | unspecified | unenforced | None        | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SPIN-Backend01     | SPIN_InnoLab          | SPIN_InnoLab      | exclude          | disabled | 32771    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SPIN-CSR-A         | SPIN_InnoLab          | SPIN_InnoLab      | exclude          | disabled | 32773    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SPIN-CSR-P         | SPIN_InnoLab          | SPIN_InnoLab      | exclude          | disabled | 49154    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SPIN-CSR-P-2       | SPIN_InnoLab          | SPIN_InnoLab      | exclude          | disabled | 32775    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | SPIN-MGMT          | SPIN_InnoLab          | SPIN_InnoLab      | exclude          | disabled | 49154    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | TEST1              | SPN_Connect_ANP       | SPN_IntraLab      | exclude          | disabled | 32772    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
-| V  | Vitria-Mon-BackEnd | Vitria-Monitoring_ANP | iks-monitoring    | exclude          | disabled | 32770    | level3      | unenforced | AtleastOne  | 
-+----+--------------------+-----------------------+-------------------+------------------+----------+----------+-------------+------------+-------------+
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| Up | EPG                                                     | Preferred Member | Flood    | Class ID | QoS Class   | Isolation  | Label Match |
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | CNC_demo/CNC_ANP/CNC_bus                                | exclude          | disabled | 32779    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | DT-EPNM/DT-EPNM/Data                                    | exclude          | disabled | 16414    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | DT-EPNM/DT-EPNM/Device                                  | exclude          | disabled | 16415    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | NXOS-HandOff_Test/TEST/EPG1                             | exclude          | disabled | 16388    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN                         | exclude          | disabled | 16386    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | MPC-F5T/F5_ANP/F5_IN                                    | exclude          | disabled | 32770    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | MPC-F5T/F5_ANP/F5_OUT                                   | exclude          | disabled | 16387    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | DT-EPNM/DT-EPNM/MGMT                                    | exclude          | disabled | 16413    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | ECMP-demo/AP-ECMP-demo_ANP/MPC-CDC-2                    | exclude          | disabled | 32771    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | P5G/P5G_App/P5G-F1C-NGC-N2                              | exclude          | disabled | 17       | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | P5G/P5G_App/P5G-mgmt                                    | exclude          | disabled | 32785    | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | common/Infra_ANP/PrivateIP-MGMT                         | exclude          | disabled | 18       | unspecified | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | TESTING_BRUNO/UntitledAP1/SITE1                         | exclude          | disabled | 16386    | unspecified | unenforced | None        | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPIN_InnoLab/SPIN_InnoLab/SPIN-Backend01                | exclude          | disabled | 32771    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPIN_InnoLab/SPIN_InnoLab/SPIN-CSR-A                    | exclude          | disabled | 32773    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPIN_InnoLab/SPIN_InnoLab/SPIN-CSR-P                    | exclude          | disabled | 49154    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPIN_InnoLab/SPIN_InnoLab/SPIN-CSR-P-2                  | exclude          | disabled | 32775    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPIN_InnoLab/SPIN_InnoLab/SPIN-MGMT                     | exclude          | disabled | 49154    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | SPN_IntraLab/SPN_Connect_ANP/TEST1                      | exclude          | disabled | 32772    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
+| V  | iks-monitoring/Vitria-Monitoring_ANP/Vitria-Mon-BackEnd | exclude          | disabled | 32770    | level3      | unenforced | AtleastOne  | 
++----+---------------------------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 
 +---------------------------------------------------------+---------------+------------+--------------+-----------------+
 | EPG                                                     | Internal VLAN | Encap VLAN | Fabric VxLAN | VLAN Oper State |
@@ -154,41 +154,102 @@ LLDP
 
 Ethernet Packets Statistics
 ---------------------------
-- Packets with no errors : 40961284306
-- Broadcast              : 23668752
-- Multicast              : 3132120
+- Packets with no errors : 48020278857
+- Broadcast              : 27432328
+- Multicast              : 3583114
 - Size up to 64B         : 52
-- Size 65-1270B          : 36373743997
-- Size 128-255B          : 6117328
-- Size 256-511B          : 10485361
-- Size 512-1023          : 4832351
-- Size 1024-1518         : 4562971665
-- Oversize               : 3133553
+- Size 65-1270B          : 42634615662
+- Size 128-255B          : 7175609
+- Size 256-511B          : 12260101
+- Size 512-1023          : 5740415
+- Size 1024-1518         : 5356792428
+- Oversize               : 3694590
 - Undersize              : 0
-- Rx with no errors      : 20471089941
+- Rx with no errors      : 23994790733
 - Rx giant               : 0
-- Rx oversize            : 108668
-- Tx with no errors      : 20482150888
+- Rx oversize            : 127256
+- Tx with no errors      : 24017444647
 - Tx giant               : 0
-- Tx oversize            : 3024885
+- Tx oversize            : 3567334
 - Collisions             : 0
 - CRC errors             : 0
 - Drops                  : 0
 
 
-+---------------+----------------+------------------+---------------+-----------------+----------------+------------------+---------------+-----------------+
-| Class         | Rx Admit Bytes | Rx Admin Packets | Rx Drop Bytes | Rx Drop Packets | Tx Admit Bytes | Tx Admin Packets | Tx Drop Bytes | Tx Drop Packets |
-+---------------+----------------+------------------+---------------+-----------------+----------------+------------------+---------------+-----------------+
-| control-plane | 6278525906     | 55099090         | 0             | 0               | 6887814261     | 68040486         | 4948          | 67              | 
-| level1        | 108233536927   | 382041173        | 0             | 0               | 23057574830    | 303076787        | 0             | 0               | 
-| level2        | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-| level3        | 3804944462578  | 20033271157      | 275788        | 1738            | 3934673809917  | 20119077208      | 50845         | 539             | 
-| level4        | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-| level5        | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-| level6        | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-| policy-plane  | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-| span          | 0              | 0                | 0             | 0               | 0              | 0                | 0             | 0               | 
-+---------------+----------------+------------------+---------------+-----------------+----------------+------------------+---------------+-----------------+
++---------------+---------------+-------------+-------------+---------+---------------+-------------+-------------+---------+
+| Class         | Rx Admit [B]  | Rx Admin    | Rx Drop [B] | Rx Drop | Tx Admit [B]  | Tx Admin    | Tx Drop [B] | Tx Drop |
++---------------+---------------+-------------+-------------+---------+---------------+-------------+-------------+---------+
+| control-plane | 7364030285    | 64619197    | 0           | 0       | 8057129296    | 79476246    | 4948        | 67      | 
+| level1        | 108233536927  | 382041173   | 0           | 0       | 23057574830   | 303076787   | 0           | 0       | 
+| level2        | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
+| level3        | 4477936865964 | 23547478678 | 736669      | 5146    | 4627184668794 | 23642965701 | 52303       | 560     | 
+| level4        | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
+| level5        | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
+| level6        | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
+| policy-plane  | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
+| span          | 0             | 0           | 0           | 0       | 0             | 0           | 0           | 0       | 
++---------------+---------------+-------------+-------------+---------+---------------+-------------+-------------+---------+
+Interface context: phy
+```
+
+Developer
+
+```
+# iserver get aci intf phy
+    --apic apic11
+    --node bl205-eu-spdc
+    --id 1/1
+    --view verbose
+
+{
+    "duration": 7360,
+    "apic": {
+        "read": true,
+        "success": 18,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 17,
+        "connect_time": 413,
+        "disconnect_time": 0,
+        "mo_time": 6312,
+        "total_time": 6725
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	413	-	connect apic11o.emea-sp.cisco.com
+True	335	11	apic11o.emea-sp.cisco.com class fabricNode
+True	310	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	322	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	483	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/1] query rsp-subtree-include=full-deployment&target-node=all&target-path=l1EthIfToEPg
+True	625	245	apic11o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	288	31	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vlanCktEp
+True	365	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/1] query query-target=children&target-subtree-class=rmonEtherStats
+True	308	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmFcot
+True	277	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/1] query query-target=children&target-subtree-class=l1LoadP
+True	345	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/1] query query-target=children&target-subtree-class=l1EeeP
+True	350	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	306	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	342	12	apic11o.emea-sp.cisco.com mo uni/infra/nodecfgcont/node-205 query query-target=subtree&target-subtree-class=infraRsInterfacePolProfile
+True	305	3	apic11o.emea-sp.cisco.com mo uni/infra/accportprof-UCSB1-FI-A_IntProf query query-target=subtree&target-subtree-class=infraHPortS,infraRsAccBaseGrp,infraPortBlk,infraSubPortBlk
+True	584	37	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree=children&rsp-subtree-class=infraRsCdpIfPol,infraRsMcpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsLacpPol,infraRsMonIfInfraPol,infraAccBndlSubgrp,infraRsStpIfPol,infraRsAttEntP,infraRsSpanVSrcGrp,infraRsSpanVDestGrp,infraRsL2IfPol,infraRsStormctrlIfPol,infraRsQosEgressDppIfPol,infraRsQosIngressDppIfPol,infraRsQosSdIfPol,infraRsQosPfcIfPol,infraRsQosEgressDppIfPol,infraRsL2PortSecurityPol,infraRsFcIfPol,infraRsMacsecIfPol
+True	384	30	apic11o.emea-sp.cisco.com class infraAttEntityP query rsp-subtree=children&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP
+True	383	324	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/qosmIfClass
 ```
 
 [[Back]](./InterfacePhy.md)

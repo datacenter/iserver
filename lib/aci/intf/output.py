@@ -9,6 +9,7 @@ from lib.aci.intf.macsec.output import InterfaceMacSecOutput
 from lib.aci.intf.management.output import InterfaceMgmtOutput
 from lib.aci.intf.phy.output import InterfacePhyOutput
 from lib.aci.intf.port_channel.output import InterfacePortChannelOutput
+from lib.aci.intf.summary.output import InterfaceSummaryOutput
 from lib.aci.intf.svi.output import InterfaceSviOutput
 from lib.aci.intf.tunnel.output import InterfaceTunnelOutput
 from lib.aci.intf.vfc.output import InterfaceVfcOutput
@@ -28,6 +29,7 @@ class InterfaceOutput(
     InterfaceMgmtOutput,
     InterfacePhyOutput,
     InterfacePortChannelOutput,
+    InterfaceSummaryOutput,
     InterfaceSviOutput,
     InterfaceTunnelOutput,
     InterfaceVfcOutput,
@@ -46,6 +48,7 @@ class InterfaceOutput(
         InterfaceMgmtOutput.__init__(self)
         InterfacePhyOutput.__init__(self)
         InterfacePortChannelOutput.__init__(self)
+        InterfaceSummaryOutput.__init__(self)
         InterfaceSviOutput.__init__(self)
         InterfaceTunnelOutput.__init__(self)
         InterfaceVfcOutput.__init__(self)

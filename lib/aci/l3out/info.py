@@ -3,7 +3,7 @@ from lib import filter_helper
 
 class L3OutInfo():
     def __init__(self):
-        pass
+        self.l3out = None
 
     def get_l3out_count(self, tenant_name=None, mpls=None):
         l3out_filter = []
@@ -92,9 +92,11 @@ class L3OutInfo():
             managed_object['l3extRsEctx']
         )
 
-        info['nodeProfiles'] = self.get_l3out_node_profiles_info(
-            info['tenant'],
-            info['name']
+        profile_filter = []
+        profile_filter.append('tenant:%s' % info['tenant'])
+        profile_filter.append('l3out:%s' % info['name'])
+        info['nodeProfiles'] = self.get_l3out_node_profiles(
+            profile_filter=profile_filter
         )
 
         info['l3extInstP'] = []
@@ -120,6 +122,29 @@ class L3OutInfo():
                     )
 
         return info
+
+    def get_l3outs_info(self):
+        if self.l3out is not None:
+            return self.l3out
+
+        managed_objects = self.get_l3out_mo()
+        if managed_objects is None:
+            return None
+
+        self.l3out = []
+        for managed_object in managed_objects:
+            self.l3out.append(
+                self.get_l3out_info(
+                    managed_object
+                )
+            )
+
+        self.log.apic_mo(
+            'l3extOut.info',
+            self.l3out
+        )
+
+        return self.l3out
 
     def match_l3out(self, l3out_info, l3out_filter):
         if l3out_filter is None or len(l3out_filter) == 0:
@@ -221,20 +246,13 @@ class L3OutInfo():
         return True
 
     def get_l3outs(self, l3out_filter=None):
+        all_outs = self.get_l3outs_info()
+        if all_outs is None:
+            return None
+
         l3outs = []
 
-        if not self.initialize_l3out():
-            self.log.error(
-                'get_l3outs',
-                'Initialization failed'
-            )
-            return l3outs
-
-        for managed_object in self.mo_l3out:
-            l3out_info = self.get_l3out_info(
-                managed_object
-            )
-
+        for l3out_info in all_outs:
             if not self.match_l3out(l3out_info, l3out_filter):
                 continue
 
@@ -243,11 +261,6 @@ class L3OutInfo():
         l3outs = sorted(
             l3outs,
             key=lambda i: i['nameTenant'].lower()
-        )
-
-        self.log.apic_mo(
-            'l3extOut.info',
-            l3outs
         )
 
         return l3outs

@@ -1,0 +1,20 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: ${NAME}-day0
+  namespace: ${NAMESPACE}
+  labels:
+    special: ${NAME}
+    type: day0
+  annotations:
+    cdi.kubevirt.io/storage.bind.immediate.requested: "true"
+spec:
+  source:
+      upload: {}
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${DAY0_SIZE}
+    volumeMode: Block

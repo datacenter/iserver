@@ -263,6 +263,7 @@ class VrfInfo():
                     bd_epg_info = copy.deepcopy(
                         self.get_epgs(
                             epg_filter=['bd:%s/%s' % (bd_info['tenant'], bd_info['name'])],
+                            bd_info=True,
                             deployed_leaves_info=True,
                             endpoint_info=True
                         )
@@ -298,11 +299,6 @@ class VrfInfo():
         self.log.apic_mo(
             'fvCtx.info',
             vrfs
-        )
-
-        self.log.trace(
-            'get_vrfs',
-            start_time
         )
 
         return vrfs

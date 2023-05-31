@@ -6,7 +6,8 @@
 # iserver get aci intf tun
     --apic apic11
     --node bl205-eu-spdc
-    --id tunnel16 -o json
+    --id tunnel16
+    --view verbose -o json
 
 [
     {
@@ -44,7 +45,10 @@
         "apic": "apic11",
         "pod_node_name": "pod-1/bl205-eu-spdc",
         "tunnelId": 16,
-        "up": true
+        "up": true,
+        "requestor": "inst-overlay-1",
+        "dest_node": null,
+        "dest_ip_node": "172.16.30.88"
     }
 ]
 ```

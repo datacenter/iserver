@@ -23,4 +23,50 @@ Pod: 1
 +---------------------+-----------------+----------------------+----------------+--------------+--------+------+-------------+---------------------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci proto cdp --apic apic11 --node rl --cap *switch*
+
+{
+    "duration": 2716,
+    "apic": {
+        "read": true,
+        "success": 8,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 7,
+        "connect_time": 401,
+        "disconnect_time": 0,
+        "mo_time": 2176,
+        "total_time": 2577
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	401	-	connect apic11o.emea-sp.cisco.com
+True	309	11	apic11o.emea-sp.cisco.com class fabricNode
+True	312	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst
+True	287	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	307	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	335	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst
+True	292	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	334	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+```
+
 [[Back]](./ProtocolCdp.md)

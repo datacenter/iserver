@@ -1,0 +1,10 @@
+vcenter:
+  name: vc-iks-kali-eu-spdc.cisco.com
+  ip: 10.58.29.66
+  port: 443
+  username: administrator@vsphere.local
+  password: "!Cisc0_123"
+  datacenter: IKS-Kali
+  datastore: datastore1
+  cluster: IKS
+  vm_folder: OCP-Kali

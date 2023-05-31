@@ -1,0 +1,66 @@
+vcenter:
+  name: vc-iks-kali-eu-spdc.cisco.com
+  ip: 10.58.29.66
+  port: 443
+  username: administrator@vsphere.local
+  password: "!Cisc0_123"
+  datacenter: IKS-Kali
+  datastore: datastore1
+  cluster: IKS
+  vm_folder: OCP-Kali
+
+jump:
+  ip: 10.58.25.162
+  username: root
+  password: cisco
+
+variables:
+  HTTP_PROXY_ENABLED: True
+  HTTP_PROXY: http://proxy.esl.cisco.com:80
+  HTTPS_PROXY: http://proxy.esl.cisco.com:80
+  OCP_BASE_DOMAIN: ocp.lan
+  OCP_NAME: cluster
+  OCP_API_VIP: 10.58.24.210
+  OCP_INGRESS_VIP: 10.58.24.211
+  OCP_NODES_DHCP_START: 10.58.24.212
+  OCP_NODES_DHCP_END: 10.58.24.218
+  OCP_NODES_IPS: 10.58.24.212,10.58.24.213,10.58.24.214,10.58.24.215,10.58.24.216,10.58.24.217,10.58.24.218
+  OCP_WORKER_COUNT: 3
+  OCP_MASTER_COUNT: 3
+
+vm:
+  name: ocp-installer
+  cpu: 1
+  memory: 2048
+  disk:
+  - size: 50
+    thin: True
+  cdrom:
+    iso:
+      destination: linux-iso/Fedora-Server-dvd-x86_64-36-1.5.iso
+    ks:
+      template: C:\kali\cisco\devel\vclinux\samples\ocp\ip-static.ks
+      destination: linux-ks/${VM_NAME}-ks.iso
+  network:
+  - name: IKS-BGP
+    type: vmxnet3
+    ip: 10.58.24.209
+    netmask: 255.255.255.240
+    gateway: 10.58.24.222
+    interface: ens192
+  settings:
+    hostname: ${VM_NAME}
+    password: cisco
+    dns:
+      nameservers:
+      - 144.254.71.184
+      domain: cisco.com
+    ntp:
+      servers:
+      - 144.254.15.78
+      timezone: Europe/Rome
+  tasks:
+  - general\main.yaml
+  - bind\main.yaml
+  - dhcp\main.yaml
+  - openshift\main.yaml

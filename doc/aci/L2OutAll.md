@@ -17,4 +17,45 @@ Apic: apic21
 +----------------+-------------+----------------+---------------+----------------+-----------------------------------------------------------------+
 ```
 
+Developer
+
+```
+# iserver get aci l2out --apic apic21
+
+{
+    "duration": 1138,
+    "apic": {
+        "read": true,
+        "success": 3,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 2,
+        "connect_time": 417,
+        "disconnect_time": 0,
+        "mo_time": 639,
+        "total_time": 1056
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	417	-	connect apic21o.emea-sp.cisco.com
+True	327	2	apic21o.emea-sp.cisco.com class l2extOut query rsp-subtree=children&rsp-subtree-class=l2extLNodeP,l2extInstP,l2extRsEBd,l2extRsL2DomAtt
+True	312	2	apic21o.emea-sp.cisco.com class l2extRsPathL2OutAtt
+```
+
 [[Back]](./L2Out.md)

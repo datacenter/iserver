@@ -12,9 +12,12 @@ Filter options:
   - [Interface ID](./InterfaceL3eId.md)
   - [Oper State](./InterfaceL3eState.md)
 
-Output options:
-  - [state](./InterfaceL3eOutputState.md) (default)
+View options:
+  - [default](./InterfaceL3eNode.md)
   - [verbose](./InterfaceL3eOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceL3eOutputState.md)
   - [json](./InterfaceL3eOutputJson.md)
 
 Command options

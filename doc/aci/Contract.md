@@ -9,10 +9,14 @@ Filter options:
   - [name](./ContractName.md)
   - [tenant](./ContractTenant.md)
 
-Output options:
-  - [properties and usage](./ContractName.md)
+View options:
+  - [default](./ContractName.md)
   - [prop](./ContractOutputProp.md)
   - [usage](./ContractOutputUsage.md)
+
+Output options:
+  - [default](./ContractName.md)
+  - [json](./ContractOutputJson.md)
 
 Command options
 
@@ -32,12 +36,12 @@ Options:
   --tenant TEXT                   Filter by tenant
   --type [all|standard|taboo|filter]
                                   [default: all]
-  -o, --output [all|prop|usage|json]
-                                  [default: all]
+  -v, --view [default|prop|usage]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 26 ms and logs saved in /tmp/iserver\5c705b0756f3
+Info: finished in 29 ms and logs saved in /tmp/iserver\9266472984a2
 ```
 
 [[Back]](./README.md)

@@ -11,14 +11,17 @@ Filter options:
   - [IP address](./BridgeDomainIp.md)
   - [l3out](./BridgeDomainL3Out.md)
 
-Output options:
-  - [default output](./BridgeDomainAllDefault.md)
+View options:
+  - [default](./BridgeDomainAllDefault.md)
   - [l2 properties](./BridgeDomainAllL2.md)
   - [l3 properties](./BridgeDomainAllL3.md)
   - [mcast properties](./BridgeDomainAllMcast.md)
   - [vrf properties](./BridgeDomainAllVrf.md)
   - [verbose](./BridgeDomainVerbose.md)
-  - [json](./BridgeDomainJson.md) output
+
+Output options:
+  - [default](./BridgeDomainAllDefault.md)
+  - [json](./BridgeDomainJson.md)
 
 Command options
 
@@ -41,12 +44,12 @@ Options:
   --ip TEXT                       Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -o, --output [default|json|verbose|l2|l3|mcast|vrf]
-                                  [default: default]
+  -v, --view [default|l2|l3|mcast|vrf|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 35 ms and logs saved in /tmp/iserver\10007e5de1fc
+Info: finished in 30 ms and logs saved in /tmp/iserver\f48ffc45dbc8
 ```
 
 [[Back]](./README.md)

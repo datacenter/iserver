@@ -6,11 +6,14 @@ Filter options:
   - [name](./PgAccessInterfaceVpcName.md)
   - [aaep](./PgAccessInterfaceVpcAaep.md)
 
-Output options:
-  - [policy](./PgAccessInterfaceVpcOutputPolicy.md) (default)
+View options:
+  - [default](./PgAccessInterfaceVpcOutputPolicy.md)
   - [aaep](./PgAccessInterfaceVpcOutputAaep.md)
   - [node](./PgAccessInterfaceVpcOutputNode.md)
   - [port](./PgAccessInterfaceVpcOutputPort.md)
+
+Output options:
+  - [default](./PgAccessInterfaceVpcOutputPolicy.md)
   - [json](./PgAccessInterfaceVpcOutputJson.md)
 
 Command options
@@ -29,12 +32,13 @@ Options:
   --password TEXT                 APIC Password
   --name TEXT                     Filter by name
   --aaep TEXT                     Filter by aaep
-  -o, --output [policy|aaep|node|port|json]
-                                  [default: policy]
+  --policy TEXT                   Filter by policy
+  -v, --view [default|aaep|node|port]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 100 ms and logs saved in /tmp/iserver\d4e6e64081ba
+Info: finished in 46 ms and logs saved in /tmp/iserver\d6be8ddd61ed
 ```
 
 [[Back]](./PgAccessInterface.md)

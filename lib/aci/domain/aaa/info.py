@@ -51,16 +51,13 @@ class DomainAaaInfo():
         return True
 
     def get_domains_aaa(self, domain_filter=None):
+        all_domains = self.get_domain_aaa_mo()
+        if all_domains is None:
+            return None
+
         domain_aaa = []
 
-        if not self.initialize_domain_aaa():
-            self.log.error(
-                'get_domain_aaa',
-                'Initialization failed'
-            )
-            return domain_aaa
-
-        for managed_object in self.mo_domain_aaa:
+        for managed_object in all_domains:
             domain_info = self.get_domain_aaa_info(
                 managed_object
             )

@@ -1,0 +1,3130 @@
+# Policy - LLDP
+
+## JSON
+
+```
+# iserver get aci policy lldp --apic apic11 --name default -o json
+
+[
+    {
+        "__Output": {
+            "adminRxSt": "Green",
+            "adminTxSt": "Green"
+        },
+        "adminRxSt": "enabled",
+        "adminTxSt": "enabled",
+        "annotation": "",
+        "dn": "uni/fabric/lldpIfP-default",
+        "name": "default",
+        "relnFrom": [],
+        "tf": false,
+        "tfTick": "",
+        "references": 0,
+        "l1RsLldpIfPolCons": [],
+        "interfaces": 0,
+        "nodeInterfaces": []
+    },
+    {
+        "__Output": {
+            "adminRxSt": "Green",
+            "adminTxSt": "Green"
+        },
+        "adminRxSt": "enabled",
+        "adminTxSt": "enabled",
+        "annotation": "",
+        "dn": "uni/infra/lldpIfP-default",
+        "name": "default",
+        "relnFrom": [
+            {
+                "class": "lldpIfPol",
+                "rn": "rtresLldpIfPol",
+                "tCl": "infraInfra",
+                "tDn": "uni/infra",
+                "policyType": "Access Infra",
+                "policyName": "infra"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLeafPGrpToLldpIfPol-[uni/infra/funcprof/accnodepgrp-HighLPMRo]",
+                "tCl": "infraAccNodePGrp",
+                "tDn": "uni/infra/funcprof/accnodepgrp-HighLPMRo",
+                "policyType": "Access Switch Policy Group",
+                "policyName": "HighLPMRo"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLeafPGrpToLldpIfPol-[uni/infra/funcprof/accnodepgrp-HighLPN_prof]",
+                "tCl": "infraAccNodePGrp",
+                "tDn": "uni/infra/funcprof/accnodepgrp-HighLPN_prof",
+                "policyType": "Access Switch Policy Group",
+                "policyName": "HighLPN_prof"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-cvim4-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-cvim4-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "cvim4-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-cvim4-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-cvim4-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "cvim4-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-1-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-1-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-1-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-1-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-1-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-1-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-2-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-2-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-2-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-2-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-2-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-2-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-3-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-3-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-3-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-AIO-3-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-AIO-3-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-AIO-3-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-COMP-1-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-COMP-1-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-COMP-1-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-COMP-1-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-COMP-1-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-COMP-1-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-COMP-2-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-COMP-2-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-COMP-2-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-COMP-2-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-COMP-2-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-COMP-2-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-SRIOV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-SRIOV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-SRIOV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-SRIOV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-SRIOV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-SRIOV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod1a-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod1a-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod1a-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-1-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-1-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-1-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-1-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-1-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-1-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-2-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-2-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-2-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-2-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-2-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-2-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-3-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-3-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-3-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-AIO-3-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-AIO-3-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-AIO-3-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-1-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-1-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-1-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-1-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-1-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-1-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-2-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-2-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-2-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-2-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-2-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-2-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-3-SRIoV-0_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-3-SRIoV-0_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-3-SRIoV-0_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accportgrp-pod4a-COMP-3-SRIoV-1_PolGrp]",
+                "tCl": "infraAccPortGrp",
+                "tDn": "uni/infra/funcprof/accportgrp-pod4a-COMP-3-SRIoV-1_PolGrp",
+                "policyType": "Leaf Access Port Policy Group",
+                "policyName": "pod4a-COMP-3-SRIoV-1_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-1-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-1-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-1-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-1-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-1-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-1-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-2-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-2-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-2-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-2-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-2-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-2-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-3-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-3-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-3-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-AIO-3-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-AIO-3-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-AIO-3-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-COMP-1-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-COMP-1-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-COMP-1-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-COMP-1-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-COMP-1-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-COMP-1-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-COMP-2-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-COMP-2-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-COMP-2-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-COMP-2-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-COMP-2-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-COMP-2-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-MX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-MX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-MX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod1a-NVBench_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod1a-NVBench_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod1a-NVBench_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-1-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-1-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-1-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-1-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-1-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-1-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-2-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-2-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-2-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-2-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-2-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-2-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-3-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-3-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-3-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-AIO-3-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-AIO-3-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-AIO-3-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-1-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-1-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-1-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-1-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-1-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-1-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-2-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-2-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-2-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-2-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-2-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-2-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-3-PET_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-3-PET_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-3-PET_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtinfraLldpIfPol-[uni/infra/funcprof/accbundle-pod4a-COMP-3-SAMX_PolGrp]",
+                "tCl": "infraAccBndlGrp",
+                "tDn": "uni/infra/funcprof/accbundle-pod4a-COMP-3-SAMX_PolGrp",
+                "policyType": "PC/VPC Interface",
+                "policyName": "pod4a-COMP-3-SAMX_PolGrp"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtvmmDefaultLldpIfPol-[uni/vmmp-VMware/dom-EU-SPDC-CDC]",
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-CDC",
+                "policyType": "VMM Domain",
+                "policyName": "EU-SPDC-CDC"
+            },
+            {
+                "class": "lldpIfPol",
+                "rn": "rtvmmDefaultLldpIfPol-[uni/vmmp-VMware/dom-EU-SPDC-R3DC]",
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-R3DC",
+                "policyType": "VMM Domain",
+                "policyName": "EU-SPDC-R3DC"
+            }
+        ],
+        "tf": false,
+        "tfTick": "",
+        "references": 56,
+        "l1RsLldpIfPolCons": [
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/1",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/100",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/101",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/102",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/11",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/12",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/15",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/16",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/17",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/18",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/19",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/2",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/25",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/26",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/27",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/28",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/29",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/30",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/31",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/32",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/48",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/49",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/50",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/51",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/52",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/53",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/54",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/55",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/56",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/57",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/58",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/59",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/60",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/61",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/62",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/63",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/64",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/65",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/66",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/69",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/70",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/73",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/74",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/75",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/76",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/77",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/78",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/79",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/80",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/85",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/86",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/87",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/88",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/89",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/90",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/94",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/95",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/97",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/98",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "201",
+                "nodeName": "cl201-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaceId": "eth1/99",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/1",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/100",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/101",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/102",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/11",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/12",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/15",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/16",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/17",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/18",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/19",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/2",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/25",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/26",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/27",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/28",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/29",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/30",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/31",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/32",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/48",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/49",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/50",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/51",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/52",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/53",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/54",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/55",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/56",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/57",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/58",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/59",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/60",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/61",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/62",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/63",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/64",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/65",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/66",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/69",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/70",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/73",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/74",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/75",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/76",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/77",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/78",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/79",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/80",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/81",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/82",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/83",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/84",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/85",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/86",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/87",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/88",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/89",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/90",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/94",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/95",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/97",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/98",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "202",
+                "nodeName": "cl202-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaceId": "eth1/99",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/25",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/26",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "205",
+                "nodeName": "bl205-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/15",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/16",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/17",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/18",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/19",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/25",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/26",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "206",
+                "nodeName": "bl206-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/1",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/11",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/12",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/15",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/16",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/17",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/18",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/19",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/2",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/24/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/24/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/30",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "301",
+                "nodeName": "rl301-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/1",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/10",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/11",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/12",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/13",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/14",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/15",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/16",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/17",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/18",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/19",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/2",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/20",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/21",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/22",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/23",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/24/3",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/24/4",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/30",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/5",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/6",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/7",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/8",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            },
+            {
+                "podId": "1",
+                "nodeId": "302",
+                "nodeName": "rl302-eu-spdc",
+                "apic": "apic11",
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaceId": "eth1/9",
+                "policyType": "lldpIfPol",
+                "policyDn": "uni/infra/lldpIfP-default",
+                "policyName": "-default"
+            }
+        ],
+        "interfaces": 237,
+        "nodeInterfaces": [
+            {
+                "pod_node_name": "pod-1/bl205-eu-spdc",
+                "interfaces": 16
+            },
+            {
+                "pod_node_name": "pod-1/bl206-eu-spdc",
+                "interfaces": 21
+            },
+            {
+                "pod_node_name": "pod-1/cl201-eu-spdc",
+                "interfaces": 74
+            },
+            {
+                "pod_node_name": "pod-1/cl202-eu-spdc",
+                "interfaces": 78
+            },
+            {
+                "pod_node_name": "pod-1/rl301-eu-spdc",
+                "interfaces": 24
+            },
+            {
+                "pod_node_name": "pod-1/rl302-eu-spdc",
+                "interfaces": 24
+            }
+        ]
+    }
+]
+```
+
+[[Back]](./PolicyLldp.md)

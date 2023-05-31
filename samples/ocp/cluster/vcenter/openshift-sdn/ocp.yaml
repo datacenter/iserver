@@ -1,0 +1,24 @@
+ocp:
+  name: Milan-Kali-OpenshiftSDN
+  installation: vsphere-ipi
+  release: 4.11.3
+  source: web
+  cluster:
+    name: cluster
+    domain: ocp.lan
+    api_vip: 10.58.24.194
+    ingress_vip: 10.58.24.195
+    master:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 16384
+      disk:
+        size: 120
+    worker:
+      hyperthreading: True
+      replicas: 3
+      cpu: 4
+      memory: 8192
+      disk:
+        size: 120

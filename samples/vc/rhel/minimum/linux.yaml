@@ -1,0 +1,8 @@
+linux:
+  template: rhel
+  iso:
+    filename: rhel-8.2-x86_64-dvd.iso
+  vm:
+    name: rhel-sample-minimum
+    interface:
+      network: VM Network

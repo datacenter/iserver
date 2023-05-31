@@ -1,0 +1,9 @@
+TOSCA-Meta-File-Version: 1.8
+CSAR-Version: 2.0
+Created-by: Cisco
+Entry-Manifest: CAT8000V-SDWAN.MF
+Entry-Change-Log: Files/ChangeLog.txt
+Entry-Tests: Files/Tests
+Entry-Licenses: Files/Licenses
+Entry-Certificate: Files/
+Entry-Definitions: Definitions/CAT8000V-SDWAN.yaml

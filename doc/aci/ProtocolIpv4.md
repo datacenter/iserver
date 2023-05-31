@@ -2,10 +2,6 @@
 
 ## IPv4
 
-### IPv4 Route Table
-
-Show IPv4 route table entries for selected nodes.
-
 Node selection options:
   - [single node](./ProtocolIpv4Node.md)
   - [selected nodes](./ProtocolIpv4Nodes.md)
@@ -16,15 +12,15 @@ Filter options:
   - [IP subnet](./ProtocolIpv4Subnet.md)
   - [vrf](./ProtocolIpv4Vrf.md)
 
-### IPv4 Route Table Summary
+View options:
+  - [default](./ProtocolIpv4Node.md)
+  - [summary](./ProtocolIpv4SummaryNode.md)
 
-Show IPv4 route table summary for selected nodes.
+Output options:
+  - [default](./ProtocolIpv4Node.md)
+  - [json](./ProtocolIpv4Json.md)
 
-Node selection options:
-  - [single node](./ProtocolIpv4SummaryNode.md)
-  - [selected nodes](./ProtocolIpv4SummaryNodes.md)
-
-### Command options
+Command options
 
 ```
 # iserver get aci proto ipv4 --help
@@ -46,12 +42,12 @@ Options:
   --ip TEXT                       IP Address filter
   --subnet TEXT                   IP Subnet filter
   --longer                        Match longer prefixes
-  -o, --output [route|summary|json]
-                                  [default: route]
+  -v, --view [default|summary]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 28 ms and logs saved in /tmp/iserver\9d618c6edc40
+Info: finished in 40 ms and logs saved in /tmp/iserver\bae3aa511107
 ```
 
 [[Back]](./Protocol.md)

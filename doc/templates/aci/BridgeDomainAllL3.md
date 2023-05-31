@@ -2,7 +2,7 @@
 
 ## Get L3 properties of bridge domains
 
-Use '-o l3' to get L3 forwarding related properties of selected bridge domains
+Use '--view l3' to get L3 forwarding related properties of selected bridge domains
 - unicast routing
 - bridge domain MAC address
 - bridge domain virtual MAC address (if applicable)
@@ -13,6 +13,12 @@ Use '-o l3' to get L3 forwarding related properties of selected bridge domains
 
 ```
 DOC_TEMPLATE:get_aci_bd.all_l3:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_bd.all_l3:devel.debug
 ```
 
 [[Back]](./BridgeDomain.md)

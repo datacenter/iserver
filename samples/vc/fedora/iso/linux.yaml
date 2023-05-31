@@ -1,0 +1,12 @@
+linux:
+  template: fedora
+  iso:
+    filename: Fedora-Server-dvd-x86_64-36-1.5.iso
+  vm:
+    name: fedora-sample-iso
+    cpu: 1
+    memory: 2048
+    disk:
+      size: 50
+    interface:
+      network: VM Network

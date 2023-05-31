@@ -13,4 +13,10 @@ Use '--type standard' to get standard contracts details
 DOC_TEMPLATE:get_aci_contract.standard:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_contract.standard:devel.debug
+```
+
 [[Back]](./Contract.md)

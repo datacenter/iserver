@@ -64,7 +64,8 @@ def get_template_names(template_names, include_redfish=False):
         templates[template_subdirectory] = []
         for template_filename in os.listdir(os.path.join(templates_directory, template_subdirectory)):
             if template_filename.endswith('.md'):
-                templates[template_subdirectory].append(template_filename)
+                if 'Template' not in template_filename:
+                    templates[template_subdirectory].append(template_filename)
 
     return templates
 
@@ -806,3 +807,85 @@ def generate_docs(results_directory, template_names=[], include_redfish=False, r
         return False
 
     return True
+
+
+def generate_template_docs(template_names=[]):
+    template_handler = template_helper.TemplateHelper()
+
+    # {'aci': ['PolicyTemplate.md', 'PolicyTemplateAll.md', 'PolicyTemplateIntf.md', 'PolicyTemplateJson.md', 'PolicyTemplateName.md', 'PolicyTemplateUsage.md', 'PolicyTemplateVerbose.md']}
+    for template_name in template_names:
+        templates = {}
+        templates_directory = get_templates_directory()
+        for template_subdirectory in os.listdir(templates_directory):
+            if len(template_names) > 0 and template_subdirectory not in template_names:
+                continue
+
+            templates[template_subdirectory] = []
+            for template_filename in os.listdir(os.path.join(templates_directory, template_subdirectory)):
+                if template_filename.endswith('.md'):
+                    if 'Template' in template_filename:
+                        templates[template_subdirectory].append(template_filename)
+
+    items = []
+    items.append(['Slow Drain', 'Drain', 'drain'])
+    items.append(['Fibre Channel', 'Fc', 'fc'])
+    items.append(['Link Flap', 'Flap', 'flap'])
+    items.append(['L2', 'L2', 'l2'])
+    items.append(['Port Channel', 'Lacp', 'lacp'])
+    items.append(['Port Channel Member', 'Lacpm', 'lacpm'])
+    items.append(['Link Level', 'Link', 'link'])
+    items.append(['Link Level Flow Control', 'LinkFc', 'linkfc'])
+    items.append(['LLDP', 'Lldp', 'lldp'])
+    items.append(['MCP', 'Mcp', 'mcp'])
+    items.append(['Priority Flow Control', 'Pfc', 'pfc'])
+    items.append(['Port Security', 'Portsec', 'portsec'])
+    items.append(['Storm Control', 'Storm', 'storm'])
+    items.append(['Spanning Tree', 'Stp', 'stp'])
+    items.append(['Synchronous Ethernet', 'Synce', 'synce'])
+    items.append(['Transceiver', 'Trans', 'trans'])
+
+    for key in templates:
+        for filename in templates[key]:
+            template_filename = os.path.join(
+                os.path.join(
+                    templates_directory,
+                    key
+                ),
+                filename
+            )
+
+            if not os.path.isfile(template_filename):
+                print('File not found: %s' % (template_filename))
+                continue
+
+            print('File found: %s' % (template_filename))
+            for item in items:
+                new_filename = template_filename.replace('Template', item[1])
+                print(new_filename)
+                if os.path.isfile(new_filename):
+                    print('Already exists...')
+                    continue
+
+                try:
+                    with open(template_filename, 'r', encoding='utf-8') as file_handler:
+                        content = file_handler.read()
+                except BaseException:
+                    print('Failed to read: %s' % (template_filename))
+                    return False
+
+                variables = {}
+                variables['TITLE'] = item[0]
+                variables['NAME'] = item[1]
+                variables['TEST'] = item[2]
+
+                new_content = template_handler.replace_variables(content, variables)
+
+                try:
+                    with open(new_filename, 'w', encoding='utf-8') as file_handler:
+                        file_handler.write(str(new_content))
+
+                except BaseException:
+                    print('Template file write failed:%s' % (new_filename))
+                    return False
+
+                print('Created')

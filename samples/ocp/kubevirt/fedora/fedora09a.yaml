@@ -1,0 +1,79 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora09
+  namespace: default
+  labels:
+    app: fedora09
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora09
+        namespace: default
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 30Gi
+          volumeMode: Filesystem
+        source:
+          pvc:
+            name: fedora-registry
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora09
+        special: fedora09
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - name: cdromdisk
+            cdrom:
+              readOnly: false
+              bus: sata
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: fedora09
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - dataVolume:
+            name: fedora09
+          name: rootdisk
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              password: fedora
+              chpasswd: { expire: False }
+              ssh_pwauth: True
+              bootcmd:
+              - "mkdir /cdrom"
+              - "mount -t iso9660 /dev/cdrom /cdrom/"
+        - name: cdromdisk
+          persistentVolumeClaim:
+            claimName: fedora-dv-cdrom

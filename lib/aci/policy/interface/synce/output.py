@@ -1,8 +1,21 @@
-class PolicyInterfaceSyncEOutput():
+class PolicyInterfaceSynceOutput():
     def __init__(self):
         pass
 
-    def print_policy_interface_synce(self, info, verbose=False):
+    def print_policy_interface_synce(self, info):
+        self.print_policy_interface_synce_properties(
+            info
+        )
+
+        self.print_policy_interface_synce_interfaces(
+            info['l1RsSynceEthIfPolCons']
+        )
+
+        self.print_policy_interface_synce_references(
+            info['relnFrom']
+        )
+
+    def print_policy_interface_synce_properties(self, info):
         order = [
             'name',
             'tf',
@@ -35,15 +48,65 @@ class PolicyInterfaceSyncEOutput():
             'Tx Qual Max'
         ]
 
-        self.print_policy_interface(
+        self.my_output.dictionary(
             info,
-            'SyncE Policy Properties',
-            order,
-            headers,
-            verbose
+            title='SyncE Policy Properties',
+            underline=True,
+            prefix="- ",
+            justify=True,
+            keys=order,
+            title_keys=headers
         )
 
-    def print_policies_interface_synce(self, info, verbose=False):
+    def print_policy_interface_synce_interfaces(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId'
+        ]
+
+        headers = [
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policy_interface_synce_references(self, info):
+        if info is None or len(info) == 0:
+            return
+
+        order = [
+            'policyName',
+            'policyType',
+            'tCl'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Policy Type',
+            'Policy Class'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_synce_summary(self, info):
         order = [
             'name',
             'tfTick',
@@ -52,8 +115,8 @@ class PolicyInterfaceSyncEOutput():
             'srcpriority',
             'ssm',
             'wtr',
-            'qlrcv',
-            'qltx'
+            'interfaces',
+            'references'
         ]
 
         headers = [
@@ -64,52 +127,71 @@ class PolicyInterfaceSyncEOutput():
             'Source Priority',
             'Sync Status Msg',
             'Wait-To-Restore',
-            'Rx Qual',
-            'Tx Qual'
+            'Interfaces',
+            'Ref Policies'
         ]
 
-        self.print_policies_interface(
+        self.my_output.my_table(
             info,
-            order,
-            headers,
-            verbose,
-            expand_lists=['qlrcv', 'qltx']
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )
 
-    def print_policy_interface_synce_node(self, info):
-        for item in info:
-            if 'qlrcv' in item['policy']:
-                item['qlrcv'] = item['policy']['qlrcv']
-                item['qltx'] = item['policy']['qltx']
-            else:
-                item['qlrcv'] = []
-                item['qltx'] = []
-
+    def print_policies_interface_synce_usage(self, info):
         order = [
-            'policy.name',
-            'policy.adminSt',
-            'policy.selinput',
-            'policy.srcpriority',
-            'policy.ssm',
-            'policy.wtr',
-            'qlrcv',
-            'qltx'
+            'name',
+            'nodeInterfaces.pod_node_name',
+            'nodeInterfaces.interfaces',
+            'relnFrom.policyType',
+            'relnFrom.policyName'
         ]
 
         headers = [
-            'SyncE Policy Name',
-            'Admin State',
-            'Input Selection',
-            'Source Priority',
-            'Sync Status Msg',
-            'Wait-To-Restore',
-            'Rx Qual',
-            'Tx Qual'
+            'Policy Name',
+            'Node',
+            'Interface Count',
+            'Ref Policy Type',
+            'Ref Policy Name'
         ]
 
-        self.print_policy_interface_node(
-            info,
-            order,
-            headers,
-            expand_lists=['qlrcv', 'qltx']
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['nodeInterfaces', 'relnFrom']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_policies_interface_synce_interfaces(self, info):
+        order = [
+            'name',
+            'l1RsSynceEthIfPolCons.pod_node_name',
+            'l1RsSynceEthIfPolCons.interfaceId'
+        ]
+
+        headers = [
+            'Policy Name',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['l1RsSynceEthIfPolCons']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
         )

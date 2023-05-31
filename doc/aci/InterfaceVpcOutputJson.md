@@ -3,7 +3,11 @@
 ## JSON output
 
 ```
-# iserver get aci intf vpc --apic apic11 --node any --id 100 -o json
+# iserver get aci intf vpc
+    --apic apic11
+    --node any
+    --id 100
+    --view verbose -o json
 
 [
     {

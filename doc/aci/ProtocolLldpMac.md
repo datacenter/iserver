@@ -3,7 +3,7 @@
 ## Filter by mac address
 
 ```
-# iserver get aci proto lldp --apic apic11 --role leaf --mac 3cfdfece -o nei
+# iserver get aci proto lldp --apic apic11 --role leaf --mac 3cfdfece --view nei
 
 Apic: apic11o.emea-sp.cisco.com
 Pod: 1
@@ -48,6 +48,64 @@ Pod: 1
 | pod-1/rl302-eu-spdc | eth1/25/3    | 180       | esx4-eu-spdc    | 3c:fd:fe:ce:1b:12 | port 513 on dvSwitch EU-SPDC-CDC-22 (cswitch) | bridge       | 
 +---------------------+--------------+-----------+-----------------+-------------------+-----------------------------------------------+--------------+
 Interface context: lldp
+```
+
+Developer
+
+```
+# iserver get aci proto lldp --apic apic11 --role leaf --mac 3cfdfece --view nei
+
+{
+    "duration": 8374,
+    "apic": {
+        "read": true,
+        "success": 20,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 19,
+        "connect_time": 431,
+        "disconnect_time": 0,
+        "mo_time": 7456,
+        "total_time": 7887
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	431	-	connect apic11o.emea-sp.cisco.com
+True	1391	11	apic11o.emea-sp.cisco.com class fabricNode
+True	275	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
+True	308	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
+True	309	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	403	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst
+True	319	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/lldpInstStats
+True	336	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	315	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lldp/inst
+True	329	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/lldpInstStats
+True	395	42	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	438	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/lldp/inst
+True	309	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/lldpInstStats
+True	342	42	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	337	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lldp/inst
+True	316	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/lldpInstStats
+True	332	21	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	329	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lldp/inst
+True	354	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/lldpInstStats
+True	319	21	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

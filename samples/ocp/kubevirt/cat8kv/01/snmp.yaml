@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat8kv-01-snmp
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - port: 161
+    protocol: UDP
+    targetPort: 161
+  selector:
+    special: cat8kv-01
+  type: NodePort

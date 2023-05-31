@@ -48,4 +48,78 @@ Pod: 1
 +--------+----------------------+---------------+-----------+---------------------------------+------------+--------------+---------------+----------------+
 ```
 
+Developer
+
+```
+# iserver get aci intf vpc --apic dom:milan --node any
+
+{
+    "duration": 12012,
+    "apic": {
+        "read": true,
+        "success": 36,
+        "failed": 0,
+        "connect": 2,
+        "disconnect": 0,
+        "mo": 34,
+        "connect_time": 802,
+        "disconnect_time": 0,
+        "mo_time": 10841,
+        "total_time": 11643
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    }
+}
+
+Log: apic
+----------
+
+True	408	-	connect apic11o.emea-sp.cisco.com
+True	394	-	connect apic21o.emea-sp.cisco.com
+True	327	11	apic11o.emea-sp.cisco.com class fabricNode
+True	314	13	apic21o.emea-sp.cisco.com class fabricNode
+True	300	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	309	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/vpc/inst/dom-105 query query-target=children&target-subtree-class=vpcIf
+True	301	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	308	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/vpc/inst/dom-105 query query-target=children&target-subtree-class=vpcIf
+True	303	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	304	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	346	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	320	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	311	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	333	2	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/vpc/inst/dom-300 query query-target=children&target-subtree-class=vpcIf
+True	280	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
+True	307	2	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/vpc/inst/dom-300 query query-target=children&target-subtree-class=vpcIf
+True	335	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
+True	331	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
+True	392	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2205/vpcDom
+True	313	6	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2205/sys/vpc/inst/dom-256 query query-target=children&target-subtree-class=vpcIf
+True	335	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2206/vpcDom
+True	291	6	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2206/sys/vpc/inst/dom-256 query query-target=children&target-subtree-class=vpcIf
+True	322	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2201/vpcDom
+True	315	2	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2201/sys/vpc/inst/dom-212 query query-target=children&target-subtree-class=vpcIf
+True	293	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2202/vpcDom
+True	305	2	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2202/sys/vpc/inst/dom-212 query query-target=children&target-subtree-class=vpcIf
+True	345	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2207/vpcDom
+True	331	8	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2207/sys/vpc/inst/dom-278 query query-target=children&target-subtree-class=vpcIf
+True	346	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2208/vpcDom
+True	338	8	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2208/sys/vpc/inst/dom-278 query query-target=children&target-subtree-class=vpcIf
+True	288	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2701/vpcDom
+True	335	2	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2701/sys/vpc/inst/dom-227 query query-target=children&target-subtree-class=vpcIf
+True	335	1	apic21o.emea-sp.cisco.com class topology/pod-1/node-2702/vpcDom
+True	294	2	apic21o.emea-sp.cisco.com mo topology/pod-1/node-2702/sys/vpc/inst/dom-227 query query-target=children&target-subtree-class=vpcIf
+True	335	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2101/vpcDom
+True	299	0	apic21o.emea-sp.cisco.com class topology/pod-1/node-2102/vpcDom
+```
+
 [[Back]](./InterfaceVpc.md)

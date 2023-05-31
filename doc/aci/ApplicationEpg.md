@@ -12,14 +12,17 @@ Filter options:
   - [deployed node](./ApplicationEpgNode.md)
   - [contract](./ApplicationEpgContract.md)
 
-Output options:
-  - [default output](./ApplicationEpgAllDefault.md)
+View options:
+  - [default](./ApplicationEpgAllDefault.md)
   - [properties](./ApplicationEpgAllProperties.md)
   - [with bridge domain details](./ApplicationEpgAllBridgeDomain.md)
   - [with contract details](./ApplicationEpgAllContract.md)
   - [with deployed node details](./ApplicationEpgAllNode.md)
   - [verbose](./ApplicationEpgVerbose.md)
-  - [json](./ApplicationEpg.md) output
+
+Output options:
+  - [default](./ApplicationEpgAllDefault.md)
+  - [json](./ApplicationEpg.md)
 
 Command options
 
@@ -43,12 +46,12 @@ Options:
   --ip TEXT                       Filter by IP address
   --node TEXT                     Filter by deployed node name
   --contract TEXT                 Filter by contract name
-  -o, --output [default|prop|bd|contract|node|json|verbose]
-                                  [default: default]
+  -v, --view [default|prop|bd|contract|node|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\cafd86ac2b4d
+Info: finished in 28 ms and logs saved in /tmp/iserver\63e9b9e7f7d3
 ```
 
 [[Back]](./README.md)

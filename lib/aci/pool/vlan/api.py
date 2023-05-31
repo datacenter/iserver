@@ -1,6 +1,6 @@
 class PoolVlanApi():
     def __init__(self):
-        self.mo_pool_vlan = None
+        self.pool_vlan_mo = None
 
     def get_pool_vlan_block_attributes(self, managed_object):
         attributes = []
@@ -22,9 +22,9 @@ class PoolVlanApi():
                     )
         return attributes
 
-    def initialize_pool_vlan(self):
-        if self.mo_pool_vlan is not None:
-            return True
+    def get_pool_vlan_mo(self):
+        if self.pool_vlan_mo is not None:
+            return self.pool_vlan_mo
 
         query = 'rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs'
         managed_objects = self.get_class(
@@ -33,14 +33,9 @@ class PoolVlanApi():
         )
 
         if managed_objects is None:
-            return False
+            return None
 
-        # self.log.apic_mo(
-        #     'fvnsVlanInstP.mo',
-        #     managed_objects
-        # )
-
-        self.mo_pool_vlan = []
+        self.pool_vlan_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvnsVlanInstP']['attributes']
             attributes['fvnsEncapBlk'] = self.get_pool_vlan_block_attributes(
@@ -49,13 +44,13 @@ class PoolVlanApi():
             attributes['fvnsRtVlanNs'] = self.get_pool_vlan_domain_attributes(
                 managed_object
             )
-            self.mo_pool_vlan.append(
+            self.pool_vlan_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'fvnsVlanInstP',
-            self.mo_pool_vlan
+            self.pool_vlan_mo
         )
 
-        return True
+        return self.pool_vlan_mo

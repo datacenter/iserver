@@ -13,10 +13,13 @@ Filter options:
   - [Peer state](./InterfaceVpcState.md)
   - [Members state](./InterfaceVpcMember.md)
 
-Output options:
-  - [state](./InterfaceVpcOutputState.md) (default)
+View options:
+  - [default](./InterfaceVpcOutputState.md)
   - [address](./InterfaceVpcOutputAddress.md)
   - [verbose](./InterfaceVpcOutputVerbose.md)
+
+Output options:
+  - [default](./InterfaceVpcOutputState.md)
   - [json](./InterfaceVpcOutputJson.md)
 
 Command options

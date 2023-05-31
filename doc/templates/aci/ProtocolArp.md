@@ -14,9 +14,12 @@ Filter options:
   - [IP Address](./ProtocolArpIp.md)
   - [IP Subnet](./ProtocolArpSubnet.md)
 
-Output options:
-  - [adjacencies](./ProtocolArpNode.md) (default)
+View options:
+  - [default](./ProtocolArpNode.md)
   - [verbose](./ProtocolArpOutputVerbose.md)
+
+Output options:
+  - [default](./ProtocolArpNode.md)
   - [json](./ProtocolArpOutputJson.md)
 
 Command options

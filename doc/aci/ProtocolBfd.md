@@ -15,10 +15,13 @@ Filter options:
   - [ip](./ProtocolBfdSessionIp.md)
   - [subnet](./ProtocolBfdSessionSubnet.md)
 
-Output options:
-  - [session](./ProtocolBfdSessionNode.md) (default)
+View options:
+  - [default](./ProtocolBfdSessionNode.md)
   - [instance](./ProtocolBfdInstanceNodes.md)
   - [verbose](./ProtocolBfdSessionVerbose.md)
+
+Output options:
+  - [default](./ProtocolBfdSessionNode.md)
   - [json](./ProtocolBfdOutputJson.md)
 
 Command options
@@ -44,12 +47,12 @@ Options:
   --vrf TEXT                      Filter by VRF name
   --ip TEXT                       Filter by IP address
   --subnet TEXT                   Filter by IP subnet
-  -o, --output [session|instance|verbose|json]
-                                  [default: session]
+  -v, --view [default|instance|verbose]
+  -o, --output [default|json]     [default: default]
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 67 ms and logs saved in /tmp/iserver\7520c3204383
+Info: finished in 37 ms and logs saved in /tmp/iserver\7ba4de780b7d
 ```
 
 [[Back]](./Protocol.md)

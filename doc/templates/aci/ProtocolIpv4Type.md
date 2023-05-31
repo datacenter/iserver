@@ -14,4 +14,10 @@ Supported route types
 DOC_TEMPLATE:get_aci_proto_ipv4.type:iserver.output.default
 ```
 
+Developer
+
+```
+DOC_TEMPLATE:get_aci_proto_ipv4.type:devel.debug
+```
+
 [[Back]](./ProtocolIpv4.md)

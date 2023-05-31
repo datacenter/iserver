@@ -1,0 +1,81 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora06
+  namespace: default
+  labels:
+    app: fedora06
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora06
+        namespace: default
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 30Gi
+          volumeMode: Filesystem
+        source:
+          pvc:
+            name: fedora-registry
+            namespace: default
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora06
+        special: fedora06
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - disk:
+              bus: virtio
+            name: extra1
+          - disk:
+              bus: virtio
+            name: extra2
+          interfaces:
+          - masquerade: {}
+            name: default
+          rng: {}
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: LiveMigrate
+      hostname: fedora06
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - dataVolume:
+            name: fedora06
+          name: rootdisk
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              password: fedora
+              chpasswd: { expire: False }
+              ssh_pwauth: True
+        - name: extra1
+          emptyDisk:
+            capacity: 1Gi
+        - name: extra2
+          emptyDisk:
+            capacity: 2Gi
