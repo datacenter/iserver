@@ -6,6 +6,17 @@ class DomainL3Api():
         if self.domain_l3_mo is not None:
             return self.domain_l3_mo
 
+        cache = self.get_object_cache(
+            'l3extDomP'
+        )
+        if cache is not None:
+            self.domain_l3_mo = cache
+            self.log.apic_mo(
+                'l3extDomP',
+                self.domain_l3_mo
+            )
+            return self.domain_l3_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain'
         managed_objects = self.get_class(
             'l3extDomP',
@@ -47,6 +58,11 @@ class DomainL3Api():
             )
 
         self.log.apic_mo(
+            'l3extDomP',
+            self.domain_l3_mo
+        )
+
+        self.set_object_cache(
             'l3extDomP',
             self.domain_l3_mo
         )

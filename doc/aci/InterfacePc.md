@@ -48,11 +48,12 @@ Options:
   --state [any|up|down]           Filter by state  [default: any]
   -v, --view [default|port|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\92326e887828
+Info: finished in 27 ms and logs saved in /tmp/iserver\25d0bbbe2dbd
 ```
 
 [[Back]](./Interface.md)

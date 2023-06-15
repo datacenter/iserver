@@ -7,6 +7,18 @@ class ProtocolCdpInterfaceApi():
         if key in self.cdp_interfaces_mo:
             return self.cdp_interfaces_mo[key]
 
+        cache = self.get_object_cache(
+            'cdpIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.cdp_interfaces_mo[key] = cache
+            self.log.apic_mo(
+                'cdpIf.%s' % (key),
+                self.cdp_interfaces_mo[key]
+            )
+            return self.cdp_interfaces_mo[key]
+
         # url: https://apic11o-eu-spdc.cisco.com/api/node/class/topology/pod-1/node-201/cdpIf.json?rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
         class_name = 'topology/pod-%s/node-%s/cdpIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required'
@@ -38,6 +50,12 @@ class ProtocolCdpInterfaceApi():
         self.log.apic_mo(
             'cdpIf.%s' % (key),
             self.cdp_interfaces_mo[key]
+        )
+
+        self.set_object_cache(
+            'cdpIf',
+            self.cdp_interfaces_mo[key],
+            object_selector=key
         )
 
         return self.cdp_interfaces_mo[key]

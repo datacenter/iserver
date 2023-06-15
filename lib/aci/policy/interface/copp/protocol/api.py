@@ -6,6 +6,17 @@ class PolicyInterfaceCoppProtocolApi():
         if self.policy_interface_copp_protocol_mo is not None:
             return self.policy_interface_copp_protocol_mo
 
+        cache = self.get_object_cache(
+            'coppProtoClassP'
+        )
+        if cache is not None:
+            self.policy_interface_copp_protocol_mo = cache
+            self.log.apic_mo(
+                'coppProtoClassP',
+                self.policy_interface_copp_protocol_mo
+            )
+            return self.policy_interface_copp_protocol_mo
+
         managed_objects = self.get_class(
             'coppProtoClassP'
         )
@@ -20,6 +31,11 @@ class PolicyInterfaceCoppProtocolApi():
             )
 
         self.log.apic_mo(
+            'coppProtoClassP',
+            self.policy_interface_copp_protocol_mo
+        )
+
+        self.set_object_cache(
             'coppProtoClassP',
             self.policy_interface_copp_protocol_mo
         )

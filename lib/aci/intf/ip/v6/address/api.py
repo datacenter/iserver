@@ -10,6 +10,18 @@ class AddressIpv6Api():
         if key in self.node_address_ipv6_mo:
             return self.node_address_ipv6_mo[key]
 
+        cache = self.get_object_cache(
+            'ipv6Addr',
+            object_selector=key
+        )
+        if cache is not None:
+            self.node_address_ipv6_mo[key] = cache
+            self.log.apic_mo(
+                'ipv6Addr.%s' % (key),
+                self.node_address_ipv6_mo[key]
+            )
+            return self.node_address_ipv6_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/ipv6Addr' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -31,6 +43,12 @@ class AddressIpv6Api():
         self.log.apic_mo(
             'ipv6Addr.%s' % (key),
             self.node_address_ipv6_mo[key]
+        )
+
+        self.set_object_cache(
+            'ipv6Addr',
+            self.node_address_ipv6_mo[key],
+            object_selector=key
         )
 
         return self.node_address_ipv6_mo[key]

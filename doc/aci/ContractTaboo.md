@@ -11,7 +11,7 @@ Use '--type taboo' to get taboo contracts details
 ```
 # iserver get aci contract --apic apic21 --type taboo --tenant k8s
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 Taboo Contracts
 ---------------
@@ -47,7 +47,7 @@ Developer
 # iserver get aci contract --apic apic21 --type taboo --tenant k8s
 
 {
-    "duration": 1920,
+    "duration": 1751,
     "apic": {
         "read": true,
         "success": 4,
@@ -55,10 +55,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 715,
+        "connect_time": 432,
         "disconnect_time": 0,
-        "mo_time": 1090,
-        "total_time": 1805
+        "mo_time": 1117,
+        "total_time": 1549
     },
     "error": {
         "read": false,
@@ -71,16 +71,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	715	-	connect apic21o.emea-sp.cisco.com
-True	322	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	327	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	441	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	432	-	connect apic21o.emea-sp.cisco.com
+True	434	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	336	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	347	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./Contract.md)

@@ -11,7 +11,7 @@
 ```
 # iserver get aci l3out --apic apic11 --view node
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | L3Out                                    | MPLS | PIM | BGP | OSPF | EIGRP | Border Leaf             | Router ID       | Loopback |
@@ -24,14 +24,14 @@ Apic: apic11
 | common/Infra_privIP_L3out                | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 116.116.116.116 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-205 | 115.115.115.115 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| ECMP-demo/ACC-ext_L3out                  | X    | X   | X   | X    | X     | topology/pod-1/node-202 | 122.122.122.122 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-201 | 121.121.121.121 | yes      | 
+| ECMP-demo/ACC-ext_L3out                  | X    | X   | X   | X    | X     | topology/pod-1/node-201 | 121.121.121.121 | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-202 | 122.122.122.122 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | ECMP-demo/L3OUT-ACC_L3out                | X    | X   | V   | X    | X     | topology/pod-1/node-301 | 31.31.31.1      | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-302 | 32.32.32.1      | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| ECMP-demo/L3OUT-INT_L3out                | X    | X   | V   | X    | X     | topology/pod-1/node-302 | 32.32.32.2      | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-301 | 31.31.31.2      | yes      | 
+| ECMP-demo/L3OUT-INT_L3out                | X    | X   | V   | X    | X     | topology/pod-1/node-301 | 31.31.31.2      | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-302 | 32.32.32.2      | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | ECMP-demo/MPC-demo_CDDC-2_L3out          | V    | X   | X   | X    | X     |                         |                 |          | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
@@ -52,14 +52,14 @@ Apic: apic11
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | MPC-E/CU-DU-Infra-SR-Backbone            | V    | X   | X   | X    | X     |                         |                 |          | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| MPC-E/MPC-E-OUT                          | X    | X   | X   | X    | X     | topology/pod-1/node-201 | 121.121.121.121 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-202 | 122.122.122.122 | yes      | 
+| MPC-E/MPC-E-OUT                          | X    | X   | X   | X    | X     | topology/pod-1/node-202 | 122.122.122.122 | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-201 | 121.121.121.121 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | MPC-E/MPC-E-Residential-IN               | X    | X   | X   | X    | X     | topology/pod-1/node-302 | 132.132.132.132 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-301 | 131.131.131.131 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| MPC-E/MPC-E-sPBR-IN                      | X    | X   | X   | X    | X     | topology/pod-1/node-301 | 131.131.131.131 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-302 | 132.132.132.132 | yes      | 
+| MPC-E/MPC-E-sPBR-IN                      | X    | X   | X   | X    | X     | topology/pod-1/node-302 | 132.132.132.132 | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-301 | 131.131.131.131 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | MPC-E/MPC-E-sPBR-OUT                     | X    | X   | V   | X    | X     | topology/pod-1/node-301 | 131.131.131.131 | no       | 
 |                                          |      |     |     |      |       | topology/pod-1/node-302 | 132.132.132.132 | no       | 
@@ -69,11 +69,11 @@ Apic: apic11
 | MPC-F5T/F5-OUT                           | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 126.126.126.126 | no       | 
 |                                          |      |     |     |      |       | topology/pod-1/node-205 | 125.125.125.125 | no       | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| MPC/MPC-OUT                              | X    | X   | X   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
-+------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| MPC/MPC-sPBR-IN                          | X    | X   | X   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
+| MPC/MPC-OUT                              | X    | X   | X   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
++------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
+| MPC/MPC-sPBR-IN                          | X    | X   | X   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | MPC/MPC-sPBR-IN_SRL3out                  | V    | X   | X   | X    | X     |                         |                 |          | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
@@ -88,14 +88,14 @@ Apic: apic11
 | smi5Gc/4G_RAN_L3Out                      | X    | X   | V   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| smi5Gc/smi5Gc-cvim1-4G-PDN_L3Out         | X    | X   | V   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
+| smi5Gc/smi5Gc-cvim1-4G-PDN_L3Out         | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | smi5Gc/smi5Gc-cvim1-4G_RAN_L3Out         | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| smi5Gc/smi5Gc-cvim1-BACKBONE_L3Out       | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 124.124.124.124 | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-205 | 123.123.123.123 | no       | 
+| smi5Gc/smi5Gc-cvim1-BACKBONE_L3Out       | X    | X   | V   | X    | X     | topology/pod-1/node-205 | 123.123.123.123 | no       | 
+|                                          |      |     |     |      |       | topology/pod-1/node-206 | 124.124.124.124 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | smi5Gc/smi5Gc-cvim1-Control_SBI_L3Out    | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
@@ -103,8 +103,8 @@ Apic: apic11
 | smi5Gc/smi5Gc-cvim1-N3-N4-BACKBONE_L3Out | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 122.122.122.122 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-205 | 121.121.121.121 | no       | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| smi5Gc/smi5Gc-cvim1-N3-N4_L3Out          | X    | X   | V   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | no       | 
-|                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | no       | 
+| smi5Gc/smi5Gc-cvim1-N3-N4_L3Out          | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | no       | 
+|                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | no       | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | smi5Gc/smi5Gc-cvim1-N6_L3Out             | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 202.202.202.202 | no       | 
 |                                          |      |     |     |      |       | topology/pod-1/node-201 | 201.201.201.201 | no       | 
@@ -124,8 +124,8 @@ Apic: apic11
 | smi5Gc/TEST_FSVI_MODULE_L3Out            | X    | X   | V   | X    | X     | topology/pod-1/node-201 | 201.201.201.201 | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-202 | 202.202.202.202 | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| SPIN_InnoLab/Calico_L3Out                | X    | X   | V   | X    | X     | topology/pod-1/node-202 | 1.1.1.2         | no       | 
-|                                          |      |     |     |      |       | topology/pod-1/node-201 | 1.1.1.1         | no       | 
+| SPIN_InnoLab/Calico_L3Out                | X    | X   | V   | X    | X     | topology/pod-1/node-201 | 1.1.1.1         | no       | 
+|                                          |      |     |     |      |       | topology/pod-1/node-202 | 1.1.1.2         | no       | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | SPIN_InnoLab/Calico_RDC3                 | V    | X   | X   | X    | X     |                         |                 |          | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
@@ -137,11 +137,11 @@ Apic: apic11
 | SPIN_InnoLab/IPN_L3Out                   | X    | X   | V   | X    | X     | topology/pod-1/node-205 | 205.205.205.15  | yes      | 
 |                                          |      |     |     |      |       | topology/pod-1/node-206 | 206.206.206.15  | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| UC3-CL2023-Demo/K8S                      | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 206.206.206.25  | no       | 
-|                                          |      |     |     |      |       | topology/pod-1/node-205 | 205.205.205.25  | no       | 
+| UC3-CL2023-Demo/K8S                      | X    | X   | V   | X    | X     | topology/pod-1/node-205 | 205.205.205.25  | no       | 
+|                                          |      |     |     |      |       | topology/pod-1/node-206 | 206.206.206.25  | no       | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
-| UC3-CL2023-Demo/LAB_Backbone             | X    | X   | V   | X    | X     | topology/pod-1/node-206 | 206.206.206.25  | yes      | 
-|                                          |      |     |     |      |       | topology/pod-1/node-205 | 205.205.205.25  | yes      | 
+| UC3-CL2023-Demo/LAB_Backbone             | X    | X   | V   | X    | X     | topology/pod-1/node-205 | 205.205.205.25  | yes      | 
+|                                          |      |     |     |      |       | topology/pod-1/node-206 | 206.206.206.25  | yes      | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
 | UC3-CL2023-Demo/SR_Backbone              | V    | X   | X   | X    | X     |                         |                 |          | 
 +------------------------------------------+------+-----+-----+------+-------+-------------------------+-----------------+----------+
@@ -153,7 +153,7 @@ Developer
 # iserver get aci l3out --apic apic11 --view node
 
 {
-    "duration": 1456,
+    "duration": 2030,
     "apic": {
         "read": true,
         "success": 3,
@@ -161,10 +161,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 390,
+        "connect_time": 448,
         "disconnect_time": 0,
-        "mo_time": 791,
-        "total_time": 1181
+        "mo_time": 766,
+        "total_time": 1214
     },
     "error": {
         "read": false,
@@ -177,15 +177,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	390	-	connect apic11o.emea-sp.cisco.com
-True	445	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	346	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	448	-	connect apic11o.emea-sp.cisco.com
+True	407	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	359	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./L3Out.md)

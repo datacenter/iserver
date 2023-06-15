@@ -6,6 +6,17 @@ class PolicyInterfaceSynceApi():
         if self.policy_interface_synce_mo is not None:
             return self.policy_interface_synce_mo
 
+        cache = self.get_object_cache(
+            'synceEthIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_synce_mo = cache
+            self.log.apic_mo(
+                'synceEthIfPol',
+                self.policy_interface_synce_mo
+            )
+            return self.policy_interface_synce_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'synceEthIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceSynceApi():
             )
 
         self.log.apic_mo(
+            'synceEthIfPol',
+            self.policy_interface_synce_mo
+        )
+
+        self.set_object_cache(
             'synceEthIfPol',
             self.policy_interface_synce_mo
         )

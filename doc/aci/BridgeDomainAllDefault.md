@@ -12,7 +12,7 @@ Get all bridge domains from selected APIC. Default output shows properties of br
 ```
 # iserver get aci bd --apic apic21
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | Bridge Domain             | Subnet             | Usage | EPG                   | VRF                      | L3Out                     |
@@ -31,11 +31,7 @@ Apic: apic21
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | infra/ave-ctrl            |                    |       | infra/ave-ctrl        | infra/ave-ctrl           |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| infra/default             | 10.5.0.30/27       | 1/30  | infra/default         | infra/overlay-1          |                           | 
-+---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/bmk8s_1_BD            | 10.58.24.78/28     | 1/14  | k8s/bmk8s_1           | common/Infra_VRF         | common/Infra_L3out        | 
-+---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/bmk8s_2_BD            | 10.58.24.94/28     | 1/14  | common/privIP_TEST    | common/Infra_VRF         | common/Infra_L3out        | 
+| infra/default             | 10.5.0.30/27       | 1/30  | common/privIP_TEST    | infra/overlay-1          |                           | 
 |                           |                    |       | common/Test_EPG       |                          |                           | 
 |                           |                    |       | hefernan_ni-demo/EPG1 |                          |                           | 
 |                           |                    |       | hefernan_ni-demo/EPG2 |                          |                           | 
@@ -73,6 +69,10 @@ Apic: apic21
 |                           |                    |       | vEPC_demo/vEPG_INT    |                          |                           | 
 |                           |                    |       | vEPC_demo/vEPG_MGMT   |                          |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
+| k8s/bmk8s_1_BD            | 10.58.24.78/28     | 1/14  | k8s/bmk8s_1           | common/Infra_VRF         | common/Infra_L3out        | 
++---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
+| k8s/bmk8s_2_BD            | 10.58.24.94/28     | 1/14  | k8s/bmk8s_2           | common/Infra_VRF         | common/Infra_L3out        | 
++---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | k8s/bmk8s_prov_BD         | 10.58.29.94/28     | 5/14  | k8s/bmk8s_prov        | common/Infra_VRF         | common/Infra_L3out        | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | k8s/bml3outk8s_BD         | 10.58.24.126/28    | 1/14  |                       | common/Infra_VRF         | k8s/bml3_k8s              | 
@@ -83,16 +83,16 @@ Apic: apic21
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 2/254 | k8s/SRIoV_B           | k8s/k8s_SRIoV_VRF        |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/Test                  | 169.169.170.254/24 | 1/254 | k8s/Test              | common/Infra_privIP_VRF  | common/Infra_privIP_L3out | 
-|                           | 169.169.169.254/24 | 1/254 |                       |                          | common/Infra_L3out        | 
+| k8s/Test                  | 169.169.169.254/24 | 1/254 | k8s/Test              | common/Infra_privIP_VRF  | common/Infra_L3out        | 
+|                           | 169.169.170.254/24 | 1/254 |                       |                          | common/Infra_privIP_L3out | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/vk8s_1_BD             | 10.58.24.174/28    | 10/14 | k8s/vk8s_1            | common/Infra_VRF         | common/Infra_L3out        | 
+| k8s/vk8s_1_BD             | 10.58.24.174/28    | 1/14  | k8s/vk8s_1            | common/Infra_VRF         | common/Infra_L3out        | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/vk8s_2_BD             | 10.58.24.190/28    | 4/14  | k8s/vk8s_2            | common/Infra_VRF         | common/Infra_L3out        | 
+| k8s/vk8s_2_BD             | 10.58.24.190/28    | 1/14  | k8s/vk8s_2            | common/Infra_VRF         | common/Infra_L3out        | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/vk8s_3_BD             | 10.58.24.206/28    | 10/14 | k8s/vk8s_3            | common/Infra_VRF         | common/Infra_L3out        | 
+| k8s/vk8s_3_BD             | 10.58.24.206/28    | 1/14  | k8s/vk8s_3            | common/Infra_VRF         | common/Infra_L3out        | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| k8s/vk8s_4_BD             | 10.58.24.222/28    | 10/14 | k8s/vk8s_4            | common/Infra_VRF         | common/Infra_L3out        | 
+| k8s/vk8s_4_BD             | 10.58.24.222/28    | 1/14  | k8s/vk8s_4            | common/Infra_VRF         | common/Infra_L3out        | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | k8s/vl3outk8s_BD          | 10.58.24.110/28    | 1/14  |                       | common/Infra_VRF         | k8s/vl3_k8s               | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
@@ -107,17 +107,17 @@ Apic: apic21
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | mgmt/EU-SPDC-BD1          |                    |       | mgmt/EU-SPDC-MGMT     | mgmt/EU-SPDC-MGMT-VRF1   |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 2/254 | mgmt/EU-SPDC-ERSPAN   | mgmt/EU-SPDC-ERSPAN-VRF  |                           | 
+| mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 1/254 | mgmt/EU-SPDC-ERSPAN   | mgmt/EU-SPDC-ERSPAN-VRF  |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | mgmt/inb                  | 10.58.50.190/27    | 1/30  |                       | mgmt/inb                 | mgmt/INB_L3out            | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | nidemo/appserver          | 10.0.2.1/24        | 1/254 | nidemo/appserver      | nidemo/streamz-vrf       |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| nidemo/database           | 10.0.3.1/24        | 2/254 | nidemo/database       | nidemo/streamz-vrf       |                           | 
+| nidemo/database           | 10.0.3.1/24        | 1/254 | nidemo/database       | nidemo/streamz-vrf       |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| nidemo/frontend           | 10.0.1.1/24        | 2/254 | nidemo/frontend       | nidemo/streamz-vrf       |                           | 
+| nidemo/frontend           | 10.0.1.1/24        | 1/254 | nidemo/frontend       | nidemo/streamz-vrf       |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
-| nidemo/management         | 10.0.4.1/24        | 2/254 | nidemo/management     | nidemo/streamz-vrf       |                           | 
+| nidemo/management         | 10.0.4.1/24        | 1/254 | nidemo/management     | nidemo/streamz-vrf       |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 1/254 | SPN_IntraLab/TEST2    | SPN_IntraLab/SPN_VRF1    |                           | 
 +---------------------------+--------------------+-------+-----------------------+--------------------------+---------------------------+
@@ -142,7 +142,7 @@ Developer
 # iserver get aci bd --apic apic21
 
 {
-    "duration": 2388,
+    "duration": 2904,
     "apic": {
         "read": true,
         "success": 4,
@@ -150,10 +150,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 418,
+        "connect_time": 443,
         "disconnect_time": 0,
-        "mo_time": 1161,
-        "total_time": 1579
+        "mo_time": 1213,
+        "total_time": 1656
     },
     "error": {
         "read": false,
@@ -166,16 +166,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	418	-	connect apic21o.emea-sp.cisco.com
-True	434	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	354	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	373	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	443	-	connect apic21o.emea-sp.cisco.com
+True	411	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	367	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	435	93	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./BridgeDomain.md)

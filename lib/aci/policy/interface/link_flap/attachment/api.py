@@ -6,6 +6,17 @@ class PolicyInterfaceLinkFlapAttachmentApi():
         if self.policy_interface_link_flap_attachment_mo is not None:
             return self.policy_interface_link_flap_attachment_mo
 
+        cache = self.get_object_cache(
+            'l1RsLinkFlapPolCons'
+        )
+        if cache is not None:
+            self.policy_interface_link_flap_attachment_mo = cache
+            self.log.apic_mo(
+                'l1RsLinkFlapPolCons',
+                self.policy_interface_link_flap_attachment_mo
+            )
+            return self.policy_interface_link_flap_attachment_mo
+
         managed_objects = self.get_class(
             'l1RsLinkFlapPolCons'
         )
@@ -20,6 +31,11 @@ class PolicyInterfaceLinkFlapAttachmentApi():
             )
 
         self.log.apic_mo(
+            'l1RsLinkFlapPolCons',
+            self.policy_interface_link_flap_attachment_mo
+        )
+
+        self.set_object_cache(
             'l1RsLinkFlapPolCons',
             self.policy_interface_link_flap_attachment_mo
         )

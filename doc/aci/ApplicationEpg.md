@@ -11,6 +11,7 @@ Filter options:
   - [IP address](./ApplicationEpgIp.md)
   - [deployed node](./ApplicationEpgNode.md)
   - [contract](./ApplicationEpgContract.md)
+  - [pcTag](./ApplicationEpgPcTag.md)
 
 View options:
   - [default](./ApplicationEpgAllDefault.md)
@@ -36,6 +37,7 @@ Usage: iserver.py get aci epg [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --name TEXT                     Filter by epg name
@@ -43,15 +45,17 @@ Options:
   --app TEXT                      Filter by application profile name
   --bd TEXT                       Filter by bridge domain name
   --subnet TEXT                   Filter by IP subnet
-  --ip TEXT                       Filter by IP address
+  --address TEXT                  Filter by IP address
   --node TEXT                     Filter by deployed node name
   --contract TEXT                 Filter by contract name
+  --pctag TEXT                    Filter by pcTag
   -v, --view [default|prop|bd|contract|node|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 28 ms and logs saved in /tmp/iserver\63e9b9e7f7d3
+Info: finished in 28 ms and logs saved in /tmp/iserver\02f6d7047992
 ```
 
 [[Back]](./README.md)

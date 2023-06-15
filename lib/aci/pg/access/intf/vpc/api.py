@@ -6,6 +6,17 @@ class PolicyGroupAccessInterfaceVpcApi():
         if self.policy_group_access_interface_vpc_mo is not None:
             return self.policy_group_access_interface_vpc_mo
 
+        cache = self.get_object_cache(
+            'infraAccBndlGrp'
+        )
+        if cache is not None:
+            self.policy_group_access_interface_vpc_mo = cache
+            self.log.apic_mo(
+                'infraAccBndlGrp',
+                self.policy_group_access_interface_vpc_mo
+            )
+            return self.policy_group_access_interface_vpc_mo
+
         distinguished_name = 'uni/infra/funcprof'
         children = [
             'infraRsCdpIfPol',
@@ -185,6 +196,11 @@ class PolicyGroupAccessInterfaceVpcApi():
             )
 
         self.log.apic_mo(
+            'infraAccBndlGrp',
+            self.policy_group_access_interface_vpc_mo
+        )
+
+        self.set_object_cache(
             'infraAccBndlGrp',
             self.policy_group_access_interface_vpc_mo
         )

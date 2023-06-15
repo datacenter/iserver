@@ -5,12 +5,14 @@
 ```
 # iserver get aci intf lb --apic apic11 --node any --id lo8 --view verbose
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
 - node: s101-eu-spdc
@@ -33,7 +35,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 122.122.122.122/32
+- IPv4 Address        : 172.24.0.14/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -44,7 +46,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 15.254.101.6/32
+- IPv4 Address        : 15.254.101.0/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -55,7 +57,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 15.254.101.9/32
+- IPv4 Address        : 202.202.202.202/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -66,7 +68,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 172.24.3.15/32
+- IPv4 Address        : 131.131.131.131/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -77,7 +79,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 132.132.132.132/32
+- IPv4 Address        : 172.24.3.14/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -88,7 +90,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 10.3.0.33/32
+- IPv4 Address        : 172.16.10.1/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 
@@ -99,7 +101,7 @@ Interface Loopback
 - Admin State         : up
 - Oper State          : up
 - Reason              : 
-- IPv4 Address        : 10.3.0.33/32
+- IPv4 Address        : 172.16.10.1/32
 - Last Errors         : 0
 - Current Error Index : 4294967295
 ```
@@ -110,18 +112,18 @@ Developer
 # iserver get aci intf lb --apic apic11 --node any --id lo8 --view verbose
 
 {
-    "duration": 6241,
+    "duration": 7202,
     "apic": {
         "read": true,
-        "success": 18,
+        "success": 22,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 17,
-        "connect_time": 405,
+        "mo": 21,
+        "connect_time": 388,
         "disconnect_time": 0,
-        "mo_time": 5401,
-        "total_time": 5806
+        "mo_time": 6393,
+        "total_time": 6781
     },
     "error": {
         "read": false,
@@ -134,30 +136,35 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	405	-	connect apic11o.emea-sp.cisco.com
-True	313	11	apic11o.emea-sp.cisco.com class fabricNode
-True	293	12	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	298	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
-True	291	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	338	63	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4Addr
-True	289	15	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	316	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
-True	290	15	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	388	-	connect apic11o.emea-sp.cisco.com
+True	296	13	apic11o.emea-sp.cisco.com class fabricNode
+True	324	12	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	302	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
+True	294	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	310	63	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4Addr
+True	296	15	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	307	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
+True	311	15	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
 True	302	90	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4Addr
-True	291	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	298	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4Addr
-True	318	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	303	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4Addr
-True	508	21	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	355	23	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4Addr
-True	303	20	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
-True	295	22	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4Addr
+True	271	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	302	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/ipv4Addr
+True	333	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	337	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/ipv4Addr
+True	289	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	299	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4Addr
+True	300	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	315	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4Addr
+True	326	21	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	285	23	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4Addr
+True	290	20	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l3LbRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf
+True	304	22	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4Addr
 ```
 
 [[Back]](./InterfaceLoopback.md)

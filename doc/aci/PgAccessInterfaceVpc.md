@@ -35,10 +35,11 @@ Options:
   --policy TEXT                   Filter by policy
   -v, --view [default|aaep|node|port]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 46 ms and logs saved in /tmp/iserver\d6be8ddd61ed
+Info: finished in 127 ms and logs saved in /tmp/iserver\26b9531aa319
 ```
 
 [[Back]](./PgAccessInterface.md)

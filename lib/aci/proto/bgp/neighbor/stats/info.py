@@ -45,7 +45,7 @@ class ProtocolBgpNeighborStatsInfo():
             bgp_peer_addr,
             bgp_state_addr
         )
-        if managed_object is None:
+        if managed_object is None or len(managed_object) == 0:
             return None
 
         return self.get_protocol_bgp_neighbor_stats_info(managed_object)

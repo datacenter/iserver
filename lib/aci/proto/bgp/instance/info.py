@@ -60,7 +60,7 @@ class ProtocolBgpInstanceInfo():
 
     def get_protocol_bgp_instance(self, pod_id, node_id):
         managed_object = self.get_protocol_bgp_instance_mo(pod_id, node_id)
-        if managed_object is None:
+        if managed_object is None or len(managed_object) == 0:
             return None
 
         return self.get_protocol_bgp_instance_info(managed_object)

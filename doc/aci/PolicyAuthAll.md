@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy auth --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+----+-------------+-------------+------------+--------------+
 | Policy Name | TF | Admin State | Host Mode   | Interfaces | Ref Policies |
@@ -20,7 +20,7 @@ Developer
 # iserver get aci policy auth --apic apic11
 
 {
-    "duration": 1120,
+    "duration": 1292,
     "apic": {
         "read": true,
         "success": 3,
@@ -28,10 +28,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 387,
+        "connect_time": 442,
         "disconnect_time": 0,
-        "mo_time": 664,
-        "total_time": 1051
+        "mo_time": 708,
+        "total_time": 1150
     },
     "error": {
         "read": false,
@@ -44,15 +44,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	387	-	connect apic11o.emea-sp.cisco.com
-True	337	1	apic11o.emea-sp.cisco.com class l2PortAuthPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	327	0	apic11o.emea-sp.cisco.com class l1RsL2PortAuthCons
+True	442	-	connect apic11o.emea-sp.cisco.com
+True	341	1	apic11o.emea-sp.cisco.com class l2PortAuthPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	367	0	apic11o.emea-sp.cisco.com class l1RsL2PortAuthCons
 ```
 
 [[Back]](./PolicyAuth.md)

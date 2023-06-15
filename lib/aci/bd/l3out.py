@@ -1,6 +1,3 @@
-from lib import log_helper
-
-
 class BridgeDomainL3Out():
     def __init__(self):
         pass

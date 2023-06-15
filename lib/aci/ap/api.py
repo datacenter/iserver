@@ -6,6 +6,17 @@ class ApplicationProfileApi():
         if self.application_profile_mo is not None:
             return self.application_profile_mo
 
+        cache = self.get_object_cache(
+            'fvAp'
+        )
+        if cache is not None:
+            self.application_profile_mo = cache
+            self.log.apic_mo(
+                'fvAp',
+                self.application_profile_mo
+            )
+            return self.application_profile_mo
+
         managed_objects = self.get_class(
             'fvAp'
         )
@@ -20,6 +31,11 @@ class ApplicationProfileApi():
             )
 
         self.log.apic_mo(
+            'fvAp',
+            self.application_profile_mo
+        )
+
+        self.set_object_cache(
             'fvAp',
             self.application_profile_mo
         )

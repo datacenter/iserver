@@ -6,6 +6,17 @@ class PolicyInterfaceLldpApi():
         if self.policy_interface_lldp_mo is not None:
             return self.policy_interface_lldp_mo
 
+        cache = self.get_object_cache(
+            'lldpIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_lldp_mo = cache
+            self.log.apic_mo(
+                'lldpIfPol',
+                self.policy_interface_lldp_mo
+            )
+            return self.policy_interface_lldp_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'lldpIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceLldpApi():
             )
 
         self.log.apic_mo(
+            'lldpIfPol',
+            self.policy_interface_lldp_mo
+        )
+
+        self.set_object_cache(
             'lldpIfPol',
             self.policy_interface_lldp_mo
         )

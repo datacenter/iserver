@@ -5,7 +5,7 @@
 ```
 # iserver get aci pool vlan --apic apic21 --vlan 2501
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +------------------------+-----------------+-----------------------+----------+-----------------------+-----------+
 | VLAN Pool Name         | Allocation Mode | Encapsulation Block   | Role     | Domain                | EPG Usage |
@@ -29,7 +29,7 @@ Developer
 # iserver get aci pool vlan --apic apic21 --vlan 2501
 
 {
-    "duration": 1215,
+    "duration": 1416,
     "apic": {
         "read": true,
         "success": 3,
@@ -37,10 +37,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 436,
+        "connect_time": 453,
         "disconnect_time": 0,
-        "mo_time": 683,
-        "total_time": 1119
+        "mo_time": 703,
+        "total_time": 1156
     },
     "error": {
         "read": false,
@@ -53,15 +53,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	436	-	connect apic21o.emea-sp.cisco.com
-True	350	13	apic21o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
-True	333	32	apic21o.emea-sp.cisco.com class vmmEpPD
+True	453	-	connect apic21o.emea-sp.cisco.com
+True	345	13	apic21o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	358	32	apic21o.emea-sp.cisco.com class vmmEpPD
 ```
 
 [[Back]](./PoolVlan.md)

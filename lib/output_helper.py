@@ -244,7 +244,7 @@ class OutputHelper():
         self.append(self.verbose_filename, output)
         self.append(self.debug_filename, output)
 
-    def get_subkey(self, value, key):
+    def get_subkey(self, value, key, cast_none=False):
         if value is not None:
             if '.' in key:
                 subkey = key.split('.')[0]
@@ -252,9 +252,11 @@ class OutputHelper():
                     return ''
 
                 new_key = '.'.join(key.split('.')[1:])
-                return self.get_subkey(value[subkey], new_key)
+                return self.get_subkey(value[subkey], new_key, cast_none=cast_none)
 
             if key in value:
+                if value[key] is None and cast_none:
+                    return ''
                 return value[key]
 
         return ''
@@ -404,99 +406,16 @@ class OutputHelper():
 
         return headers, order
 
-    def expand_list(self, values, order, key):
-        new_values = []
-        for value in values:
-            if len(value[key]) == 0:
-                value[key] = ''
-                value['__Last'] = True
-                new_values.append(value)
-                continue
-
-            if len(value[key]) == 1:
-                value[key] = value[key][0]
-                if '__Output' in value and '__Output' in value[key]:
-                    for okey in value[key]['__Output']:
-                        value['__Output']['%s.%s' % (key, okey)] = value[key]['__Output'][okey]
-                value['__Last'] = True
-                new_values.append(value)
-                continue
-
-            if len(value[key]) > 1:
-                index = 1
-                for item in value[key]:
-                    if isinstance(item, dict):
-                        if index == 1:
-                            new_value = copy.deepcopy(value)
-                            new_value[key] = item
-                        else:
-                            new_value = copy.deepcopy(value)
-                            new_value[key] = {}
-                            for displayed_field in order:
-                                new_value = self.replace_subkey(
-                                    new_value,
-                                    displayed_field,
-                                    ''
-                                )
-
-                            new_value = self.replace_subkey(
-                                new_value,
-                                key,
-                                item
-                            )
-
-                        if '__Output' in new_value and '__Output' in item:
-                            for okey in item['__Output']:
-                                new_value['__Output']['%s.%s' % (key, okey)] = item['__Output'][okey]
-
-                        new_value['__Last'] = False
-                        if index == len(value[key]) - 1:
-                            new_value['__Last'] = True
-
-                        new_values.append(new_value)
-                        index = index + 1
-
-                    else:
-                        if index == 1:
-                            new_value = copy.deepcopy(value)
-                            new_value[key] = item
-                        else:
-                            new_value = copy.deepcopy(value)
-                            for displayed_field in order:
-                                new_value = self.replace_subkey(
-                                    new_value,
-                                    displayed_field,
-                                    ''
-                                )
-
-                            new_value = self.replace_subkey(
-                                new_value,
-                                key,
-                                item
-                            )
-
-                        if '__Output' in new_value and '__Output' in item:
-                            for okey in item['__Output']:
-                                new_value['__Output']['%s.%s' % (key, okey)] = item['__Output'][okey]
-
-                        new_value['__Last'] = False
-                        if index == len(value[key]) - 1:
-                            new_value['__Last'] = True
-
-                        new_values.append(new_value)
-                        index = index + 1
-
-                continue
-
-        return new_values
-
-    def expand_lists(self, values_ref, order, keys):
+    def expand_lists(self, values_ref, order, keys, filtering_rules=None):
         values = copy.deepcopy(values_ref)
         new_values = []
         for value in values:
             max_key_length = 0
             for key in keys:
                 if key in value and value[key] is not None:
+                    if filtering_rules is not None:
+                        value[key] = self.filter_values(value[key], filtering_rules)
+
                     max_key_length = max(
                         max_key_length,
                         len(value[key])
@@ -538,8 +457,8 @@ class OutputHelper():
                                 new_value[key] = ''
                                 continue
 
-                            if len(value[key]) == 0:
-                                new_value[key] = {}
+                            if value[key] is None or len(value[key]) == 0:
+                                new_value[key] = ''
                             else:
                                 new_value[key] = copy.deepcopy(value[key][0])
                                 if '__Output' in value[key][0]:
@@ -558,8 +477,8 @@ class OutputHelper():
                                 new_value[key] = ''
                                 continue
 
-                            if len(value[key]) == 0:
-                                new_value[key] = {}
+                            if value[key] is None or len(value[key]) == 0:
+                                new_value[key] = ''
                             else:
                                 new_value[key] = copy.deepcopy(value[key][0])
 
@@ -575,11 +494,12 @@ class OutputHelper():
                             if key not in value:
                                 continue
 
-                            if len(value[key]) > index:
-                                new_value[key] = copy.deepcopy(value[key][index])
-                                if '__Output' in value[key][index]:
-                                    for output_key in value[key][index]['__Output']:
-                                        new_value['__Output']['%s.%s' % (key, output_key)] = value[key][index]['__Output'][output_key]
+                            if value[key] is not None:
+                                if len(value[key]) > index:
+                                    new_value[key] = copy.deepcopy(value[key][index])
+                                    if '__Output' in value[key][index]:
+                                        for output_key in value[key][index]['__Output']:
+                                            new_value['__Output']['%s.%s' % (key, output_key)] = value[key][index]['__Output'][output_key]
 
                         if index == max_key_length - 1:
                             new_value['__Last'] = True
@@ -602,7 +522,39 @@ class OutputHelper():
 
         return new_values
 
-    def my_table(self, values, spacing=3, underline=False, order=None, allow_order_subkeys=False, headers=None, headers_upper=False, table=False, row_separator=False, remove_empty_columns=False, stream='default', merge=False):
+    def match_value(self, value, value_filter):
+        if value_filter is None or len(value_filter) == 0:
+            return True
+
+        for filtering_rule in value_filter:
+            (key, value_type, ref_value) = filtering_rule.split(':')
+
+            key_value = self.get_subkey(
+                value,
+                key
+            )
+
+            if value_type == 'bool':
+                if isinstance(key_value, bool):
+                    if ref_value == 'true':
+                        if key_value:
+                            return False
+
+                    if ref_value == 'false':
+                        if not key_value:
+                            return False
+
+        return True
+
+    def filter_values(self, values, filtering_rules):
+        new_values = []
+        for value in values:
+            if not self.match_value(value, filtering_rules):
+                continue
+            new_values.append(value)
+        return new_values
+
+    def my_table(self, values, spacing=3, underline=False, order=None, filtering_rules=None, allow_order_subkeys=False, headers=None, headers_upper=False, table=False, row_separator=False, remove_empty_columns=False, cast_none=False, stream='default', merge=False):
         if merge:
             values = self.merge_output(
                 values
@@ -610,6 +562,9 @@ class OutputHelper():
 
         if remove_empty_columns:
             headers, order = self.remove_empty_columns(headers, order, values, allow_order_subkeys=allow_order_subkeys)
+
+        if filtering_rules is not None:
+            values = self.filter_values(values, filtering_rules)
 
         if table and row_separator:
             values = self.add_last_tag(values)
@@ -647,7 +602,7 @@ class OutputHelper():
                 try:
                     if allow_order_subkeys and '.' in key:
                         value[key] = str(
-                            self.get_subkey(value, key)
+                            self.get_subkey(value, key, cast_none=cast_none)
                         )
                     else:
                         value[key] = str(value[key])

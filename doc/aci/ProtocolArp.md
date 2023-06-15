@@ -45,10 +45,11 @@ Options:
   --subnet TEXT                 Filter by subnet
   -v, --view [default|verbose]
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\372ffbc1387a
+Info: finished in 131 ms and logs saved in /tmp/iserver\26a247cb18a2
 ```
 
 [[Back]](./Protocol.md)

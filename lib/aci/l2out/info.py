@@ -4,8 +4,8 @@ from lib import filter_helper
 
 class L2OutInfo():
     def __init__(self):
-        self.l2outs = None
-        self.l2outs_with_path = None
+        self.l2out = None
+        self.l2out_with_path = None
 
     def get_l2out_count(self, tenant_name=None):
         l2out_filter = None
@@ -113,32 +113,32 @@ class L2OutInfo():
         return info
 
     def get_l2outs_info(self, path_info=False):
-        if self.l2outs is None:
-            l2outs = self.get_l2outs_mo()
+        if self.l2out is None:
+            l2outs = self.get_l2out_mo()
             if l2outs is not None:
-                self.l2outs = []
+                self.l2out = []
                 for managed_object in l2outs:
-                    self.l2outs.append(
+                    self.l2out.append(
                         self.get_l2out_info(
                             managed_object
                         )
                     )
 
         if not path_info:
-            return self.l2outs
+            return self.l2out
 
-        if self.l2outs_with_path is not None:
-            return self.l2outs_with_path
+        if self.l2out_with_path is not None:
+            return self.l2out_with_path
 
-        l2outs_with_path_mo = self.get_l2out_paths_mo()
+        l2outs_with_path_mo = self.get_l2out_path_mo()
         if l2outs_with_path_mo is None:
             return None
 
-        self.l2outs_with_path = copy.deepcopy(
-            self.l2outs
+        self.l2out_with_path = copy.deepcopy(
+            self.l2out
         )
 
-        for l2out_with_path in self.l2outs_with_path:
+        for l2out_with_path in self.l2out_with_path:
             l2out_with_path['path'] = []
             for managed_object in l2outs_with_path_mo:
                 if managed_object['tCl'] == 'fabricPathEp':
@@ -154,7 +154,7 @@ class L2OutInfo():
                         managed_object['dn'].split('rspathL2OutAtt-[')[1][:-1]
                     )
 
-        return self.l2outs_with_path
+        return self.l2out_with_path
 
     def match_l2out(self, l2out_info, l2out_filter):
         if l2out_filter is None or len(l2out_filter) == 0:

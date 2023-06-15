@@ -1,10 +1,20 @@
 class ContractApi():
     def __init__(self):
         self.contracts_mo = None
-        self.taboos_mo = None
 
     def get_contracts_mo(self):
         if self.contracts_mo is not None:
+            return self.contracts_mo
+
+        cache = self.get_object_cache(
+            'vzBrCP'
+        )
+        if cache is not None:
+            self.contracts_mo = cache
+            self.log.apic_mo(
+                'vzBrCP',
+                self.contracts_mo
+            )
             return self.contracts_mo
 
         query = 'rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv'
@@ -43,6 +53,11 @@ class ContractApi():
             )
 
         self.log.apic_mo(
+            'vzBrCP',
+            self.contracts_mo
+        )
+
+        self.set_object_cache(
             'vzBrCP',
             self.contracts_mo
         )

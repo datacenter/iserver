@@ -10,6 +10,18 @@ class InterfaceSviApi():
         if key in self.interface_svi_mo:
             return self.interface_svi_mo[key]
 
+        cache = self.get_object_cache(
+            'sviIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_svi_mo[key] = cache
+            self.log.apic_mo(
+                'sviIf.%s' % (key),
+                self.interface_svi_mo[key]
+            )
+            return self.interface_svi_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/l2BD' % (pod_id, node_id)
         query = 'rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required'
         managed_objects = self.get_class(
@@ -46,6 +58,12 @@ class InterfaceSviApi():
         self.log.apic_mo(
             'sviIf.%s' % (key),
             self.interface_svi_mo[key]
+        )
+
+        self.set_object_cache(
+            'sviIf',
+            self.interface_svi_mo[key],
+            object_selector=key
         )
 
         return self.interface_svi_mo[key]

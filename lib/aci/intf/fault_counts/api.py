@@ -11,6 +11,18 @@ class InterfaceFaultCountsApi():
         if key in self.interface_fault_counts_mo:
             return self.interface_fault_counts_mo[key]
 
+        cache = self.get_object_cache(
+            'fltCnts',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_fault_counts_mo[key] = cache
+            self.log.apic_mo(
+                'fltCnts.%s' % (key),
+                self.interface_fault_counts_mo[key]
+            )
+            return self.interface_fault_counts_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/%s-[%s]/fltCnts' % (
             pod_id,
             node_id,
@@ -38,8 +50,14 @@ class InterfaceFaultCountsApi():
         self.interface_fault_counts_mo[key] = managed_objects['imdata'][0]['faultCounts']['attributes']
 
         self.log.apic_mo(
-            'faultCounts.%s' % (key),
+            'fltCnts.%s' % (key),
             self.interface_fault_counts_mo[key]
+        )
+
+        self.set_object_cache(
+            'fltCnts',
+            self.interface_fault_counts_mo[key],
+            object_selector=key
         )
 
         return self.interface_fault_counts_mo[key]

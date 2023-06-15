@@ -1,30 +1,46 @@
 class NodeApi():
     def __init__(self):
-        self.nodes_mo = None
+        self.node_mo = None
 
-    def get_nodes_mo(self):
-        if self.nodes_mo is not None:
-            return self.nodes_mo
+    def get_node_mo(self):
+        if self.node_mo is not None:
+            return self.node_mo
+
+        cache = self.get_object_cache(
+            'fabricNode'
+        )
+        if cache is not None:
+            self.node_mo = cache
+            self.log.apic_mo(
+                'fabricNode',
+                self.node_mo
+            )
+            return self.node_mo
 
         managed_objects = self.get_class(
             'fabricNode'
         )
         if managed_objects is None:
             self.log.error(
-                'get_nodes_mo',
+                'get_node_mo',
                 'API failed'
             )
             return None
 
-        self.nodes_mo = []
+        self.node_mo = []
         for managed_object in managed_objects['imdata']:
-            self.nodes_mo.append(
+            self.node_mo.append(
                 managed_object['fabricNode']['attributes']
             )
 
         self.log.apic_mo(
             'fabricNode',
-            self.nodes_mo
+            self.node_mo
         )
 
-        return self.nodes_mo
+        self.set_object_cache(
+            'fabricNode',
+            self.node_mo
+        )
+
+        return self.node_mo

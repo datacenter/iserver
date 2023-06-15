@@ -8,6 +8,116 @@ def get_tenant_name(value):
     return None
 
 
+def match_integer(key, value):
+    if key is None and value is None:
+        return True
+
+    if key is None and value is not None:
+        return False
+
+    if key is not None and value is None:
+        return False
+
+    if isinstance(value, str):
+        try:
+            value = int(value)
+        except BaseException:
+            return False
+
+    if key.startswith('gt'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value <= reference:
+            return False
+
+        return True
+
+    if key.startswith('ge'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value < reference:
+            return False
+
+        return True
+
+    if key.startswith('lt'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value >= reference:
+            return False
+
+        return True
+
+    if key.startswith('le'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value < reference:
+            return False
+
+        return True
+
+    if key.startswith('eq'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value != reference:
+            return False
+
+        return True
+
+    if key.startswith('ne'):
+        try:
+            reference = int(key[2:])
+        except BaseException:
+            return False
+
+        if value == reference:
+            return False
+
+        return True
+
+    if len(key.split('-')) == 2:
+        (start, end) = key.split('-')
+        try:
+            start = int(start)
+        except BaseException:
+            return False
+
+        try:
+            end = int(end)
+        except BaseException:
+            return False
+
+        if start <= value <= end:
+            return True
+
+        return False
+
+    try:
+        reference = int(key)
+    except BaseException:
+        return False
+
+    if reference != value:
+        return False
+
+    return True
+
+
 def match_string(key, value, strict=False):
     if key is None and value is None:
         return True

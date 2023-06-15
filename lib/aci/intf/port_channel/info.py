@@ -150,7 +150,7 @@ class InterfacePortChannelInfo():
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             self.get_node_name(
@@ -201,14 +201,16 @@ class InterfacePortChannelInfo():
             return self.interfaces_pc[key]
 
         interfaces_pc_mo = self.get_interface_port_channels_mo(pod_id, node_id)
-        if interfaces_pc_mo is not None:
-            self.interfaces_pc[key] = []
-            for interface_pc_mo in interfaces_pc_mo:
-                self.interfaces_pc[key].append(
-                    self.get_interface_port_channel_info(
-                        interface_pc_mo
-                    )
+        if interfaces_pc_mo is None:
+            return None
+
+        self.interfaces_pc[key] = []
+        for interface_pc_mo in interfaces_pc_mo:
+            self.interfaces_pc[key].append(
+                self.get_interface_port_channel_info(
+                    interface_pc_mo
                 )
+            )
 
         self.log.apic_mo(
             'pcAggrIf.info.%s' % (key),
@@ -268,7 +270,7 @@ class InterfacePortChannelInfo():
                 )
 
             if instance_info:
-                interface_port_channel_info['lacp'] = self.get_lacp_instance(
+                interface_port_channel_info['lacp'] = self.get_protocol_lacp_instance(
                     pod_id,
                     node_id
                 )

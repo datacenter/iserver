@@ -7,6 +7,18 @@ class ProtocolHsrpDomainApi():
         if key in self.hsrp_domains_mo:
             return self.hsrp_domains_mo[key]
 
+        cache = self.get_object_cache(
+            'hsrpDom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.hsrp_domains_mo[key] = cache
+            self.log.apic_mo(
+                'hsrpDom.%s' % (key),
+                self.hsrp_domains_mo[key]
+            )
+            return self.hsrp_domains_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/hsrpDom' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -28,6 +40,12 @@ class ProtocolHsrpDomainApi():
         self.log.apic_mo(
             'hsrpDom.%s' % (key),
             self.hsrp_domains_mo[key]
+        )
+
+        self.set_object_cache(
+            'hsrpDom',
+            self.hsrp_domains_mo[key],
+            object_selector=key
         )
 
         return self.hsrp_domains_mo[key]

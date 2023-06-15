@@ -10,6 +10,18 @@ class InterfaceVfcApi():
         if key in self.interface_vfc_mo:
             return self.interface_vfc_mo[key]
 
+        cache = self.get_object_cache(
+            'l2VfcIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_vfc_mo[key] = cache
+            self.log.apic_mo(
+                'l2VfcIf.%s' % (key),
+                self.interface_vfc_mo[key]
+            )
+            return self.interface_vfc_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/l2VfcIf' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -32,6 +44,12 @@ class InterfaceVfcApi():
         self.log.apic_mo(
             'l2VfcIf.%s' % (key),
             self.interface_vfc_mo[key]
+        )
+
+        self.set_object_cache(
+            'l2VfcIf',
+            self.interface_vfc_mo[key],
+            object_selector=key
         )
 
         return self.interface_vfc_mo[key]

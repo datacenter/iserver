@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy portsec --apic apic11 --name default --view verbose
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 CDP Policy Properties
 ---------------------
@@ -14,7 +14,7 @@ CDP Policy Properties
 - Timeout           : 60
 - Maximum Endpoints : 0
 - Violation Action  : protect
-- Interfaces        : 414
+- Interfaces        : 470
 - Ref Policies      : 83
 
 
@@ -347,6 +347,62 @@ CDP Policy Properties
 | pod-1/bl206-eu-spdc | po3       | 
 | pod-1/bl206-eu-spdc | po4       | 
 | pod-1/bl206-eu-spdc | po5       | 
+| pod-1/cl209-eu-spdc | eth1/1    | 
+| pod-1/cl209-eu-spdc | eth1/10   | 
+| pod-1/cl209-eu-spdc | eth1/11   | 
+| pod-1/cl209-eu-spdc | eth1/12   | 
+| pod-1/cl209-eu-spdc | eth1/13   | 
+| pod-1/cl209-eu-spdc | eth1/14   | 
+| pod-1/cl209-eu-spdc | eth1/15   | 
+| pod-1/cl209-eu-spdc | eth1/16   | 
+| pod-1/cl209-eu-spdc | eth1/17   | 
+| pod-1/cl209-eu-spdc | eth1/18   | 
+| pod-1/cl209-eu-spdc | eth1/19   | 
+| pod-1/cl209-eu-spdc | eth1/2    | 
+| pod-1/cl209-eu-spdc | eth1/20   | 
+| pod-1/cl209-eu-spdc | eth1/21   | 
+| pod-1/cl209-eu-spdc | eth1/22   | 
+| pod-1/cl209-eu-spdc | eth1/23   | 
+| pod-1/cl209-eu-spdc | eth1/24   | 
+| pod-1/cl209-eu-spdc | eth1/25   | 
+| pod-1/cl209-eu-spdc | eth1/26   | 
+| pod-1/cl209-eu-spdc | eth1/27   | 
+| pod-1/cl209-eu-spdc | eth1/28   | 
+| pod-1/cl209-eu-spdc | eth1/3    | 
+| pod-1/cl209-eu-spdc | eth1/4    | 
+| pod-1/cl209-eu-spdc | eth1/5    | 
+| pod-1/cl209-eu-spdc | eth1/6    | 
+| pod-1/cl209-eu-spdc | eth1/7    | 
+| pod-1/cl209-eu-spdc | eth1/8    | 
+| pod-1/cl209-eu-spdc | eth1/9    | 
+| pod-1/cl210-eu-spdc | eth1/1    | 
+| pod-1/cl210-eu-spdc | eth1/10   | 
+| pod-1/cl210-eu-spdc | eth1/11   | 
+| pod-1/cl210-eu-spdc | eth1/12   | 
+| pod-1/cl210-eu-spdc | eth1/13   | 
+| pod-1/cl210-eu-spdc | eth1/14   | 
+| pod-1/cl210-eu-spdc | eth1/15   | 
+| pod-1/cl210-eu-spdc | eth1/16   | 
+| pod-1/cl210-eu-spdc | eth1/17   | 
+| pod-1/cl210-eu-spdc | eth1/18   | 
+| pod-1/cl210-eu-spdc | eth1/19   | 
+| pod-1/cl210-eu-spdc | eth1/2    | 
+| pod-1/cl210-eu-spdc | eth1/20   | 
+| pod-1/cl210-eu-spdc | eth1/21   | 
+| pod-1/cl210-eu-spdc | eth1/22   | 
+| pod-1/cl210-eu-spdc | eth1/23   | 
+| pod-1/cl210-eu-spdc | eth1/24   | 
+| pod-1/cl210-eu-spdc | eth1/25   | 
+| pod-1/cl210-eu-spdc | eth1/26   | 
+| pod-1/cl210-eu-spdc | eth1/27   | 
+| pod-1/cl210-eu-spdc | eth1/28   | 
+| pod-1/cl210-eu-spdc | eth1/3    | 
+| pod-1/cl210-eu-spdc | eth1/4    | 
+| pod-1/cl210-eu-spdc | eth1/5    | 
+| pod-1/cl210-eu-spdc | eth1/6    | 
+| pod-1/cl210-eu-spdc | eth1/7    | 
+| pod-1/cl210-eu-spdc | eth1/8    | 
+| pod-1/cl210-eu-spdc | eth1/9    | 
 | pod-1/rl301-eu-spdc | eth1/1    | 
 | pod-1/rl301-eu-spdc | eth1/10   | 
 | pod-1/rl301-eu-spdc | eth1/11   | 
@@ -533,7 +589,7 @@ Developer
 # iserver get aci policy portsec --apic apic11 --name default --view verbose
 
 {
-    "duration": 1835,
+    "duration": 2412,
     "apic": {
         "read": true,
         "success": 4,
@@ -541,10 +597,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 399,
+        "connect_time": 415,
         "disconnect_time": 0,
-        "mo_time": 1035,
-        "total_time": 1434
+        "mo_time": 1005,
+        "total_time": 1420
     },
     "error": {
         "read": false,
@@ -557,16 +613,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	399	-	connect apic11o.emea-sp.cisco.com
-True	331	1	apic11o.emea-sp.cisco.com class l2PortSecurityPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	410	414	apic11o.emea-sp.cisco.com class l1RsL2PortSecurityCons
-True	294	11	apic11o.emea-sp.cisco.com class fabricNode
+True	415	-	connect apic11o.emea-sp.cisco.com
+True	317	1	apic11o.emea-sp.cisco.com class l2PortSecurityPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	388	470	apic11o.emea-sp.cisco.com class l1RsL2PortSecurityCons
+True	300	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyPortsec.md)

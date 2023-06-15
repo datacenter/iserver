@@ -119,10 +119,10 @@ class ProtocolIpv4Output():
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_list(
+            self.my_output.expand_lists(
                 info,
                 order,
-                'next_hop'
+                ['next_hop']
             ),
             order=order,
             headers=headers,
@@ -130,4 +130,35 @@ class ProtocolIpv4Output():
             remove_empty_columns=True,
             underline=True,
             table=True
+        )
+
+    def print_protocol_ipv4_routes_summary(self, info):
+        order = [
+            'count',
+            'default',
+            'direct',
+            'local',
+            'bgp',
+            'ibgp',
+            'ebgp'
+        ]
+
+        headers = [
+            'Routes',
+            'Default',
+            'Direct',
+            'Local',
+            'BGP',
+            'iBGP',
+            'eBGP'
+        ]
+
+        self.my_output.dictionary(
+            info,
+            title='IPv4 Routes Summary',
+            underline=True,
+            prefix="- ",
+            justify=True,
+            keys=order,
+            title_keys=headers
         )

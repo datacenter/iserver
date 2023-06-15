@@ -14,7 +14,7 @@ Use '--view props' to get properties of selected epgs
 ```
 # iserver get aci epg --apic apic21 --view prop
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------------------+------------------+----------+----------+-------------+------------+-------------+
 | Up | EPG                                | Preferred Member | Flood    | Class ID | QoS Class   | Isolation  | Label Match |
@@ -101,7 +101,7 @@ Developer
 # iserver get aci epg --apic apic21 --view prop
 
 {
-    "duration": 2848,
+    "duration": 2633,
     "apic": {
         "read": true,
         "success": 6,
@@ -109,10 +109,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 410,
+        "connect_time": 429,
         "disconnect_time": 0,
-        "mo_time": 2135,
-        "total_time": 2545
+        "mo_time": 1949,
+        "total_time": 2378
     },
     "error": {
         "read": false,
@@ -125,18 +125,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	410	-	connect apic21o.emea-sp.cisco.com
-True	370	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	464	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	314	13	apic21o.emea-sp.cisco.com class fabricNode
-True	609	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	378	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	429	-	connect apic21o.emea-sp.cisco.com:443
+True	385	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	368	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	318	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	469	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	409	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy auth --apic apic11 --name default --view verbose
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 802.1x Policy Properties
 ------------------------
@@ -110,7 +110,7 @@ Developer
 # iserver get aci policy auth --apic apic11 --name default --view verbose
 
 {
-    "duration": 1243,
+    "duration": 1531,
     "apic": {
         "read": true,
         "success": 3,
@@ -118,10 +118,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 417,
+        "connect_time": 434,
         "disconnect_time": 0,
-        "mo_time": 695,
-        "total_time": 1112
+        "mo_time": 718,
+        "total_time": 1152
     },
     "error": {
         "read": false,
@@ -134,15 +134,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	417	-	connect apic11o.emea-sp.cisco.com
-True	345	1	apic11o.emea-sp.cisco.com class l2PortAuthPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	350	0	apic11o.emea-sp.cisco.com class l1RsL2PortAuthCons
+True	434	-	connect apic11o.emea-sp.cisco.com
+True	342	1	apic11o.emea-sp.cisco.com class l2PortAuthPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	376	0	apic11o.emea-sp.cisco.com class l1RsL2PortAuthCons
 ```
 
 [[Back]](./PolicyAuth.md)

@@ -92,3 +92,76 @@ class LinuxInterface():
             return None
 
         return interfaces
+
+    def get_sriov_interfaces(self, numa_info=False, pci_info=False):
+        all_interfaces = self.get_interfaces()
+
+        sriov_interfaces = []
+        for interface in all_interfaces:
+            if len(interface['vf']) > 0:
+                interface['vfCount'] = len(interface['vf'])
+                if numa_info:
+                    interface['numa'] = self.get_interface_numa(
+                        interface['name']
+                    )
+
+                if pci_info:
+                    interface['pci'] = self.get_interface_pci(
+                        interface['name']
+                    )
+
+                sriov_interfaces.append(
+                    interface
+                )
+
+        return sriov_interfaces
+
+    def get_interface_numa(self, interface_name):
+        command = 'cat /sys/class/net/%s/device/numa_node' % (interface_name)
+        outputs = self.run_commands([command])
+        if outputs is None:
+            self.my_output.error('Interface numa check failed failed:%s' % (interface_name))
+            return None
+
+        numa = outputs[command].strip().replace('\n', '')
+        return numa
+
+    def get_interface_pci(self, interface_name):
+        command = 'cat /sys/class/net/%s/device/uevent' % (interface_name)
+        outputs = self.run_commands([command])
+        if outputs is None:
+            self.my_output.error('Interface pci check failed failed:%s' % (interface_name))
+            return None
+
+        # DRIVER=vmxnet3
+        # PCI_CLASS=20000
+        # PCI_ID=15AD:07B0
+        # PCI_SUBSYS_ID=15AD:07B0
+        # PCI_SLOT_NAME=0000:03:00.0
+        # MODALIAS=pci:v000015ADd000007B0sv000015ADsd000007B0bc02sc00i00
+        pci_info = {}
+
+        for line in outputs[command].split('\n'):
+            if len(line.split('=')) == 2:
+                (key, value) = line.split('=')
+                if key == 'DRIVER':
+                    pci_info['driver'] = value
+                    continue
+
+                if key == 'PCI_CLASS':
+                    pci_info['class'] = value
+                    continue
+
+                if key == 'PCI_ID':
+                    pci_info['id'] = value
+                    continue
+
+                if key == 'PCI_SUBSYS_ID':
+                    pci_info['subid'] = value
+                    continue
+
+                if key == 'PCI_SLOT_NAME':
+                    pci_info['slot'] = value
+                    continue
+
+        return pci_info

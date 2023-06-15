@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy transceiver --apic apic11 --name default
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+----+-------------+------+------------+
 | Policy Name | TF | Admin State | Type | Interfaces |
@@ -23,7 +23,7 @@ Developer
 # iserver get aci policy transceiver --apic apic11 --name default
 
 {
-    "duration": 1511,
+    "duration": 1663,
     "apic": {
         "read": true,
         "success": 4,
@@ -31,10 +31,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 395,
+        "connect_time": 408,
         "disconnect_time": 0,
-        "mo_time": 1011,
-        "total_time": 1406
+        "mo_time": 1030,
+        "total_time": 1438
     },
     "error": {
         "read": false,
@@ -47,16 +47,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	395	-	connect apic11o.emea-sp.cisco.com
-True	296	2	apic11o.emea-sp.cisco.com class xcvrOpticsIfPol
-True	422	414	apic11o.emea-sp.cisco.com class l1RsSynceEthIfPolCons
-True	293	11	apic11o.emea-sp.cisco.com class fabricNode
+True	408	-	connect apic11o.emea-sp.cisco.com
+True	324	2	apic11o.emea-sp.cisco.com class xcvrOpticsIfPol
+True	387	470	apic11o.emea-sp.cisco.com class l1RsSynceEthIfPolCons
+True	319	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyTrans.md)

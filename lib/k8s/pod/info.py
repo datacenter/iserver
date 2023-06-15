@@ -1,24 +1,127 @@
+import copy
+import json
+
+from lib import filter_helper
+
+
 class K8sPodInfo():
     def __init__(self):
-        pass
+        self.pod = None
 
-    def get_pod_with_label(self, label_name, label_value, namespace=None):
-        if not self.get_pods():
+    def get_pod_networks_info(self, pod_mo):
+        networks = []
+
+        if 'annotations' in pod_mo['metadata'] and pod_mo['metadata']['annotations'] is not None:
+            for annotation in pod_mo['metadata']['annotations']:
+                if annotation == 'k8s.v1.cni.cncf.io/networks-status':
+                    try:
+                        networks = json.loads(
+                            pod_mo['metadata']['annotations'][annotation]
+                        )
+                    except BaseException:
+                        pass
+
+        return networks
+
+    def get_pod_info(self, pod_mo):
+        info = copy.deepcopy(pod_mo)
+        info['networks'] = self.get_pod_networks_info(
+            pod_mo
+        )
+        return info
+
+    def get_pods_info(self, cache=True):
+        if cache and self.pod is not None:
+            return self.pod
+
+        pods_mo = self.get_pods_mo(cache=cache)
+        if pods_mo is None:
             return None
 
-        for pod_mo in self.pods:
-            if namespace is not None:
-                if pod_mo['metadata']['namespace'] != namespace:
-                    continue
+        self.pod = []
+        for pod_mo in pods_mo:
+            self.pod.append(
+                self.get_pod_info(
+                    pod_mo
+                )
+            )
 
-            if 'labels' in pod_mo['metadata']:
-                if pod_mo['metadata']['labels'] is not None:
-                    for pod_label_name in pod_mo['metadata']['labels']:
-                        if pod_label_name == label_name:
-                            if pod_mo['metadata']['labels'][pod_label_name] == label_value:
-                                return pod_mo
+        self.log.k8s_mo(
+            'pod.info',
+            self.pod
+        )
 
-        return None
+        return self.pod
+
+    def match_pod(self, pod_info, pod_filter):
+        if pod_filter is None or len(pod_filter) == 0:
+            return True
+
+        for ap_rule in pod_filter:
+            key = ap_rule.split(':')[0]
+            value = ':'.join(ap_rule.split(':')[1:])
+
+            if key == 'namespace':
+                if not filter_helper.match_string(value, pod_info['metadata']['namespace']):
+                    return False
+
+            if key == 'name':
+                if not filter_helper.match_string(value, pod_info['metadata']['name']):
+                    return False
+
+            if key == 'label':
+                if 'labels' not in pod_info['metadata']:
+                    return False
+
+                if pod_info['metadata']['labels'] is None:
+                    return False
+
+                found = False
+                for label in pod_info['metadata']['labels']:
+                    if filter_helper.match_string(value.split(':', maxsplit=1)[0], label):
+                        if filter_helper.match_string(value.split(':')[1], pod_info['metadata']['labels'][label]):
+                            found = True
+
+                if not found:
+                    return False
+
+            if key == 'mac':
+                found = False
+                for network in pod_info['networks']:
+                    if 'mac' in network:
+                        if filter_helper.match_string(value, network['mac']):
+                            found = True
+
+                if not found:
+                    return False
+
+            if key == 'network':
+                found = False
+                for network in pod_info['networks']:
+                    if 'mac' in network:
+                        if filter_helper.match_string(value, network['name']):
+                            found = True
+
+                if not found:
+                    return False
+
+        return True
+
+    def get_pods(self, pod_filter=None, cache=True):
+        all_pods = self.get_pods_info(cache=cache)
+        if all_pods is None:
+            return None
+
+        pods = []
+        for pod_info in all_pods:
+            if not self.match_pod(pod_info, pod_filter):
+                continue
+
+            pods.append(
+                pod_info
+            )
+
+        return pods
 
     # def get_pod_replicaset_info(self, pod_id):
     #     try:

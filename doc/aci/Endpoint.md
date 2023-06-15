@@ -56,10 +56,11 @@ Options:
   --xd TEXT                       Cross domain filter
   -v, --view [default|vm|fabric]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 23 ms and logs saved in /tmp/iserver\585c8268ec6d
+Info: finished in 78 ms and logs saved in /tmp/iserver\cbafd89204b9
 ```
 
 [[Back]](./README.md)

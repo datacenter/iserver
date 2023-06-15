@@ -37,11 +37,12 @@ Options:
   --role [any|leaf|spine]         [default: any]
   -v, --view [default|addr|nei|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\11d7d71dd2bd
+Info: finished in 30 ms and logs saved in /tmp/iserver\b97f4d860c9d
 ```
 
 [[Back]](./Interface.md)

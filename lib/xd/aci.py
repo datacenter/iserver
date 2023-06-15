@@ -2,6 +2,25 @@ from lib.aci import settings as aci_settings
 from lib.aci import apic
 
 
+def get_aci_handler(controller_name, log_id=None):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=log_id)
+    aci_controllers = aci_settings_handler.get_apic_controllers()
+    if aci_controllers is not None:
+        for aci_controller in aci_controllers:
+            if aci_controller['name'] == controller_name:
+                apic_handler = apic.Apic(
+                    aci_controller['ip'],
+                    aci_controller['port'],
+                    aci_controller['username'],
+                    aci_controller['password'],
+                    apic_name=aci_controller['name'],
+                    log_id=log_id
+                )
+                return apic_handler
+
+    return None
+
+
 def get_any_aci_handler(log_id=None):
     aci_settings_handler = aci_settings.ApicSettings(log_id=log_id)
     aci_controllers = aci_settings_handler.get_apic_controllers()
@@ -9,9 +28,10 @@ def get_any_aci_handler(log_id=None):
         for aci_controller in aci_controllers:
             apic_handler = apic.Apic(
                 aci_controller['ip'],
+                aci_controller['port'],
                 aci_controller['username'],
                 aci_controller['password'],
-                label=aci_controller['name'],
+                apic_name=aci_controller['name'],
                 log_id=log_id
             )
             return apic_handler
@@ -35,9 +55,10 @@ def get_aci_endpoints(log_id=None, fabric_info=True, macs=None, apic_ips=None):
             if apic_ips is None or aci_controller['ip'] in apic_ips:
                 apic_handler = apic.Apic(
                     aci_controller['ip'],
+                    aci_controller['port'],
                     aci_controller['username'],
                     aci_controller['password'],
-                    label=aci_controller['name'],
+                    apic_name=aci_controller['name'],
                     log_id=log_id
                 )
 
@@ -65,9 +86,10 @@ def get_aci_cdp_info(log_id=None):
         for aci_controller in aci_controllers:
             apic_handler = apic.Apic(
                 aci_controller['ip'],
+                aci_controller['port'],
                 aci_controller['username'],
                 aci_controller['password'],
-                label=aci_controller['name'],
+                apic_name=aci_controller['name'],
                 log_id=log_id
             )
 
@@ -99,9 +121,10 @@ def get_aci_lldp_info(log_id=None):
         for aci_controller in aci_controllers:
             apic_handler = apic.Apic(
                 aci_controller['ip'],
+                aci_controller['port'],
                 aci_controller['username'],
                 aci_controller['password'],
-                label=aci_controller['name'],
+                apic_name=aci_controller['name'],
                 log_id=log_id
             )
 
@@ -113,8 +136,9 @@ def get_aci_lldp_info(log_id=None):
                 node_lldp_info = apic_handler.get_protocol_lldp(
                     node['podId'],
                     node['id'],
-                    include_instance=False,
-                    include_stats=False
+                    instance_info=False,
+                    stats_info=False,
+                    adjacenty_info=True
                 )
                 node_lldp_info['apic'] = aci_controller['name']
                 aci_lldp_info.append(

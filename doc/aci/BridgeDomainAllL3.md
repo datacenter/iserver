@@ -14,7 +14,7 @@ Use '--view l3' to get L3 forwarding related properties of selected bridge domai
 ```
 # iserver get aci bd --apic apic21 --view l3
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +---------------------------+---------------+-------------------+-------------+-------------------------+-----------------+------------------------+
 | Bridge Domain             | Ucast Routing | BD MAC            | IP Learning | Limit Local IP Learning | Adv Host Routes | EP Move Detection Mode |
@@ -99,7 +99,7 @@ Developer
 # iserver get aci bd --apic apic21 --view l3
 
 {
-    "duration": 1905,
+    "duration": 2501,
     "apic": {
         "read": true,
         "success": 4,
@@ -107,10 +107,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 397,
+        "connect_time": 426,
         "disconnect_time": 0,
-        "mo_time": 1154,
-        "total_time": 1551
+        "mo_time": 1211,
+        "total_time": 1637
     },
     "error": {
         "read": false,
@@ -123,16 +123,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	397	-	connect apic21o.emea-sp.cisco.com
-True	427	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	349	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	378	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	426	-	connect apic21o.emea-sp.cisco.com
+True	416	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	372	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	423	92	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./BridgeDomain.md)

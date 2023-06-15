@@ -7,6 +7,18 @@ class ProtocolArpDomainApi():
         if key in self.arp_domain_mo:
             return self.arp_domain_mo[key]
 
+        cache = self.get_object_cache(
+            'arpDom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.arp_domain_mo[key] = cache
+            self.log.apic_mo(
+                'arpDom.%s' % (key),
+                self.arp_domain_mo[key]
+            )
+            return self.arp_domain_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/arpDom' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -28,6 +40,12 @@ class ProtocolArpDomainApi():
         self.log.apic_mo(
             'arpDom.%s' % (key),
             self.arp_domain_mo[key]
+        )
+
+        self.set_object_cache(
+            'arpDom',
+            self.arp_domain_mo[key],
+            object_selector=key
         )
 
         return self.arp_domain_mo[key]

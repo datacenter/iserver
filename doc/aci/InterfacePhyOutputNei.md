@@ -5,15 +5,15 @@
 ```
 # iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view nei
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
 +---------------------+-----------+------+--------------------+-----------------+-----------------+-------------------------------+-------------------+
 | Node                | Interface | Oper | CDP System Name    | CDP Platform    | CDP Port ID     | LLDP System Name              | LLDP Port ID      |
 +---------------------+-----------+------+--------------------+-----------------+-----------------+-------------------------------+-------------------+
-| pod-1/bl205-eu-spdc | 1/1       | up   | FI-ucsb1-eu-spdc-A | UCS-FI-6454     | Ethernet1/51    | FI-ucsb1-eu-spdc-A.cisco.com  | Ethernet1/51      | 
-| pod-1/bl205-eu-spdc | 1/2       | up   | FI-ucsb1-eu-spdc-B | UCS-FI-6454     | Ethernet1/51    | FI-ucsb1-eu-spdc-B.cisco.com  | Ethernet1/51      | 
+| pod-1/bl205-eu-spdc | 1/1       | up   | FI-ucsb1-eu-spdc-A | UCS-FI-6454     | Ethernet1/51    | FI-ucsb1-eu-spdc-A.cisco.com  | Eth1/51           | 
+| pod-1/bl205-eu-spdc | 1/2       | up   | FI-ucsb1-eu-spdc-B | UCS-FI-6454     | Ethernet1/51    | FI-ucsb1-eu-spdc-B.cisco.com  | Eth1/51           | 
 | pod-1/bl205-eu-spdc | 1/3       | down |                    |                 |                 |                               |                   | 
 | pod-1/bl205-eu-spdc | 1/4       | down |                    |                 |                 |                               |                   | 
 | pod-1/bl205-eu-spdc | 1/5       | down |                    |                 |                 |                               |                   | 
@@ -58,7 +58,7 @@ Developer
 # iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view nei
 
 {
-    "duration": 2456,
+    "duration": 2117,
     "apic": {
         "read": true,
         "success": 6,
@@ -66,10 +66,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 420,
+        "connect_time": 398,
         "disconnect_time": 0,
-        "mo_time": 1713,
-        "total_time": 2133
+        "mo_time": 1508,
+        "total_time": 1906
     },
     "error": {
         "read": false,
@@ -82,18 +82,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	420	-	connect apic11o.emea-sp.cisco.com
-True	296	11	apic11o.emea-sp.cisco.com class fabricNode
-True	334	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	348	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	326	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	409	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	398	-	connect apic11o.emea-sp.cisco.com
+True	303	13	apic11o.emea-sp.cisco.com class fabricNode
+True	310	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	317	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	285	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	293	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./InterfacePhy.md)

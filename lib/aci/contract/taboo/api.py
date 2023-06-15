@@ -6,6 +6,17 @@ class TabooApi():
         if self.taboos_mo is not None:
             return self.taboos_mo
 
+        cache = self.get_object_cache(
+            'vzTaboo'
+        )
+        if cache is not None:
+            self.taboos_mo = cache
+            self.log.apic_mo(
+                'vzTaboo',
+                self.taboos_mo
+            )
+            return self.taboos_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy'
         managed_objects = self.get_class(
             'vzTaboo',
@@ -37,6 +48,11 @@ class TabooApi():
             )
 
         self.log.apic_mo(
+            'vzTaboo',
+            self.taboos_mo
+        )
+
+        self.set_object_cache(
             'vzTaboo',
             self.taboos_mo
         )

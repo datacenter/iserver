@@ -5,7 +5,7 @@
 ```
 # iserver get aci aaep --apic apic11 --name UCSB*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +----------------------------------+------------+--------------------+-------------+--------------+------------------------+-----------------------------+
 | Attachable Access Entity Profile | Infra VLAN | Domain Name        | Domain Type | Domain State | Policy Group Name      | Policy Group Interface Type |
@@ -27,7 +27,7 @@ Developer
 # iserver get aci aaep --apic apic11 --name UCSB*
 
 {
-    "duration": 870,
+    "duration": 1414,
     "apic": {
         "read": true,
         "success": 2,
@@ -35,10 +35,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 378,
+        "connect_time": 820,
         "disconnect_time": 0,
-        "mo_time": 359,
-        "total_time": 737
+        "mo_time": 378,
+        "total_time": 1198
     },
     "error": {
         "read": false,
@@ -51,14 +51,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	378	-	connect apic11o.emea-sp.cisco.com
-True	359	30	apic11o.emea-sp.cisco.com class infraAttEntityP query rsp-subtree=children&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP
+True	820	-	connect apic11o.emea-sp.cisco.com
+True	378	30	apic11o.emea-sp.cisco.com class infraAttEntityP query rsp-subtree=children&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP
 ```
 
 [[Back]](./Aaep.md)

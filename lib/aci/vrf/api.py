@@ -1,12 +1,24 @@
 class VrfApi():
     def __init__(self):
-        self.vrfs_mo = None
+        self.vrf_mo = None
         self.vrf_ipv4_mo = {}
         self.vrf_ipv6_mo = {}
 
     def get_vrf_ipv4_mo(self, tenant, name):
         key = '%s:%s' % (tenant, name)
         if key in self.vrf_ipv4_mo:
+            return self.vrf_ipv4_mo[key]
+
+        cache = self.get_object_cache(
+            'uribv4Nexthop',
+            object_selector=key
+        )
+        if cache is not None:
+            self.vrf_ipv4_mo[key] = cache
+            self.log.apic_mo(
+                'uribv4Nexthop.%s' % (key),
+                self.vrf_ipv4_mo[key]
+            )
             return self.vrf_ipv4_mo[key]
 
         query = 'query-target-filter=wcard(uribv4Nexthop.dn,"sys/uribv4/dom-%s:%s/db-rt")' % (
@@ -38,11 +50,29 @@ class VrfApi():
             self.vrf_ipv4_mo[key]
         )
 
+        self.set_object_cache(
+            'uribv4Nexthop',
+            self.vrf_ipv4_mo[key],
+            object_selector=key
+        )
+
         return self.vrf_ipv4_mo[key]
 
     def get_vrf_ipv6_mo(self, tenant, name):
         key = '%s:%s' % (tenant, name)
         if key in self.vrf_ipv6_mo:
+            return self.vrf_ipv6_mo[key]
+
+        cache = self.get_object_cache(
+            'uribv6Nexthop',
+            object_selector=key
+        )
+        if cache is not None:
+            self.vrf_ipv6_mo[key] = cache
+            self.log.apic_mo(
+                'uribv6Nexthop.%s' % (key),
+                self.vrf_ipv6_mo[key]
+            )
             return self.vrf_ipv6_mo[key]
 
         query = 'query-target-filter=wcard(uribv6Nexthop.dn,"sys/uribv6/dom-%s:%s/db-rt")' % (
@@ -74,11 +104,28 @@ class VrfApi():
             self.vrf_ipv6_mo[key]
         )
 
+        self.set_object_cache(
+            'uribv6Nexthop',
+            self.vrf_ipv6_mo[key],
+            object_selector=key
+        )
+
         return self.vrf_ipv6_mo[key]
 
     def get_vrfs_mo(self):
-        if self.vrfs_mo is not None:
-            return self.vrfs_mo
+        if self.vrf_mo is not None:
+            return self.vrf_mo
+
+        cache = self.get_object_cache(
+            'fvCtx'
+        )
+        if cache is not None:
+            self.vrf_mo = cache
+            self.log.apic_mo(
+                'fvCtx',
+                self.vrf_mo
+            )
+            return self.vrf_mo
 
         managed_objects = self.get_class(
             'fvCtx'
@@ -86,21 +133,26 @@ class VrfApi():
 
         if managed_objects is None:
             self.log.error(
-                'get_vrfs_mo',
+                'get_vrf_mo',
                 'API failed'
             )
             return None
 
-        self.vrfs_mo = []
+        self.vrf_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvCtx']['attributes']
-            self.vrfs_mo.append(
+            self.vrf_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'fvCtx',
-            self.vrfs_mo
+            self.vrf_mo
         )
 
-        return self.vrfs_mo
+        self.set_object_cache(
+            'fvCtx',
+            self.vrf_mo
+        )
+
+        return self.vrf_mo

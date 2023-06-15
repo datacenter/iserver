@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy link --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-----------------------------+----+----------+----------+---------+--------------+----------------------+---------------+-------------+------------+--------------+
 | Policy Name                 | TF | PHY Type | Auto Neg | Speed   | Delay [msec] | Link Debounce [msec] | FEC Mode      | EMI Retrain | Interfaces | Ref Policies |
@@ -23,7 +23,7 @@ Apic: apic11
 | 25G-fix-FEC                 |    | auto     | off      | inherit | 0            | 100                  | cl91-rs-fec   | disable     | 4          | 2            | 
 | 40G-auto                    |    | auto     | on       | 40G     | 0            | 100                  | inherit       | disable     | 0          | 0            | 
 | 40G-fix                     |    | auto     | off      | 40G     | 0            | 100                  | inherit       | disable     | 0          | 0            | 
-| default                     |    | auto     | on       | inherit | 0            | 100                  | inherit       | disable     | 339        | 54           | 
+| default                     |    | auto     | on       | inherit | 0            | 100                  | inherit       | disable     | 395        | 54           | 
 | fabric-inherit              |    | auto     | off      | inherit | 0            | 100                  | inherit       | disable     | 4          | 3            | 
 | inherit                     |    | auto     | off      | inherit | 0            | 100                  | inherit       | disable     | 33         | 0            | 
 | Inherit                     |    | auto     | on       | inherit | 0            | 100                  | inherit       | disable     | 33         | 16           | 
@@ -49,7 +49,7 @@ Developer
 # iserver get aci policy link --apic apic11
 
 {
-    "duration": 1572,
+    "duration": 2029,
     "apic": {
         "read": true,
         "success": 4,
@@ -57,10 +57,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 407,
+        "connect_time": 434,
         "disconnect_time": 0,
-        "mo_time": 1027,
-        "total_time": 1434
+        "mo_time": 1101,
+        "total_time": 1535
     },
     "error": {
         "read": false,
@@ -73,16 +73,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	407	-	connect apic11o.emea-sp.cisco.com
-True	324	29	apic11o.emea-sp.cisco.com class fabricHIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	408	408	apic11o.emea-sp.cisco.com class l1RsHIfPolCons
-True	295	11	apic11o.emea-sp.cisco.com class fabricNode
+True	434	-	connect apic11o.emea-sp.cisco.com
+True	345	29	apic11o.emea-sp.cisco.com class fabricHIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	403	464	apic11o.emea-sp.cisco.com class l1RsHIfPolCons
+True	353	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLink.md)

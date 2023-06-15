@@ -13,7 +13,7 @@ class EpgOutput():
             'nameAlias',
             'descr',
             'annotation',
-            'pcTag',
+            'pcTagT',
             'exceptionTag',
             'prio',
             'pcEnfPref',
@@ -172,7 +172,7 @@ class EpgOutput():
             'nameApTenant',
             'prefGrMemb',
             'floodOnEncap',
-            'pcTag',
+            'pcTagT',
             'prio',
             'pcEnfPref',
             'matchT'
@@ -225,7 +225,7 @@ class EpgOutput():
             'Up',
             'EPG',
             'Bridge Domain',
-            'Subnets',
+            'BD Subnets',
             'Usage',
             'L3Out'
         ]
@@ -342,7 +342,7 @@ class EpgOutput():
             'Up',
             'EPG',
             'Bridge Domain',
-            'Subnets',
+            'BD Subnets',
             'Endpoints',
             'Contract'
         ]

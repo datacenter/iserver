@@ -7,6 +7,18 @@ class ProtocolHsrpInterfaceApi():
         if key in self.hsrp_interfaces_mo:
             return self.hsrp_interfaces_mo[key]
 
+        cache = self.get_object_cache(
+            'hsrpIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.hsrp_interfaces_mo[key] = cache
+            self.log.apic_mo(
+                'hsrpIf.%s' % (key),
+                self.hsrp_interfaces_mo[key]
+            )
+            return self.hsrp_interfaces_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/hsrpIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=hsrpIf,hsrpIfStats&rsp-subtree-include=required'
         managed_objects = self.get_class(
@@ -34,5 +46,16 @@ class ProtocolHsrpInterfaceApi():
                 self.hsrp_interfaces_mo[key].append(
                     attributes
                 )
+
+        self.log.apic_mo(
+            'hsrpIf.%s' % (key),
+            self.hsrp_interfaces_mo[key]
+        )
+
+        self.set_object_cache(
+            'hsrpIf',
+            self.hsrp_interfaces_mo[key],
+            object_selector=key
+        )
 
         return self.hsrp_interfaces_mo[key]

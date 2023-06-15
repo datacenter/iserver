@@ -49,15 +49,16 @@ Options:
   --type [any|int|ext]            [default: any]
   --mac TEXT                      MAC Address filter
   --vlan TEXT                     VLAN filter
-  --ip TEXT                       IP Address filter
+  --address TEXT                  IP Address filter
   --subnet TEXT                   IP Subnet filter
   -v, --view [default|addr|counter|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\add795d0604b
+Info: finished in 29 ms and logs saved in /tmp/iserver\a7880496518d
 ```
 
 [[Back]](./Interface.md)

@@ -7,7 +7,7 @@ Get selected vrf route table
 ```
 # iserver get aci vrf --apic apic21 --name k8s_SRIoV_VRF --view route
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +-------+-----------+-----------------+-----------------+-------------------+--------+-----------+------------+--------+
 | Pod   | Node      | Prefix          | Next Hop        | Next Hop VRF      | Type   | Details   | Preference | Source |
@@ -56,7 +56,7 @@ Developer
 # iserver get aci vrf --apic apic21 --name k8s_SRIoV_VRF --view route
 
 {
-    "duration": 4094,
+    "duration": 6455,
     "apic": {
         "read": true,
         "success": 10,
@@ -64,10 +64,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 9,
-        "connect_time": 406,
+        "connect_time": 412,
         "disconnect_time": 0,
-        "mo_time": 3236,
-        "total_time": 3642
+        "mo_time": 5609,
+        "total_time": 6021
     },
     "error": {
         "read": false,
@@ -80,22 +80,23 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	406	-	connect apic21o.emea-sp.cisco.com
-True	303	23	apic21o.emea-sp.cisco.com class fvCtx
-True	478	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	375	71	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
-True	366	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	372	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	321	13	apic21o.emea-sp.cisco.com class fabricNode
-True	332	14	apic21o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	358	17	apic21o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
-True	331	8	apic21o.emea-sp.cisco.com class uribv4Nexthop query query-target-filter=wcard(uribv4Nexthop.dn,"sys/uribv4/dom-k8s:k8s_SRIoV_VRF/db-rt")
+True	412	-	connect apic21o.emea-sp.cisco.com:443
+True	328	23	apic21o.emea-sp.cisco.com:443 class fvCtx
+True	2398	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	465	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	417	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	490	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	348	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	405	15	apic21o.emea-sp.cisco.com:443 class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	359	18	apic21o.emea-sp.cisco.com:443 class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	399	8	apic21o.emea-sp.cisco.com:443 class uribv4Nexthop query query-target-filter=wcard(uribv4Nexthop.dn,"sys/uribv4/dom-k8s:k8s_SRIoV_VRF/db-rt")
 ```
 
 [[Back]](./Vrf.md)

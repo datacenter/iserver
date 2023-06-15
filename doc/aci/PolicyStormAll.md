@@ -5,12 +5,12 @@
 ```
 # iserver get aci policy storm --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+-------+-------------+------------+----------------+-------------+------------------+----------------------+------------+-----------+--------------+
 | Policy Name | TF    | Packet Type | Rate [%]   | Burst Rate [%] | Rate [pps]  | Burst Rate [pps] | Storm Control Action | Storm Soak | Instances | Ref Policies |
 +-------------+-------+-------------+------------+----------------+-------------+------------------+----------------------+------------+-----------+--------------+
-| default     | False | all         | 100.000000 | 100.000000     | unspecified | unspecified      | drop                 | 3          | 414       | 83           | 
+| default     | False | all         | 100.000000 | 100.000000     | unspecified | unspecified      | drop                 | 3          | 470       | 83           | 
 +-------------+-------+-------------+------------+----------------+-------------+------------------+----------------------+------------+-----------+--------------+
 Context: phy
 ```
@@ -21,7 +21,7 @@ Developer
 # iserver get aci policy storm --apic apic11
 
 {
-    "duration": 1559,
+    "duration": 1786,
     "apic": {
         "read": true,
         "success": 4,
@@ -29,10 +29,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 404,
+        "connect_time": 408,
         "disconnect_time": 0,
-        "mo_time": 1042,
-        "total_time": 1446
+        "mo_time": 1035,
+        "total_time": 1443
     },
     "error": {
         "read": false,
@@ -45,16 +45,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	404	-	connect apic11o.emea-sp.cisco.com
-True	331	1	apic11o.emea-sp.cisco.com class stormctrlIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	401	414	apic11o.emea-sp.cisco.com class l1RsStormctrlIfPolCons
-True	310	11	apic11o.emea-sp.cisco.com class fabricNode
+True	408	-	connect apic11o.emea-sp.cisco.com
+True	340	1	apic11o.emea-sp.cisco.com class stormctrlIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	387	470	apic11o.emea-sp.cisco.com class l1RsStormctrlIfPolCons
+True	308	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyStorm.md)

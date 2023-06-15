@@ -10,6 +10,18 @@ class InterfaceMacSecApi():
         if key in self.interface_macsec_mo:
             return self.interface_macsec_mo[key]
 
+        cache = self.get_object_cache(
+            'macsecIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_macsec_mo[key] = cache
+            self.log.apic_mo(
+                'macsecIf.%s' % (key),
+                self.interface_macsec_mo[key]
+            )
+            return self.interface_macsec_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/macsecIf' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -32,6 +44,12 @@ class InterfaceMacSecApi():
         self.log.apic_mo(
             'macsecIf.%s' % (key),
             self.interface_macsec_mo[key]
+        )
+
+        self.set_object_cache(
+            'macsecIf',
+            self.interface_macsec_mo[key],
+            object_selector=key
         )
 
         return self.interface_macsec_mo[key]

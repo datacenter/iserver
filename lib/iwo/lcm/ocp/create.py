@@ -3,8 +3,8 @@ import json
 import uuid
 import tarfile
 import traceback
-import yaml
 
+from lib import file_helper
 from lib import ssh
 from lib.intersight import asset_device_registration
 
@@ -37,25 +37,13 @@ class IwoOcpCreateLcm():
             return None
 
         values_filename = '/tmp/iwo-k8s-collector/values.yaml'
-        if not os.path.isfile(values_filename):
+        content = file_helper.get_file_yaml(
+            values_filename
+        )
+        if content is None:
             self.log.error(
                 'get_chart_values',
-                'Extracted file not found: %s' % (values_filename)
-            )
-            return None
-
-        try:
-            with open(values_filename, 'rb') as file_handler:
-                content = yaml.safe_load(file_handler)
-
-        except BaseException:
-            self.log.error(
-                'get_chart_values',
-                'YAML format required: %s' % (values_filename)
-            )
-            self.log.error(
-                'get_chart_values',
-                traceback.format_exc()
+                'File read failed: %s' % (values_filename)
             )
             return None
 

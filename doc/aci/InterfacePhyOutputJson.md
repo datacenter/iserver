@@ -66,7 +66,7 @@
             "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/phys",
             "encap": "3",
             "intfT": "phy",
-            "lastLinkStChg": "2023-03-03T01:21:41.943+02:00",
+            "lastLinkStChg": "2023-06-12T10:37:03.475+02:00",
             "media": "2",
             "nativeVlan": "vlan-1",
             "operDuplex": "full",
@@ -90,7 +90,7 @@
         "up": true,
         "epg_stats": [],
         "ether_stats": {
-            "broadcastPkts": "29765",
+            "broadcastPkts": "67",
             "cRCAlignErrors": "0",
             "childAction": "",
             "clearTs": "never",
@@ -100,24 +100,27 @@
             "fragments": "0",
             "jabbers": "0",
             "modTs": "never",
-            "multicastPkts": "766029",
-            "octets": "12163139714342",
-            "oversizePkts": "108903452",
-            "pkts": "14334287161",
-            "pkts1024to1518Octets": "8811255381",
-            "pkts128to255Octets": "444720439",
-            "pkts256to511Octets": "272806016",
-            "pkts512to1023Octets": "448847447",
-            "pkts64Octets": "4232395",
-            "pkts65to127Octets": "4243522031",
-            "rXNoErrors": "9080255213",
+            "multicastPkts": "16154",
+            "octets": "13908461941",
+            "oversizePkts": "19241",
+            "pkts": "34047600",
+            "pkts1024to1518Octets": "7106805",
+            "pkts128to255Octets": "9442924",
+            "pkts256to511Octets": "278847",
+            "pkts512to1023Octets": "390150",
+            "pkts64Octets": "111303",
+            "pkts65to127Octets": "16698330",
+            "rXNoErrors": "12701833",
             "rxGiantPkts": "0",
-            "rxOversizePkts": "103539058",
+            "rxOversizePkts": "19227",
             "status": "",
-            "tXNoErrors": "5254031948",
+            "tXNoErrors": "21345767",
             "txGiantPkts": "0",
-            "txOversizePkts": "5364394",
-            "undersizePkts": "0"
+            "txOversizePkts": "14",
+            "undersizePkts": "0",
+            "pod_id": "pod-1",
+            "node_id": "node-205",
+            "interface_id": "eth1/24"
         },
         "fc_stats": {
             "actualType": "qsfp28",
@@ -134,22 +137,29 @@
             "typeName": "QSFP-100G-AOC3M"
         },
         "load": {
-            "loadIntvl1": "30",
-            "loadIntvl2": "300",
-            "loadIntvl3": "0"
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/phys/portcap",
+            "mdix": "0",
+            "speed": "10000,100000,40000",
+            "pod_id": "pod-1",
+            "node_id": "node-205",
+            "interface_id": "eth1/24"
         },
         "eee": {
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/eeep",
             "eeeLat": "variable",
             "eeeLpi": "aggressive",
-            "eeeState": "not-applicable"
+            "eeeState": "not-applicable",
+            "pod_id": "pod-1",
+            "node_id": "node-205",
+            "interface_id": "eth1/24"
         },
         "cdp": [
             {
                 "cap": "router,stp-dispute,switch",
                 "devId": "ipn-eu-spdc.emea-sp.cisco.com(FOX2115PRJV)",
-                "dn": "topology/pod-1/node-205/sys/cdp/inst/if-[eth1/24]/adj-2",
+                "dn": "topology/pod-1/node-205/sys/cdp/inst/if-[eth1/24]/adj-1",
                 "duplex": "full",
-                "index": "2",
+                "index": "1",
                 "name": "",
                 "nativeVlan": "unspecified",
                 "platId": "N9K-C9504",
@@ -276,12 +286,12 @@
                 "id": "control-plane",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-control-plane",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 1161956674,
-                "RxAdmitPacketsCount": 13347177,
+                "RxAdmitBytesCount": 35286320,
+                "RxAdmitPacketsCount": 393471,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
-                "TxAdmitBytesCount": 189550911710,
-                "TxAdmitPacketsCount": 231925440,
+                "TxAdmitBytesCount": 7797597077,
+                "TxAdmitPacketsCount": 11164355,
                 "TxDropBytesCount": 0,
                 "TxDropPacketsCount": 0
             },
@@ -314,21 +324,18 @@
                 "TxDropPacketsCount": 0
             },
             {
-                "__Output": {
-                    "TxDropBytesCount": "Red",
-                    "TxDropPacketsCount": "Red"
-                },
+                "__Output": {},
                 "id": "level3",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-level3",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 10049496038263,
-                "RxAdmitPacketsCount": 9066904942,
+                "RxAdmitBytesCount": 2747274428,
+                "RxAdmitPacketsCount": 12309412,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
-                "TxAdmitBytesCount": 1899344299017,
-                "TxAdmitPacketsCount": 4984168368,
-                "TxDropBytesCount": 678,
-                "TxDropPacketsCount": 9
+                "TxAdmitBytesCount": 3329172229,
+                "TxAdmitPacketsCount": 10183010,
+                "TxDropBytesCount": 0,
+                "TxDropPacketsCount": 0
             },
             {
                 "__Output": {},
@@ -353,8 +360,8 @@
                 "RxAdmitPacketsCount": 0,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
-                "TxAdmitBytesCount": 23586246938,
-                "TxAdmitPacketsCount": 37938131,
+                "TxAdmitBytesCount": 0,
+                "TxAdmitPacketsCount": 0,
                 "TxDropBytesCount": 0,
                 "TxDropPacketsCount": 0
             },
@@ -377,8 +384,8 @@
                 "id": "policy-plane",
                 "dn": "topology/pod-1/node-205/sys/qosm/if-[eth1/24]/class-policy-plane",
                 "interface_id": "eth1/24",
-                "RxAdmitBytesCount": 11625,
-                "RxAdmitPacketsCount": 61,
+                "RxAdmitBytesCount": 0,
+                "RxAdmitPacketsCount": 0,
                 "RxDropBytesCount": 0,
                 "RxDropPacketsCount": 0,
                 "TxAdmitBytesCount": 0,
@@ -400,7 +407,15 @@
                 "TxDropBytesCount": 0,
                 "TxDropPacketsCount": 0
             }
-        ]
+        ],
+        "pc": {
+            "dn": "topology/pod-1/node-205/sys/phys-[eth1/24]/aggrmbrif",
+            "channelingSt": "unknown",
+            "pcMode": "on",
+            "pod_id": "pod-1",
+            "node_id": "node-205",
+            "interface_id": "eth1/24"
+        }
     }
 ]
 ```

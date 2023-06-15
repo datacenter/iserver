@@ -8,7 +8,7 @@
     --node bl205-eu-spdc
     --switching disabled
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
@@ -23,8 +23,8 @@ Node: bl205-eu-spdc
 | pod-1/bl205-eu-spdc | 1/8       | up    | disabled  | down | link-not-connected | leaf | switched |     | 4C:71:0D:7E:83:F8 | trunk | 40G   | full   | 9000 | disable-fec | 
 | pod-1/bl205-eu-spdc | 1/9       | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:F9 | trunk | 100G  | full   | 9000 | disable-fec | 
 | pod-1/bl205-eu-spdc | 1/10      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FA | trunk | 100G  | full   | 9000 | disable-fec | 
-| pod-1/bl205-eu-spdc | 1/11      | up    | disabled  | up   | connected          | leaf | switched | po4 | 4C:71:0D:7E:83:FB | trunk | 40G   | full   | 9000 | disable-fec | 
-| pod-1/bl205-eu-spdc | 1/12      | up    | disabled  | up   | connected          | leaf | switched | po1 | 4C:71:0D:7E:83:FC | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/11      | up    | disabled  | up   | connected          | leaf | switched | po1 | 4C:71:0D:7E:83:FB | trunk | 40G   | full   | 9000 | disable-fec | 
+| pod-1/bl205-eu-spdc | 1/12      | up    | disabled  | up   | connected          | leaf | switched | po2 | 4C:71:0D:7E:83:FC | trunk | 40G   | full   | 9000 | disable-fec | 
 | pod-1/bl205-eu-spdc | 1/13      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FD | trunk | 100G  | full   | 9000 | disable-fec | 
 | pod-1/bl205-eu-spdc | 1/14      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:83:FE | trunk | 100G  | full   | 9000 | disable-fec | 
 | pod-1/bl205-eu-spdc | 1/20      | up    | disabled  | down | sfp-missing        | leaf | switched |     | 4C:71:0D:7E:84:04 | trunk | 100G  | full   | 9000 | disable-fec | 
@@ -52,7 +52,7 @@ Developer
     --switching disabled
 
 {
-    "duration": 1826,
+    "duration": 1473,
     "apic": {
         "read": true,
         "success": 4,
@@ -60,10 +60,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 534,
+        "connect_time": 396,
         "disconnect_time": 0,
-        "mo_time": 1054,
-        "total_time": 1588
+        "mo_time": 907,
+        "total_time": 1303
     },
     "error": {
         "read": false,
@@ -76,16 +76,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	534	-	connect apic11o.emea-sp.cisco.com
-True	331	11	apic11o.emea-sp.cisco.com class fabricNode
-True	357	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	366	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	396	-	connect apic11o.emea-sp.cisco.com
+True	303	13	apic11o.emea-sp.cisco.com class fabricNode
+True	292	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	312	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
 ```
 
 [[Back]](./InterfacePhy.md)

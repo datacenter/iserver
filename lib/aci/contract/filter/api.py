@@ -6,6 +6,17 @@ class FilterApi():
         if self.filters_mo is not None:
             return self.filters_mo
 
+        cache = self.get_object_cache(
+            'vzFilter'
+        )
+        if cache is not None:
+            self.filters_mo = cache
+            self.log.apic_mo(
+                'vzFilter',
+                self.filters_mo
+            )
+            return self.filters_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=vzEntry'
         managed_objects = self.get_class(
             'vzFilter',
@@ -32,6 +43,11 @@ class FilterApi():
             )
 
         self.log.apic_mo(
+            'vzFilter',
+            self.filters_mo
+        )
+
+        self.set_object_cache(
             'vzFilter',
             self.filters_mo
         )

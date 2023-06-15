@@ -10,6 +10,18 @@ class InterfaceFcPcApi():
         if key in self.interface_fcpc_mo:
             return self.interface_fcpc_mo[key]
 
+        cache = self.get_object_cache(
+            'ipv4Addr',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_fcpc_mo[key] = cache
+            self.log.apic_mo(
+                'pcFcAggrIf.%s' % (key),
+                self.interface_fcpc_mo[key]
+            )
+            return self.interface_fcpc_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/pcFcAggrIf' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -32,6 +44,12 @@ class InterfaceFcPcApi():
         self.log.apic_mo(
             'pcFcAggrIf.%s' % (key),
             self.interface_fcpc_mo[key]
+        )
+
+        self.set_object_cache(
+            'pcFcAggrIf',
+            self.interface_fcpc_mo[key],
+            object_selector=key
         )
 
         return self.interface_fcpc_mo[key]

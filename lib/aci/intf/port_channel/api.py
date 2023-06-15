@@ -7,6 +7,18 @@ class InterfacePortChannelApi():
         if key in self.interfaces_pc_mo:
             return self.interfaces_pc_mo[key]
 
+        cache = self.get_object_cache(
+            'pcAggrIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interfaces_pc_mo[key] = cache
+            self.log.apic_mo(
+                'pcAggrIf.%s' % (key),
+                self.interfaces_pc_mo[key]
+            )
+            return self.interfaces_pc_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/pcAggrIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=ethpmAggrIf'
         managed_objects = self.get_class(
@@ -37,6 +49,12 @@ class InterfacePortChannelApi():
         self.log.apic_mo(
             'pcAggrIf.%s' % (key),
             self.interfaces_pc_mo[key]
+        )
+
+        self.set_object_cache(
+            'pcAggrIf',
+            self.interfaces_pc_mo[key],
+            object_selector=key
         )
 
         return self.interfaces_pc_mo[key]

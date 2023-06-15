@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy cdp --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +---------------------+----+-------------+------------+--------------+
 | Policy Name         | TF | Admin State | Interfaces | Ref Policies |
@@ -14,7 +14,7 @@ Apic: apic11
 | cdp-enabled         |    | enabled     | 4          | 3            | 
 | CDP_disable         |    | disabled    | 0          | 1            | 
 | CDP_enable          |    | enabled     | 86         | 24           | 
-| default             |    | disabled    | 278        | 67           | 
+| default             |    | disabled    | 334        | 67           | 
 | nidemo-dummy        |    | disabled    | 2          | 1            | 
 | system-cdp-disabled |    | disabled    | 0          | 0            | 
 | system-cdp-enabled  |    | enabled     | 0          | 0            | 
@@ -28,7 +28,7 @@ Developer
 # iserver get aci policy cdp --apic apic11
 
 {
-    "duration": 1578,
+    "duration": 1831,
     "apic": {
         "read": true,
         "success": 4,
@@ -36,10 +36,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 402,
+        "connect_time": 442,
         "disconnect_time": 0,
-        "mo_time": 1012,
-        "total_time": 1414
+        "mo_time": 1086,
+        "total_time": 1528
     },
     "error": {
         "read": false,
@@ -52,16 +52,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	402	-	connect apic11o.emea-sp.cisco.com
-True	319	8	apic11o.emea-sp.cisco.com class cdpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	399	370	apic11o.emea-sp.cisco.com class l1RsCdpIfPolCons
-True	294	11	apic11o.emea-sp.cisco.com class fabricNode
+True	442	-	connect apic11o.emea-sp.cisco.com
+True	330	8	apic11o.emea-sp.cisco.com class cdpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	382	426	apic11o.emea-sp.cisco.com class l1RsCdpIfPolCons
+True	374	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyCdp.md)

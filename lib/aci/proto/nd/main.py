@@ -1,7 +1,7 @@
-from lib.aci.proto.nd.instance import ProtocolNdInstance
-from lib.aci.proto.nd.domain import ProtocolNdDomain
-from lib.aci.proto.nd.interface import ProtocolNdInterface
-from lib.aci.proto.nd.neighbor import ProtocolNdNeighbor
+from lib.aci.proto.nd.instance.main import ProtocolNdInstance
+from lib.aci.proto.nd.domain.main import ProtocolNdDomain
+from lib.aci.proto.nd.interface.main import ProtocolNdInterface
+from lib.aci.proto.nd.neighbor.main import ProtocolNdNeighbor
 
 
 class ProtocolNd(ProtocolNdInstance, ProtocolNdDomain, ProtocolNdInterface, ProtocolNdNeighbor):

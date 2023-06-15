@@ -19,7 +19,7 @@
             "childAction": "",
             "dn": "topology/pod-1/node-201/sys/isis",
             "lcOwn": "local",
-            "modTs": "2023-03-03T01:13:22.862+02:00",
+            "modTs": "2023-06-12T09:12:18.104+02:00",
             "monPolDn": "uni/fabric/monfab-default",
             "name": "",
             "operErr": "",
@@ -46,11 +46,11 @@
                 "fastLsps": "0",
                 "lcOwn": "local",
                 "lspPurged": "0",
-                "lspRefreshed": "55316",
+                "lspRefreshed": "1232",
                 "lspSourced": "4",
                 "maxEcmp": "18",
                 "metricStyle": "narrow",
-                "modTs": "2023-03-03T01:24:50.156+02:00",
+                "modTs": "2023-06-12T10:38:44.308+02:00",
                 "mode": "fabric",
                 "monPolDn": "uni/fabric/monfab-default",
                 "mtsError": "no",
@@ -60,7 +60,7 @@
                 "operSt": "ok",
                 "redistribMetric": "63",
                 "seqWrapError": "no",
-                "spfCalculated": "87",
+                "spfCalculated": "71",
                 "status": "",
                 "sysId": "43:C0:03:0A:00:00",
                 "systemGipo": "225.0.0.16",
@@ -69,6 +69,40 @@
                 "pod_node_name": "pod-1/cl201-eu-spdc",
                 "instance": "default",
                 "tunnel": [
+                    {
+                        "__Output": {},
+                        "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-dtep/dtep-[10.3.136.64]",
+                        "encapt": "unknown",
+                        "id": "10.3.136.64",
+                        "modTs": "never",
+                        "name": "default",
+                        "role": "leaf",
+                        "status": "",
+                        "type": "physical",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay",
+                        "id_resolved": "10.3.136.64 (pod-1/cl209-eu-spdc)",
+                        "dest_node": "pod-1/cl209-eu-spdc"
+                    },
+                    {
+                        "__Output": {},
+                        "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-dtep/dtep-[10.3.136.65]",
+                        "encapt": "unknown",
+                        "id": "10.3.136.65",
+                        "modTs": "never",
+                        "name": "default",
+                        "role": "leaf",
+                        "status": "",
+                        "type": "physical",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay",
+                        "id_resolved": "10.3.136.65 (pod-1/cl210-eu-spdc)",
+                        "dest_node": "pod-1/cl210-eu-spdc"
+                    },
                     {
                         "__Output": {},
                         "childAction": "",
@@ -82,7 +116,9 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.192.64 (pod-1/bl205-eu-spdc)",
+                        "dest_node": "pod-1/bl205-eu-spdc"
                     },
                     {
                         "__Output": {},
@@ -97,7 +133,9 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.192.65 (pod-1/s101-eu-spdc)",
+                        "dest_node": "pod-1/s101-eu-spdc"
                     },
                     {
                         "__Output": {},
@@ -112,7 +150,9 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.192.68 (pod-1/cl202-eu-spdc)",
+                        "dest_node": "pod-1/cl202-eu-spdc"
                     },
                     {
                         "__Output": {},
@@ -127,7 +167,9 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.32.64 (pod-1/bl206-eu-spdc)",
+                        "dest_node": "pod-1/bl206-eu-spdc"
                     },
                     {
                         "__Output": {},
@@ -142,7 +184,9 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.32.65 (pod-1/s102-eu-spdc)",
+                        "dest_node": "pod-1/s102-eu-spdc"
                     },
                     {
                         "__Output": {},
@@ -157,7 +201,8 @@
                         "type": "physical,proxy-acast-v4",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.40.64"
                     },
                     {
                         "__Output": {},
@@ -172,7 +217,8 @@
                         "type": "physical,proxy-acast-mac",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.40.65"
                     },
                     {
                         "__Output": {},
@@ -187,7 +233,8 @@
                         "type": "physical,proxy-acast-v6",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.40.66"
                     },
                     {
                         "__Output": {},
@@ -202,7 +249,8 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.40.67"
                     },
                     {
                         "__Output": {},
@@ -217,7 +265,8 @@
                         "type": "physical",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
-                        "domain": "overlay"
+                        "domain": "overlay",
+                        "id_resolved": "10.3.48.64"
                     }
                 ],
                 "lsp": [
@@ -226,7 +275,7 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "40929",
+                        "ckSum": "63992",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-40:20:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -239,12 +288,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54739",
+                        "seqNum": "311",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "40:20:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:20:33.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:57:11.000+02:00",
                         "timerType": "hold",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -256,7 +305,37 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "22313",
+                        "ckSum": "279",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-40:88:03:0A:00:00-0-0",
+                        "frag": "0",
+                        "hostName": "",
+                        "lanId": "0",
+                        "lifeTime": "1198",
+                        "modTs": "never",
+                        "name": "",
+                        "nlpId": "0.0.0.0",
+                        "overload": "no",
+                        "partition": "no",
+                        "routerId": "",
+                        "rrmBitMaps": "",
+                        "seqNum": "264",
+                        "srmBitMaps": "",
+                        "ssnBitMaps": "",
+                        "status": "",
+                        "sysId": "40:88:03:0A:00:00",
+                        "timerExpiryTS": "2023-06-14T08:52:12.000+02:00",
+                        "timerType": "hold",
+                        "type": "l1",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "areaAddr": "",
+                        "attached": "no",
+                        "childAction": "",
+                        "ckSum": "21383",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-40:C0:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -269,12 +348,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54714",
+                        "seqNum": "309",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "40:C0:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:16:39.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:55:13.000+02:00",
                         "timerType": "hold",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -286,7 +365,7 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "36556",
+                        "ckSum": "21435",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-41:20:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -299,12 +378,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54793",
+                        "seqNum": "327",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "41:20:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:18:08.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:50:48.000+02:00",
                         "timerType": "hold",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -316,7 +395,37 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "22080",
+                        "ckSum": "64704",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-41:88:03:0A:00:00-0-0",
+                        "frag": "0",
+                        "hostName": "",
+                        "lanId": "0",
+                        "lifeTime": "1198",
+                        "modTs": "never",
+                        "name": "",
+                        "nlpId": "0.0.0.0",
+                        "overload": "no",
+                        "partition": "no",
+                        "routerId": "",
+                        "rrmBitMaps": "",
+                        "seqNum": "262",
+                        "srmBitMaps": "",
+                        "ssnBitMaps": "",
+                        "status": "",
+                        "sysId": "41:88:03:0A:00:00",
+                        "timerExpiryTS": "2023-06-14T08:51:01.000+02:00",
+                        "timerType": "hold",
+                        "type": "l1",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "areaAddr": "",
+                        "attached": "no",
+                        "childAction": "",
+                        "ckSum": "64079",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-41:C0:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -329,12 +438,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54785",
+                        "seqNum": "325",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "41:C0:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:15:51.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:58:43.000+02:00",
                         "timerType": "hold",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -346,7 +455,7 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "27761",
+                        "ckSum": "49494",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-43:C0:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -359,12 +468,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54733",
+                        "seqNum": "315",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "43:C0:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:08:40.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:42:50.000+02:00",
                         "timerType": "refresh",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -376,7 +485,7 @@
                         "areaAddr": "",
                         "attached": "no",
                         "childAction": "",
-                        "ckSum": "39025",
+                        "ckSum": "64294",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-ls/lsp-44:C0:03:0A:00:00-0-0",
                         "frag": "0",
                         "hostName": "",
@@ -389,12 +498,12 @@
                         "partition": "no",
                         "routerId": "",
                         "rrmBitMaps": "",
-                        "seqNum": "54757",
+                        "seqNum": "311",
                         "srmBitMaps": "",
                         "ssnBitMaps": "",
                         "status": "",
                         "sysId": "44:C0:03:0A:00:00",
-                        "timerExpiryTS": "2023-05-30T20:20:33.000+02:00",
+                        "timerExpiryTS": "2023-06-14T08:56:03.000+02:00",
                         "timerType": "hold",
                         "type": "l1",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -416,7 +525,7 @@
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/107.7]",
                         "extdLocalCktId": "436641799",
                         "id": "eth1/107.7",
-                        "iibIdx": "2",
+                        "iibIdx": "3",
                         "iibState": "Ready",
                         "iibUpCtrl": "yes",
                         "initError": "no",
@@ -424,10 +533,10 @@
                         "localCktId": "1",
                         "lspRefreshIntvl": "33",
                         "metric": "1",
-                        "modTs": "2023-03-03T01:18:58.830+02:00",
+                        "modTs": "2023-06-12T10:16:37.928+02:00",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "overlay-1",
-                        "nextIIHTs": "2023-03-03T01:20:10.000+02:00",
+                        "nextIIHTs": "2023-06-12T10:18:39.000+02:00",
                         "p2pCktId": "",
                         "status": "",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -444,9 +553,9 @@
                         "cktT": "l1",
                         "ctrl": "",
                         "descr": "",
-                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/108.504]",
-                        "extdLocalCktId": "436646392",
-                        "id": "eth1/108.504",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/108.8]",
+                        "extdLocalCktId": "436645896",
+                        "id": "eth1/108.8",
                         "iibIdx": "4",
                         "iibState": "Ready",
                         "iibUpCtrl": "yes",
@@ -455,10 +564,10 @@
                         "localCktId": "1",
                         "lspRefreshIntvl": "33",
                         "metric": "1",
-                        "modTs": "2023-04-28T11:32:54.213+02:00",
+                        "modTs": "2023-06-12T10:16:37.928+02:00",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "overlay-1",
-                        "nextIIHTs": "2023-04-28T11:31:19.000+02:00",
+                        "nextIIHTs": "2023-06-12T10:18:41.000+02:00",
                         "p2pCktId": "",
                         "status": "",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -478,7 +587,7 @@
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[lo0]",
                         "extdLocalCktId": "335544320",
                         "id": "lo0",
-                        "iibIdx": "3",
+                        "iibIdx": "2",
                         "iibState": "Ready",
                         "iibUpCtrl": "yes",
                         "initError": "no",
@@ -486,41 +595,10 @@
                         "localCktId": "1",
                         "lspRefreshIntvl": "33",
                         "metric": "1",
-                        "modTs": "2023-03-03T01:18:58.830+02:00",
+                        "modTs": "2023-06-12T10:16:37.928+02:00",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "overlay-1",
-                        "nextIIHTs": "2023-03-03T01:18:59.000+02:00",
-                        "p2pCktId": "",
-                        "status": "",
-                        "pod_node_name": "pod-1/cl201-eu-spdc",
-                        "instance": "default",
-                        "domain": "overlay"
-                    },
-                    {
-                        "__Output": {
-                            "adminSt": "Green",
-                            "iibState": "Green"
-                        },
-                        "adminSt": "enabled",
-                        "childAction": "",
-                        "cktT": "l1",
-                        "ctrl": "advert-tep,passive",
-                        "descr": "",
-                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[lo1]",
-                        "extdLocalCktId": "335544321",
-                        "id": "lo1",
-                        "iibIdx": "5",
-                        "iibState": "Ready",
-                        "iibUpCtrl": "yes",
-                        "initError": "no",
-                        "lcOwn": "local",
-                        "localCktId": "1",
-                        "lspRefreshIntvl": "33",
-                        "metric": "1",
-                        "modTs": "2023-03-03T01:24:43.101+02:00",
-                        "monPolDn": "uni/fabric/monfab-default",
-                        "name": "overlay-1",
-                        "nextIIHTs": "2023-03-03T01:21:29.000+02:00",
+                        "nextIIHTs": "2023-06-12T10:16:38.000+02:00",
                         "p2pCktId": "",
                         "status": "",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -537,6 +615,37 @@
                         "cktT": "l1",
                         "ctrl": "passive",
                         "descr": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[lo1]",
+                        "extdLocalCktId": "335544321",
+                        "id": "lo1",
+                        "iibIdx": "5",
+                        "iibState": "Ready",
+                        "iibUpCtrl": "yes",
+                        "initError": "no",
+                        "lcOwn": "local",
+                        "localCktId": "1",
+                        "lspRefreshIntvl": "33",
+                        "metric": "1",
+                        "modTs": "2023-06-12T10:35:12.412+02:00",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "overlay-1",
+                        "nextIIHTs": "2023-06-12T10:31:50.000+02:00",
+                        "p2pCktId": "",
+                        "status": "",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {
+                            "adminSt": "Green",
+                            "iibState": "Green"
+                        },
+                        "adminSt": "enabled",
+                        "childAction": "",
+                        "cktT": "l1",
+                        "ctrl": "advert-tep,passive",
+                        "descr": "",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[lo2]",
                         "extdLocalCktId": "335544322",
                         "id": "lo2",
@@ -548,10 +657,10 @@
                         "localCktId": "1",
                         "lspRefreshIntvl": "33",
                         "metric": "1",
-                        "modTs": "2023-03-03T01:24:50.156+02:00",
+                        "modTs": "2023-06-12T10:38:34.005+02:00",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "overlay-1",
-                        "nextIIHTs": "2023-03-03T01:21:34.000+02:00",
+                        "nextIIHTs": "2023-06-12T10:35:12.000+02:00",
                         "p2pCktId": "",
                         "status": "",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -568,16 +677,16 @@
                         "bfdOperSt": "down",
                         "childAction": "",
                         "cktType": "bcast",
-                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/108.504]/adj-l1-adj-41:20:03:0A:00:00",
-                        "holdExpTs": "2023-05-30T20:04:25.000+02:00",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/108.8]/adj-l1-adj-41:20:03:0A:00:00",
+                        "holdExpTs": "2023-06-14T08:40:26.000+02:00",
                         "lanId": "0",
-                        "lastTrans": "2023-04-28T11:31:14.000+02:00",
+                        "lastTrans": "2023-06-12T10:18:34.000+02:00",
                         "modTs": "never",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "4120.030a.0000",
                         "numAdjTrans": "1",
                         "operSt": "up",
-                        "peerCktId": "28",
+                        "peerCktId": "18",
                         "peerCktPrio": "64",
                         "peerGrFlags": "capable",
                         "status": "",
@@ -593,7 +702,7 @@
                         "pod_node_name": "pod-1/cl201-eu-spdc",
                         "instance": "default",
                         "domain": "overlay",
-                        "interface": "eth1/108.504"
+                        "interface": "eth1/108.8"
                     },
                     {
                         "__Output": {
@@ -604,15 +713,15 @@
                         "childAction": "",
                         "cktType": "bcast",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/if-[eth1/107.7]/adj-l1-adj-41:C0:03:0A:00:00",
-                        "holdExpTs": "2023-05-30T20:04:19.000+02:00",
+                        "holdExpTs": "2023-06-14T08:40:31.000+02:00",
                         "lanId": "0",
-                        "lastTrans": "2023-03-03T01:20:03.000+02:00",
+                        "lastTrans": "2023-06-12T10:18:34.000+02:00",
                         "modTs": "never",
                         "monPolDn": "uni/fabric/monfab-default",
                         "name": "41c0.030a.0000",
                         "numAdjTrans": "1",
                         "operSt": "up",
-                        "peerCktId": "21",
+                        "peerCktId": "18",
                         "peerCktPrio": "64",
                         "peerGrFlags": "capable",
                         "status": "",
@@ -638,7 +747,7 @@
                         },
                         "childAction": "",
                         "diaAlert": "inactive",
-                        "diameter": "6",
+                        "diameter": "7",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-0",
                         "id": "0",
                         "modTs": "never",
@@ -646,8 +755,8 @@
                         "name": "",
                         "operSt": "active",
                         "origin": "isis",
-                        "root": "10.3.192.65",
-                        "rootPort": "eth1/107.7",
+                        "root": "10.3.32.65",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "internal",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -661,7 +770,7 @@
                         },
                         "childAction": "",
                         "diaAlert": "inactive",
-                        "diameter": "7",
+                        "diameter": "6",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-1",
                         "id": "1",
                         "modTs": "never",
@@ -670,7 +779,7 @@
                         "operSt": "active",
                         "origin": "isis",
                         "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "user",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -693,30 +802,7 @@
                         "operSt": "active",
                         "origin": "isis",
                         "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
-                        "status": "",
-                        "usage": "user",
-                        "pod_node_name": "pod-1/cl201-eu-spdc",
-                        "instance": "default",
-                        "domain": "overlay",
-                        "enable": true
-                    },
-                    {
-                        "__Output": {
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "diaAlert": "inactive",
-                        "diameter": "6",
-                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-3",
-                        "id": "3",
-                        "modTs": "never",
-                        "monPolDn": "uni/fabric/monfab-default",
-                        "name": "",
-                        "operSt": "active",
-                        "origin": "isis",
-                        "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "user",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -731,6 +817,29 @@
                         "childAction": "",
                         "diaAlert": "inactive",
                         "diameter": "7",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-3",
+                        "id": "3",
+                        "modTs": "never",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "",
+                        "operSt": "active",
+                        "origin": "isis",
+                        "root": "10.3.32.65",
+                        "rootPort": "eth1/108.8",
+                        "status": "",
+                        "usage": "user",
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay",
+                        "enable": true
+                    },
+                    {
+                        "__Output": {
+                            "operSt": "Green"
+                        },
+                        "childAction": "",
+                        "diaAlert": "inactive",
+                        "diameter": "6",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-4",
                         "id": "4",
                         "modTs": "never",
@@ -739,7 +848,7 @@
                         "operSt": "active",
                         "origin": "isis",
                         "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "user",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -799,7 +908,7 @@
                         },
                         "childAction": "",
                         "diaAlert": "inactive",
-                        "diameter": "7",
+                        "diameter": "6",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/fmtree-7",
                         "id": "7",
                         "modTs": "never",
@@ -900,7 +1009,7 @@
                         "operSt": "active",
                         "origin": "isis",
                         "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "user",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -923,7 +1032,7 @@
                         "operSt": "active",
                         "origin": "isis",
                         "root": "10.3.32.65",
-                        "rootPort": "eth1/108.504",
+                        "rootPort": "eth1/108.8",
                         "status": "",
                         "usage": "user",
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1005,6 +1114,31 @@
                     {
                         "__Output": {},
                         "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-rt/rt-[10.3.0.1/32]",
+                        "metric": "12",
+                        "modTs": "never",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "",
+                        "pfx": "10.3.0.1/32",
+                        "pref": "115",
+                        "status": "",
+                        "isisNexthop": [
+                            {
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
+                            },
+                            {
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
+                            }
+                        ],
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "childAction": "",
                         "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-rt/rt-[10.3.0.33/32]",
                         "metric": "2",
                         "modTs": "never",
@@ -1015,12 +1149,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1040,12 +1174,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1065,12 +1199,62 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
+                            }
+                        ],
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-rt/rt-[10.3.136.64/32]",
+                        "metric": "3",
+                        "modTs": "never",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "",
+                        "pfx": "10.3.136.64/32",
+                        "pref": "115",
+                        "status": "",
+                        "isisNexthop": [
+                            {
+                                "interface": "eth1/108.8",
                                 "address": "10.3.32.65"
+                            },
+                            {
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
+                            }
+                        ],
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-rt/rt-[10.3.136.65/32]",
+                        "metric": "3",
+                        "modTs": "never",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "",
+                        "pfx": "10.3.136.65/32",
+                        "pref": "115",
+                        "status": "",
+                        "isisNexthop": [
+                            {
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
+                            },
+                            {
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1090,12 +1274,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1115,12 +1299,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1140,12 +1324,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1165,12 +1349,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1190,12 +1374,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1215,12 +1399,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1240,12 +1424,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1265,12 +1449,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1290,12 +1474,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1315,12 +1499,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1340,12 +1524,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1365,12 +1549,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1390,12 +1574,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1415,12 +1599,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1440,12 +1624,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1465,12 +1649,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1490,12 +1674,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1515,12 +1699,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1540,12 +1724,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1565,12 +1749,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1590,12 +1774,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1615,12 +1799,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1640,12 +1824,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1665,12 +1849,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1690,12 +1874,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1715,12 +1899,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1740,12 +1924,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1765,12 +1949,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1790,12 +1974,37 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
+                            }
+                        ],
+                        "pod_node_name": "pod-1/cl201-eu-spdc",
+                        "instance": "default",
+                        "domain": "overlay"
+                    },
+                    {
+                        "__Output": {},
+                        "childAction": "",
+                        "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-rt/rt-[172.16.11.230/32]",
+                        "metric": "12",
+                        "modTs": "never",
+                        "monPolDn": "uni/fabric/monfab-default",
+                        "name": "",
+                        "pfx": "172.16.11.230/32",
+                        "pref": "115",
+                        "status": "",
+                        "isisNexthop": [
+                            {
+                                "interface": "eth1/108.8",
                                 "address": "10.3.32.65"
+                            },
+                            {
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1815,12 +2024,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1840,12 +2049,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1865,12 +2074,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1890,12 +2099,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1915,12 +2124,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1940,12 +2149,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1965,12 +2174,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -1990,12 +2199,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2015,12 +2224,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2040,12 +2249,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2065,12 +2274,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2090,12 +2299,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2115,12 +2324,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2140,12 +2349,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2165,12 +2374,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2190,12 +2399,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",
@@ -2215,12 +2424,12 @@
                         "status": "",
                         "isisNexthop": [
                             {
-                                "interface": "eth1/107.7",
-                                "address": "10.3.192.65"
+                                "interface": "eth1/108.8",
+                                "address": "10.3.32.65"
                             },
                             {
-                                "interface": "eth1/108.504",
-                                "address": "10.3.32.65"
+                                "interface": "eth1/107.7",
+                                "address": "10.3.192.65"
                             }
                         ],
                         "pod_node_name": "pod-1/cl201-eu-spdc",

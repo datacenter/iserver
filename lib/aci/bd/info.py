@@ -130,14 +130,16 @@ class BridgeDomainInfo():
             return self.bridge_domains
 
         bridge_domains_mo = self.get_bridge_domains_mo()
-        if bridge_domains_mo is not None:
-            self.bridge_domains = []
-            for managed_object in bridge_domains_mo:
-                self.bridge_domains.append(
-                    self.get_bridge_domain_info(
-                        managed_object
-                    )
+        if bridge_domains_mo is None:
+            return None
+
+        self.bridge_domains = []
+        for managed_object in bridge_domains_mo:
+            self.bridge_domains.append(
+                self.get_bridge_domain_info(
+                    managed_object
                 )
+            )
 
         return self.bridge_domains
 

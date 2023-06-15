@@ -1,3 +1,6 @@
+from lib import ip_helper
+
+
 class ProtocolIsisTunnelInfo():
     def __init__(self):
         self.isis_domain_tunnels = {}
@@ -17,6 +20,18 @@ class ProtocolIsisTunnelInfo():
 
         info['instance'] = info['dn'].split('/')[5].split('-')[1]
         info['domain'] = info['dn'].split('/')[6].split('-')[1]
+
+        info['id_resolved'] = info['id']
+        if ip_helper.is_valid_ipv4_address(info['id']):
+            destination_node_info = self.get_node(
+                node_ip=info['id']
+            )
+            if destination_node_info is not None:
+                info['dest_node'] = destination_node_info['pod_node_name']
+                info['id_resolved'] = '%s (%s)' % (
+                    info['id'],
+                    info['dest_node']
+                )
 
         return info
 

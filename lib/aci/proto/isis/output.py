@@ -397,14 +397,22 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_tunnels(self, info):
+    def print_proto_isis_tunnels(self, info, title=False):
         if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Discovered Tunnel Endpoints',
+                before_newline=True,
+                underline=True
+            )
 
         order = [
             'pod_node_name',
             'domain',
             'id',
+            'dest_node',
             'role',
             'type'
         ]
@@ -413,6 +421,7 @@ class ProtocolIsisOutput():
             'Node',
             'Domain',
             'Id',
+            'Destination',
             'Role',
             'Type'
         ]

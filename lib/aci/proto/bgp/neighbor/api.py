@@ -10,6 +10,18 @@ class ProtocolBgpNeighborApi():
         if key in self.bgp_neighbors_mo:
             return self.bgp_neighbors_mo[key]
 
+        cache = self.get_object_cache(
+            'bgpPeer',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bgp_neighbors_mo[key] = cache
+            self.log.apic_mo(
+                'bgpPeer.%s' % (key),
+                self.bgp_neighbors_mo[key]
+            )
+            return self.bgp_neighbors_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/bgpDom' % (pod_id, node_id)
         query = 'query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry'
         managed_objects = self.get_class(
@@ -65,8 +77,14 @@ class ProtocolBgpNeighborApi():
         self.bgp_neighbors_mo[key] = copy.deepcopy(flat_bgp_peers)
 
         self.log.apic_mo(
-            'bgpPeer.%s.%s' % (pod_id, node_id),
+            'bgpPeer.%s' % (key),
             self.bgp_neighbors_mo[key]
+        )
+
+        self.set_object_cache(
+            'bgpPeer',
+            self.bgp_neighbors_mo[key],
+            object_selector=key
         )
 
         return self.bgp_neighbors_mo[key]

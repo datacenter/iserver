@@ -6,6 +6,17 @@ class PolicyInterfacePfcApi():
         if self.policy_interface_pfc_mo is not None:
             return self.policy_interface_pfc_mo
 
+        cache = self.get_object_cache(
+            'qosPfcIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_pfc_mo = cache
+            self.log.apic_mo(
+                'qosPfcIfPol',
+                self.policy_interface_pfc_mo
+            )
+            return self.policy_interface_pfc_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'qosPfcIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfacePfcApi():
             )
 
         self.log.apic_mo(
+            'qosPfcIfPol',
+            self.policy_interface_pfc_mo
+        )
+
+        self.set_object_cache(
             'qosPfcIfPol',
             self.policy_interface_pfc_mo
         )

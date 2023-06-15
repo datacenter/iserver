@@ -34,21 +34,23 @@ Usage: iserver.py get aci vrf [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --name TEXT                     VRF name
   --tenant TEXT                   Tenant name
   --bd TEXT                       Filter by bridge domain name
   --epg TEXT                      Filter by epg name
-  --ip TEXT                       Filter by subnet with IP
+  --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -v, --view [default|route|props|refs|verbose]
+  -v, --view [default|route|prop|ref|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\e6631f16bb40
+Info: finished in 32 ms and logs saved in /tmp/iserver\6a572a7b3bb0
 ```
 
 [[Back]](./README.md)

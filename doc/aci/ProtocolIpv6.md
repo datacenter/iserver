@@ -39,15 +39,16 @@ Options:
   --role [any|leaf|spine]         [default: any]
   --vrf TEXT                      VRF
   --type [ibgp|ebgp|bgp|static|local|direct]
-  --ip TEXT                       IP Address filter
+  --address TEXT                  IP Address filter
   --subnet TEXT                   IP Subnet filter
   --longer                        Match longer prefixes
-  -v, --view [default|summary]
+  -v, --view [default|summary]    [default: default]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 31 ms and logs saved in /tmp/iserver\e7e83ea9465b
+Info: finished in 62 ms and logs saved in /tmp/iserver\26185e796382
 ```
 
 [[Back]](./Protocol.md)

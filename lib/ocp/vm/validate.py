@@ -7,7 +7,6 @@ from lib import template
 from lib import log_helper
 from lib import output_helper
 
-
 class OcpDeploymentValidate():
     def __init__(self, verbose=False, debug=False, log_id=None):
         self.my_output = output_helper.OutputHelper(
@@ -17,28 +16,39 @@ class OcpDeploymentValidate():
         )
         self.log = log_helper.Log(log_id=log_id)
 
-        self.template_handler = template.Template()
+        self.template_handler = template.Template(
+            log_id=log_id
+        )
         self.template_subdirectory = 'ocp/kubevirt'
         self.variables = None
 
     def get_deployment_yaml(self, filename):
-        success, data = file_helper.get_file_yaml(filename)
-        if not success:
-            self.my_output.error(data)
+        content = file_helper.get_file_yaml(filename)
+        if content is None:
+            self.log.error(
+                'get_deployment_yaml',
+                'File read failed: %s' % (filename)
+            )
             return None
 
         self.variables = None
-        if 'variables' in data:
-            self.variables = data['variables']
+        if 'variables' in content:
+            self.variables = content['variables']
 
-        data = self.template_handler.get_template(
+        content = self.template_handler.get_template(
             filename,
             self.variables,
             replace_variables_enabled=True,
             check_remaining_variables=True,
             yaml_conversion=True
         )
-        return data
+        if content is None:
+            self.log.error(
+                'get_deployment_yaml',
+                'File parse failed: %s' % (filename)
+            )
+
+        return content
 
     def validate(self, deployment_filename, chdir=None):
         data = self.get_deployment_yaml(deployment_filename)
@@ -77,6 +87,13 @@ class OcpDeploymentValidate():
         vm_yaml = yaml.safe_load(
             validated_data['files'][filename]
         )
+        if vm_yaml is None:
+            self.log.error(
+                'validate',
+                'Yaml load failed: %s' % (validated_data['files'][filename])
+            )
+            return None
+
         for key in ['namespace', 'name']:
             if key not in vm_yaml['metadata']:
                 self.my_output.error(

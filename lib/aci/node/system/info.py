@@ -70,7 +70,7 @@ class NodeSystemInfo():
             info['nodeId']
         )
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['nodeName']
@@ -92,7 +92,7 @@ class NodeSystemInfo():
         if self.nodes_system is not None:
             return self.nodes_system
 
-        nodes_system_mo = self.get_nodes_system_mo()
+        nodes_system_mo = self.get_node_system_mo()
         if nodes_system_mo is not None:
             self.nodes_system = []
             for node_system_mo in nodes_system_mo:

@@ -2,8 +2,8 @@ class InterfaceTunnelOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_tunnel(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_tunnel(self, info):
+        if len(info) == 0:
             self.my_output.default('No tunnel interfaces')
             return
 
@@ -19,10 +19,11 @@ class InterfaceTunnelOutput():
             'operStQual',
             'tLayer',
             'tType',
-            'type',
+            'typeT',
             'requestor',
-            'src',
-            'dest_ip_node',
+            'src_ip',
+            'dest_ip',
+            'dest_node',
             'vrfName',
             'cfgdMtu'
         ]
@@ -38,26 +39,32 @@ class InterfaceTunnelOutput():
             'Oper',
             'Reason',
             'Layer',
-            'Tunnel Type',
+            'Encap',
             'Type',
             'Req',
-            'Source',
-            'Destination',
+            'Source IP',
+            'Destination IP',
+            'Destination Node',
             'VRF',
             'MTU'
         ]
 
         self.my_output.my_table(
-            interfaces,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['dest_node', 'typeT']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
             remove_empty_columns=True,
             underline=True,
+            row_separator=True,
             table=True
         )
 
-    def print_interface_tunnel(self, interface):
+    def print_interface_tunnel(self, info):
         order = [
             'id',
             'adminSt',
@@ -66,8 +73,9 @@ class InterfaceTunnelOutput():
             'tLayer',
             'tType',
             'type',
-            'src',
-            'dest_ip_node',
+            'src_ip',
+            'dest_ip',
+            'dest_node',
             'vrfName',
             'cfgdMtu',
             'keepAlvIntvl',
@@ -82,8 +90,9 @@ class InterfaceTunnelOutput():
             'Tunnel Layer',
             'Tunnel Type',
             'Type',
-            'Source',
-            'Destination',
+            'Source IP',
+            'Destination IP',
+            'Destiation Node',
             'VRF',
             'MTU',
             'Keepalive Interval',
@@ -91,8 +100,8 @@ class InterfaceTunnelOutput():
         ]
 
         self.my_output.dictionary(
-            interface,
-            title='Interface tunnel',
+            info,
+            title='Interface Tunnel',
             underline=True,
             prefix="- ",
             justify=True,

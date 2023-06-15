@@ -6,6 +6,17 @@ class EndpointVmmVnicApi():
         if self.endpoint_vmm_vnic_mo is not None:
             return self.endpoint_vmm_vnic_mo
 
+        cache = self.get_object_cache(
+            'compVNic'
+        )
+        if cache is not None:
+            self.endpoint_vmm_vnic_mo = cache
+            self.log.apic_mo(
+                'compVNic',
+                self.endpoint_vmm_vnic_mo
+            )
+            return self.endpoint_vmm_vnic_mo
+
         managed_objects = self.get_class(
             'compVNic'
         )
@@ -25,6 +36,11 @@ class EndpointVmmVnicApi():
             )
 
         self.log.apic_mo(
+            'compVNic',
+            self.endpoint_vmm_vnic_mo
+        )
+
+        self.set_object_cache(
             'compVNic',
             self.endpoint_vmm_vnic_mo
         )

@@ -45,14 +45,15 @@ Options:
   --intf TEXT                     Filter by interface id
   --state [any|up|down]           Filter by session state  [default: any]
   --vrf TEXT                      Filter by VRF name
-  --ip TEXT                       Filter by IP address
+  --address TEXT                  Filter by IP address
   --subnet TEXT                   Filter by IP subnet
   -v, --view [default|instance|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 37 ms and logs saved in /tmp/iserver\7ba4de780b7d
+Info: finished in 51 ms and logs saved in /tmp/iserver\9961e25f8dc0
 ```
 
 [[Back]](./Protocol.md)

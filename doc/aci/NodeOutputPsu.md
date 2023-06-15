@@ -5,7 +5,7 @@
 ```
 # iserver get aci node --apic apic11 --view psu
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +---------------------+-------------+-----------------+-------------------+---------------+---------+---------+------------+
 | Node                | PSU Slot ID | Description     | Model             | Serial Number | Current | Voltage | Oper State |
@@ -24,6 +24,10 @@ Apic: apic11
 | pod-1/cl201-eu-spdc | 2           | PSU             | NXA-PAC-1200W-PE  | LIT23103NJH   | 0.0     | 12.0    | ok         | 
 | pod-1/cl202-eu-spdc | 1           | PSU             | NXA-PAC-1200W-PE  | LIT23103NEJ   | 0.0     | 12.0    | ok         | 
 | pod-1/cl202-eu-spdc | 2           | PSU             | NXA-PAC-1200W-PE  | LIT23103NKC   | 0.0     | 12.0    | ok         | 
+| pod-1/cl209-eu-spdc | 1           | PSU             | NXA-PAC-1100W-PE2 | ART2714FCN3   | 0.0     | 12.0    | ok         | 
+| pod-1/cl209-eu-spdc | 2           | PSU             | NXA-PAC-1100W-PE2 | ART2714FDAV   | 0.0     | 12.0    | ok         | 
+| pod-1/cl210-eu-spdc | 1           | PSU             | NXA-PAC-1100W-PE2 | ART2714FDAU   | 0.0     | 12.0    | ok         | 
+| pod-1/cl210-eu-spdc | 2           | PSU             | NXA-PAC-1100W-PE2 | ART2714FDCJ   | 0.0     | 12.0    | ok         | 
 | pod-1/rl301-eu-spdc | 1           | PSU             | NXA-PAC-1100W-PE2 | ART2338F0XZ   | 0.0     | 12.0    | ok         | 
 | pod-1/rl301-eu-spdc | 2           | PSU             | NXA-PAC-1100W-PE2 | ART2338F0UG   | 0.0     | 12.0    | ok         | 
 | pod-1/rl302-eu-spdc | 1           | PSU             | NXA-PAC-1100W-PE2 | ART2338F0RF   | 0.0     | 12.0    | ok         | 
@@ -41,7 +45,7 @@ Developer
 # iserver get aci node --apic apic11 --view psu
 
 {
-    "duration": 1426,
+    "duration": 1386,
     "apic": {
         "read": true,
         "success": 3,
@@ -49,10 +53,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 669,
+        "connect_time": 452,
         "disconnect_time": 0,
-        "mo_time": 612,
-        "total_time": 1281
+        "mo_time": 686,
+        "total_time": 1138
     },
     "error": {
         "read": false,
@@ -65,15 +69,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	669	-	connect apic11o.emea-sp.cisco.com
-True	313	11	apic11o.emea-sp.cisco.com class fabricNode
-True	299	22	apic11o.emea-sp.cisco.com class eqptPsu
+True	452	-	connect apic11o.emea-sp.cisco.com
+True	333	13	apic11o.emea-sp.cisco.com class fabricNode
+True	353	26	apic11o.emea-sp.cisco.com class eqptPsu
 ```
 
 [[Back]](./Node.md)

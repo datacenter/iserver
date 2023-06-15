@@ -10,6 +10,18 @@ class InterfaceEncapsulatedRoutedApi():
         if key in self.interface_encap_routed_mo:
             return self.interface_encap_routed_mo[key]
 
+        cache = self.get_object_cache(
+            'l3EncRtdIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_encap_routed_mo[key] = cache
+            self.log.apic_mo(
+                'l3EncRtdIf.%s' % (key),
+                self.interface_encap_routed_mo[key]
+            )
+            return self.interface_encap_routed_mo[key]
+
         # https://apic11o.emea-sp.cisco.com/api/node/class/topology/pod-1/node-201/l3EncRtdIf.json?rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf&subscription=yes&order-by=l3EncRtdIf.mplsEnable|asc&page=0&page-size=15&_dc=1683801093405
 
         class_name = 'topology/pod-%s/node-%s/l3EncRtdIf' % (pod_id, node_id)
@@ -47,6 +59,12 @@ class InterfaceEncapsulatedRoutedApi():
         self.log.apic_mo(
             'l3EncRtdIf.%s' % (key),
             self.interface_encap_routed_mo[key]
+        )
+
+        self.set_object_cache(
+            'l3EncRtdIf',
+            self.interface_encap_routed_mo[key],
+            object_selector=key
         )
 
         return self.interface_encap_routed_mo[key]

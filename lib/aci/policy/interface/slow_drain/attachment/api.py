@@ -6,6 +6,17 @@ class PolicyInterfaceSlowDrainAttachmentApi():
         if self.policy_interface_slow_drain_attachment_mo is not None:
             return self.policy_interface_slow_drain_attachment_mo
 
+        cache = self.get_object_cache(
+            'l1RsQosSdIfPolCons'
+        )
+        if cache is not None:
+            self.policy_interface_slow_drain_attachment_mo = cache
+            self.log.apic_mo(
+                'l1RsQosSdIfPolCons',
+                self.policy_interface_slow_drain_attachment_mo
+            )
+            return self.policy_interface_slow_drain_attachment_mo
+
         managed_objects = self.get_class(
             'l1RsQosSdIfPolCons'
         )
@@ -20,6 +31,11 @@ class PolicyInterfaceSlowDrainAttachmentApi():
             )
 
         self.log.apic_mo(
+            'l1RsQosSdIfPolCons',
+            self.policy_interface_slow_drain_attachment_mo
+        )
+
+        self.set_object_cache(
             'l1RsQosSdIfPolCons',
             self.policy_interface_slow_drain_attachment_mo
         )

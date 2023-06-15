@@ -11,10 +11,10 @@ Use '--view bd' to get bridge domain properties of selected epgs
 ```
 # iserver get aci epg --apic apic21 --view bd
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| Up | EPG                                | Bridge Domain             | Subnets            | Usage | L3Out                     |
+| Up | EPG                                | Bridge Domain             | BD Subnets         | Usage | L3Out                     |
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | common/privIP_TEST/privIP_TEST     | common/Infra_privIP_BD    | 15.254.254.254/28  | 1/14  | common/Infra_privIP_L3out | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
@@ -56,28 +56,28 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 2/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.170.254/24 | 1/254 | common/Infra_privIP_L3out | 
-|    |                                    |                           | 169.169.169.254/24 | 1/254 | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.169.254/24 | 1/254 | common/Infra_L3out        | 
+|    |                                    |                           | 169.169.170.254/24 | 1/254 | common/Infra_privIP_L3out | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_1                 | k8s/vk8s_1_BD             | 10.58.24.174/28    | 10/14 | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/vk8s_1                 | k8s/vk8s_1_BD             | 10.58.24.174/28    | 1/14  | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_2                 | k8s/vk8s_2_BD             | 10.58.24.190/28    | 4/14  | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/vk8s_2                 | k8s/vk8s_2_BD             | 10.58.24.190/28    | 1/14  | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_3                 | k8s/vk8s_3_BD             | 10.58.24.206/28    | 10/14 | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/vk8s_3                 | k8s/vk8s_3_BD             | 10.58.24.206/28    | 1/14  | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 11/14 | common/Infra_L3out        | 
+| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 1/14  | common/Infra_L3out        | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 2/254 |                           | 
+| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | mgmt/EU-SPDC-BD1          |                    |       |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | nidemo/streamz/appserver           | nidemo/appserver          | 10.0.2.1/24        | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/database            | nidemo/database           | 10.0.3.1/24        | 2/254 |                           | 
+| V  | nidemo/streamz/database            | nidemo/database           | 10.0.3.1/24        | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 3/254 |                           | 
+| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/management          | nidemo/management         | 10.0.4.1/24        | 2/254 |                           | 
+| V  | nidemo/streamz/management          | nidemo/management         | 10.0.4.1/24        | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
 | V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 1/254 |                           | 
 +----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
@@ -100,7 +100,7 @@ Developer
 # iserver get aci epg --apic apic21 --view bd
 
 {
-    "duration": 3004,
+    "duration": 2654,
     "apic": {
         "read": true,
         "success": 6,
@@ -108,10 +108,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 408,
+        "connect_time": 407,
         "disconnect_time": 0,
-        "mo_time": 2008,
-        "total_time": 2416
+        "mo_time": 1894,
+        "total_time": 2301
     },
     "error": {
         "read": false,
@@ -124,18 +124,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	408	-	connect apic21o.emea-sp.cisco.com
-True	371	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	441	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	298	13	apic21o.emea-sp.cisco.com class fabricNode
-True	461	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	437	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	407	-	connect apic21o.emea-sp.cisco.com:443
+True	361	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	361	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	325	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	425	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	422	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

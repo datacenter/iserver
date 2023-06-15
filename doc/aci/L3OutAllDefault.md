@@ -10,7 +10,7 @@
 ```
 # iserver get aci l3out --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +------------------------------------------+------+-----+-----+------+-------+--------------------------------+-------------------------------+
 | L3Out                                    | MPLS | PIM | BGP | OSPF | EIGRP | VRF                            | L3 Domain                     |
@@ -152,7 +152,7 @@ Developer
 # iserver get aci l3out --apic apic11
 
 {
-    "duration": 1800,
+    "duration": 1958,
     "apic": {
         "read": true,
         "success": 3,
@@ -160,10 +160,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 493,
+        "connect_time": 430,
         "disconnect_time": 0,
-        "mo_time": 792,
-        "total_time": 1285
+        "mo_time": 743,
+        "total_time": 1173
     },
     "error": {
         "read": false,
@@ -176,15 +176,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	493	-	connect apic11o.emea-sp.cisco.com
-True	441	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	351	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	430	-	connect apic11o.emea-sp.cisco.com
+True	388	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	355	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./L3Out.md)

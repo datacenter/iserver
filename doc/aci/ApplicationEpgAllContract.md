@@ -11,7 +11,7 @@ Following with contract and filter details of all related objects.
 ```
 # iserver get aci epg --apic apic21 --view contract
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------------------+-----------------------------+-----------------------------+
 | Up | EPG                                | Contract Consumed           | Contract Provided           |
@@ -76,8 +76,8 @@ Apic: apic21
 | V  | nidemo/streamz/database            |                             | nidemo/management-access    | 
 |    |                                    |                             | nidemo/database-service     | 
 +----+------------------------------------+-----------------------------+-----------------------------+
-| V  | nidemo/streamz/frontend            | nidemo/app-service          | nidemo/frontend-service     | 
-|    |                                    |                             | nidemo/management-access    | 
+| V  | nidemo/streamz/frontend            | nidemo/app-service          | nidemo/management-access    | 
+|    |                                    |                             | nidemo/frontend-service     | 
 +----+------------------------------------+-----------------------------+-----------------------------+
 | V  | nidemo/streamz/management          | nidemo/management-access    |                             | 
 +----+------------------------------------+-----------------------------+-----------------------------+
@@ -100,32 +100,32 @@ Standard Contracts
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 | Contract                    | Scope   | Intent  | Target DSCP | Subject                       | Filter               |
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| common/default              | context | install | unspecified | Ericsson_PACO/PERMIT_ALL      | common/default       | 
+| common/default              | context | install | unspecified | common/default                | common/default       | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| common/ESX_mgmt             | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
+| common/ESX_mgmt             | global  | install | unspecified | common/k8s_prov               | common/any           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| common/k8s_bm               | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
+| common/k8s_bm               | global  | install | unspecified | common/k8s_prov               | common/any           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| common/k8s_prov             | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
+| common/k8s_prov             | global  | install | unspecified | common/k8s_prov               | common/any           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| common/k8s_vm               | global  | install | unspecified | k8s/k8s_tn_bm                 | common/any           | 
+| common/k8s_vm               | global  | install | unspecified | common/k8s_prov               | common/any           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 | common/vEPG-MGMT_alltraffic | global  | install | unspecified | common/IKSHS-alltraffic       | common/alltraffic    | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| hefernan_ni-demo/PERMIT_ALL | context | install | unspecified | Ericsson_PACO/PERMIT_ALL      | common/default       | 
+| hefernan_ni-demo/PERMIT_ALL | context | install | unspecified | common/default                | common/default       | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 | k8s/BT-Demo                 | context | install | unspecified | k8s/Any                       | k8s/alltraffic       | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| nidemo/app-service          | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
+| nidemo/app-service          | tenant  | install | unspecified | nidemo/app-service            | nidemo/http          | 
 |                             |         |         |             | nidemo/database-service       | nidemo/icmp          | 
-|                             |         |         |             | nidemo/frontend-service       | nidemo/http          | 
+|                             |         |         |             | nidemo/app-service            | nidemo/https         | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 | nidemo/database-service     | tenant  | install | unspecified | nidemo/database-service       | nidemo/icmp          | 
 |                             |         |         |             | nidemo/database-service       | nidemo/sql           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
-| nidemo/frontend-service     | tenant  | install | unspecified | nidemo/frontend-service       | nidemo/https         | 
+| nidemo/frontend-service     | tenant  | install | unspecified | nidemo/app-service            | nidemo/https         | 
 |                             |         |         |             | nidemo/database-service       | nidemo/icmp          | 
-|                             |         |         |             | nidemo/frontend-service       | nidemo/http          | 
+|                             |         |         |             | nidemo/app-service            | nidemo/http          | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
 | nidemo/management-access    | tenant  | install | unspecified | nidemo/management-access      | nidemo/any           | 
 +-----------------------------+---------+---------+-------------+-------------------------------+----------------------+
@@ -150,11 +150,11 @@ Contract Filters
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
 | k8s/alltraffic       | alltraffic |       |          |       | no        | no       |        |               |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| nidemo/https         | https      | ipv4  |          | tcp   | no        | no       |        | https - https |       | 
+| nidemo/http          | http       | ipv4  |          | tcp   | no        | no       |        | http - http   |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
 | nidemo/icmp          | icmp       | ipv4  |          | icmp  | no        | no       |        |               |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
-| nidemo/http          | http       | ipv4  |          | tcp   | no        | no       |        | http - http   |       | 
+| nidemo/https         | https      | ipv4  |          | tcp   | no        | no       |        | https - https |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
 | nidemo/sql           | sql        | ipv4  |          | tcp   | no        | no       |        | 3306 - 3306   |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+---------------+-------+
@@ -172,7 +172,7 @@ Developer
 # iserver get aci epg --apic apic21 --view contract
 
 {
-    "duration": 4095,
+    "duration": 3940,
     "apic": {
         "read": true,
         "success": 9,
@@ -180,10 +180,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 8,
-        "connect_time": 410,
+        "connect_time": 412,
         "disconnect_time": 0,
-        "mo_time": 3105,
-        "total_time": 3515
+        "mo_time": 3025,
+        "total_time": 3437
     },
     "error": {
         "read": false,
@@ -196,21 +196,22 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	410	-	connect apic21o.emea-sp.cisco.com
-True	365	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	568	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	375	13	apic21o.emea-sp.cisco.com class fabricNode
-True	379	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	378	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
-True	353	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	345	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	342	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	412	-	connect apic21o.emea-sp.cisco.com:443
+True	384	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	378	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	334	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	428	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	392	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	362	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	367	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	380	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./ApplicationEpg.md)

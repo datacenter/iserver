@@ -9,7 +9,7 @@
     --name alltraffic
     --view prop
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 Contract Filters
 ----------------
@@ -17,11 +17,11 @@ Contract Filters
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 | Filter               | Entry      | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| common/alltraffic    | alltraffic |       |          |       | no        | no       |        |             |       | 
-+----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 | vEPC_demo/alltraffic | alltraffic |       |          |       | no        | no       |        |             |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 | k8s/alltraffic       | alltraffic |       |          |       | no        | no       |        |             |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
+| common/alltraffic    | alltraffic |       |          |       | no        | no       |        |             |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 ```
 
@@ -35,7 +35,7 @@ Developer
     --view prop
 
 {
-    "duration": 2267,
+    "duration": 2750,
     "apic": {
         "read": true,
         "success": 6,
@@ -43,10 +43,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 408,
+        "connect_time": 439,
         "disconnect_time": 0,
-        "mo_time": 1674,
-        "total_time": 2082
+        "mo_time": 2025,
+        "total_time": 2464
     },
     "error": {
         "read": false,
@@ -59,18 +59,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	408	-	connect apic21o.emea-sp.cisco.com
-True	338	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	301	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	301	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	396	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	338	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	439	-	connect apic21o.emea-sp.cisco.com
+True	636	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	342	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	343	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	362	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	342	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
 ```
 
 [[Back]](./Contract.md)

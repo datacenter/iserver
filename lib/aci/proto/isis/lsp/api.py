@@ -12,6 +12,18 @@ class ProtocolIsisLspApi():
         if key in self.isis_domain_lsps_mo:
             return self.isis_domain_lsps_mo[key]
 
+        cache = self.get_object_cache(
+            'isisLspRec',
+            object_selector=key
+        )
+        if cache is not None:
+            self.isis_domain_lsps_mo[key] = cache
+            self.log.apic_mo(
+                'isisLspRec.%s' % (key),
+                self.isis_domain_lsps_mo[key]
+            )
+            return self.isis_domain_lsps_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/isis/inst-%s/dom-%s' % (
             pod_id,
             node_id,
@@ -41,6 +53,12 @@ class ProtocolIsisLspApi():
         self.log.apic_mo(
             'isisLspRec.%s' % (key),
             self.isis_domain_lsps_mo[key]
+        )
+
+        self.set_object_cache(
+            'isisLspRec',
+            self.isis_domain_lsps_mo[key],
+            object_selector=key
         )
 
         return self.isis_domain_lsps_mo[key]

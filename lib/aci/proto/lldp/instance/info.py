@@ -26,7 +26,7 @@ class ProtocolLldpInstanceInfo():
 
     def get_protocol_lldp_instance(self, pod_id, node_id):
         managed_object = self.get_protocol_lldp_instance_mo(pod_id, node_id)
-        if managed_object is None:
+        if managed_object is None or len(managed_object) == 0:
             return None
 
         return self.get_protocol_lldp_instance_info(managed_object)

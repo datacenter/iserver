@@ -6,6 +6,17 @@ class PolicyInterfaceStpAttachmentApi():
         if self.policy_interface_stp_attachment_mo is not None:
             return self.policy_interface_stp_attachment_mo
 
+        cache = self.get_object_cache(
+            'l1RsStpIfPolCons'
+        )
+        if cache is not None:
+            self.policy_interface_stp_attachment_mo = cache
+            self.log.apic_mo(
+                'l1RsStpIfPolCons',
+                self.policy_interface_stp_attachment_mo
+            )
+            return self.policy_interface_stp_attachment_mo
+
         managed_objects = self.get_class(
             'l1RsStpIfPolCons'
         )
@@ -20,6 +31,11 @@ class PolicyInterfaceStpAttachmentApi():
             )
 
         self.log.apic_mo(
+            'l1RsStpIfPolCons',
+            self.policy_interface_stp_attachment_mo
+        )
+
+        self.set_object_cache(
             'l1RsStpIfPolCons',
             self.policy_interface_stp_attachment_mo
         )

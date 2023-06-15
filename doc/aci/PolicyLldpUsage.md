@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy lldp --apic apic11 --name default --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+-------------------------------+-----------------------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type               | Ref Policy Name             |
@@ -15,10 +15,10 @@ Apic: apic11
 |             | pod-1/bl206-eu-spdc | 21              | Access Switch Policy Group    | HighLPMRo                   | 
 |             | pod-1/cl201-eu-spdc | 74              | Access Switch Policy Group    | HighLPN_prof                | 
 |             | pod-1/cl202-eu-spdc | 78              | Leaf Access Port Policy Group | cvim4-SRIoV-0_PolGrp        | 
-|             | pod-1/rl301-eu-spdc | 24              | Leaf Access Port Policy Group | cvim4-SRIoV-1_PolGrp        | 
-|             | pod-1/rl302-eu-spdc | 24              | Leaf Access Port Policy Group | pod1a-AIO-1-SRIoV-0_PolGrp  | 
-|             |                     |                 | Leaf Access Port Policy Group | pod1a-AIO-1-SRIoV-1_PolGrp  | 
-|             |                     |                 | Leaf Access Port Policy Group | pod1a-AIO-2-SRIoV-0_PolGrp  | 
+|             | pod-1/cl209-eu-spdc | 28              | Leaf Access Port Policy Group | cvim4-SRIoV-1_PolGrp        | 
+|             | pod-1/cl210-eu-spdc | 28              | Leaf Access Port Policy Group | pod1a-AIO-1-SRIoV-0_PolGrp  | 
+|             | pod-1/rl301-eu-spdc | 24              | Leaf Access Port Policy Group | pod1a-AIO-1-SRIoV-1_PolGrp  | 
+|             | pod-1/rl302-eu-spdc | 24              | Leaf Access Port Policy Group | pod1a-AIO-2-SRIoV-0_PolGrp  | 
 |             |                     |                 | Leaf Access Port Policy Group | pod1a-AIO-2-SRIoV-1_PolGrp  | 
 |             |                     |                 | Leaf Access Port Policy Group | pod1a-AIO-3-SRIoV-0_PolGrp  | 
 |             |                     |                 | Leaf Access Port Policy Group | pod1a-AIO-3-SRIoV-1_PolGrp  | 
@@ -77,7 +77,7 @@ Developer
 # iserver get aci policy lldp --apic apic11 --name default --view usage
 
 {
-    "duration": 1703,
+    "duration": 2435,
     "apic": {
         "read": true,
         "success": 4,
@@ -85,10 +85,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 392,
+        "connect_time": 429,
         "disconnect_time": 0,
-        "mo_time": 1022,
-        "total_time": 1414
+        "mo_time": 1116,
+        "total_time": 1545
     },
     "error": {
         "read": false,
@@ -101,16 +101,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	392	-	connect apic11o.emea-sp.cisco.com
-True	311	10	apic11o.emea-sp.cisco.com class lldpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	418	338	apic11o.emea-sp.cisco.com class l1RsLldpIfPolCons
-True	293	11	apic11o.emea-sp.cisco.com class fabricNode
+True	429	-	connect apic11o.emea-sp.cisco.com
+True	361	10	apic11o.emea-sp.cisco.com class lldpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	380	394	apic11o.emea-sp.cisco.com class l1RsLldpIfPolCons
+True	375	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLldp.md)

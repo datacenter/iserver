@@ -7,6 +7,18 @@ class InterfacePolicyProfileApi():
         if key in self.interface_policy_profile_mo:
             return self.interface_policy_profile_mo[key]
 
+        cache = self.get_object_cache(
+            'accportprof',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_policy_profile_mo[key] = cache
+            self.log.apic_mo(
+                'accportprof.%s' % (key),
+                self.interface_policy_profile_mo[key]
+            )
+            return self.interface_policy_profile_mo[key]
+
         # https://apic11o.emea-sp.cisco.com/api/node/mo/uni/infra/accportprof-SPN_IntProf.json?query-target=subtree&target-subtree-class=infraHPortS,infraRsAccBaseGrp,infraPortBlk,infraSubPortBlk&_dc=1684139157872
         distinguished_name = 'uni/infra/accportprof-%s' % (
             profile_name
@@ -64,6 +76,12 @@ class InterfacePolicyProfileApi():
         self.log.apic_mo(
             'accportprof.%s' % (key),
             self.interface_policy_profile_mo[key]
+        )
+
+        self.set_object_cache(
+            'accportprof',
+            self.interface_policy_profile_mo[key],
+            object_selector=key
         )
 
         return self.interface_policy_profile_mo[key]

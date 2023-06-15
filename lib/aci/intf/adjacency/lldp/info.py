@@ -83,13 +83,13 @@ class InterfaceAdjacencyLldpInfo():
 
         return info
 
-    def match_lldp_adjacency_endpoint(self, endpoint_info, lldp_filter):
-        if lldp_filter is None or len(lldp_filter) == 0:
+    def match_lldp_adjacency_endpoint(self, endpoint_info, adjacency_filter):
+        if adjacency_filter is None or len(adjacency_filter) == 0:
             return True
 
         mac_filtering = False
         mac_match = False
-        for rule in lldp_filter:
+        for rule in adjacency_filter:
             key = rule.split(':')[0]
             value = ':'.join(rule.split(':')[1:])
 
@@ -101,7 +101,7 @@ class InterfaceAdjacencyLldpInfo():
         if mac_filtering and not mac_match:
             return False
 
-        for ap_rule in lldp_filter:
+        for ap_rule in adjacency_filter:
             key = ap_rule.split(':')[0]
             value = ':'.join(ap_rule.split(':')[1:])
 
@@ -115,7 +115,7 @@ class InterfaceAdjacencyLldpInfo():
 
         return True
 
-    def get_lldp_adjacency_endpoint(self, pod_id, node_id, lldp_filter=None, allow_multiple=True):
+    def get_lldp_adjacency_endpoint(self, pod_id, node_id, adjacency_filter=None, allow_multiple=True):
         managed_objects = self.get_adjacency_lldp_mo(
             pod_id,
             node_id
@@ -129,7 +129,7 @@ class InterfaceAdjacencyLldpInfo():
                 managed_object
             )
 
-            if not self.match_lldp_adjacency_endpoint(endpoint_info, lldp_filter):
+            if not self.match_lldp_adjacency_endpoint(endpoint_info, adjacency_filter):
                 continue
 
             endpoints.append(

@@ -8,13 +8,13 @@
 ```
 # iserver get aci ep --apic apic11 --xd server:10.58.29.58
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 Resolve xd server...
 
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
 | Name                          | Model              | Serial      | IP          | CPU        | Memory    |
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
-| comp2-p4a-eu-spdc-WZP22520B04 | (R) UCSC-C220-M5SX | WZP22520B04 | 10.58.29.58 | 2S 48C 96T | 256 [GiB] | 
+| comp2-p4a-eu-spdc-WZP22520B04 | (R) UCSC-C220-M5SX | WZP22520B04 | 10.58.29.58 | 2S 48C 96T | 384 [GiB] | 
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
 
 +-------------------+-----------+--------------------------------------------------+----------+
@@ -46,13 +46,13 @@ Resolve xd server...
 ```
 # iserver get aci ep --apic apic11 --xd server:10.58.29.58 --view fabric
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 Resolve xd server...
 
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
 | Name                          | Model              | Serial      | IP          | CPU        | Memory    |
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
-| comp2-p4a-eu-spdc-WZP22520B04 | (R) UCSC-C220-M5SX | WZP22520B04 | 10.58.29.58 | 2S 48C 96T | 256 [GiB] | 
+| comp2-p4a-eu-spdc-WZP22520B04 | (R) UCSC-C220-M5SX | WZP22520B04 | 10.58.29.58 | 2S 48C 96T | 384 [GiB] | 
 +-------------------------------+--------------------+-------------+-------------+------------+-----------+
 
 +-------------------+-----------+--------------------------------------------------+----------+
@@ -87,7 +87,7 @@ Interface context: ep
 ```
 # iserver get aci intf phy --apic apic11 --role leaf --ctx ep
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
@@ -95,8 +95,8 @@ Pod: 1
 +---------------------+-----------+-------+-----------+------+-----------+------+----------+------+-------------------+-------+-------+--------+------+-------------+
 | Node                | Interface | Admin | Switching | Oper | Reason    | Type | Layer    | PC   | MAC               | Mode  | Speed | Duplex | MTU  | FEC         |
 +---------------------+-----------+-------+-----------+------+-----------+------+----------+------+-------------------+-------+-------+--------+------+-------------+
-| pod-1/cl201-eu-spdc | 1/61      | up    | enabled   | up   | connected | leaf | switched | po14 | 4C:71:0D:23:FA:75 | trunk | 10G   | full   | 9000 | disable-fec | 
-| pod-1/cl202-eu-spdc | 1/61      | up    | enabled   | up   | connected | leaf | switched | po5  | 10:B3:D5:B5:62:59 | trunk | 10G   | full   | 9000 | disable-fec | 
+| pod-1/cl201-eu-spdc | 1/61      | up    | enabled   | up   | connected | leaf | switched | po16 | 4C:71:0D:23:FA:75 | trunk | 10G   | full   | 9000 | disable-fec | 
+| pod-1/cl202-eu-spdc | 1/61      | up    | enabled   | up   | connected | leaf | switched | po19 | 10:B3:D5:B5:62:59 | trunk | 10G   | full   | 9000 | disable-fec | 
 +---------------------+-----------+-------+-----------+------+-----------+------+----------+------+-------------------+-------+-------+--------+------+-------------+
 Interface context: phy
 ```

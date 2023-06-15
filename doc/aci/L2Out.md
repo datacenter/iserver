@@ -27,10 +27,11 @@ Options:
   --name TEXT                  Filter by application profile name
   --tenant TEXT                Filter by tenant name
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 34 ms and logs saved in /tmp/iserver\9d62c0ca2d37
+Info: finished in 109 ms and logs saved in /tmp/iserver\fd163a50ce5f
 ```
 
 [[Back]](./README.md)

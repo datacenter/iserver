@@ -10,6 +10,18 @@ class PolicyGroupAccessInterfaceVpcPortApi():
         if key in self.policy_group_access_interface_vpc_port_mo:
             return self.policy_group_access_interface_vpc_port_mo[key]
 
+        cache = self.get_object_cache(
+            'AccBaseGrpToEthIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.policy_group_access_interface_vpc_port_mo[key] = cache
+            self.log.apic_mo(
+                'AccBaseGrpToEthIf.%s' % (key),
+                self.policy_group_access_interface_vpc_port_mo[key]
+            )
+            return self.policy_group_access_interface_vpc_port_mo[key]
+
         distinguished_name = 'uni/infra/funcprof/accbundle-%s' % (policy_group_name)
         query = 'rsp-subtree-include=full-deployment&target-node=%s&target-path=AccBaseGrpToEthIf' % (node_id)
 
@@ -43,6 +55,12 @@ class PolicyGroupAccessInterfaceVpcPortApi():
         self.log.apic_mo(
             'AccBaseGrpToEthIf.%s' % (key),
             self.policy_group_access_interface_vpc_port_mo[key]
+        )
+
+        self.set_object_cache(
+            'AccBaseGrpToEthIf',
+            self.policy_group_access_interface_vpc_port_mo[key],
+            object_selector=key
         )
 
         return self.policy_group_access_interface_vpc_port_mo[key]

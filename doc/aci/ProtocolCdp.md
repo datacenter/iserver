@@ -46,10 +46,11 @@ Options:
   --intf TEXT                     Filter by interface name
   -v, --view [default|intf|instance]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\1eb7f33483fe
+Info: finished in 82 ms and logs saved in /tmp/iserver\bf920fde3e59
 ```
 
 [[Back]](./Protocol.md)

@@ -5,24 +5,28 @@
 ```
 # iserver get aci ep --apic apic11 --ap cvim4a_ANP
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | SF | MAC Address       | IP Address     | Tenant | BD                         | EPG              | Ap         | VRF                  |
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | 2A:D8:5D:08:E7:8F |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
+| L  | 16:61:0B:27:BE:72 | 10.58.50.121   | cvim4a | cvim4a/cvim4a-A-OS-API_BD  | cvim4a-OS-API    | cvim4a_ANP | common/Infra_BGP_VRF | 
++----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
+| L  | 1E:73:26:9A:B0:92 | 192.168.152.12 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
++----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
+| L  | 32:EA:D4:B2:92:20 | 192.168.152.11 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:CB:F5:18 | 192.168.152.14 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:CB:F5:18 | 192.168.157.14 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | 3C:FD:FE:CE:C4:28 | 192.168.157.15 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
-+----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:CE:C4:28 | 192.168.152.15 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
++----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
+| L  | 3C:FD:FE:CE:C4:28 | 192.168.157.15 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:EF:6F:48 | 192.168.152.1  | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | 3C:FD:FE:F0:15:10 | 192.168.152.12 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
+| L  | 3C:FD:FE:F0:15:10 |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:F0:15:10 | 192.168.157.12 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
@@ -30,36 +34,19 @@ Apic: apic11
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 3C:FD:FE:F0:15:68 | 192.168.157.10 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | 3E:B6:36:D2:DD:C7 | 192.168.152.13 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
-+----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 40:A6:B7:08:FC:20 | 192.168.157.13 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | 40:A6:B7:08:FC:28 | 192.168.152.11 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
+| L  | 40:A6:B7:08:FC:20 | 192.168.152.13 | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
++----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
+| L  | 40:A6:B7:08:FC:28 |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 | L  | 40:A6:B7:08:FC:28 | 192.168.157.11 | cvim4a | cvim4a/cvim4a-S-storage_BD | cvim4a-S-storage | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | AE:FE:6E:1A:95:B7 |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
+| L  | 9E:D8:FF:0D:61:14 |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | B2:D2:93:7E:71:79 | 192.168.152.2  | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
+| L  | D2:A7:5C:C0:E2:8A | 192.168.152.2  | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | F2:90:E9:26:B2:1B | 10.58.50.121   | cvim4a | cvim4a/cvim4a-A-OS-API_BD  | cvim4a-OS-API    | cvim4a_ANP | common/Infra_BGP_VRF | 
-+----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
-| L  | FA:16:3E:CB:82:0A | 10.58.51.133   | cvim4a | cvim4a/cvim4a-ExtIP_BD     | cvim4a-ExtIP     | cvim4a_ANP | common/Infra_BGP_VRF | 
-|    |                   | 10.58.51.137   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.139   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.140   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.135   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.155   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.154   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.131   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.132   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.138   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.130   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.143   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.156   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.136   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.141   |        |                            |                  |            |                      | 
-|    |                   | 10.58.51.134   |        |                            |                  |            |                      | 
+| L  | FE:51:FD:6B:D2:1D |                | cvim4a | cvim4a/cvim4a-MX-mgmt_BD   | cvim4a-MX-mgmt   | cvim4a_ANP | cvim4a/cvim4a_VRF    | 
 +----+-------------------+----------------+--------+----------------------------+------------------+------------+----------------------+
 ```
 
@@ -69,7 +56,7 @@ Developer
 # iserver get aci ep --apic apic11 --ap cvim4a_ANP
 
 {
-    "duration": 1343,
+    "duration": 1393,
     "apic": {
         "read": true,
         "success": 2,
@@ -77,10 +64,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 419,
+        "connect_time": 444,
         "disconnect_time": 0,
-        "mo_time": 623,
-        "total_time": 1042
+        "mo_time": 579,
+        "total_time": 1023
     },
     "error": {
         "read": false,
@@ -93,14 +80,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	419	-	connect apic11o.emea-sp.cisco.com
-True	623	323	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	444	-	connect apic11o.emea-sp.cisco.com
+True	579	192	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./Endpoint.md)

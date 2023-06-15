@@ -10,12 +10,10 @@ Node selection options:
 Filter options:
   - [device](./ProtocolLldpDevice.md)
   - [mac](./ProtocolLldpMac.md)
-
-Cross domain filter options:
   - [server](./ProtocolLldpServer.md)
 
 View options:
-  - [default](./ProtocolLldpInstanceNode.md)
+  - [summary](./ProtocolLldpInstanceNode.md)
   - [nei](./ProtocolLldpNeighborNodes.md)
   - [stats](./ProtocolLldpOutputVerbose.md)
   - [verbose](./ProtocolLldpOutputVerbose.md)

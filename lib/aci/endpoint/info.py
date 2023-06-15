@@ -248,6 +248,11 @@ class EndpointInfo():
                 managed_object['fvRsHyper']
             )
 
+        if len(info['fabricPathDn']) == 0:
+            if managed_object['fvRsCEpToPathEp'] is not None:
+                if 'tDn' in managed_object['fvRsCEpToPathEp']:
+                    info['fabricPathDn'] = managed_object['fvRsCEpToPathEp']['tDn']
+
         return info
 
     def get_endpoints_info(self):

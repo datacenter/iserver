@@ -11,10 +11,10 @@ Get all epgs from selected APIC. Default view shows main properties of epgs as w
 ```
 # iserver get aci epg --apic apic21
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| Up | EPG                                | Bridge Domain             | Subnets            | Endpoints | Contract |
+| Up | EPG                                | Bridge Domain             | BD Subnets         | Endpoints | Contract |
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | common/privIP_TEST/privIP_TEST     | common/Infra_privIP_BD    | 15.254.254.254/28  | 0         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
@@ -54,10 +54,10 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/SRIoV_A                | k8s/SRIoV_A_BD            | 15.20.16.254/24    | 1         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 2         |          | 
+| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 1         |          | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.170.254/24 | 0         |          | 
-|    |                                    |                           | 169.169.169.254/24 |           |          | 
+| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.169.254/24 | 0         |          | 
+|    |                                    |                           | 169.169.170.254/24 |           |          | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/vk8s_1                 | k8s/vk8s_1_BD             | 10.58.24.174/28    | 8         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
@@ -67,7 +67,7 @@ Apic: apic21
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 8         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 1         |          | 
+| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 0         |          | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
 | V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | mgmt/EU-SPDC-BD1          |                    | 0         | V        | 
 +----+------------------------------------+---------------------------+--------------------+-----------+----------+
@@ -99,7 +99,7 @@ Developer
 # iserver get aci epg --apic apic21
 
 {
-    "duration": 2552,
+    "duration": 3746,
     "apic": {
         "read": true,
         "success": 6,
@@ -107,10 +107,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 415,
+        "connect_time": 454,
         "disconnect_time": 0,
-        "mo_time": 1824,
-        "total_time": 2239
+        "mo_time": 2953,
+        "total_time": 3407
     },
     "error": {
         "read": false,
@@ -123,18 +123,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	415	-	connect apic21o.emea-sp.cisco.com
-True	369	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	381	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	316	13	apic21o.emea-sp.cisco.com class fabricNode
-True	395	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	363	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	454	-	connect apic21o.emea-sp.cisco.com:443
+True	400	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	371	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	335	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	1387	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	460	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

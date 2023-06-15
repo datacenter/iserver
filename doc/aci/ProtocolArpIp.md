@@ -5,17 +5,16 @@
 ```
 # iserver get aci proto arp --apic apic11 --ip 15.2.7.1
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
-+---------------------+----------------------+-------------------+----------+--------+-----------+---------------+-------------------------------+
-| Node                | VRF                  | MAC               | IP       | State  | Interface | Phy Interface | Timestamp                     |
-+---------------------+----------------------+-------------------+----------+--------+-----------+---------------+-------------------------------+
-| pod-1/bl205-eu-spdc | MPC-F5T:F5-OUT_VRF   | 00:50:56:B2:80:63 | 15.2.7.1 | normal | vlan63    | tunnel2       | 2023-05-30T18:22:42.541+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:D5:AB | 15.2.7.1 | normal | vlan61    | po5           | 2023-05-30T18:22:15.727+02:00 | 
-+---------------------+----------------------+-------------------+----------+--------+-----------+---------------+-------------------------------+
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
+| Node                | VRF                  | MAC         | IP       | State      | Interface | Timestamp                     |
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
+| pod-1/bl205-eu-spdc | MPC-F5T:F5-OUT_VRF   | unspecified | 15.2.7.1 | incomplete | vlan56    | 2023-06-14T08:06:45.049+02:00 | 
+| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | unspecified | 15.2.7.1 | incomplete | vlan67    | 2023-06-14T08:07:01.065+02:00 | 
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
 ```
 
 Developer
@@ -24,7 +23,7 @@ Developer
 # iserver get aci proto arp --apic apic11 --ip 15.2.7.1
 
 {
-    "duration": 1333,
+    "duration": 1516,
     "apic": {
         "read": true,
         "success": 4,
@@ -32,10 +31,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 384,
+        "connect_time": 406,
         "disconnect_time": 0,
-        "mo_time": 862,
-        "total_time": 1246
+        "mo_time": 939,
+        "total_time": 1345
     },
     "error": {
         "read": false,
@@ -48,16 +47,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	384	-	connect apic11o.emea-sp.cisco.com
-True	296	11	apic11o.emea-sp.cisco.com class fabricNode
-True	290	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom
-True	276	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom query query-target=subtree&target-subtree-class=arpAdjEp
+True	406	-	connect apic11o.emea-sp.cisco.com
+True	322	13	apic11o.emea-sp.cisco.com class fabricNode
+True	304	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom
+True	313	13	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom query query-target=subtree&target-subtree-class=arpAdjEp
 ```
 
 [[Back]](./ProtocolArp.md)

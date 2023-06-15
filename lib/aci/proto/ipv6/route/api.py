@@ -7,6 +7,18 @@ class ProtocolIpv6RouteApi():
         if key in self.ipv6_routes_mo:
             return self.ipv6_routes_mo[key]
 
+        cache = self.get_object_cache(
+            'uribv6Route',
+            object_selector=key
+        )
+        if cache is not None:
+            self.ipv6_routes_mo[key] = cache
+            self.log.apic_mo(
+                'uribv6Route.%s' % (key),
+                self.ipv6_routes_mo[key]
+            )
+            return self.ipv6_routes_mo[key]
+
         # url: https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/uribv6/dom-common:smi5Gc-cvim1-N6_VRF.json?query-target=subtree&target-subtree-class=uribv6Route&page=0&page-size=15
         distinguished_name = 'topology/pod-%s/node-%s/sys/uribv6/dom-%s' % (
             pod_id,
@@ -48,6 +60,12 @@ class ProtocolIpv6RouteApi():
         self.log.apic_mo(
             'uribv6Route.%s' % (key),
             self.ipv6_routes_mo[key]
+        )
+
+        self.set_object_cache(
+            'uribv6Route',
+            self.ipv6_routes_mo[key],
+            object_selector=key
         )
 
         return self.ipv6_routes_mo[key]

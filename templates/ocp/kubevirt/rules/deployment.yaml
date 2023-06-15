@@ -201,6 +201,11 @@ properties:
     type: str
     check: null
     default: null
+  running.wait:
+    mandatory: False
+    type: bool
+    check: null
+    default: True
   ready.enabled:
     mandatory: False
     type: bool

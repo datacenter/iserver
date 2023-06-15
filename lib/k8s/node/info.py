@@ -114,8 +114,23 @@ class K8sNodeInfo():
     def get_node_name(self, node_mo):
         return node_mo['metadata']['name']
 
-    def get_node_ip(self, node, address_type):
-        addresses = node['status']['addresses']
+    def get_node_ip_by_name(self, node_name):
+        node_mo = self.get_node_mo(node_name)
+        if node_mo is None:
+            return None
+
+        external_ip = self.get_node_ip(node_mo, 'ExternalIP')
+        if external_ip is not None:
+            return external_ip
+
+        internal_ip = self.get_node_ip(node_mo, 'InternalIP')
+        if internal_ip is not None:
+            return internal_ip
+
+        return None
+
+    def get_node_ip(self, node_mo, address_type):
+        addresses = node_mo['status']['addresses']
         if addresses is not None:
             for address in addresses:
                 if address['type'] == address_type:

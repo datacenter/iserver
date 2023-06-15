@@ -5,8 +5,7 @@
 ```
 # iserver get aci proto cdp --apic apic11 --node cl201-eu-spdc --view instance
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: cl201-eu-spdc
 
@@ -23,7 +22,7 @@ Developer
 # iserver get aci proto cdp --apic apic11 --node cl201-eu-spdc --view instance
 
 {
-    "duration": 1792,
+    "duration": 1994,
     "apic": {
         "read": true,
         "success": 5,
@@ -31,10 +30,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 382,
+        "connect_time": 436,
         "disconnect_time": 0,
-        "mo_time": 1281,
-        "total_time": 1663
+        "mo_time": 1292,
+        "total_time": 1728
     },
     "error": {
         "read": false,
@@ -47,17 +46,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	382	-	connect apic11o.emea-sp.cisco.com
-True	312	11	apic11o.emea-sp.cisco.com class fabricNode
-True	291	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst
-True	311	17	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	367	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	436	-	connect apic11o.emea-sp.cisco.com
+True	328	13	apic11o.emea-sp.cisco.com class fabricNode
+True	288	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst
+True	323	17	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	353	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
 ```
 
 [[Back]](./ProtocolCdp.md)

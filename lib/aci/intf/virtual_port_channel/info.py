@@ -76,7 +76,7 @@ class InterfaceVirtualPortChannelInfo():
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             self.get_node_name(

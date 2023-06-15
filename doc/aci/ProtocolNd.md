@@ -34,10 +34,11 @@ Options:
   --role [any|leaf|spine]       [default: any]
   -v, --view [default|verbose]  [default: default]
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 37 ms and logs saved in /tmp/iserver\ec02b88321bf
+Info: finished in 74 ms and logs saved in /tmp/iserver\2df81750041d
 ```
 
 [[Back]](./Protocol.md)

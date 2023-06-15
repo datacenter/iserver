@@ -14,17 +14,20 @@ class BridgeDomainSubnet():
     def get_subnet_usage(self, bridge_domain_subnets, endpoints):
         for subnet in bridge_domain_subnets:
             subnet['endpoints'] = 1
-            for endpoint in endpoints:
-                for endpoint_ip in endpoint['fvIp']:
-                    if ip_helper.is_ipv4_in_cidr(endpoint_ip['addr'], subnet['network']):
-                        subnet['endpoints'] = subnet['endpoints'] + 1
+            if endpoints is not None:
+                for endpoint in endpoints:
+                    for endpoint_ip in endpoint['fvIp']:
+                        if ip_helper.is_ipv4_in_cidr(endpoint_ip['addr'], subnet['network']):
+                            subnet['endpoints'] = subnet['endpoints'] + 1
 
             subnet['usage'] = '%s/%s' % (
                 subnet['endpoints'],
                 subnet['size']
             )
 
-            subnet['available'] = subnet['size'] - subnet['endpoints']
+            subnet['available'] = None
+            if subnet['size'] is not None:
+                subnet['available'] = subnet['size'] - subnet['endpoints']
 
         return bridge_domain_subnets
 

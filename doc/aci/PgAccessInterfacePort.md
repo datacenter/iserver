@@ -32,10 +32,11 @@ Options:
   --aaep TEXT                  Filter by aaep
   -v, --view [default|aaep]
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\2160df1dc50f
+Info: finished in 52 ms and logs saved in /tmp/iserver\7a74dc8b1b8b
 ```
 
 [[Back]](./PgAccessInterface.md)

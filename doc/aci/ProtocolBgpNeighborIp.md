@@ -14,7 +14,7 @@ Example: IP address
 ```
 # iserver get aci proto bgp --apic apic11 --node rl --nbr-ip 172.24.3.3
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
@@ -32,7 +32,7 @@ Example: IP subnet
 ```
 # iserver get aci proto bgp --apic apic11 --node rl --nbr-subnet 15.0.0.0/8
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
@@ -51,7 +51,7 @@ Developer
 # iserver get aci proto bgp --apic apic11 --node rl --nbr-ip 172.24.3.3
 
 {
-    "duration": 2686,
+    "duration": 3068,
     "apic": {
         "read": true,
         "success": 8,
@@ -59,10 +59,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 7,
-        "connect_time": 394,
+        "connect_time": 446,
         "disconnect_time": 0,
-        "mo_time": 2114,
-        "total_time": 2508
+        "mo_time": 2305,
+        "total_time": 2751
     },
     "error": {
         "read": false,
@@ -75,20 +75,21 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	394	-	connect apic11o.emea-sp.cisco.com
-True	328	11	apic11o.emea-sp.cisco.com class fabricNode
-True	282	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bgp/inst
-True	286	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom
-True	298	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
-True	284	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bgp/inst
-True	299	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom
-True	337	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	446	-	connect apic11o.emea-sp.cisco.com
+True	368	13	apic11o.emea-sp.cisco.com class fabricNode
+True	318	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/bgp/inst
+True	336	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom
+True	306	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	305	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/bgp/inst
+True	323	18	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom
+True	349	27	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

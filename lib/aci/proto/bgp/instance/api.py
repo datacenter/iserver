@@ -7,6 +7,18 @@ class ProtocolBgpInstanceApi():
         if key in self.bgp_instance_mo:
             return self.bgp_instance_mo[key]
 
+        cache = self.get_object_cache(
+            'bgpInst',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bgp_instance_mo[key] = cache
+            self.log.apic_mo(
+                'bgpInst.%s' % (key),
+                self.bgp_instance_mo[key]
+            )
+            return self.bgp_instance_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/bgp/inst' % (pod_id, node_id)
         managed_objects = self.get_managed_object(
             distinguished_name
@@ -19,18 +31,27 @@ class ProtocolBgpInstanceApi():
             )
             return None
 
-        if managed_objects['totalCount'] != '1':
+        if int(managed_objects['totalCount']) > 1:
             self.log.error(
                 'get_protocol_bgp_instance_mo',
-                'Unexpected object count'
+                'Unexpected object count: %s' % (key)
             )
             return None
 
-        self.bgp_instance_mo[key] = managed_objects['imdata'][0]['bgpInst']['attributes']
+        if int(managed_objects['totalCount']) == 0:
+            self.bgp_instance_mo[key] = {}
+        else:
+            self.bgp_instance_mo[key] = managed_objects['imdata'][0]['bgpInst']['attributes']
 
         self.log.apic_mo(
-            'bgp.instance.%s' % (key),
+            'bgpInst.%s' % (key),
             self.bgp_instance_mo[key]
+        )
+
+        self.set_object_cache(
+            'bgpInst',
+            self.bgp_instance_mo[key],
+            object_selector=key
         )
 
         return self.bgp_instance_mo[key]

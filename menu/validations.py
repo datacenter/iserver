@@ -1,0 +1,1506 @@
+import os
+import subprocess
+import socket
+import traceback
+
+import click
+
+from menu import common
+
+from lib import context
+from lib import file_helper
+from lib import iaccount_helper
+from lib import ip_helper
+from lib import my_servers_helper
+
+from lib.intersight import compute_info
+from lib.intersight import organization
+from lib.intersight import scu
+from lib.intersight import os_image
+from lib.intersight import hcl_operating_system
+from lib.intersight import hcl_operating_system_vendor
+
+from lib.aci import apic
+from lib.aci import settings as aci_settings
+from lib.nexus import settings as nexus_settings
+from lib.nexus import nxapi
+from lib.nso import settings as nso_settings
+from lib.nso import main as nso
+from lib.ocp import settings as ocp_settings
+from lib.ocp import main as ocp
+from lib.ocp.vm import validate as ocp_deployment_validate
+from lib.ucsm import settings as ucsm_settings
+from lib.vc import vcenter
+from lib.vc import settings as vc_settings
+
+
+def validate_isctl():
+    try:
+        command = 'isctl version'
+        with subprocess.Popen(
+            args=command,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            shell=True,
+            env=os.environ
+        ) as process:
+            output, error = process.communicate()
+            if process.returncode == 0:
+                success = True
+                reason = None
+            else:
+                success = False
+                reason = 'isctl command execution failed'
+
+    except BaseException:
+        success = False
+        reason = 'Exception in running isctl command'
+
+    return success, reason
+
+
+def validate_iaccount(ctx, param, value):
+    iaccount_handler = iaccount_helper.IntersightAccount()
+    if not iaccount_handler.is_isctl():
+        raise click.BadParameter('isctl not found')
+
+    if not iaccount_handler.is_isctl_configured():
+        ctx.my_output.error('isctl not configured')
+        ctx.my_output.default('\niserver requires isctl that is configured to work with Intersight\n')
+        ctx.my_output.default('Notes')
+        ctx.my_output.default('- follow isctl configuration instructions from https://github.com/cgascoig/isctl')
+        ctx.my_output.default('- iserver expects $HOME/.isctl.yaml file with isctl configuration parameters')
+        ctx.my_output.default('')
+        raise click.BadParameter('configure isctl first')
+
+    if not iaccount_handler.initialize_iaccount():
+        raise click.BadParameter('iaccount initialization failure')
+
+    success, reason = validate_isctl()
+    if not success:
+        raise click.BadParameter(reason)
+
+    intersight_handler = iaccount_helper.IntersightAccount()
+    if not intersight_handler.is_iaccount_valid(value):
+        raise click.BadParameter('Invalid iaccount value')
+    return value
+
+
+def validate_organization(ctx, iaccount, organization_name):
+    organization_handler = organization.Organization(iaccount, log_id=ctx.run_id)
+
+    if len(organization_name) == 0:
+        organizations = organization_handler.get_moids_dict()
+        if len(organizations) == 0:
+            ctx.busy = False
+            ctx.my_output.error('No organizations found')
+            return None
+
+        if len(organizations) > 0:
+            ctx.busy = False
+            ctx.my_output.error('Multiple organizations found. Select single one')
+            for key in organizations:
+                ctx.my_output.default('- %s' % (organizations[key]))
+            return None
+
+        return list(organizations.keys())[0]
+
+    organization_details = organization_handler.get_by_name(organization_name)
+    if organization_details is None:
+        ctx.busy = False
+        ctx.my_output.error('Organization not found: %s' % (organization_name))
+        return None
+
+    return organization_details['Moid']
+
+
+def validate_fqdn(value):
+    try:
+        address = socket.gethostbyname(value)
+        if ip_helper.is_valid_ipv4_address(address):
+            return True
+
+    except BaseException:
+        pass
+
+    return False
+
+
+def validate_ip(ctx, param, value):
+    if len(value) > 0:
+        if not ip_helper.is_valid_ipv4_address(value):
+            if not validate_fqdn(value):
+                raise click.BadParameter('Invalid IPv4 address: %s' % (value))
+
+    return value
+
+
+def validate_ip_subnet(ctx, param, value):
+    if len(value) > 0:
+        if ip_helper.is_valid_ipv4_address(value):
+            return value
+
+        if ip_helper.is_valid_ipv4_cidr(value):
+            return value
+
+        raise click.BadParameter('Invalid IPv4 address or subnet: %s' % (value))
+
+    return value
+
+
+def validate_prefix_length(ctx, param, value):
+    if value <= 0 or value >= 30:
+        raise click.BadParameter('Invalid prefix length')
+    return value
+
+
+def validate_file_content(ctx, filename):
+    if not os.path.isfile(filename):
+        ctx.my_output.error('File %s not found' % (filename))
+        return None
+
+    try:
+        with open(filename, 'r', encoding='utf-8') as file_handler:
+            content = file_handler.read()
+
+    except BaseException:
+        ctx.my_output.traceback(traceback.format_exc())
+        return None
+
+    return content
+
+
+def validate_file(ctx, param, filename):
+    if len(filename) == 0:
+        raise click.BadParameter('Define filename')
+
+    if not os.path.isfile(filename):
+        raise click.BadParameter('File %s not found' % (filename))
+
+    return filename
+
+
+def validate_int_oper(ctx, param, value):
+    if len(value) == 0:
+        return value
+
+    for prefix in ['ge', '>=', 'le', '<=', 'gt', '>', 'lt', '<', 'ne', '!=']:
+        if value.startswith(prefix):
+            try:
+                int_value = int(value.lstrip(prefix))
+                return value
+            except BaseException:
+                pass
+            raise click.BadParameter('Wrong value: %s' % (value))
+
+    try:
+        int_value = int(value)
+        return value
+    except BaseException:
+        pass
+
+    raise click.BadParameter('Wrong value: %s' % (value))
+
+
+def validate_group(ctx, param, value):
+    my_servers_handler = my_servers_helper.MyServers()
+    if not my_servers_handler.is_group(value):
+        raise click.BadParameter('Group not found: %s' % (value))
+    return value
+
+
+def validate_group_serials(ctx, param, value):
+    if len(value) == 0:
+        return []
+
+    my_servers_handler = my_servers_helper.MyServers()
+    if not my_servers_handler.is_group(value):
+        raise click.BadParameter('Group not found: %s' % (value))
+
+    serials = my_servers_handler.get_group_serials(value)
+    if serials is None or len(serials) == 0:
+        raise click.BadParameter('No group members found: %s' % (value))
+
+    return serials
+
+
+def validate_group_oper(ctx, param, value):
+    my_servers_handler = my_servers_helper.MyServers()
+    if len(value) == 0:
+        return None
+
+    group_oper = {}
+    if value.startswith('+'):
+        group_oper['oper'] = 'add'
+        group_oper['group'] = value.lstrip('+')
+
+    if value.startswith('-'):
+        group_oper['oper'] = 'del'
+        group_oper['group'] = value.lstrip('-')
+
+    if not value.startswith('-') and not value.startswith('+'):
+        group_oper['oper'] = 'set'
+        group_oper['group'] = value
+        return group_oper
+
+    if not my_servers_handler.is_group(group_oper['group']):
+        raise click.BadParameter('Group not found: %s' % (value))
+
+    return group_oper
+
+
+def validate_filter_serials(ctx, param, value):
+    if len(value) == 0:
+        return []
+    return value.split(',')
+
+
+def validate_filter_ip(ctx, param, value):
+    if len(value) == 0:
+        return []
+
+    ip_filter = []
+    for item in value.split(','):
+        if ip_helper.is_valid_ipv4_address(item):
+            ip_filter.append(
+                dict(
+                    type='address',
+                    value=item
+                )
+            )
+            continue
+
+        if ip_helper.is_valid_ipv4_cidr(item):
+            ip_filter.append(
+                dict(
+                    type='subnet',
+                    value=item
+                )
+            )
+            continue
+
+        raise click.BadParameter('Invalid IP address or subnet value: %s' % (item))
+
+    return ip_filter
+
+
+def validate_scu(ctx, iaccount, scu_name, required=True):
+    if len(scu_name) == 0:
+        if required:
+            ctx.my_output.error('SCU value required')
+            return None
+        return scu_name
+
+    scu_handler = scu.SoftwareConfigurationUtility(iaccount, log_id=ctx.run_id)
+    scu_item = scu_handler.get_by_name(scu_name)
+    if scu_item is None:
+        ctx.my_output.error('SCU not found: %s' % (scu_name))
+        return None
+
+    return scu_item
+
+
+def validate_os_image(ctx, iaccount, image_name, required=True):
+    if len(image_name) == 0:
+        if required:
+            ctx.my_output.error('OS image value required')
+            return None
+        return image_name
+
+    image_handler = os_image.OsImage(iaccount, log_id=ctx.run_id)
+    image_item = image_handler.get_by_name(image_name)
+    if image_item is None:
+        ctx.my_output.error('Image not found: %s' % (image_name))
+        return None
+
+    vendor_handler = hcl_operating_system_vendor.HclOperatingSystemVendor(iaccount, log_id=ctx.run_id)
+    vendor_item = vendor_handler.get_by_name(image_item['Vendor'])
+    if vendor_item is None:
+        ctx.my_output.error('Image vendor not found: %s' % (image_item['Vendor']))
+        return None
+    image_item['VendorId'] = vendor_item['Moid']
+
+    version_handler = hcl_operating_system.HclOperatingSystem(iaccount, log_id=ctx.run_id)
+    version_item = version_handler.get_vendor_version(vendor_item['Moid'], image_item['Version'])
+    if version_item is None:
+        ctx.my_output.error('Image version not found: %s' % (image_item['Version']))
+        return None
+
+    image_item['VersionId'] = version_item['Moid']
+
+    return image_item
+
+
+def validate_chassis_ifm_filter(ctx, param, value):
+    if value is None:
+        ifm_filter = {}
+        ifm_filter['enabled'] = False
+        return ifm_filter
+
+    if value.lower() in ['all', '.', '*']:
+        ifm_filter = {}
+        ifm_filter['enabled'] = True
+        ifm_filter['path'] = None
+        ifm_filter['id'] = None
+        return ifm_filter
+
+    if len(value.split(',')) > 1:
+        raise click.BadParameter('Select module by ID or Path')
+
+    if value.lower() == 'a':
+        ifm_filter = {}
+        ifm_filter['enabled'] = True
+        ifm_filter['path'] = 'A'
+        ifm_filter['id'] = None
+        return ifm_filter
+
+    if value.lower() == 'b':
+        ifm_filter = {}
+        ifm_filter['enabled'] = True
+        ifm_filter['path'] = 'B'
+        ifm_filter['id'] = None
+        return ifm_filter
+
+    try:
+        ifm_module_id = int(value)
+    except BaseException:
+        ifm_module_id = None
+
+    if ifm_module_id is None:
+        raise click.BadParameter('Select path A or B')
+
+    if ifm_module_id not in [1, 2]:
+        raise click.BadParameter('Select module id 1 or 2')
+
+    ifm_filter = {}
+    ifm_filter['enabled'] = True
+    ifm_filter['path'] = None
+    ifm_filter['id'] = ifm_module_id
+
+    return ifm_filter
+
+
+def validate_chassis_fan_filter(ctx, param, value):
+    fan_filter = {}
+    fan_filter['enabled'] = value
+    return fan_filter
+
+
+def validate_chassis_power_filter(ctx, param, value):
+    power_filter = {}
+    power_filter['enabled'] = value
+    return power_filter
+
+
+def validate_chassis_node_filter(ctx, param, value):
+    node_filter = {}
+    node_filter['enabled'] = value
+    return node_filter
+
+
+def validate_chassis_port_filter(ctx, param, value):
+    if len(value) == 0:
+        port_filter = {}
+        port_filter['enabled'] = False
+        return port_filter
+
+    port_filter = {}
+    port_filter['enabled'] = True
+    port_filter['type'] = None
+    port_filter['state'] = None
+    port_filter['module'] = None
+    port_filter['node'] = None
+
+    for parameter in value:
+        if parameter.lower() in ['all', '.', '*']:
+            return port_filter
+
+        if len(parameter.split(':')) != 2:
+            continue
+
+        (param_type, param_value) = parameter.split(':')
+
+        if param_type.lower() in ['t', 'type']:
+            if param_value.lower() not in ['host', 'net']:
+                raise click.BadParameter('Port type host or net')
+            port_filter['type'] = param_value.lower()
+
+        if param_type.lower() in ['s', 'state']:
+            if param_value.lower() not in ['up', 'down']:
+                raise click.BadParameter('Port state up or down')
+            port_filter['state'] = param_value.lower()
+
+        if param_type.lower() in ['m', 'module']:
+            if param_value.lower() not in ['a', 'b', '1', '2']:
+                raise click.BadParameter('Port path a/b or 1/2')
+            port_filter['module'] = param_value.lower()
+
+        if param_type.lower() in ['n', 'node']:
+            if param_value.lower() in ['.', '*', 'all']:
+                port_filter['node'] = -1
+            else:
+                node_id = None
+                try:
+                    node_id = int(param_value)
+                except BaseException:
+                    pass
+
+                if node_id is None:
+                    raise click.BadParameter('Node all or index')
+
+                port_filter['node'] = node_id
+
+    return port_filter
+
+
+def validate_redfish_path(ctx, param, value):
+    if value == '':
+        return value
+
+    if value.startswith('/redfish/v1/'):
+        value = value.lstrip('/redfish/v1/')
+
+    if value.startswith('/api-explorer/resources/redfish/v1/'):
+        value = value.lstrip('/api-explorer/resources/redfish/v1/')
+
+    return value
+
+
+def validate_apic_name(ctx, param, value):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+    if len(value) == 0:
+        default_controller_name = aci_settings_handler.get_default_controller()
+        if default_controller_name is None:
+            return None
+
+        return aci_settings_handler.get_apic_controller(default_controller_name)
+
+    controller = aci_settings_handler.get_apic_controller(value)
+    if controller is None:
+        controllers = aci_settings_handler.get_apic_controller_names()
+        if controllers is None:
+            raise click.BadParameter('Invalid apic name')
+        raise click.BadParameter('Invalid apic name. Define one of %s' % (','.join(controllers)))
+
+    return controller
+
+
+def validate_apic_any_name(ctx, param, value):
+    if len(value) == 0:
+        return []
+
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+    selected_controllers = []
+    names = []
+
+    for parameter in value.split(','):
+        if parameter.lower() in ['any', 'all']:
+            all_controllers = aci_settings_handler.get_apic_controllers()
+            if all_controllers is not None:
+                for controller in all_controllers:
+                    if controller['name'] not in names:
+                        names.append(
+                            controller['name']
+                        )
+                        selected_controllers.append(
+                            controller
+                        )
+
+            continue
+
+        if parameter.startswith('dom:'):
+            domain_controllers = aci_settings_handler.get_apic_domain_controllers(
+                parameter[4:]
+            )
+            if domain_controllers is not None:
+                for domain_controller in domain_controllers:
+                    if domain_controller['name'] not in names:
+                        names.append(
+                            domain_controller['name']
+                        )
+                        selected_controllers.append(
+                            domain_controller
+                        )
+
+            continue
+
+        controller = aci_settings_handler.get_apic_controller(parameter)
+        if controller is not None:
+            aci_settings_handler.set_default_controller(
+                controller['name']
+            )
+
+        if controller is None:
+            controllers = aci_settings_handler.get_apic_controller_names()
+            if controllers is None:
+                raise click.BadParameter('Invalid apic name')
+            controllers.append('any')
+            raise click.BadParameter('Invalid apic name. Define one of %s' % (','.join(controllers)))
+
+        if controller['name'] not in names:
+            names.append(
+                controller['name']
+            )
+            selected_controllers.append(
+                controller
+            )
+
+    return selected_controllers
+
+
+def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+
+    if controller_obj is None and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
+        controller_name = aci_settings_handler.get_default_controller()
+        if controller_name is not None:
+            controller_obj = aci_settings_handler.get_apic_controller(controller_name)
+
+    if controller_obj is not None:
+        controller_ip = controller_obj['ip']
+        controller_port = controller_obj['port']
+        controller_username = controller_obj['username']
+        controller_password = controller_obj['password']
+        aci_settings_handler.set_default_controller(
+            controller_obj['name']
+        )
+
+        if show_selected and ctx.output == 'default':
+            ctx.my_output.default(
+                aci_settings_handler.get_apic_controller_label(
+                    controller_obj['name']
+                )
+            )
+
+    if controller_obj is None:
+        if len(controller_ip) == 0 or len(controller_username) == 0 or len(controller_password) == 0:
+            ctx.my_output.error('Define controller name or ip/username/password')
+            return None
+
+    apic_handler = apic.Apic(
+        controller_ip,
+        controller_port,
+        controller_username,
+        controller_password,
+        apic_name=controller_obj['name'],
+        log_id=ctx.run_id,
+        no_cache=no_cache
+    )
+
+    if auto_connect:
+        if not apic_handler.is_connected():
+            ctx.my_output.error('Failed to connect to APIC')
+            return None
+
+    return apic_handler
+
+
+def validate_apic_controllers(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+
+    if len(controller_objs) == 0 and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
+        controller_name = aci_settings_handler.get_default_controller()
+        if controller_name is not None:
+            controller_objs.append(
+                aci_settings_handler.get_apic_controller(controller_name)
+            )
+
+    if len(controller_ip) > 0 and len(controller_username) > 0 and len(controller_password) > 0:
+        controller_objs.append(
+            dict(
+                name=controller_ip,
+                ip=controller_ip,
+                port=controller_port,
+                username=controller_username,
+                password=controller_password
+            )
+        )
+
+    if len(controller_objs) == 0:
+        ctx.my_output.error('Select at least on APIC')
+        return None
+
+    apic_handlers = []
+    names = []
+    for controller_obj in controller_objs:
+        controller_ip = controller_obj['ip']
+        controller_port = controller_obj['port']
+        controller_username = controller_obj['username']
+        controller_password = controller_obj['password']
+
+        apic_handler = apic.Apic(
+            controller_ip,
+            controller_port,
+            controller_username,
+            controller_password,
+            apic_name=controller_obj['name'],
+            log_id=ctx.run_id,
+            no_cache=no_cache
+        )
+
+        if auto_connect:
+            if not apic_handler.is_connected():
+                ctx.my_output.error('Failed to connect to APIC')
+                return None
+
+        names.append(controller_obj['name'])
+        apic_handlers.append(
+            dict(
+                name=controller_obj['name'],
+                handler=apic_handler
+            )
+        )
+
+    if show_selected and ctx.output == 'default':
+        if len(names) > 0:
+            for name in names:
+                ctx.my_output.default(
+                    aci_settings_handler.get_apic_controller_label(
+                        name
+                    )
+                )
+
+    return apic_handlers
+
+
+def validate_apic_controllers_with_context(ctx, user_context):
+    controller_objs = validate_apic_any_name(ctx, 'apic', ','.join(user_context['apic']))
+    apic_handlers = validate_apic_controllers(
+        ctx,
+        controller_objs,
+        '',
+        '',
+        '',
+        '',
+        show_selected=False
+    )
+    if apic_handlers is None:
+        return None
+
+    for apic_handler in apic_handlers:
+        apic_handler['nodes'] = validate_apic_node_names(
+            ctx,
+            apic_handler['handler'],
+            user_context['node'][apic_handler['name']],
+            'any',
+            pod_id=None
+        )
+        if apic_handler['nodes'] is None:
+            return None
+
+    return apic_handlers
+
+
+def validate_apic_controllers_with_nodes(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, node_names, node_role, pod_id=None, user_context=None, no_cache=False):
+    if user_context is not None:
+        apic_handlers = validate_apic_controllers_with_context(ctx, user_context['value'])
+        if apic_handlers is not None:
+            return apic_handlers
+
+    apic_handlers = validate_apic_controllers(
+        ctx,
+        controller_objs,
+        controller_ip,
+        controller_port,
+        controller_username,
+        controller_password,
+        show_selected=False,
+        no_cache=no_cache
+    )
+    if apic_handlers is None:
+        return None
+
+    if len(apic_handlers) > 1:
+        if len(node_names) == 0:
+            node_names = ['any']
+
+    if len(apic_handlers) == 1:
+        if len(node_names) == 0 and node_role == 'any':
+            aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+            node_name = aci_settings_handler.get_default_node(
+                apic_handlers[0]['handler'].get_apic_ip()
+            )
+            if node_name is None:
+                ctx.my_output.error('Define node name')
+                return None
+            node_names = [node_name]
+
+    for apic_handler in apic_handlers:
+        apic_handler['nodes'] = validate_apic_node_names(
+            ctx,
+            apic_handler['handler'],
+            node_names,
+            node_role,
+            pod_id=pod_id
+        )
+        if apic_handler['nodes'] is None:
+            return None
+
+    return apic_handlers
+
+
+def validate_apic_node_name(ctx, apic_handler, node_name, pod_id=None):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+
+    if node_name is None:
+        node_name = aci_settings_handler.get_default_node(
+            apic_handler.get_apic_ip()
+        )
+        if node_name is None:
+            ctx.my_output.error('Define node name')
+            return None
+
+    node_filter = []
+    if pod_id is not None:
+        node_filter.append(
+            'pod:%s' % (pod_id)
+        )
+
+    node_filter.append(
+        'name:*%s*' % (node_name.replace('*', ''))
+    )
+
+    nodes_info = apic_handler.get_nodes(
+        node_filter=node_filter
+    )
+
+    if nodes_info is None or len(nodes_info) != 1:
+        ctx.my_output.error(
+            'Unique node name match failed: %s' % (node_name)
+        )
+
+        node_names = apic_handler.get_node_names(pod_id=pod_id)
+        if node_names is not None:
+            ctx.my_output.default('\nNode names:')
+            for name in node_names:
+                ctx.my_output.default('- %s' % (name))
+
+        return None
+
+    aci_settings_handler.set_default_node(
+        apic_handler.get_apic_ip(),
+        nodes_info[0]['name']
+    )
+    if ctx.output == 'default':
+        ctx.my_output.default('Pod: %s' % (nodes_info[0]['podId']))
+        ctx.my_output.default('Node: %s' % (nodes_info[0]['name']))
+
+    return nodes_info[0]
+
+
+def validate_apic_node_names(ctx, apic_handler, node_names, node_role, pod_id=None):
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+
+    # Check default node name
+    if len(node_names) == 0 and node_role == 'any':
+        node_name = aci_settings_handler.get_default_node(
+            apic_handler.get_apic_ip()
+        )
+        if node_name is None:
+            ctx.my_output.error('Define node name')
+            return None
+
+        node_names = [node_name]
+
+    node_filter = []
+    if pod_id is not None:
+        node_filter.append(
+            'pod:%s' % (pod_id)
+        )
+
+    if node_role != 'any':
+        node_filter.append(
+            'role:%s' % (node_role)
+        )
+    else:
+        node_filter.append(
+            'role:!controller'
+        )
+
+    if 'any' not in node_names and len(node_names) > 0:
+        new_node_names = []
+        for node_name in node_names:
+            new_node_names.append(
+                '*%s*' % (node_name.replace('*', ''))
+            )
+
+        node_filter.append(
+            'names:%s' % (','.join(new_node_names))
+        )
+
+    nodes_info = apic_handler.get_nodes(
+        node_filter=node_filter
+    )
+
+    if nodes_info is None:
+        ctx.my_output.error(
+            'Failed to get nodes'
+        )
+        return None
+
+    if nodes_info is None or len(nodes_info) == 0:
+        ctx.my_output.error(
+            'No node name match'
+        )
+
+        node_names = apic_handler.get_node_names(pod_id=pod_id)
+        if node_names is not None:
+            ctx.my_output.default('\nNode names:')
+            for name in node_names:
+                ctx.my_output.default('- %s' % (name))
+
+        return None
+
+    if len(nodes_info) == 1:
+        aci_settings_handler.set_default_node(
+            apic_handler.get_apic_ip(),
+            nodes_info[0]['name']
+        )
+        if ctx.output == 'default':
+            ctx.my_output.default(
+                aci_settings_handler.get_apic_controller_label(
+                    apic_handler.get_apic_name()
+                )
+            )
+            ctx.my_output.default('Pod: %s' % (nodes_info[0]['podId']))
+            ctx.my_output.default('Node: %s' % (nodes_info[0]['name']))
+
+    if len(nodes_info) > 1:
+        if ctx.output == 'default':
+            ctx.my_output.default(
+                aci_settings_handler.get_apic_controller_label(
+                    apic_handler.get_apic_name()
+                )
+            )
+            ctx.my_output.default('Pod: %s' % (nodes_info[0]['podId']))
+            for node_info in nodes_info:
+                ctx.my_output.default('- node: %s' % (node_info['name']))
+
+    return nodes_info
+
+
+def validate_apic_tenant_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    tenant_name = {}
+    if len(value.split('/')) == 1:
+        tenant_name['tenant'] = None
+        tenant_name['name'] = value
+        return tenant_name
+
+    if len(value.split('/')) == 2:
+        tenant_name['tenant'] = value.split('/')[0]
+        tenant_name['name'] = value.split('/')[1]
+        return tenant_name
+
+    raise click.BadParameter('Invalid name syntax')
+
+
+def validate_apic_tenant_ap_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    tenant_name = {}
+    if len(value.split('/')) == 1:
+        tenant_name['tenant'] = None
+        tenant_name['ap'] = None
+        tenant_name['name'] = value
+        return tenant_name
+
+    if len(value.split('/')) == 2:
+        tenant_name['tenant'] = None
+        tenant_name['ap'] = value.split('/')[0]
+        tenant_name['name'] = value.split('/')[1]
+        return tenant_name
+
+    if len(value.split('/')) == 3:
+        tenant_name['tenant'] = value.split('/')[0]
+        tenant_name['ap'] = value.split('/')[1]
+        tenant_name['name'] = value.split('/')[2]
+        return tenant_name
+
+    raise click.BadParameter('Invalid name syntax')
+
+
+def validate_aci_xd(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    if len(value.split(':')) == 1:
+        raise click.BadParameter('Invalid xd syntax')
+
+    xd_type = value.split(':')[0]
+    if xd_type not in ['server']:
+        raise click.BadParameter('Unsupported xd type: %s' % (xd_type))
+
+    xd_filter = {}
+    xd_filter['mac'] = []
+    xd_filter['ip'] = []
+    xd_filter['type'] = None
+
+    if xd_type == 'server':
+        xd_filter['type'] = 'server'
+
+        if len(value.split(':')) == 2:
+            xd_filter['iaccount'] = ctx.obj.defaults['iaccount']
+            xd_filter['server_ip'] = value.split(':')[1]
+        else:
+            xd_filter['iaccount'] = value.split(':')[1]
+            xd_filter['server_ip'] = value.split(':')[2]
+
+        if not ip_helper.is_valid_ipv4_address(xd_filter['server_ip']):
+            raise click.BadParameter('Invalid server IP: %s' % (xd_filter['server_ip']))
+
+    return xd_filter
+
+
+def resolve_aci_xd_server(ctx, xd_filter, output):
+    if output != 'json':
+        ctx.my_output.default('Resolve xd server...')
+
+    xd_filter['server'] = common.get_selected_server(
+        ctx,
+        xd_filter['iaccount'],
+        '',
+        xd_filter['server_ip'],
+        '',
+        workflow=None,
+        action=False,
+        include_object=True,
+        cache_enabled=False
+    )
+    if xd_filter['server'] is None:
+        ctx.my_output.error(
+            'Server not found: %s' % (xd_filter['server_ip'])
+        )
+        return None, None
+
+    settings = common.get_server_selection_settings(
+        xd_filter['iaccount'],
+        workflow=None,
+        action=False,
+        registration=False
+    )
+    settings['mac'] = True
+
+    compute_handler = compute_info.ComputeInfo(xd_filter['iaccount'], settings=settings, log_id=getattr(ctx, 'run_id', None))
+    xd_filter['server_info'] = compute_handler.get_server_info(
+        xd_filter['server']['IntersightObject'],
+        state_enabled=False,
+        cache_enabled=True
+    )
+
+    for mac_info in xd_filter['server_info']['MacAddressInfo']:
+        xd_filter['mac'].append(
+            mac_info['MacAddress']
+        )
+
+    if output not in ['json']:
+        compute_handler.print_summary_table(
+            xd_filter['server_info']
+        )
+
+    mac = xd_filter['mac']
+    interface = []
+    for interface_info in xd_filter['server_info']['MacAddressInfo']:
+        xd_interface_info = {}
+        xd_interface_info['host'] = xd_filter['server_ip']
+        xd_interface_info['mac'] = interface_info['MacAddress']
+        xd_interface_info['pci'] = interface_info['AdapterPciSlot']
+        xd_interface_info['interface'] = interface_info['InterfaceName']
+        xd_interface_info['model'] = interface_info['AdapterModel']
+        interface.append(
+            xd_interface_info
+        )
+
+    interface = sorted(
+        interface,
+        key=lambda i: (
+            i['host'],
+            i['pci'],
+            i['interface'],
+            i['mac']
+        )
+    )
+    return mac, interface
+
+
+def resolve_aci_xd(ctx, xd_filter, output):
+    if xd_filter is None:
+        return None, None
+
+    if xd_filter['type'] is None:
+        return None, None
+
+    if xd_filter['type'] == 'server':
+        return resolve_aci_xd_server(ctx, xd_filter, output)
+
+    return None, None
+
+
+def validate_context(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    context_handler = context.Context()
+    user_context = {}
+    user_context['key'] = value
+    user_context['value'] = context_handler.get(value)
+    if user_context['value'] is None:
+        return None
+
+    return user_context
+
+
+def validate_nexus_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
+    nexus_switch = nexus_settings_handler.get_nexus_switch(value)
+    if nexus_switch is None:
+        switches = nexus_settings_handler.get_nexus_switch_names()
+        if switches is None:
+            raise click.BadParameter('Invalid switch name')
+        raise click.BadParameter('Invalid switch name. Define one of %s' % (','.join(switches)))
+
+    return nexus_switch
+
+
+def validate_nexus_switch(ctx, switch_obj, switch_ip, switch_username, switch_password):
+    nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
+
+    if switch_obj is None and len(switch_ip) == 0 and len(switch_username) == 0 and len(switch_password) == 0:
+        switch_name = nexus_settings_handler.get_default_nexus_switch()
+        if switch_name is not None:
+            switch_obj = nexus_settings_handler.get_nexus_switch(switch_name)
+
+    if switch_obj is not None:
+        switch_ip = switch_obj['ip']
+        switch_username = switch_obj['username']
+        switch_password = switch_obj['password']
+        nexus_settings_handler.set_default_nexus_switch(
+            switch_obj['name']
+        )
+
+        if ctx.output == 'default':
+            ctx.my_output.default('Switch: %s' % (switch_obj['name']))
+
+    if switch_obj is None:
+        if len(switch_ip) == 0 or len(switch_username) == 0 or len(switch_password) == 0:
+            ctx.my_output.error('Define switch name or ip/username/password')
+            return None
+
+    nexus_handler = nxapi.NxApi(
+        switch_ip,
+        switch_username,
+        switch_password,
+        log_id=ctx.run_id
+    )
+
+    if not nexus_handler.is_connected():
+        ctx.my_output.error('Failed to connect to switch')
+        return None
+
+    return nexus_handler
+
+
+def validate_ucsm_name(ctx, param, value):
+    if len(value) == 0:
+        raise click.BadParameter('Define ucsm name')
+
+    ucsm_settings_handler = ucsm_settings.UcsmSettings(log_id=None)
+    ucsm_manager = ucsm_settings_handler.get_ucsm_manager(value)
+    if ucsm_manager is None:
+        raise click.BadParameter('Invalid ucsm name')
+
+    return ucsm_manager
+
+
+def validate_vc_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    vc_settings_handler = vc_settings.VcSettings(log_id=None)
+    instance = vc_settings_handler.get_vc_instance(value)
+    if instance is None:
+        raise click.BadParameter('Invalid vcenter name')
+
+    return instance
+
+
+def validate_vc_any_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    vc_settings_handler = vc_settings.VcSettings(log_id=None)
+
+    if value.lower() in ['any', 'all']:
+        return vc_settings_handler.get_vc_instances()
+
+    instance = vc_settings_handler.get_vc_instance(value)
+    if instance is None:
+        raise click.BadParameter('Invalid vcenter name')
+
+    return instance
+
+
+def validate_vcenter(ctx, vcenter_obj, vcenter_ip, vcenter_username, vcenter_password, vcenter_port=443):
+    vc_settings_handler = vc_settings.VcSettings(log_id=ctx.run_id)
+
+    if vcenter_obj is None and len(vcenter_ip) == 0 and len(vcenter_username) == 0 and len(vcenter_password) == 0:
+        instance_name = vc_settings_handler.get_default_instance()
+        if instance_name is not None:
+            vcenter_obj = vc_settings_handler.get_vc_instance(instance_name)
+
+    if vcenter_obj is not None:
+        vcenter_ip = vcenter_obj['ip']
+        vcenter_port = vcenter_obj['port']
+        vcenter_username = vcenter_obj['username']
+        vcenter_password = vcenter_obj['password']
+        vc_settings_handler.set_default_instance(
+            vcenter_obj['name']
+        )
+
+        if ctx.output == 'default':
+            ctx.my_output.default('vcenter: %s' % (vcenter_obj['name']))
+
+    if vcenter_obj is None:
+        if len(vcenter_ip) == 0 or len(vcenter_username) == 0 or len(vcenter_password) == 0:
+            ctx.my_output.error('Define vcenter name or ip/username/password')
+            return None
+
+    vc_handler = vcenter.Vcenter(
+        vcenter_ip,
+        vcenter_username,
+        vcenter_password,
+        port=vcenter_port,
+        log_id=ctx.run_id
+    )
+
+    if not vc_handler.is_vc_connected():
+        ctx.my_output.error('Failed to connect to vcenter')
+        return None
+
+    return vc_handler
+
+
+def validate_vcenters(ctx, vcenter_objs):
+    vc_settings_handler = vc_settings.VcSettings(log_id=None)
+
+    vc_handlers = []
+    for vcenter_obj in vcenter_objs:
+        vcenter_ip = vcenter_obj['ip']
+        vcenter_port = vcenter_obj['port']
+        vcenter_username = vcenter_obj['username']
+        vcenter_password = vcenter_obj['password']
+
+        vcenter_handler = vcenter.Vcenter(
+            vcenter_ip,
+            vcenter_username,
+            vcenter_password,
+            port=vcenter_port,
+            log_id=ctx.run_id
+        )
+
+        if not vcenter_handler.is_vc_connected():
+            ctx.my_output.error('Failed to connect to vcenter')
+            return None
+
+        vc_handlers.append(
+            dict(
+                name=vcenter_obj['name'],
+                handler=vcenter_handler
+            )
+        )
+
+    return vc_handlers
+
+
+def empty_string_to_none(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    return value
+
+
+def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
+
+    if cluster_name is None or cluster_name == '':
+        cluster_name = ocp_settings_handler.get_default_cluster()
+        if cluster_name is None:
+            ctx.my_output.error('Define ocp cluster name')
+            return None
+
+        if ctx.output == 'default':
+            ctx.my_output.default('Cluster: %s' % (cluster_name))
+
+    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name)
+    if cluster_obj is None:
+        ctx.my_output.error('Define valid ocp cluster name')
+        names = ocp_settings_handler.get_ocp_cluster_names()
+        if names is not None:
+            for name in names:
+                ctx.my_output.default('- %s' % (name))
+
+        return None
+
+    ocp_settings_handler.set_default_cluster(
+        cluster_obj['name']
+    )
+
+    ocp_handler = ocp.Ocp(
+        cluster_name,
+        verbose=verbose,
+        debug=debug,
+        log_id=ctx.run_id
+    )
+
+    return ocp_handler
+
+
+def validate_ocp_node(ctx, ocp_handler, node_name):
+    if node_name == '':
+        ctx.my_output.error('Define ocp cluster node name')
+        return False
+
+    if not ocp_handler.is_node(node_name):
+        ctx.my_output.error('Define valid ocp cluster node name')
+        names = ocp_handler.get_nodes_name()
+        if names is not None:
+            for name in names:
+                ctx.my_output.default('- %s' % (name))
+
+        return False
+
+    return True
+
+
+def validate_ocp_cluster_name(ctx, param, cluster_name):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=None)
+    if cluster_name == '':
+        cluster_name = ocp_settings_handler.get_default_cluster()
+        if cluster_name is None:
+            raise click.BadParameter('Define OCP cluster name')
+
+    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name)
+    if cluster_obj is None:
+        raise click.BadParameter('Define valid OCP cluster name')
+
+    return cluster_name
+
+
+def validate_ocp_namespace_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    namespace_name = {}
+    if len(value.split('/')) == 1:
+        namespace_name['namespace'] = None
+        namespace_name['name'] = value
+        return namespace_name
+
+    if len(value.split('/')) == 2:
+        namespace_name['namespace'] = value.split('/')[0]
+        namespace_name['name'] = value.split('/')[1]
+        return namespace_name
+
+    raise click.BadParameter('Invalid name syntax')
+
+
+def validate_ocp_vm_namespace(ctx, ocp_handler, namespace, vm_name):
+    if namespace == '':
+        vm_filter = ['name:%s' % (vm_name)]
+        vms_mo = ocp_handler.get_ocp_vms_mo(vm_filter=vm_filter)
+        if vms_mo is None or len(vms_mo) == 0:
+            ctx.busy = False
+            ctx.my_output.error(
+                'Virtual machine %s not found in any namespace' % (vm_name)
+            )
+            return None
+
+        if len(vms_mo) > 1:
+            ctx.busy = False
+            ctx.my_output.error(
+                'Multiple virtual machines found - define namespace'
+            )
+            for vm_mo in vms_mo:
+                ctx.my_output.default(
+                    '- %s' % (vm_mo['metadata']['namespace'])
+                )
+            return None
+
+        namespace = vms_mo[0]['metadata']['namespace']
+    else:
+        if not ocp_handler.is_ocp_vm_mo(namespace, vm_name):
+            ctx.busy = False
+            ctx.my_output.error(
+                'Virtual machine %s/%s not found' % (
+                    namespace,
+                    vm_name
+                )
+            )
+            return None
+
+    ctx.busy = False
+
+    ctx.my_output.default(
+        'Virtual machine %s/%s found' % (
+            namespace,
+            vm_name
+        )
+    )
+
+    return namespace
+
+
+def validate_ocp_vm_yaml_file(ctx, filename):
+    if filename == '':
+        ctx.my_output.error('Define virtual machine deployment yaml filename')
+        return None
+
+    content = file_helper.get_file_yaml(
+        filename
+    )
+    if content is None:
+        ctx.my_output.error(
+            'File read failed: %s' % (filename)
+        )
+        return None
+
+    if 'kind' not in content:
+        ctx.my_output.error('Invalid yaml file content')
+        return None
+
+    if content['kind'] not in ['VirtualMachineDeployment', 'VirtualMachine']:
+        ctx.my_output.error('Unsupported kind property')
+        return None
+
+    ocp_deployment_validate_handler = ocp_deployment_validate.OcpDeploymentValidate(log_id=ctx.run_id)
+
+    if content['kind'] == 'VirtualMachineDeployment':
+        return ocp_deployment_validate_handler.validate(filename)
+
+    if content['kind'] == 'VirtualMachine':
+        deployment = 'kind: VirtualMachineDeployment'
+        deployment = '%s\ndeployment:' % (deployment)
+        deployment = '%s\n  name: %s' % (deployment, content['metadata']['name'])
+        deployment = '%s\n  namespace: %s' % (deployment, content['metadata']['namespace'])
+        deployment = '%s\n  vm: %s' % (deployment, os.path.basename(filename))
+        new_filename = file_helper.set_tmp_file(deployment)
+        if new_filename is None:
+            ctx.my_output.error('Failed to prepare deployment file')
+            return None
+
+        return ocp_deployment_validate_handler.validate(
+            new_filename,
+            chdir=os.path.dirname(filename)
+        )
+
+    return None
+
+
+def validate_ncs_name(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    nso_settings_handler = nso_settings.NsoSettings(log_id=None)
+    controller = nso_settings_handler.get_nso_ncs(value)
+    if controller is None:
+        raise click.BadParameter('Invalid ncs name')
+
+    return controller
+
+
+def validate_nso_ncs(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username, ncs_password, restconf_enabled, nfvo_version, nfvo_etsi):
+    nso_settings_handler = nso_settings.NsoSettings(log_id=None)
+
+    if ncs_obj is None and len(ncs_ip) == 0 and len(ncs_username) == 0 and len(ncs_password) == 0:
+        ncs_name = nso_settings_handler.get_default_ncs()
+        if ncs_name is not None:
+            ncs_obj = nso_settings_handler.get_nso_ncs(ncs_name)
+
+    if ncs_obj is not None:
+        ncs_protocol = ncs_obj['protocol']
+        ncs_ip = ncs_obj['ip']
+        ncs_port = ncs_obj['port']
+        ncs_username = ncs_obj['username']
+        ncs_password = ncs_obj['password']
+        restconf_enabled = ncs_obj['restconf_enabled']
+        nfvo_version = ncs_obj['nfvo_version']
+        nfvo_etsi = ncs_obj['nfvo_etsi']
+        nso_settings_handler.set_default_ncs(
+            ncs_obj['name']
+        )
+
+        if ctx.output == 'default':
+            ctx.my_output.default('NCS: %s' % (ncs_obj['name']))
+
+    if ncs_obj is None:
+        if len(ncs_ip) == 0 or len(ncs_username) == 0 or len(ncs_password) == 0:
+            ctx.my_output.error('Define ncs name or ip/username/password')
+            return None
+
+    nso_handler = nso.Nso(
+        ncs_protocol,
+        ncs_ip,
+        ncs_port,
+        username=ncs_username,
+        password=ncs_password,
+        restconf_enabled=restconf_enabled,
+        nfvo_version=nfvo_version,
+        nfvo_etsi=nfvo_etsi,
+        log_id=ctx.run_id
+    )
+
+    if not nso_handler.is_connected():
+        ctx.my_output.error('Failed to connect to NCS')
+        return None
+
+    return nso_handler
+
+
+def validate_xml_file(ctx, filename):
+    if not os.path.isfile(filename):
+        ctx.my_output.error('File %s not found' % (filename))
+        return None
+
+    try:
+        with open(filename, 'r', encoding='utf-8') as file_handler:
+            content = file_handler.read()
+
+    except BaseException:
+        ctx.my_output.traceback(traceback.format_exc())
+        return None
+
+    return content
+
+
+def validate_fabric(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    aci_settings_handler = aci_settings.ApicSettings(log_id=None)
+    fabrics = []
+    for item in value:
+        if len(item.split(':')) != 2:
+            raise click.BadParameter('Expected fabric syntax is <type>:<name>')
+
+        fabric_hint = {}
+        fabric_hint['type'] = item.split(':')[0]
+        if fabric_hint['type'] not in ['aci']:
+            raise click.BadParameter('Unsupported fabric type')
+
+        if fabric_hint['type'] == 'aci':
+            fabric_hint['controller'] = item.split(':')[1]
+
+        if aci_settings_handler.get_apic_controller(fabric_hint['controller']) is None:
+            raise click.BadParameter('Undefined apic: %s' % (fabric_hint['controller']))
+
+        fabrics.append(
+            fabric_hint
+        )
+
+    return fabrics

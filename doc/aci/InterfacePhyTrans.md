@@ -9,7 +9,7 @@
     --trans *h40g*
     --view trans
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
@@ -35,7 +35,7 @@ Developer
     --view trans
 
 {
-    "duration": 2119,
+    "duration": 1766,
     "apic": {
         "read": true,
         "success": 5,
@@ -43,10 +43,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 410,
+        "connect_time": 397,
         "disconnect_time": 0,
-        "mo_time": 1403,
-        "total_time": 1813
+        "mo_time": 1205,
+        "total_time": 1602
     },
     "error": {
         "read": false,
@@ -59,17 +59,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	410	-	connect apic11o.emea-sp.cisco.com
-True	330	11	apic11o.emea-sp.cisco.com class fabricNode
-True	345	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	345	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	383	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmFcot
+True	397	-	connect apic11o.emea-sp.cisco.com
+True	291	13	apic11o.emea-sp.cisco.com class fabricNode
+True	310	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	308	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	296	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmFcot
 ```
 
 [[Back]](./InterfacePhy.md)

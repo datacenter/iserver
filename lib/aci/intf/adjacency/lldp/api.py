@@ -10,6 +10,18 @@ class InterfaceAdjacencyLldpApi():
         if key in self.adjacency_lldp_mo:
             return self.adjacency_lldp_mo[key]
 
+        cache = self.get_object_cache(
+            'lldpAdjEp',
+            object_selector=key
+        )
+        if cache is not None:
+            self.adjacency_lldp_mo[key] = cache
+            self.log.apic_mo(
+                'lldpAdjEp.%s' % (key),
+                self.adjacency_lldp_mo[key]
+            )
+            return self.adjacency_lldp_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/lldp/inst' % (
             pod_id,
             node_id
@@ -38,6 +50,12 @@ class InterfaceAdjacencyLldpApi():
         self.log.apic_mo(
             'lldpAdjEp.%s' % (key),
             self.adjacency_lldp_mo[key]
+        )
+
+        self.set_object_cache(
+            'lldpAdjEp',
+            self.adjacency_lldp_mo[key],
+            object_selector=key
         )
 
         return self.adjacency_lldp_mo[key]

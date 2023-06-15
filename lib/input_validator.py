@@ -1,6 +1,4 @@
-import sys
 import os
-import yaml
 
 from lib import file_helper
 from lib import ip_helper
@@ -64,11 +62,14 @@ class InputValidator():
             return None
 
         filename = os.path.join(rules_dir, '%s.yaml' % (section_name))
-        if not os.path.isfile(filename):
-            self.my_output.error('Section %s rules not found: %s' % (section_name, filename))
+        content = file_helper.get_file_yaml(
+            filename
+        )
+        if content is None:
+            self.my_output.error('Section %s rules read failed: %s' % (section_name, filename))
             return None
 
-        return self.get_input_file(filename)
+        return content
 
     def get_template_name(self, user_input, template_reference=None, template_name=None):
         if template_reference is None and template_name is None:
@@ -105,11 +106,13 @@ class InputValidator():
             return None
 
         filename = os.path.join(rules_dir, 'main.yaml')
-        if not os.path.isfile(filename):
-            self.my_output.error('Template definition not found: %s' % (filename))
-            return None
+        content = file_helper.get_file_yaml(
+            filename
+        )
+        if content is None:
+            self.my_output.error('Template definition read failed: %s' % (filename))
 
-        return self.get_input_file(filename)
+        return content
 
     def get_template_filename(self, template_name, filename):
         files_dir = self.get_template_files_dir(template_name)
@@ -123,27 +126,15 @@ class InputValidator():
 
         return template_filename
 
-    def get_input_file(self, filename):
-        if not os.path.isfile(filename):
-            self.my_output.error('File %s not found' % (filename))
-            return None
-
-        try:
-            with open(filename, 'rb') as file_handler:
-                content = yaml.safe_load(file_handler)
-
-        except BaseException:
-            return None
-
-        return content
-
     def get_input(self, location):
         if not os.path.isfile(location) and not os.path.isdir(location):
             self.my_output.error('Specify valid location user input')
             return None
 
         if os.path.isfile(location):
-            content = self.get_input_file(location)
+            content = file_helper.get_file_yaml(
+                location
+            )
             if content is None:
                 return None
 
@@ -158,7 +149,7 @@ class InputValidator():
             if os.path.isdir(fullname):
                 continue
 
-            part = self.get_input_file(
+            part = file_helper.get_file_yaml(
                 fullname
             )
             if part is None:
@@ -609,7 +600,7 @@ class InputValidator():
                                 self.my_output.error('Expected attribute %s value is existing local file: %s' % (section_name, value))
                                 return None
 
-                            content = self.get_input_file(filename)
+                            content = file_helper.get_file_yaml(filename)
                             if content is None:
                                 self.my_output.error('Expected attribute %s value is existing local file with yaml formatted content: %s' % (section_name, value))
                                 return None

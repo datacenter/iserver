@@ -17,21 +17,7 @@ Use '--type filter' to get contract filters details
 ```
 # iserver get aci contract --apic apic21 --type filter --tenant k8s/*
 
-Apic: apic21
-
-Contract Filters
-----------------
-
-+--------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| Filter | Entry | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
-+--------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-
-Contract Filters Usage
-----------------------
-
-+--------+----------+-------+
-| Filter | Contract | Taboo |
-+--------+----------+-------+
+Apic: apic21 (mode:online, cache:off)
 ```
 
 Developer
@@ -40,7 +26,7 @@ Developer
 # iserver get aci contract --apic apic21 --type filter --tenant k8s/*
 
 {
-    "duration": 1001,
+    "duration": 1298,
     "apic": {
         "read": true,
         "success": 2,
@@ -48,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 570,
+        "connect_time": 787,
         "disconnect_time": 0,
-        "mo_time": 349,
-        "total_time": 919
+        "mo_time": 358,
+        "total_time": 1145
     },
     "error": {
         "read": false,
@@ -64,14 +50,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	570	-	connect apic21o.emea-sp.cisco.com
-True	349	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	787	-	connect apic21o.emea-sp.cisco.com
+True	358	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./Contract.md)

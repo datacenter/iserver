@@ -10,7 +10,7 @@ Get selected vrf details
 ```
 # iserver get aci vrf --apic apic21 --name Infra_VRF --view verbose
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +------------------+----------------+---------------+------------------------------+-------------------+-----------------+--------------------+
 | VRF              | PCE Preference | PCE Direction | Associated EPG               | Associated BD     | BD Subnets      | Associated L3Out   |
@@ -49,7 +49,7 @@ Associated EPGs
 ---------------
 
 +----+------------------------------+-------------------+-----------------+-----------+----------+
-| Up | EPG                          | Bridge Domain     | Subnets         | Endpoints | Contract |
+| Up | EPG                          | Bridge Domain     | BD Subnets      | Endpoints | Contract |
 +----+------------------------------+-------------------+-----------------+-----------+----------+
 | V  | k8s/k8s_ANP/bmk8s_1          | k8s/bmk8s_1_BD    | 10.58.24.78/28  | 0         | V        | 
 +----+------------------------------+-------------------+-----------------+-----------+----------+
@@ -104,13 +104,13 @@ Associated Bridge Domains
 +-------------------+-----------------+-------+------------------+--------------------+
 | k8s/MGMT_BD       | 10.58.25.174/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
 +-------------------+-----------------+-------+------------------+--------------------+
-| k8s/vk8s_1_BD     | 10.58.24.174/28 | 11/14 | common/Infra_VRF | common/Infra_L3out | 
+| k8s/vk8s_1_BD     | 10.58.24.174/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
 +-------------------+-----------------+-------+------------------+--------------------+
-| k8s/vk8s_2_BD     | 10.58.24.190/28 | 4/14  | common/Infra_VRF | common/Infra_L3out | 
+| k8s/vk8s_2_BD     | 10.58.24.190/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
 +-------------------+-----------------+-------+------------------+--------------------+
-| k8s/vk8s_3_BD     | 10.58.24.206/28 | 10/14 | common/Infra_VRF | common/Infra_L3out | 
+| k8s/vk8s_3_BD     | 10.58.24.206/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
 +-------------------+-----------------+-------+------------------+--------------------+
-| k8s/vk8s_4_BD     | 10.58.24.222/28 | 10/14 | common/Infra_VRF | common/Infra_L3out | 
+| k8s/vk8s_4_BD     | 10.58.24.222/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
 +-------------------+-----------------+-------+------------------+--------------------+
 | k8s/vl3outk8s_BD  | 10.58.24.110/28 | 1/14  | common/Infra_VRF | k8s/vl3_k8s        | 
 +-------------------+-----------------+-------+------------------+--------------------+
@@ -136,7 +136,7 @@ Developer
 # iserver get aci vrf --apic apic21 --name Infra_VRF --view verbose
 
 {
-    "duration": 4082,
+    "duration": 4026,
     "apic": {
         "read": true,
         "success": 9,
@@ -144,10 +144,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 8,
-        "connect_time": 424,
+        "connect_time": 401,
         "disconnect_time": 0,
-        "mo_time": 2951,
-        "total_time": 3375
+        "mo_time": 2965,
+        "total_time": 3366
     },
     "error": {
         "read": false,
@@ -160,21 +160,22 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	424	-	connect apic21o.emea-sp.cisco.com
-True	315	23	apic21o.emea-sp.cisco.com class fvCtx
-True	458	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	388	71	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
-True	371	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	357	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	320	13	apic21o.emea-sp.cisco.com class fabricNode
-True	327	14	apic21o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	415	17	apic21o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	401	-	connect apic21o.emea-sp.cisco.com:443
+True	391	23	apic21o.emea-sp.cisco.com:443 class fvCtx
+True	378	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	410	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	367	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	361	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	325	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	396	15	apic21o.emea-sp.cisco.com:443 class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	337	18	apic21o.emea-sp.cisco.com:443 class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./Vrf.md)

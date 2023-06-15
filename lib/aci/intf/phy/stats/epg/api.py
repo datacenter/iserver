@@ -11,6 +11,18 @@ class InterfacePhyEpgStatsApi():
         if key in self.interface_phy_epg_stats_mo:
             return self.interface_phy_epg_stats_mo[key]
 
+        cache = self.get_object_cache(
+            'l1EthIfToEPg',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_phy_epg_stats_mo[key] = cache
+            self.log.apic_mo(
+                'l1EthIfToEPg.%s' % (key),
+                self.interface_phy_epg_stats_mo[key]
+            )
+            return self.interface_phy_epg_stats_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/phys-[%s]' % (
             pod_id,
             node_id,
@@ -51,6 +63,12 @@ class InterfacePhyEpgStatsApi():
         self.log.apic_mo(
             'l1EthIfToEPg.%s' % (key),
             self.interface_phy_epg_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'l1EthIfToEPg',
+            self.interface_phy_epg_stats_mo[key],
+            object_selector=key
         )
 
         return self.interface_phy_epg_stats_mo[key]

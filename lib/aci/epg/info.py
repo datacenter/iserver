@@ -90,28 +90,50 @@ class EpgInfo():
         info['contractConsumed'] = []
         for item in managed_object['fvRsCons']:
             if item['tCl'] == 'vzBrCP':
-                contract = {}
-                contract['dn'] = item['tDn']
-                contract['tenant'] = item['tDn'].split('/')[1][3:]
-                contract['name'] = item['tDn'].split('/')[2][4:]
-                contract['nameTenant'] = '%s/%s' % (
-                    contract['tenant'],
-                    contract['name']
-                )
-                info['contractConsumed'].append(contract)
+                if item['state'] == 'formed':
+                    contract = {}
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = item['tDn'].split('/')[1][3:]
+                    contract['name'] = item['tDn'].split('/')[2][4:]
+                    contract['nameTenant'] = '%s/%s' % (
+                        contract['tenant'],
+                        contract['name']
+                    )
+                    info['contractConsumed'].append(contract)
+
+                if item['state'] != 'formed':
+                    contract = {}
+                    contract['__Output'] = {}
+                    contract['__Output']['nameTenant'] = 'Red'
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = None
+                    contract['name'] = item['tnVzBrCPName']
+                    contract['nameTenant'] = item['tnVzBrCPName']
+                    info['contractConsumed'].append(contract)
 
         info['contractProvided'] = []
         for item in managed_object['fvRsProv']:
             if item['tCl'] == 'vzBrCP':
-                contract = {}
-                contract['dn'] = item['tDn']
-                contract['tenant'] = item['tDn'].split('/')[1][3:]
-                contract['name'] = item['tDn'].split('/')[2][4:]
-                contract['nameTenant'] = '%s/%s' % (
-                    contract['tenant'],
-                    contract['name']
-                )
-                info['contractProvided'].append(contract)
+                if item['state'] == 'formed':
+                    contract = {}
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = item['tDn'].split('/')[1][3:]
+                    contract['name'] = item['tDn'].split('/')[2][4:]
+                    contract['nameTenant'] = '%s/%s' % (
+                        contract['tenant'],
+                        contract['name']
+                    )
+                    info['contractProvided'].append(contract)
+
+                if item['state'] != 'formed':
+                    contract = {}
+                    contract['__Output'] = {}
+                    contract['__Output']['nameTenant'] = 'Red'
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = None
+                    contract['name'] = item['tnVzBrCPName']
+                    contract['nameTenant'] = item['tnVzBrCPName']
+                    info['contractProvided'].append(contract)
 
         info['contractTick'] = ''
         if len(info['contractConsumed']) > 0 or len(info['contractProvided']) > 0:
@@ -125,8 +147,23 @@ class EpgInfo():
             )
             return None
 
-        info['bd_tenant_name'] = managed_object['fvBD'][0]['tDn'].split('/')[1][3:]
-        info['bd_name'] = managed_object['fvBD'][0]['tDn'].split('/')[2][3:]
+        bd_mo = managed_object['fvBD'][0]
+        if bd_mo['state'] == 'formed':
+            info['bd_tenant_name'] = managed_object['fvBD'][0]['tDn'].split('/')[1][3:]
+            info['bd_name'] = managed_object['fvBD'][0]['tDn'].split('/')[2][3:]
+            info['bd_state'] = bd_mo['state']
+
+        if bd_mo['state'] != 'formed':
+            info['bd_tenant_name'] = bd_mo['tnFvBDName']
+            info['bd_name'] = bd_mo['tnFvBDName']
+            info['bd_state'] = bd_mo['state']
+            info['__Output']['bd_tenant_name'] = 'Red'
+
+        # pcTag global
+        info['pcTagT'] = info['pcTag']
+        if int(info['pcTag']) < 16384:
+            info['pcTagT'] = '%s (global)' % (info['pcTag'])
+            info['__Output']['pcTagT'] = 'Red'
 
         return info
 
@@ -265,6 +302,16 @@ class EpgInfo():
                     if not found:
                         return False
 
+            if key == 'pctag':
+                key_found = True
+                if value == 'global':
+                    if int(epg_info['pcTag']) >= 16384:
+                        return False
+
+                if value != 'global':
+                    if not filter_helper.match_integer(value, epg_info['pcTag']):
+                        return False
+
             if not key_found:
                 self.log.error(
                     'match_epg',
@@ -355,10 +402,11 @@ class EpgInfo():
                         epg_info['fvCEp']
                     )
 
-                epg_info['fvBD']['fvSubnet'] = self.get_subnet_usage(
-                    epg_info['fvBD']['fvSubnet'],
-                    epg_info['fvCEp']
-                )
+                if epg_info['fvBD'] is not None:
+                    epg_info['fvBD']['fvSubnet'] = self.get_subnet_usage(
+                        epg_info['fvBD']['fvSubnet'],
+                        epg_info['fvCEp']
+                    )
 
             if contract_info:
                 epg_info['contractConsumedInfo'] = []
@@ -384,24 +432,26 @@ class EpgInfo():
                     )
 
             if vrf_info:
-                vrf_dn = epg_info['fvBD']['fvRsCtx']['dn']
-                epg_info['fvBD']['fvCtxInfo'] = copy.deepcopy(
-                    self.get_vrf(
-                        vrf_dn
-                    )
-                )
-
-            if l3out_info:
-                epg_info['fvBD']['l3extOutInfo'] = []
-                l3out_filter = self.get_epg_l3out_filter(
-                    epg_info
-                )
-                if len(l3out_filter) > 0:
-                    epg_info['fvBD']['l3extOutInfo'] = copy.deepcopy(
-                        self.get_l3outs(
-                            l3out_filter=l3out_filter
+                if epg_info['fvBD'] is not None:
+                    vrf_dn = epg_info['fvBD']['fvRsCtx']['dn']
+                    epg_info['fvBD']['fvCtxInfo'] = copy.deepcopy(
+                        self.get_vrf(
+                            vrf_dn
                         )
                     )
+
+            if l3out_info:
+                if epg_info['fvBD'] is not None:
+                    epg_info['fvBD']['l3extOutInfo'] = []
+                    l3out_filter = self.get_epg_l3out_filter(
+                        epg_info
+                    )
+                    if len(l3out_filter) > 0:
+                        epg_info['fvBD']['l3extOutInfo'] = copy.deepcopy(
+                            self.get_l3outs(
+                                l3out_filter=l3out_filter
+                            )
+                        )
 
             epgs.append(epg_info)
 

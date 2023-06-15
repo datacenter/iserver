@@ -7,6 +7,18 @@ class InterfaceLacpApi():
         if key in self.interfaces_lacp_mo:
             return self.interfaces_lacp_mo[key]
 
+        cache = self.get_object_cache(
+            'lacpIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interfaces_lacp_mo[key] = cache
+            self.log.apic_mo(
+                'lacpIf.%s' % (key),
+                self.interfaces_lacp_mo[key]
+            )
+            return self.interfaces_lacp_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/lacpIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=lacpIfStats'
         managed_objects = self.get_class(
@@ -35,8 +47,14 @@ class InterfaceLacpApi():
             )
 
         self.log.apic_mo(
-            'interface.lacp.%s' % (key),
+            'lacpIf.%s' % (key),
             self.interfaces_lacp_mo[key]
+        )
+
+        self.set_object_cache(
+            'lacpIf',
+            self.interfaces_lacp_mo[key],
+            object_selector=key
         )
 
         return self.interfaces_lacp_mo[key]

@@ -64,10 +64,11 @@ Options:
   --intf TEXT                     Filter by BGP Neighbor source interface
   -v, --view [default|node|vrf|trans|conn|af|verbose|route]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\60d1ab5c6ec2
+Info: finished in 69 ms and logs saved in /tmp/iserver\1ba946f39b32
 ```
 
 [[Back]](./Protocol.md)

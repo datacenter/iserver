@@ -6,6 +6,17 @@ class PolicyInterfaceCoppApi():
         if self.policy_interface_copp_mo is not None:
             return self.policy_interface_copp_mo
 
+        cache = self.get_object_cache(
+            'coppIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_copp_mo = cache
+            self.log.apic_mo(
+                'coppIfPol',
+                self.policy_interface_copp_mo
+            )
+            return self.policy_interface_copp_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'coppIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceCoppApi():
             )
 
         self.log.apic_mo(
+            'coppIfPol',
+            self.policy_interface_copp_mo
+        )
+
+        self.set_object_cache(
             'coppIfPol',
             self.policy_interface_copp_mo
         )

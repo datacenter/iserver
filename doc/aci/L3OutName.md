@@ -7,7 +7,7 @@ Example: name
 ```
 # iserver get aci l3out --apic apic11 --name Calico*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------------------------+------+-----+-----+------+-------+----------------------------+-------------------------------+
 | L3Out                         | MPLS | PIM | BGP | OSPF | EIGRP | VRF                        | L3 Domain                     |
@@ -29,7 +29,7 @@ Example: tenant and name
 ```
 # iserver get aci l3out --apic apic11 --name SPIN*/Calico*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------------------------+------+-----+-----+------+-------+----------------------------+-------------------------------+
 | L3Out                         | MPLS | PIM | BGP | OSPF | EIGRP | VRF                        | L3 Domain                     |
@@ -52,7 +52,7 @@ Developer
 # iserver get aci l3out --apic apic11 --name Calico*
 
 {
-    "duration": 1444,
+    "duration": 1803,
     "apic": {
         "read": true,
         "success": 3,
@@ -60,10 +60,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 394,
+        "connect_time": 457,
         "disconnect_time": 0,
-        "mo_time": 894,
-        "total_time": 1288
+        "mo_time": 959,
+        "total_time": 1416
     },
     "error": {
         "read": false,
@@ -76,15 +76,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	394	-	connect apic11o.emea-sp.cisco.com
-True	459	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	435	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	457	-	connect apic11o.emea-sp.cisco.com
+True	549	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	410	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./L3Out.md)

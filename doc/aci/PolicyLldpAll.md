@@ -5,13 +5,13 @@
 ```
 # iserver get aci policy lldp --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +------------------------+----+---------------+----------------+------------+--------------+
 | Policy Name            | TF | Receive State | Transmit State | Interfaces | Ref Policies |
 +------------------------+----+---------------+----------------+------------+--------------+
 | default                |    | enabled       | enabled        | 0          | 0            | 
-| default                |    | enabled       | enabled        | 237        | 56           | 
+| default                |    | enabled       | enabled        | 293        | 56           | 
 | EU-SPDC-CDC_lldpIfPol  |    | enabled       | enabled        | 0          | 0            | 
 | EU-SPDC-R3DC_lldpIfPol |    | enabled       | enabled        | 0          | 0            | 
 | lldp-enabled           |    | enabled       | enabled        | 6          | 4            | 
@@ -30,7 +30,7 @@ Developer
 # iserver get aci policy lldp --apic apic11
 
 {
-    "duration": 1562,
+    "duration": 1910,
     "apic": {
         "read": true,
         "success": 4,
@@ -38,10 +38,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 386,
+        "connect_time": 467,
         "disconnect_time": 0,
-        "mo_time": 1061,
-        "total_time": 1447
+        "mo_time": 1063,
+        "total_time": 1530
     },
     "error": {
         "read": false,
@@ -54,16 +54,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	386	-	connect apic11o.emea-sp.cisco.com
-True	374	10	apic11o.emea-sp.cisco.com class lldpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	395	338	apic11o.emea-sp.cisco.com class l1RsLldpIfPolCons
-True	292	11	apic11o.emea-sp.cisco.com class fabricNode
+True	467	-	connect apic11o.emea-sp.cisco.com
+True	352	10	apic11o.emea-sp.cisco.com class lldpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	395	394	apic11o.emea-sp.cisco.com class l1RsLldpIfPolCons
+True	316	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLldp.md)

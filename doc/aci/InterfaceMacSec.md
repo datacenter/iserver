@@ -42,11 +42,12 @@ Options:
   --type [any|leaf|fabric]      [default: any]
   -v, --view [default|verbose]
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --empty                       No error on empty result
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 41 ms and logs saved in /tmp/iserver\8e196e268565
+Info: finished in 30 ms and logs saved in /tmp/iserver\e3c3491022ac
 ```
 
 [[Back]](./Interface.md)

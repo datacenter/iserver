@@ -10,6 +10,18 @@ class InterfaceFcApi():
         if key in self.interface_fc_mo:
             return self.interface_fc_mo[key]
 
+        cache = self.get_object_cache(
+            'l1FcPhysIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_fc_mo[key] = cache
+            self.log.apic_mo(
+                'l1FcPhysIf.%s' % (key),
+                self.interface_fc_mo[key]
+            )
+            return self.interface_fc_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/l1FcPhysIf' % (pod_id, node_id)
         query = 'query-target=subtree&target-subtree-class=l1RtFcBrConf'
         managed_objects = self.get_class(
@@ -39,6 +51,12 @@ class InterfaceFcApi():
         self.log.apic_mo(
             'l1FcPhysIf.%s' % (key),
             self.interface_fc_mo[key]
+        )
+
+        self.set_object_cache(
+            'l1FcPhysIf',
+            self.interface_fc_mo[key],
+            object_selector=key
         )
 
         return self.interface_fc_mo[key]

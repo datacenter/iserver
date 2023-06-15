@@ -5,7 +5,7 @@
 ```
 # iserver get aci domain l2 --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +----------------+------------+----------------+-----------------------+-----------+
 | Domain Name    | AAEP       | VLAN Pool      | Encapsulation Block   | EPG Usage |
@@ -21,7 +21,7 @@ Developer
 # iserver get aci domain l2 --apic apic11
 
 {
-    "duration": 2625,
+    "duration": 1549,
     "apic": {
         "read": true,
         "success": 4,
@@ -29,10 +29,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 439,
+        "connect_time": 409,
         "disconnect_time": 0,
-        "mo_time": 2052,
-        "total_time": 2491
+        "mo_time": 1023,
+        "total_time": 1432
     },
     "error": {
         "read": false,
@@ -45,16 +45,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	439	-	connect apic11o.emea-sp.cisco.com
-True	336	1	apic11o.emea-sp.cisco.com class l2extDomP query rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain
-True	353	25	apic11o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
-True	1363	39	apic11o.emea-sp.cisco.com class vmmEpPD
+True	409	-	connect apic11o.emea-sp.cisco.com
+True	325	1	apic11o.emea-sp.cisco.com class l2extDomP query rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain
+True	371	25	apic11o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	327	39	apic11o.emea-sp.cisco.com class vmmEpPD
 ```
 
 [[Back]](./DomainL2.md)

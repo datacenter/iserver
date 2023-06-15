@@ -2,6 +2,7 @@ import os
 import json
 import yaml
 
+from lib import file_helper
 from lib import ip_helper
 
 
@@ -72,25 +73,14 @@ class OcpValidate():
 
         return content
 
-    def get_input_file(self, filename):
-        if not os.path.isfile(filename):
-            self.my_output.error('File %s not found' % (filename))
-            return None
-
-        try:
-            with open(filename, 'rb') as file_handler:
-                content = yaml.safe_load(file_handler)
-
-        except BaseException:
-            self.my_output.debug('YAML format required: %s' % (filename))
-            return None
-
-        return content
-
     def get_input(self, location):
         if os.path.isfile(location):
-            content = self.get_input_file(location)
+            content = file_helper.get_file_yaml(location)
             if content is None:
+                self.log.error(
+                    'get_input',
+                    'File read failed: %s' % (location)
+                )
                 return None
 
             return content
@@ -101,7 +91,7 @@ class OcpValidate():
             if os.path.isdir(content_filename):
                 continue
 
-            part = self.get_input_file(
+            part = file_helper.get_file_yaml(
                 content_filename
             )
             if part is None:
@@ -127,7 +117,7 @@ class OcpValidate():
         installation_method_dir = os.path.join(ocp_templates_dir, self.ocp_type)
         rules_dir = os.path.join(installation_method_dir, 'rules')
         rules_filename = os.path.join(rules_dir, '%s.yaml' % (section_name))
-        return self.get_input_file(rules_filename)
+        return file_helper.get_file_yaml(rules_filename)
 
     def is_key_in_section(self, key, section):
         try:

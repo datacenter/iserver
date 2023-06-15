@@ -10,6 +10,17 @@ class L3OutNode():
         if self.l3out_node_profile_mo is not None:
             return self.l3out_node_profile_mo
 
+        cache = self.get_object_cache(
+            'l3extLNodeP'
+        )
+        if cache is not None:
+            self.l3out_node_profile_mo = cache
+            self.log.apic_mo(
+                'l3extLNodeP',
+                self.l3out_node_profile_mo
+            )
+            return self.l3out_node_profile_mo
+
         children = [
             'l3extRsNodeL3OutAtt'
         ]
@@ -37,6 +48,11 @@ class L3OutNode():
             )
 
         self.log.apic_mo(
+            'l3extLNodeP',
+            self.l3out_node_profile_mo
+        )
+
+        self.set_object_cache(
             'l3extLNodeP',
             self.l3out_node_profile_mo
         )

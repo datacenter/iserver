@@ -17,7 +17,7 @@ Example:
 ```
 # iserver get aci intf mgmt --apic apic11 --node bl
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
@@ -25,8 +25,8 @@ Pod: 1
 +---------------------+-------+-------------+-----------------+-----------+------------------+--------+------+-------+-------------------------------+
 | Node                | Name  | Admin State | Switching State | OperState | Auto Negotiation | Duplex | MTU  | Speed | Last Link State Change        |
 +---------------------+-------+-------------+-----------------+-----------+------------------+--------+------+-------+-------------------------------+
-| pod-1/bl205-eu-spdc | mgmt0 | up          | disabled        | up        | on               | full   | 1500 | 1G    | 2023-03-03T01:13:34.502+02:00 | 
-| pod-1/bl206-eu-spdc | mgmt0 | up          | disabled        | up        | on               | full   | 1500 | 1G    | 2023-03-03T10:37:10.362+02:00 | 
+| pod-1/bl205-eu-spdc | mgmt0 | up          | disabled        | up        | on               | full   | 1500 | 1G    | 2023-06-12T09:14:04.036+02:00 | 
+| pod-1/bl206-eu-spdc | mgmt0 | up          | disabled        | up        | on               | full   | 1500 | 1G    | 2023-06-12T09:14:46.234+02:00 | 
 +---------------------+-------+-------------+-----------------+-----------+------------------+--------+------+-------+-------------------------------+
 ```
 

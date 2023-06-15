@@ -44,11 +44,12 @@ Options:
   --admin [any|up|down]        [default: any]
   --oper [any|up|down]         [default: any]
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --empty                      No error on empty result
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 24 ms and logs saved in /tmp/iserver\2bee70a6a061
+Info: finished in 63 ms and logs saved in /tmp/iserver\9bb101555529
 ```
 
 [[Back]](./Interface.md)

@@ -5,19 +5,23 @@
 ```
 # iserver get aci intf l3e --apic apic11 --node cl
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 
-+---------------------+--------------+-------------+------------+--------+---------+------+--------------------+
-| Node                | Interface    | Admin State | Oper State | Encap  | SR-MPLS | MTU  | IP Unnumbered Intf |
-+---------------------+--------------+-------------+------------+--------+---------+------+--------------------+
-| pod-1/cl201-eu-spdc | eth1/107.7   | up          | up         | vlan-2 | no      | 9366 | lo0                | 
-| pod-1/cl201-eu-spdc | eth1/108.504 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
-| pod-1/cl202-eu-spdc | eth1/107.8   | up          | up         | vlan-2 | no      | 9366 | lo0                | 
-| pod-1/cl202-eu-spdc | eth1/108.500 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
-+---------------------+--------------+-------------+------------+--------+---------+------+--------------------+
++---------------------+------------+-------------+------------+--------+---------+------+--------------------+
+| Node                | Interface  | Admin State | Oper State | Encap  | SR-MPLS | MTU  | IP Unnumbered Intf |
++---------------------+------------+-------------+------------+--------+---------+------+--------------------+
+| pod-1/cl201-eu-spdc | eth1/107.7 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
+| pod-1/cl201-eu-spdc | eth1/108.8 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
+| pod-1/cl202-eu-spdc | eth1/107.7 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
+| pod-1/cl202-eu-spdc | eth1/108.8 | up          | up         | vlan-2 | no      | 9366 | lo0                | 
+| pod-1/cl209-eu-spdc | eth1/35.9  | up          | up         | vlan-2 | no      | 9366 | lo0                | 
+| pod-1/cl210-eu-spdc | eth1/36.9  | up          | up         | vlan-2 | no      | 9366 | lo0                | 
++---------------------+------------+-------------+------------+--------+---------+------+--------------------+
 ```
 
 Developer
@@ -26,18 +30,18 @@ Developer
 # iserver get aci intf l3e --apic apic11 --node cl
 
 {
-    "duration": 2179,
+    "duration": 3232,
     "apic": {
         "read": true,
-        "success": 6,
+        "success": 10,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 5,
-        "connect_time": 398,
+        "mo": 9,
+        "connect_time": 404,
         "disconnect_time": 0,
-        "mo_time": 1580,
-        "total_time": 1978
+        "mo_time": 2640,
+        "total_time": 3044
     },
     "error": {
         "read": false,
@@ -50,18 +54,23 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	398	-	connect apic11o.emea-sp.cisco.com
-True	318	11	apic11o.emea-sp.cisco.com class fabricNode
-True	292	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
-True	299	75	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4If
-True	305	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
-True	366	74	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4If
+True	404	-	connect apic11o.emea-sp.cisco.com
+True	306	13	apic11o.emea-sp.cisco.com class fabricNode
+True	283	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	302	75	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4If
+True	294	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	322	74	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4If
+True	280	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	291	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/ipv4If
+True	285	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/l3EncRtdIf query rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf
+True	277	11	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/ipv4If
 ```
 
 [[Back]](./InterfaceL3e.md)

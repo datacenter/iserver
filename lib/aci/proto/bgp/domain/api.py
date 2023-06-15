@@ -7,6 +7,18 @@ class ProtocolBgpDomainApi():
         if key in self.bgp_domains_mo:
             return self.bgp_domains_mo[key]
 
+        cache = self.get_object_cache(
+            'bgpDom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bgp_domains_mo[key] = cache
+            self.log.apic_mo(
+                'bgpDom.%s' % (key),
+                self.bgp_domains_mo[key]
+            )
+            return self.bgp_domains_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/bgpDom' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -28,6 +40,12 @@ class ProtocolBgpDomainApi():
         self.log.apic_mo(
             'bgpDom.%s' % (key),
             self.bgp_domains_mo[key]
+        )
+
+        self.set_object_cache(
+            'bgpDom',
+            self.bgp_domains_mo[key],
+            object_selector=key
         )
 
         return self.bgp_domains_mo[key]

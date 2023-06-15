@@ -49,7 +49,7 @@ class NodeSensorInfo():
             info['nodeId']
         )
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['nodeName']
@@ -66,7 +66,7 @@ class NodeSensorInfo():
         if self.nodes_sensor is not None:
             return self.nodes_sensor
 
-        nodes_sensor_mo = self.get_nodes_sensor_mo()
+        nodes_sensor_mo = self.get_node_sensor_mo()
         if nodes_sensor_mo is not None:
             self.nodes_sensor = []
             for node_sensor_mo in nodes_sensor_mo:

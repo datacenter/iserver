@@ -13,6 +13,18 @@ class ProtocolBgpNeighborStatsApi():
         if key in self.bgp_nbr_stats_mo:
             return self.bgp_nbr_stats_mo[key]
 
+        cache = self.get_object_cache(
+            'bgpPeerEntryStats',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bgp_nbr_stats_mo[key] = cache
+            self.log.apic_mo(
+                'bgpPeerEntryStats.%s' % (key),
+                self.bgp_nbr_stats_mo[key]
+            )
+            return self.bgp_nbr_stats_mo[key]
+
         # https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/bgp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/peer-[15.100.103.41/32]/ent-[15.100.103.41]/peerstats.json
         distinguished_name = 'topology/pod-%s/node-%s/sys/bgp/inst/dom-%s/peer-[%s]/ent-[%s]/peerstats' % (
             pod_id,
@@ -32,18 +44,27 @@ class ProtocolBgpNeighborStatsApi():
             )
             return None
 
-        if managed_objects['totalCount'] != '1':
+        if int(managed_objects['totalCount']) > 1:
             self.log.error(
                 'get_protocol_bgp_neighbor_stats_mo',
-                'Unexpected object count'
+                'Unexpected object count: %s' % (key)
             )
             return None
 
-        self.bgp_nbr_stats_mo[key] = managed_objects['imdata'][0]['bgpPeerEntryStats']['attributes']
+        if int(managed_objects['totalCount']) == 0:
+            self.bgp_nbr_stats_mo[key] = {}
+        else:
+            self.bgp_nbr_stats_mo[key] = managed_objects['imdata'][0]['bgpPeerEntryStats']['attributes']
 
         self.log.apic_mo(
-            'bgp.stats.%s' % (key),
+            'bgpPeerEntryStats.%s' % (key),
             self.bgp_nbr_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'bgpPeerEntryStats',
+            self.bgp_nbr_stats_mo[key],
+            object_selector=key
         )
 
         return self.bgp_nbr_stats_mo[key]

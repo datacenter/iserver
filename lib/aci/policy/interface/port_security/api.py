@@ -6,6 +6,17 @@ class PolicyInterfacePortSecurityApi():
         if self.policy_interface_port_security_mo is not None:
             return self.policy_interface_port_security_mo
 
+        cache = self.get_object_cache(
+            'l2PortSecurityPol'
+        )
+        if cache is not None:
+            self.policy_interface_port_security_mo = cache
+            self.log.apic_mo(
+                'l2PortSecurityPol',
+                self.policy_interface_port_security_mo
+            )
+            return self.policy_interface_port_security_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'l2PortSecurityPol',
@@ -28,6 +39,11 @@ class PolicyInterfacePortSecurityApi():
             )
 
         self.log.apic_mo(
+            'l2PortSecurityPol',
+            self.policy_interface_port_security_mo
+        )
+
+        self.set_object_cache(
             'l2PortSecurityPol',
             self.policy_interface_port_security_mo
         )

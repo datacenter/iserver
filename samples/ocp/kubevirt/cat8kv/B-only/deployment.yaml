@@ -73,8 +73,10 @@ netconf:
   enabled: true
   username: ${SSH_USERNAME}
   password: ${SSH_PASSWORD}
+running:
+  wait: false
 ready:
-  enabled: true
+  enabled: false
   type: ssh
   timeout: 600
   sleep: 120

@@ -7,6 +7,18 @@ class ProtocolIpv4DomainApi():
         if key in self.ipv4_domains_mo:
             return self.ipv4_domains_mo[key]
 
+        cache = self.get_object_cache(
+            'uribv4Dom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.ipv4_domains_mo[key] = cache
+            self.log.apic_mo(
+                'uribv4Dom.%s' % (key),
+                self.ipv4_domains_mo[key]
+            )
+            return self.ipv4_domains_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/uribv4' % (pod_id, node_id)
         query = 'query-target=children&target-subtree-class=uribv4Dom'
         managed_objects = self.get_managed_object(
@@ -29,6 +41,12 @@ class ProtocolIpv4DomainApi():
         self.log.apic_mo(
             'uribv4Dom.%s' % (key),
             self.ipv4_domains_mo[key]
+        )
+
+        self.set_object_cache(
+            'uribv4Dom',
+            self.ipv4_domains_mo[key],
+            object_selector=key
         )
 
         return self.ipv4_domains_mo[key]

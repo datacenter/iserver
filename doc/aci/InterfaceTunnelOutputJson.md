@@ -20,11 +20,11 @@
         "adminSt": "up",
         "cfgdMtu": "9000",
         "delInProg": "no",
-        "dest": "172.16.30.88",
+        "dest": "172.16.30.161",
         "dn": "topology/pod-1/node-205/sys/tunnel-[tunnel16]",
         "id": "tunnel16",
-        "idRequestorDn": "topology/pod-1/node-205/sys/inst-overlay-1/db-dtep/dtep-[172.16.30.88]",
-        "iod": "119",
+        "idRequestorDn": "topology/pod-1/node-205/sys/bgp/inst/dom-overlay-1/db-dtep/dtep-[172.16.30.161]",
+        "iod": "121",
         "keepAlvIntvl": "10",
         "keepAlvRetries": "3",
         "mac": "00:00:00:00:00:00",
@@ -44,11 +44,17 @@
         "nodeId": "205",
         "apic": "apic11",
         "pod_node_name": "pod-1/bl205-eu-spdc",
+        "src_ip": "10.3.192.64",
+        "dest_ip": "172.16.30.161",
+        "typeT": [
+            "Fabric External",
+            "Physical",
+            "dci-ucast"
+        ],
         "tunnelId": 16,
         "up": true,
-        "requestor": "inst-overlay-1",
-        "dest_node": null,
-        "dest_ip_node": "172.16.30.88"
+        "requestor": "bgp",
+        "dest_node": []
     }
 ]
 ```

@@ -34,5 +34,6 @@ class TenantOutput():
             order=order,
             headers=headers,
             underline=True,
+            remove_empty_columns=True,
             table=True
         )

@@ -21,30 +21,49 @@ class InterfaceAdjacencyLacpInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
+        # "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/27]/adj"
+        info['pod_id'] = info['dn'].split('/')[1]
+        info['node_id'] = info['dn'].split('/')[2]
+        info['interface_id'] = info['dn'].split('if-[')[1].split(']')[0]
+
         return info
 
-    def get_lacp_adjacency_endpoint(self, pod_id, node_id, interface_id, allow_multiple=True):
+    def get_lacp_adjacency_endpoints_info(self, pod_id, node_id):
+        key = '%s.%s' % (
+            pod_id,
+            node_id
+        )
+        if key in self.adjacency_lacp:
+            return self.adjacency_lacp[key]
+
         managed_objects = self.get_adjacency_lacp_mo(
             pod_id,
-            node_id,
-            interface_id
+            node_id
         )
-
         if managed_objects is None:
             return None
 
-        info = []
+        self.adjacency_lacp[key] = []
         for managed_object in managed_objects:
-            endpoint_info = self.get_lacp_adjacency_endpoint_info(
-                managed_object
+            self.adjacency_lacp[key].append(
+                self.get_lacp_adjacency_endpoint_info(
+                    managed_object
+                )
             )
-            endpoint_info['pod_id'] = pod_id
-            endpoint_info['node_id'] = node_id
-            endpoint_info['port_id'] = interface_id
 
-            info.append(
-                endpoint_info
-            )
+        return self.adjacency_lacp[key]
+
+    def get_lacp_adjacency_endpoint(self, pod_id, node_id, interface_id, allow_multiple=True):
+        endpoints_info = self.get_lacp_adjacency_endpoints_info(pod_id, node_id)
+        if endpoints_info is None:
+            return None
+
+        info = []
+        for endpoint_info in endpoints_info:
+            if interface_id == endpoint_info['interface_id']:
+                info.append(
+                    endpoint_info
+                )
 
         if allow_multiple:
             return info

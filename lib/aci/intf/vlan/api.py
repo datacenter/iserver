@@ -7,6 +7,18 @@ class InterfaceVlanStatsApi():
         if key in self.vlan_stats_mo:
             return self.vlan_stats_mo[key]
 
+        cache = self.get_object_cache(
+            'vlanCktEp',
+            object_selector=key
+        )
+        if cache is not None:
+            self.vlan_stats_mo[key] = cache
+            self.log.apic_mo(
+                'vlanCktEp.%s' % (key),
+                self.vlan_stats_mo[key]
+            )
+            return self.vlan_stats_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/vlanCktEp' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -28,6 +40,12 @@ class InterfaceVlanStatsApi():
         self.log.apic_mo(
             'vlanCktEp.%s' % (key),
             self.vlan_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'vlanCktEp',
+            self.vlan_stats_mo[key],
+            object_selector=key
         )
 
         return self.vlan_stats_mo[key]

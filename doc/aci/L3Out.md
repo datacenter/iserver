@@ -50,11 +50,11 @@ Options:
   -v, --view [default|epg|node]
   -o, --output [default|json|epg|node]
                                   [default: default]
-  --empty                         No error on empty result
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\552d29b40f30
+Info: finished in 110 ms and logs saved in /tmp/iserver\0106a86db754
 ```
 
 [[Back]](./README.md)

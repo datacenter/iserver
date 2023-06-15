@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy lacp-m --apic apic11 --name default --view verbose
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 Port Channel Member Policy Properties
 -------------------------------------
@@ -106,7 +106,7 @@ Developer
 # iserver get aci policy lacp-m --apic apic11 --name default --view verbose
 
 {
-    "duration": 1569,
+    "duration": 1845,
     "apic": {
         "read": true,
         "success": 4,
@@ -114,10 +114,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 369,
+        "connect_time": 425,
         "disconnect_time": 0,
-        "mo_time": 1050,
-        "total_time": 1419
+        "mo_time": 959,
+        "total_time": 1384
     },
     "error": {
         "read": false,
@@ -130,16 +130,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	369	-	connect apic11o.emea-sp.cisco.com
-True	314	1	apic11o.emea-sp.cisco.com class lacpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	334	70	apic11o.emea-sp.cisco.com class l1RsLacpIfPolCons
-True	402	11	apic11o.emea-sp.cisco.com class fabricNode
+True	425	-	connect apic11o.emea-sp.cisco.com
+True	315	1	apic11o.emea-sp.cisco.com class lacpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	341	70	apic11o.emea-sp.cisco.com class l1RsLacpIfPolCons
+True	303	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLacpm.md)

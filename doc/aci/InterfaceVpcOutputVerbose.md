@@ -5,12 +5,14 @@
 ```
 # iserver get aci intf vpc --apic apic11 --node any --id 100 --view verbose
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
 - node: s101-eu-spdc
@@ -49,34 +51,34 @@ Interface Virtual Port Channel
 +-----+--------------------------+---------+-------------+--------------+
 | ID  | Name                     | PC Mode | Local State | Remote State |
 +-----+--------------------------+---------+-------------+--------------+
-| 23  | pod4a-COMP-1-PET_PolGrp  | active  | up          | up           | 
-| 689 | pod1a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
-| 26  | pod1a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
-| 696 | pod4a-AIO-2-PET_PolGrp   | active  | up          | up           | 
+| 21  | pod4a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
 | 25  | pod4a-COMP-2-PET_PolGrp  | active  | up          | up           | 
-| 686 | pod1a-MX_PolGrp          | active  | up          | down         | 
+| 356 | pod1a-COMP-2-PET_PolGrp  | active  | up          | up           | 
+| 24  | pod4a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
+| 697 | pod4a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
+| 696 | pod4a-AIO-2-PET_PolGrp   | active  | up          | up           | 
+| 23  | pod4a-COMP-1-PET_PolGrp  | active  | up          | up           | 
+| 688 | pod1a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
+| 28  | pod1a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
+| 26  | pod1a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
+| 353 | pod1a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
+| 13  | pod4a-COMP-3-PET_PolGrp  | active  | up          | up           | 
 | 687 | pod1a-NVBench_PolGrp     | active  | down        | down         | 
 | 27  | pod1a-AIO-2-PET_PolGrp   | active  | up          | up           | 
-| 697 | pod4a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
-| 351 | pod-4a-br-API            | active  | up          | up           | 
 | 352 | pod1a-AIO-1-PET_PolGrp   | active  | up          | up           | 
-| 21  | pod4a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
+| 695 | pod4a-COMP-3-SAMX_PolGrp | active  | up          | up           | 
+| 355 | pod1a-COMP-1-PET_PolGrp  | active  | up          | up           | 
 | 14  | pod4a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
-| 353 | pod1a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
-| 24  | pod4a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
+| 689 | pod1a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
+| 16  | pod4a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
+| 343 | Infra_PolGrp             | active  | up          | up           | 
+| 684 | pod4a-MX_PolGrp          | active  | up          | down         | 
+| 15  | pod4a-AIO-1-PET_PolGrp   | active  | up          | up           | 
+| 354 | pod1a-AIO-3-PET_PolGrp   | active  | up          | up           | 
+| 686 | pod1a-MX_PolGrp          | active  | up          | down         | 
 | 22  | pod4a-AIO-3-PET_PolGrp   | active  | up          | up           | 
 | 685 | pod1a-API_PolGrp         | active  | up          | up           | 
-| 356 | pod1a-COMP-2-PET_PolGrp  | active  | up          | up           | 
-| 28  | pod1a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
-| 15  | pod4a-AIO-1-PET_PolGrp   | active  | up          | up           | 
-| 688 | pod1a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
-| 354 | pod1a-AIO-3-PET_PolGrp   | active  | up          | up           | 
-| 695 | pod4a-COMP-3-SAMX_PolGrp | active  | up          | up           | 
-| 16  | pod4a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
-| 13  | pod4a-COMP-3-PET_PolGrp  | active  | up          | up           | 
-| 343 | Infra_PolGrp             | active  | up          | up           | 
-| 355 | pod1a-COMP-1-PET_PolGrp  | active  | up          | up           | 
-| 684 | pod4a-MX_PolGrp          | active  | up          | down         | 
+| 351 | pod-4a-br-API            | active  | up          | up           | 
 +-----+--------------------------+---------+-------------+--------------+
 
 +---------------------+---------------+-----------+---------------+------------+--------------+---------------+----------------+
@@ -112,34 +114,34 @@ Interface Virtual Port Channel
 +-----+--------------------------+---------+-------------+--------------+
 | ID  | Name                     | PC Mode | Local State | Remote State |
 +-----+--------------------------+---------+-------------+--------------+
-| 684 | pod4a-MX_PolGrp          | active  | down        | up           | 
-| 697 | pod4a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
+| 27  | pod1a-AIO-2-PET_PolGrp   | active  | up          | up           | 
+| 353 | pod1a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
 | 28  | pod1a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
+| 354 | pod1a-AIO-3-PET_PolGrp   | active  | up          | up           | 
 | 689 | pod1a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
-| 22  | pod4a-AIO-3-PET_PolGrp   | active  | up          | up           | 
-| 685 | pod1a-API_PolGrp         | active  | up          | up           | 
+| 355 | pod1a-COMP-1-PET_PolGrp  | active  | up          | up           | 
+| 343 | Infra_PolGrp             | active  | up          | up           | 
+| 687 | pod1a-NVBench_PolGrp     | active  | down        | down         | 
+| 26  | pod1a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
+| 352 | pod1a-AIO-1-PET_PolGrp   | active  | up          | up           | 
+| 356 | pod1a-COMP-2-PET_PolGrp  | active  | up          | up           | 
+| 686 | pod1a-MX_PolGrp          | active  | down        | up           | 
+| 688 | pod1a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
 | 25  | pod4a-COMP-2-PET_PolGrp  | active  | up          | up           | 
 | 24  | pod4a-COMP-2-SAMX_PolGrp | active  | up          | up           | 
-| 353 | pod1a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
-| 352 | pod1a-AIO-1-PET_PolGrp   | active  | up          | up           | 
-| 16  | pod4a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
-| 687 | pod1a-NVBench_PolGrp     | active  | down        | down         | 
-| 23  | pod4a-COMP-1-PET_PolGrp  | active  | up          | up           | 
-| 696 | pod4a-AIO-2-PET_PolGrp   | active  | up          | up           | 
-| 354 | pod1a-AIO-3-PET_PolGrp   | active  | up          | up           | 
-| 686 | pod1a-MX_PolGrp          | active  | down        | up           | 
 | 13  | pod4a-COMP-3-PET_PolGrp  | active  | up          | up           | 
-| 21  | pod4a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
+| 684 | pod4a-MX_PolGrp          | active  | down        | up           | 
+| 685 | pod1a-API_PolGrp         | active  | up          | up           | 
 | 351 | pod-4a-br-API            | active  | up          | up           | 
-| 26  | pod1a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
-| 688 | pod1a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
-| 695 | pod4a-COMP-3-SAMX_PolGrp | active  | up          | up           | 
+| 22  | pod4a-AIO-3-PET_PolGrp   | active  | up          | up           | 
 | 15  | pod4a-AIO-1-PET_PolGrp   | active  | up          | up           | 
-| 343 | Infra_PolGrp             | active  | up          | up           | 
-| 355 | pod1a-COMP-1-PET_PolGrp  | active  | up          | up           | 
-| 356 | pod1a-COMP-2-PET_PolGrp  | active  | up          | up           | 
+| 697 | pod4a-COMP-1-SAMX_PolGrp | active  | up          | up           | 
 | 14  | pod4a-AIO-1-SAMX_PolGrp  | active  | up          | up           | 
-| 27  | pod1a-AIO-2-PET_PolGrp   | active  | up          | up           | 
+| 696 | pod4a-AIO-2-PET_PolGrp   | active  | up          | up           | 
+| 23  | pod4a-COMP-1-PET_PolGrp  | active  | up          | up           | 
+| 21  | pod4a-AIO-3-SAMX_PolGrp  | active  | up          | up           | 
+| 16  | pod4a-AIO-2-SAMX_PolGrp  | active  | up          | up           | 
+| 695 | pod4a-COMP-3-SAMX_PolGrp | active  | up          | up           | 
 +-----+--------------------------+---------+-------------+--------------+
 ```
 
@@ -149,18 +151,18 @@ Developer
 # iserver get aci intf vpc --apic apic11 --node any --id 100 --view verbose
 
 {
-    "duration": 4157,
+    "duration": 4958,
     "apic": {
         "read": true,
-        "success": 12,
+        "success": 14,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 11,
-        "connect_time": 416,
+        "mo": 13,
+        "connect_time": 386,
         "disconnect_time": 0,
-        "mo_time": 3472,
-        "total_time": 3888
+        "mo_time": 4131,
+        "total_time": 4517
     },
     "error": {
         "read": false,
@@ -173,24 +175,27 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	416	-	connect apic11o.emea-sp.cisco.com
-True	319	11	apic11o.emea-sp.cisco.com class fabricNode
-True	283	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
-True	315	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
-True	334	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
-True	345	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
-True	306	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
-True	314	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
-True	309	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	386	-	connect apic11o.emea-sp.cisco.com
+True	325	13	apic11o.emea-sp.cisco.com class fabricNode
+True	285	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	285	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	308	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	309	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	281	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	305	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	277	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/vpcDom
+True	566	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/vpcDom
+True	286	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
 True	293	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
-True	356	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
-True	298	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
+True	279	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
+True	332	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
 ```
 
 [[Back]](./InterfaceVpc.md)

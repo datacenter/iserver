@@ -115,10 +115,10 @@ class ProtocolIpv6Output():
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_list(
+            self.my_output.expand_lists(
                 info,
                 order,
-                'next_hop'
+                ['next_hop']
             ),
             order=order,
             headers=headers,

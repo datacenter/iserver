@@ -5,23 +5,16 @@
 ```
 # iserver get aci proto arp --apic apic11 --subnet 15.2.0.0/16
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
-+---------------------+----------------------+-------------------+------------+--------+-----------+---------------+-------------------------------+
-| Node                | VRF                  | MAC               | IP         | State  | Interface | Phy Interface | Timestamp                     |
-+---------------------+----------------------+-------------------+------------+--------+-----------+---------------+-------------------------------+
-| pod-1/bl205-eu-spdc | MPC-F5T:F5-OUT_VRF   | 00:50:56:B2:80:63 | 15.2.7.1   | normal | vlan63    | tunnel2       | 2023-05-30T18:22:42.541+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:22:BD:CD:C2:BB | 15.2.7.252 | normal | vlan61    | tunnel2       | 2023-05-30T18:14:54.885+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:0E:D8 | 15.2.7.5   | normal | vlan61    | po5           | 2023-05-30T18:20:32.983+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:62:BB | 15.2.7.4   | normal | vlan61    | po5           | 2023-05-30T18:21:04.495+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:77:0B | 15.2.7.3   | normal | vlan61    | tunnel2       | 2023-05-30T18:20:07.840+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:7E:F3 | 15.2.7.2   | normal | vlan61    | po5           | 2023-05-30T18:22:03.650+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:8F:CB | 15.2.7.6   | normal | vlan61    | po5           | 2023-05-30T18:20:27.742+02:00 | 
-| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | 00:50:56:B2:D5:AB | 15.2.7.1   | normal | vlan61    | po5           | 2023-05-30T18:22:15.727+02:00 | 
-+---------------------+----------------------+-------------------+------------+--------+-----------+---------------+-------------------------------+
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
+| Node                | VRF                  | MAC         | IP       | State      | Interface | Timestamp                     |
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
+| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | unspecified | 15.2.7.1 | incomplete | vlan67    | 2023-06-14T08:07:01.065+02:00 | 
+| pod-1/bl205-eu-spdc | MPC:MPC-sPBR-OUT_VRF | unspecified | 15.2.7.3 | incomplete | vlan67    | 2023-06-14T08:07:08.493+02:00 | 
++---------------------+----------------------+-------------+----------+------------+-----------+-------------------------------+
 ```
 
 Developer
@@ -30,7 +23,7 @@ Developer
 # iserver get aci proto arp --apic apic11 --subnet 15.2.0.0/16
 
 {
-    "duration": 79214,
+    "duration": 1572,
     "apic": {
         "read": true,
         "success": 4,
@@ -38,10 +31,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 439,
+        "connect_time": 412,
         "disconnect_time": 0,
-        "mo_time": 78641,
-        "total_time": 79080
+        "mo_time": 953,
+        "total_time": 1365
     },
     "error": {
         "read": false,
@@ -54,16 +47,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	439	-	connect apic11o.emea-sp.cisco.com
-True	78059	11	apic11o.emea-sp.cisco.com class fabricNode
-True	308	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom
-True	274	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom query query-target=subtree&target-subtree-class=arpAdjEp
+True	412	-	connect apic11o.emea-sp.cisco.com
+True	334	13	apic11o.emea-sp.cisco.com class fabricNode
+True	321	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom
+True	298	12	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/arpDom query query-target=subtree&target-subtree-class=arpAdjEp
 ```
 
 [[Back]](./ProtocolArp.md)

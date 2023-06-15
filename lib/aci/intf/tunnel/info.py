@@ -6,6 +6,16 @@ class InterfaceTunnelInfo():
     def __init__(self):
         self.interface_tunnel = {}
 
+        self.interface_tunnel_endpoint_type = {
+            'physical': 'Physical',
+            'proxy-acast-mac': 'Proxy Anycast MAC',
+            'proxy-acast-v4': 'Proxy Anycast IPv4',
+            'proxy-acast-v6': 'Proxy Anycast IPv6',
+            'fabric-ext': 'Fabric External',
+            'rl-mcast-hrep': 'Remote Leaf Multicast',
+            'rl-ucast': 'Remote Leaf Unicast'
+        }
+
     def get_interface_tunnel_summary(self, pod_id, node_id):
         ports = self.get_interfaces_tunnel(
             pod_id,
@@ -82,12 +92,35 @@ class InterfaceTunnelInfo():
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             self.get_node_name(
                 info['nodeId']
             )
+        )
+
+        info['src_ip'] = info['src']
+        if info['src'].endswith('/32'):
+            info['src_ip'] = info['src_ip'].split('/32')[0]
+
+        info['dest_ip'] = info['dest']
+        if info['dest'].endswith('/32'):
+            info['dest_ip'] = info['dest_ip'].split('/32')[0]
+
+        info['typeT'] = []
+        for tunnel_type in info['type'].split(','):
+            if tunnel_type in self.interface_tunnel_endpoint_type:
+                info['typeT'].append(
+                    self.interface_tunnel_endpoint_type[tunnel_type]
+                )
+            else:
+                info['typeT'].append(
+                    tunnel_type
+                )
+
+        info['typeT'] = sorted(
+            info['typeT']
         )
 
         info['tunnelId'] = int(info['id'].strip('tunnel'))
@@ -116,18 +149,39 @@ class InterfaceTunnelInfo():
                 if len(info['idRequestorDn'].split('/')) > 4:
                     info['requestor'] = info['idRequestorDn'].split('/')[4]
 
-        info['dest_node'] = None
-        info['dest_ip_node'] = info['dest']
+        info['dest_node'] = []
 
-        destination_node_info = self.get_node(
-            node_ip=info['dest'].split('/')[0]
-        )
-        if destination_node_info is not None:
-            info['dest_node'] = destination_node_info['name']
-            info['dest_ip_node'] = '%s (%s)' % (
-                info['dest'],
-                info['dest_node']
+        return info
+
+    def get_interface_tunnel_info_resolved(self, info):
+        tep_found = False
+        nodes = self.get_nodes()
+        for node in nodes:
+            node_address_info = self.get_node_address_ipv4(
+                node['podId'],
+                node['id'],
+                address_filter=['ip:%s' % (info['dest_ip'])]
             )
+            if node_address_info is not None and len(node_address_info) == 1:
+                tep_found = True
+                info['dest_node'].append(
+                    'pod-%s/%s/%s' % (
+                        node['podId'],
+                        node['name'],
+                        node_address_info[0]['interface']
+                    )
+                )
+
+        if not tep_found:
+            # Tunnel destined to node (tep)
+            destination_node_info = self.get_node(
+                node_ip=info['dest_ip']
+            )
+            if destination_node_info is not None:
+                info['dest_node'].append(
+                    destination_node_info['pod_node_name']
+                )
+                tep_found = True
 
         return info
 
@@ -137,14 +191,16 @@ class InterfaceTunnelInfo():
             return self.interface_tunnel[key]
 
         interfaces_mo = self.get_interface_tunnel_mo(pod_id, node_id)
-        if interfaces_mo is not None:
-            self.interface_tunnel[key] = []
-            for interface_mo in interfaces_mo:
-                self.interface_tunnel[key].append(
-                    self.get_interface_tunnel_info(
-                        interface_mo
-                    )
+        if interfaces_mo is None:
+            return None
+
+        self.interface_tunnel[key] = []
+        for interface_mo in interfaces_mo:
+            self.interface_tunnel[key].append(
+                self.get_interface_tunnel_info(
+                    interface_mo
                 )
+            )
 
         self.log.apic_mo(
             'tunnelIf.info.%s' % (key),
@@ -185,20 +241,16 @@ class InterfaceTunnelInfo():
                         return False
 
             if key == 'ip':
-                source_ip = interface_info['src'].split('/')[0]
-                destination_ip = interface_info['dest']
-                if not filter_helper.match_string(value, source_ip) and not filter_helper.match_string(value, destination_ip):
+                if not filter_helper.match_string(value, interface_info['src_ip']) and not filter_helper.match_string(value, interface_info['dest']):
                     return False
 
             if key == 'subnet':
-                source_ip = interface_info['src'].split('/')[0]
-                destination_ip = interface_info['dest']
-                if not ip_helper.is_ipv4_in_cidr(source_ip, value) and not ip_helper.is_ipv4_in_cidr(destination_ip, value):
+                if not ip_helper.is_ipv4_in_cidr(interface_info['src_ip'], value) and not ip_helper.is_ipv4_in_cidr(interface_info['dest'], value):
                     return False
 
         return True
 
-    def get_interfaces_tunnel(self, pod_id, node_id, interface_filter=None):
+    def get_interfaces_tunnel(self, pod_id, node_id, interface_filter=None, resolve=False):
         all_interfaces = self.get_interfaces_tunnel_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -209,6 +261,10 @@ class InterfaceTunnelInfo():
             if not self.match_interface_tunnel(interface_info, interface_filter):
                 continue
 
+            if resolve:
+                interface_info = self.get_interface_tunnel_info_resolved(
+                    interface_info
+                )
             interfaces.append(
                 interface_info
             )

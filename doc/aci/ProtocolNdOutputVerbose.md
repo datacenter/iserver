@@ -5,8 +5,7 @@
 ```
 # iserver get aci proto nd --apic apic11 --node bl205-eu-spdc --view verbose
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
@@ -57,7 +56,7 @@ Developer
 # iserver get aci proto nd --apic apic11 --node bl205-eu-spdc --view verbose
 
 {
-    "duration": 2280,
+    "duration": 2636,
     "apic": {
         "read": true,
         "success": 6,
@@ -65,10 +64,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 447,
+        "connect_time": 514,
         "disconnect_time": 0,
-        "mo_time": 1566,
-        "total_time": 2013
+        "mo_time": 1719,
+        "total_time": 2233
     },
     "error": {
         "read": false,
@@ -81,18 +80,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	447	-	connect apic11o.emea-sp.cisco.com
-True	378	11	apic11o.emea-sp.cisco.com class fabricNode
-True	316	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst
-True	292	26	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndDom
-True	290	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst query query-target=subtree&target-subtree-class=ndAdjEp
-True	290	35	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndIf query rsp-subtree=children&rsp-subtree-class=ndIf,ndIfStats&rsp-subtree-include=required
+True	514	-	connect apic11o.emea-sp.cisco.com
+True	369	13	apic11o.emea-sp.cisco.com class fabricNode
+True	348	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst
+True	348	26	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndDom
+True	330	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/nd/inst query query-target=subtree&target-subtree-class=ndAdjEp
+True	324	35	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ndIf query rsp-subtree=children&rsp-subtree-class=ndIf,ndIfStats&rsp-subtree-include=required
 ```
 
 [[Back]](./ProtocolNd.md)

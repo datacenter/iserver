@@ -21,6 +21,19 @@ class OcpApiSriovNetwork():
 
         return None
 
+    def get_ocp_sriov_network_with_resource_name(self, resource_name, cache=True):
+        if not self.get_ocp_sriov_networks(cache=cache):
+            return None
+
+        networks = []
+        for network in self.sriov_networks:
+            if network['spec']['resourceName'] == resource_name:
+                networks.append(
+                    network
+                )
+
+        return networks
+
     def get_ocp_sriov_networks(self, cache=True):
         if not self.connect():
             return False

@@ -153,7 +153,7 @@ class InterfacePhyInfo():
         info['nodeId'] = info['dn'].split('/')[2][5:]
         info['nodeName'] = self.get_node_name(info['nodeId'])
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             self.get_node_name(
@@ -223,14 +223,16 @@ class InterfacePhyInfo():
             return self.interface_phy[key]
 
         interfaces_mo = self.get_interface_phy_mo(pod_id, node_id)
-        if interfaces_mo is not None:
-            self.interface_phy[key] = []
-            for interface_mo in interfaces_mo:
-                self.interface_phy[key].append(
-                    self.get_interface_phy_info(
-                        interface_mo
-                    )
+        if interfaces_mo is None:
+            return None
+
+        self.interface_phy[key] = []
+        for interface_mo in interfaces_mo:
+            self.interface_phy[key].append(
+                self.get_interface_phy_info(
+                    interface_mo
                 )
+            )
 
         self.log.apic_mo(
             'l1PhysIf.info.%s' % (key),
@@ -462,7 +464,7 @@ class InterfacePhyInfo():
 
         return True
 
-    def get_interfaces_phy(self, pod_id, node_id, interface_filter=None, ether_stats_info=False, fc_stats_info=False, epg_stats_info=False, load_info=False, eee_info=False, cdp_info=False, lldp_info=False, policy_info=False, qos_info=False, qos_references=None):
+    def get_interfaces_phy(self, pod_id, node_id, interface_filter=None, ether_stats_info=False, fc_stats_info=False, epg_stats_info=False, load_info=False, eee_info=False, cdp_info=False, lldp_info=False, policy_info=False, qos_info=False, qos_references=None, cap_info=False, pc_info=False):
         all_interfaces = self.get_interfaces_phy_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -547,7 +549,7 @@ class InterfacePhyInfo():
                 interface_info['lldp'] = self.get_lldp_adjacency_endpoint(
                     interface_info['podId'],
                     interface_info['nodeId'],
-                    lldp_filter=['interface_id:%s' % (interface_info['id'])],
+                    adjacency_filter=['interface_id:%s' % (interface_info['id'])],
                     allow_multiple=True
                 )
 
@@ -579,6 +581,20 @@ class InterfacePhyInfo():
 
                 if len(interface_info['qos']) == 0:
                     continue
+
+            if cap_info:
+                interface_info['load'] = self.get_interface_phy_cap_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
+
+            if pc_info:
+                interface_info['pc'] = self.get_interface_phy_pc_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
 
             interfaces.append(
                 interface_info

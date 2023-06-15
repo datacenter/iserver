@@ -16,7 +16,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-black-hole",
                 "encap": "vxlan-16777200",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:12:02.244+02:00",
+                "modTs": "2023-06-12T09:12:42.649+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "black-hole",
                 "status": "",
@@ -32,7 +32,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_BGP_VRF",
                 "encap": "vxlan-2424848",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:19.532+02:00",
+                "modTs": "2023-06-12T10:38:40.610+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:Infra_BGP_VRF",
                 "status": "",
@@ -44,8 +44,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_BGP_VRF/db-ip/adj-[eth1/24.62]-[192.168.254.1]",
-                        "ifId": "eth1/24.62",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_BGP_VRF/db-ip/adj-[eth1/24.48]-[192.168.254.1]",
+                        "ifId": "eth1/24.48",
                         "ip": "192.168.254.1",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -53,7 +53,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:20:51.579+02:00",
+                        "upTS": "2023-06-14T07:59:40.468+02:00",
                         "domain_name": "common:Infra_BGP_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -68,7 +68,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_privIP_VRF",
                 "encap": "vxlan-2097161",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:16.395+02:00",
+                "modTs": "2023-06-12T10:38:52.329+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:Infra_privIP_VRF",
                 "status": "",
@@ -80,8 +80,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_privIP_VRF/db-ip/adj-[eth1/24.36]-[192.168.254.66]",
-                        "ifId": "eth1/24.36",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_privIP_VRF/db-ip/adj-[eth1/24.47]-[192.168.254.66]",
+                        "ifId": "eth1/24.47",
                         "ip": "192.168.254.66",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -89,7 +89,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:08.346+02:00",
+                        "upTS": "2023-06-14T07:55:52.820+02:00",
                         "domain_name": "common:Infra_privIP_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -104,7 +104,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_VRF",
                 "encap": "vxlan-2686976",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:58.969+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:Infra_VRF",
                 "status": "",
@@ -120,7 +120,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1-N3-N4_VRF",
                 "encap": "vxlan-2261001",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:26.794+02:00",
+                "modTs": "2023-06-12T10:36:43.879+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:smi5Gc-cvim1-N3-N4_VRF",
                 "status": "",
@@ -132,8 +132,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1-N3-N4_VRF/db-ip/adj-[eth1/24.65]-[192.168.254.98]",
-                        "ifId": "eth1/24.65",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1-N3-N4_VRF/db-ip/adj-[eth1/24.51]-[192.168.254.98]",
+                        "ifId": "eth1/24.51",
                         "ip": "192.168.254.98",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -141,7 +141,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:05.783+02:00",
+                        "upTS": "2023-06-14T07:55:55.983+02:00",
                         "domain_name": "common:smi5Gc-cvim1-N3-N4_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -156,7 +156,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1_VRF",
                 "encap": "vxlan-2883586",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:26.794+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:smi5Gc-cvim1_VRF",
                 "status": "",
@@ -168,8 +168,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1_VRF/db-ip/adj-[eth1/24.60]-[192.168.254.102]",
-                        "ifId": "eth1/24.60",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1_VRF/db-ip/adj-[eth1/24.46]-[192.168.254.102]",
+                        "ifId": "eth1/24.46",
                         "ip": "192.168.254.102",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -177,7 +177,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:05.673+02:00",
+                        "upTS": "2023-06-14T07:55:56.446+02:00",
                         "domain_name": "common:smi5Gc-cvim1_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -192,7 +192,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF",
                 "encap": "vxlan-2523141",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:19.532+02:00",
+                "modTs": "2023-06-12T10:35:12.912+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:smi5Gc-cvim4-N3-N4_VRF",
                 "status": "",
@@ -204,8 +204,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/db-ip/adj-[eth1/24.64]-[192.168.254.90]",
-                        "ifId": "eth1/24.64",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/db-ip/adj-[eth1/24.52]-[192.168.254.90]",
+                        "ifId": "eth1/24.52",
                         "ip": "192.168.254.90",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -213,7 +213,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:06.103+02:00",
+                        "upTS": "2023-06-14T07:55:57.429+02:00",
                         "domain_name": "common:smi5Gc-cvim4-N3-N4_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -228,7 +228,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4_VRF",
                 "encap": "vxlan-2621441",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:27.775+02:00",
+                "modTs": "2023-06-12T10:35:12.912+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "common:smi5Gc-cvim4_VRF",
                 "status": "",
@@ -240,8 +240,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4_VRF/db-ip/adj-[eth1/24.66]-[192.168.254.94]",
-                        "ifId": "eth1/24.66",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4_VRF/db-ip/adj-[eth1/24.55]-[192.168.254.94]",
+                        "ifId": "eth1/24.55",
                         "ip": "192.168.254.94",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -249,7 +249,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:05.725+02:00",
+                        "upTS": "2023-06-14T07:55:56.393+02:00",
                         "domain_name": "common:smi5Gc-cvim4_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -264,7 +264,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-ECMP-demo:ACC_VRF",
                 "encap": "vxlan-2326534",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:26.794+02:00",
+                "modTs": "2023-06-12T10:38:39.736+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "ECMP-demo:ACC_VRF",
                 "status": "",
@@ -280,7 +280,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-ECMP-demo:INT-ext_VRF",
                 "encap": "vxlan-2621448",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T02:37:01.049+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "ECMP-demo:INT-ext_VRF",
                 "status": "",
@@ -296,7 +296,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-ECMP-demo:MPC-CDC-2_VRF",
                 "encap": "vxlan-3047429",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "ECMP-demo:MPC-CDC-2_VRF",
                 "status": "",
@@ -312,7 +312,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-iks-monitoring:iks-mon_VRF",
                 "encap": "vxlan-2228231",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "iks-monitoring:iks-mon_VRF",
                 "status": "",
@@ -328,7 +328,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-management",
                 "encap": "vxlan-2752512",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:16.395+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "management",
                 "status": "",
@@ -344,7 +344,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:EU-SPDC-ERSPAN-VRF",
                 "encap": "vxlan-2555904",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:11.621+02:00",
+                "modTs": "2023-06-12T10:38:40.369+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "mgmt:EU-SPDC-ERSPAN-VRF",
                 "status": "",
@@ -360,7 +360,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:inb",
                 "encap": "vxlan-2818048",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:26.794+02:00",
+                "modTs": "2023-06-12T10:38:36.765+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "mgmt:inb",
                 "status": "",
@@ -372,8 +372,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:inb/db-ip/adj-[eth1/24.67]-[192.168.254.17]",
-                        "ifId": "eth1/24.67",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:inb/db-ip/adj-[eth1/24.54]-[192.168.254.17]",
+                        "ifId": "eth1/24.54",
                         "ip": "192.168.254.17",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -381,7 +381,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:06.156+02:00",
+                        "upTS": "2023-06-14T07:55:56.033+02:00",
                         "domain_name": "mgmt:inb",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -396,7 +396,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-E:CU-DU-Infra_VRF",
                 "encap": "vxlan-2981889",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:40.610+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC-E:CU-DU-Infra_VRF",
                 "status": "",
@@ -412,7 +412,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-E:MPC-E-sPBR-IN_VRF",
                 "encap": "vxlan-2097155",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:14.560+02:00",
+                "modTs": "2023-06-12T10:38:40.610+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC-E:MPC-E-sPBR-IN_VRF",
                 "status": "",
@@ -428,7 +428,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-F5T:F5-IN_VRF",
                 "encap": "vxlan-2162693",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC-F5T:F5-IN_VRF",
                 "status": "",
@@ -444,33 +444,13 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-F5T:F5-OUT_VRF",
                 "encap": "vxlan-2523139",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:15.089+02:00",
+                "modTs": "2023-06-12T10:38:40.610+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC-F5T:F5-OUT_VRF",
                 "status": "",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "adjacency": [
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-F5T:F5-OUT_VRF/db-ip/adj-[vlan63]-[15.2.7.1]",
-                        "ifId": "vlan63",
-                        "ip": "15.2.7.1",
-                        "mac": "00:50:56:B2:80:63",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:22:42.541+02:00",
-                        "domain_name": "MPC-F5T:F5-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    }
-                ],
-                "adjacency_count": 1
+                "adjacency": [],
+                "adjacency_count": 0
             },
             {
                 "__Output": {
@@ -480,7 +460,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-IN_VRF",
                 "encap": "vxlan-2490372",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:19.532+02:00",
+                "modTs": "2023-06-12T10:38:47.088+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC:MPC-sPBR-IN_VRF",
                 "status": "",
@@ -496,7 +476,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF",
                 "encap": "vxlan-2097154",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:19.532+02:00",
+                "modTs": "2023-06-12T10:35:13.032+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "MPC:MPC-sPBR-OUT_VRF",
                 "status": "",
@@ -505,138 +485,43 @@
                     {
                         "__Output": {
                             "name": "Yellow",
-                            "operSt": "Green"
+                            "operSt": "Red"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.252]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.252",
-                        "mac": "00:22:BD:CD:C2:BB",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:14:54.885+02:00",
-                        "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.5]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.5",
-                        "mac": "00:50:56:B2:0E:D8",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:20:32.983+02:00",
-                        "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.4]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.4",
-                        "mac": "00:50:56:B2:62:BB",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:21:04.495+02:00",
-                        "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.3]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.3",
-                        "mac": "00:50:56:B2:77:0B",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:20:07.840+02:00",
-                        "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.2]",
-                        "ifId": "vlan61",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan67]-[15.2.7.2]",
+                        "ifId": "vlan67",
                         "ip": "15.2.7.2",
-                        "mac": "00:50:56:B2:7E:F3",
+                        "mac": "unspecified",
                         "modTs": "never",
                         "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
+                        "operSt": "incomplete",
+                        "physIfId": "",
                         "status": "",
-                        "upTS": "2023-05-30T18:22:03.650+02:00",
+                        "upTS": "2023-06-14T08:07:30.525+02:00",
                         "domain_name": "MPC:MPC-sPBR-OUT_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     },
                     {
                         "__Output": {
                             "name": "Yellow",
-                            "operSt": "Green"
+                            "operSt": "Red"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.6]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.6",
-                        "mac": "00:50:56:B2:8F:CB",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan67]-[15.2.7.5]",
+                        "ifId": "vlan67",
+                        "ip": "15.2.7.5",
+                        "mac": "unspecified",
                         "modTs": "never",
                         "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
+                        "operSt": "incomplete",
+                        "physIfId": "",
                         "status": "",
-                        "upTS": "2023-05-30T18:20:27.742+02:00",
-                        "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.1]",
-                        "ifId": "vlan61",
-                        "ip": "15.2.7.1",
-                        "mac": "00:50:56:B2:D5:AB",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:22:15.727+02:00",
+                        "upTS": "2023-06-14T08:07:40.045+02:00",
                         "domain_name": "MPC:MPC-sPBR-OUT_VRF",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
                 ],
-                "adjacency_count": 7
+                "adjacency_count": 2
             },
             {
                 "__Output": {
@@ -646,7 +531,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-NXOS-HandOff_Test:default",
                 "encap": "vxlan-2129927",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:15.089+02:00",
+                "modTs": "2023-06-12T10:38:46.993+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "NXOS-HandOff_Test:default",
                 "status": "",
@@ -662,7 +547,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-overlay-1",
                 "encap": "vxlan-16777199",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:12:02.244+02:00",
+                "modTs": "2023-06-12T09:12:42.649+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "overlay-1",
                 "status": "",
@@ -683,7 +568,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/28",
                         "status": "",
-                        "upTS": "2023-05-30T18:10:03.901+02:00",
+                        "upTS": "2023-06-14T07:49:18.345+02:00",
                         "domain_name": "overlay-1",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -698,7 +583,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-P5G:P5G_VRF",
                 "encap": "vxlan-2883584",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:19.532+02:00",
+                "modTs": "2023-06-12T10:38:58.969+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "P5G:P5G_VRF",
                 "status": "",
@@ -714,7 +599,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPIN_InnoLab:SPIN_VRF1",
                 "encap": "vxlan-2195458",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:15.420+02:00",
+                "modTs": "2023-06-12T10:35:12.912+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "SPIN_InnoLab:SPIN_VRF1",
                 "status": "",
@@ -726,8 +611,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPIN_InnoLab:SPIN_VRF1/db-ip/adj-[eth1/24.71]-[192.168.254.41]",
-                        "ifId": "eth1/24.71",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPIN_InnoLab:SPIN_VRF1/db-ip/adj-[eth1/24.50]-[192.168.254.41]",
+                        "ifId": "eth1/24.50",
                         "ip": "192.168.254.41",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -735,7 +620,7 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:06.051+02:00",
+                        "upTS": "2023-06-14T07:55:52.876+02:00",
                         "domain_name": "SPIN_InnoLab:SPIN_VRF1",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
@@ -750,7 +635,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPN_IntraLab:SPN_VRF1",
                 "encap": "vxlan-2883591",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:29.861+02:00",
+                "modTs": "2023-06-12T10:38:43.783+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "SPN_IntraLab:SPN_VRF1",
                 "status": "",
@@ -766,7 +651,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-TESTING_BRUNO:default",
                 "encap": "vxlan-2457600",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:14.329+02:00",
+                "modTs": "2023-06-12T10:38:58.969+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "TESTING_BRUNO:default",
                 "status": "",
@@ -782,7 +667,7 @@
                 "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default",
                 "encap": "vxlan-3014663",
                 "lcOwn": "local",
-                "modTs": "2023-03-03T01:23:16.395+02:00",
+                "modTs": "2023-06-12T10:35:13.032+02:00",
                 "monPolDn": "uni/fabric/monfab-default",
                 "name": "UC3-CL2023-Demo:default",
                 "status": "",
@@ -794,198 +679,8 @@
                             "operSt": "Green"
                         },
                         "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.108]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.108",
-                        "mac": "00:22:BD:F8:19:FF",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:19:09.001+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.104]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.104",
-                        "mac": "00:50:56:B2:13:6E",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:23:50.898+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.106]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.106",
-                        "mac": "00:50:56:B2:94:45",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:24:22.824+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.99]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.99",
-                        "mac": "00:50:56:B2:94:45",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:24:11.464+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.103]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.103",
-                        "mac": "00:50:56:B2:9F:42",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:24:20.575+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.98]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.98",
-                        "mac": "00:50:56:B2:9F:42",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "tunnel2",
-                        "status": "",
-                        "upTS": "2023-05-30T18:24:09.781+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.97]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.97",
-                        "mac": "00:50:56:B2:A9:62",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:23:45.838+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.102]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.102",
-                        "mac": "00:50:56:B2:E3:FD",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:23:47.372+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.105]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.105",
-                        "mac": "00:50:56:B2:E7:5B",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:24:15.923+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.101]",
-                        "ifId": "vlan35",
-                        "ip": "10.58.24.101",
-                        "mac": "00:50:56:B2:ED:D0",
-                        "modTs": "never",
-                        "name": "",
-                        "operSt": "normal",
-                        "physIfId": "po5",
-                        "status": "",
-                        "upTS": "2023-05-30T18:23:09.309+02:00",
-                        "domain_name": "UC3-CL2023-Demo:default",
-                        "pod_node_name": "pod-1/bl205-eu-spdc"
-                    },
-                    {
-                        "__Output": {
-                            "name": "Yellow",
-                            "operSt": "Green"
-                        },
-                        "childAction": "",
-                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[eth1/24.68]-[192.168.254.105]",
-                        "ifId": "eth1/24.68",
+                        "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[eth1/24.53]-[192.168.254.105]",
+                        "ifId": "eth1/24.53",
                         "ip": "192.168.254.105",
                         "mac": "00:A3:8E:EB:B3:3F",
                         "modTs": "never",
@@ -993,12 +688,12 @@
                         "operSt": "normal",
                         "physIfId": "eth1/24",
                         "status": "",
-                        "upTS": "2023-05-30T18:08:06.050+02:00",
+                        "upTS": "2023-06-14T07:55:52.923+02:00",
                         "domain_name": "UC3-CL2023-Demo:default",
                         "pod_node_name": "pod-1/bl205-eu-spdc"
                     }
                 ],
-                "adjacency_count": 11
+                "adjacency_count": 1
             }
         ],
         "adjacency": [
@@ -1008,8 +703,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_BGP_VRF/db-ip/adj-[eth1/24.62]-[192.168.254.1]",
-                "ifId": "eth1/24.62",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_BGP_VRF/db-ip/adj-[eth1/24.48]-[192.168.254.1]",
+                "ifId": "eth1/24.48",
                 "ip": "192.168.254.1",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1017,7 +712,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:20:51.579+02:00",
+                "upTS": "2023-06-14T07:59:40.468+02:00",
                 "domain_name": "common:Infra_BGP_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1027,8 +722,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_privIP_VRF/db-ip/adj-[eth1/24.36]-[192.168.254.66]",
-                "ifId": "eth1/24.36",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:Infra_privIP_VRF/db-ip/adj-[eth1/24.47]-[192.168.254.66]",
+                "ifId": "eth1/24.47",
                 "ip": "192.168.254.66",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1036,7 +731,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:08.346+02:00",
+                "upTS": "2023-06-14T07:55:52.820+02:00",
                 "domain_name": "common:Infra_privIP_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1046,8 +741,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1-N3-N4_VRF/db-ip/adj-[eth1/24.65]-[192.168.254.98]",
-                "ifId": "eth1/24.65",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1-N3-N4_VRF/db-ip/adj-[eth1/24.51]-[192.168.254.98]",
+                "ifId": "eth1/24.51",
                 "ip": "192.168.254.98",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1055,7 +750,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:05.783+02:00",
+                "upTS": "2023-06-14T07:55:55.983+02:00",
                 "domain_name": "common:smi5Gc-cvim1-N3-N4_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1065,8 +760,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1_VRF/db-ip/adj-[eth1/24.60]-[192.168.254.102]",
-                "ifId": "eth1/24.60",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim1_VRF/db-ip/adj-[eth1/24.46]-[192.168.254.102]",
+                "ifId": "eth1/24.46",
                 "ip": "192.168.254.102",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1074,7 +769,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:05.673+02:00",
+                "upTS": "2023-06-14T07:55:56.446+02:00",
                 "domain_name": "common:smi5Gc-cvim1_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1084,8 +779,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/db-ip/adj-[eth1/24.64]-[192.168.254.90]",
-                "ifId": "eth1/24.64",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/db-ip/adj-[eth1/24.52]-[192.168.254.90]",
+                "ifId": "eth1/24.52",
                 "ip": "192.168.254.90",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1093,7 +788,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:06.103+02:00",
+                "upTS": "2023-06-14T07:55:57.429+02:00",
                 "domain_name": "common:smi5Gc-cvim4-N3-N4_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1103,8 +798,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4_VRF/db-ip/adj-[eth1/24.66]-[192.168.254.94]",
-                "ifId": "eth1/24.66",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-common:smi5Gc-cvim4_VRF/db-ip/adj-[eth1/24.55]-[192.168.254.94]",
+                "ifId": "eth1/24.55",
                 "ip": "192.168.254.94",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1112,7 +807,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:05.725+02:00",
+                "upTS": "2023-06-14T07:55:56.393+02:00",
                 "domain_name": "common:smi5Gc-cvim4_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1122,8 +817,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:inb/db-ip/adj-[eth1/24.67]-[192.168.254.17]",
-                "ifId": "eth1/24.67",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-mgmt:inb/db-ip/adj-[eth1/24.54]-[192.168.254.17]",
+                "ifId": "eth1/24.54",
                 "ip": "192.168.254.17",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1131,159 +826,45 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:06.156+02:00",
+                "upTS": "2023-06-14T07:55:56.033+02:00",
                 "domain_name": "mgmt:inb",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
             {
                 "__Output": {
                     "name": "Yellow",
-                    "operSt": "Green"
+                    "operSt": "Red"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC-F5T:F5-OUT_VRF/db-ip/adj-[vlan63]-[15.2.7.1]",
-                "ifId": "vlan63",
-                "ip": "15.2.7.1",
-                "mac": "00:50:56:B2:80:63",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:22:42.541+02:00",
-                "domain_name": "MPC-F5T:F5-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.252]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.252",
-                "mac": "00:22:BD:CD:C2:BB",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:14:54.885+02:00",
-                "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.5]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.5",
-                "mac": "00:50:56:B2:0E:D8",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:20:32.983+02:00",
-                "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.4]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.4",
-                "mac": "00:50:56:B2:62:BB",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:21:04.495+02:00",
-                "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.3]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.3",
-                "mac": "00:50:56:B2:77:0B",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:20:07.840+02:00",
-                "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.2]",
-                "ifId": "vlan61",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan67]-[15.2.7.2]",
+                "ifId": "vlan67",
                 "ip": "15.2.7.2",
-                "mac": "00:50:56:B2:7E:F3",
+                "mac": "unspecified",
                 "modTs": "never",
                 "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
+                "operSt": "incomplete",
+                "physIfId": "",
                 "status": "",
-                "upTS": "2023-05-30T18:22:03.650+02:00",
+                "upTS": "2023-06-14T08:07:30.525+02:00",
                 "domain_name": "MPC:MPC-sPBR-OUT_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
             {
                 "__Output": {
                     "name": "Yellow",
-                    "operSt": "Green"
+                    "operSt": "Red"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.6]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.6",
-                "mac": "00:50:56:B2:8F:CB",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan67]-[15.2.7.5]",
+                "ifId": "vlan67",
+                "ip": "15.2.7.5",
+                "mac": "unspecified",
                 "modTs": "never",
                 "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
+                "operSt": "incomplete",
+                "physIfId": "",
                 "status": "",
-                "upTS": "2023-05-30T18:20:27.742+02:00",
-                "domain_name": "MPC:MPC-sPBR-OUT_VRF",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-MPC:MPC-sPBR-OUT_VRF/db-ip/adj-[vlan61]-[15.2.7.1]",
-                "ifId": "vlan61",
-                "ip": "15.2.7.1",
-                "mac": "00:50:56:B2:D5:AB",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:22:15.727+02:00",
+                "upTS": "2023-06-14T08:07:40.045+02:00",
                 "domain_name": "MPC:MPC-sPBR-OUT_VRF",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1302,7 +883,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/28",
                 "status": "",
-                "upTS": "2023-05-30T18:10:03.901+02:00",
+                "upTS": "2023-06-14T07:49:18.345+02:00",
                 "domain_name": "overlay-1",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1312,8 +893,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPIN_InnoLab:SPIN_VRF1/db-ip/adj-[eth1/24.71]-[192.168.254.41]",
-                "ifId": "eth1/24.71",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-SPIN_InnoLab:SPIN_VRF1/db-ip/adj-[eth1/24.50]-[192.168.254.41]",
+                "ifId": "eth1/24.50",
                 "ip": "192.168.254.41",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1321,7 +902,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:06.051+02:00",
+                "upTS": "2023-06-14T07:55:52.876+02:00",
                 "domain_name": "SPIN_InnoLab:SPIN_VRF1",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             },
@@ -1331,198 +912,8 @@
                     "operSt": "Green"
                 },
                 "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.108]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.108",
-                "mac": "00:22:BD:F8:19:FF",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:19:09.001+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.104]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.104",
-                "mac": "00:50:56:B2:13:6E",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:23:50.898+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.106]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.106",
-                "mac": "00:50:56:B2:94:45",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:24:22.824+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.99]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.99",
-                "mac": "00:50:56:B2:94:45",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:24:11.464+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.103]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.103",
-                "mac": "00:50:56:B2:9F:42",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:24:20.575+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.98]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.98",
-                "mac": "00:50:56:B2:9F:42",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "tunnel2",
-                "status": "",
-                "upTS": "2023-05-30T18:24:09.781+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.97]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.97",
-                "mac": "00:50:56:B2:A9:62",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:23:45.838+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.102]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.102",
-                "mac": "00:50:56:B2:E3:FD",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:23:47.372+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.105]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.105",
-                "mac": "00:50:56:B2:E7:5B",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:24:15.923+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[vlan35]-[10.58.24.101]",
-                "ifId": "vlan35",
-                "ip": "10.58.24.101",
-                "mac": "00:50:56:B2:ED:D0",
-                "modTs": "never",
-                "name": "",
-                "operSt": "normal",
-                "physIfId": "po5",
-                "status": "",
-                "upTS": "2023-05-30T18:23:09.309+02:00",
-                "domain_name": "UC3-CL2023-Demo:default",
-                "pod_node_name": "pod-1/bl205-eu-spdc"
-            },
-            {
-                "__Output": {
-                    "name": "Yellow",
-                    "operSt": "Green"
-                },
-                "childAction": "",
-                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[eth1/24.68]-[192.168.254.105]",
-                "ifId": "eth1/24.68",
+                "dn": "topology/pod-1/node-205/sys/arp/inst/dom-UC3-CL2023-Demo:default/db-ip/adj-[eth1/24.53]-[192.168.254.105]",
+                "ifId": "eth1/24.53",
                 "ip": "192.168.254.105",
                 "mac": "00:A3:8E:EB:B3:3F",
                 "modTs": "never",
@@ -1530,7 +921,7 @@
                 "operSt": "normal",
                 "physIfId": "eth1/24",
                 "status": "",
-                "upTS": "2023-05-30T18:08:06.050+02:00",
+                "upTS": "2023-06-14T07:55:52.923+02:00",
                 "domain_name": "UC3-CL2023-Demo:default",
                 "pod_node_name": "pod-1/bl205-eu-spdc"
             }
@@ -1538,47 +929,47 @@
         "interface": [
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.36",
+                "interface": "eth1/24.46",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.60",
+                "interface": "eth1/24.47",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.62",
+                "interface": "eth1/24.48",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.64",
+                "interface": "eth1/24.50",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.65",
+                "interface": "eth1/24.51",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.66",
+                "interface": "eth1/24.52",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.67",
+                "interface": "eth1/24.53",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.68",
+                "interface": "eth1/24.54",
                 "count": 1
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "eth1/24.71",
+                "interface": "eth1/24.55",
                 "count": 1
             },
             {
@@ -1588,18 +979,8 @@
             },
             {
                 "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "vlan35",
-                "count": 10
-            },
-            {
-                "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "vlan61",
-                "count": 7
-            },
-            {
-                "pod_node_name": "pod-1/bl205-eu-spdc",
-                "interface": "vlan63",
-                "count": 1
+                "interface": "vlan67",
+                "count": 2
             }
         ]
     }

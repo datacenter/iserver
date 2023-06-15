@@ -10,6 +10,18 @@ class NodeInterfacePolicyProfileApi():
         if key in self.node_interface_policy_profile_mo:
             return self.node_interface_policy_profile_mo[key]
 
+        cache = self.get_object_cache(
+            'infraRsInterfacePolProfile',
+            object_selector=key
+        )
+        if cache is not None:
+            self.node_interface_policy_profile_mo[key] = cache
+            self.log.apic_mo(
+                'infraRsInterfacePolProfile.%s' % (key),
+                self.node_interface_policy_profile_mo[key]
+            )
+            return self.node_interface_policy_profile_mo[key]
+
         # https://apic11o.emea-sp.cisco.com/api/node/mo/uni/infra/nodecfgcont/node-205.json?query-target=subtree&target-subtree-class=infraRsInterfacePolProfile,infraRsFexGrp&_dc=1684139156603
         distinguished_name = 'uni/infra/nodecfgcont/node-%s' % (
             node_id
@@ -39,6 +51,12 @@ class NodeInterfacePolicyProfileApi():
         self.log.apic_mo(
             'infraRsInterfacePolProfile.%s' % (key),
             self.node_interface_policy_profile_mo[key]
+        )
+
+        self.set_object_cache(
+            'infraRsInterfacePolProfile',
+            self.node_interface_policy_profile_mo[key],
+            object_selector=key
         )
 
         return self.node_interface_policy_profile_mo[key]

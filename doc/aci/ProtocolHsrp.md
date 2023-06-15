@@ -39,10 +39,11 @@ Options:
   --id TEXT                      Filter by neighbor
   -v, --view [default|vrf|intf]
   -o, --output [default|json]    [default: default]
+  --no-cache                     Disable cache
   --devel                        Developer output
   --help                         Show this message and exit.
 
-Info: finished in 54 ms and logs saved in /tmp/iserver\7fbed1c0ee6e
+Info: finished in 64 ms and logs saved in /tmp/iserver\6446605b3989
 ```
 
 [[Back]](./Protocol.md)

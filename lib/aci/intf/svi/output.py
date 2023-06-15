@@ -85,10 +85,10 @@ class InterfaceSviOutput():
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_list(
+            self.my_output.expand_lists(
                 interfaces,
                 order,
-                'ipv4_address'
+                ['ipv4_address']
             ),
             order=order,
             headers=headers,

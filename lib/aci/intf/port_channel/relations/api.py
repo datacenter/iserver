@@ -11,6 +11,18 @@ class InterfacePortChannelRelationsApi():
         if key in self.interface_pc_relations_mo:
             return self.interface_pc_relations_mo[key]
 
+        cache = self.get_object_cache(
+            'pcAggrIfRelations',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_pc_relations_mo[key] = cache
+            self.log.apic_mo(
+                'pcAggrIfRelations.%s' % (key),
+                self.interface_pc_relations_mo[key]
+            )
+            return self.interface_pc_relations_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/aggr-[%s]' % (pod_id, node_id, port_channel_id)
         query = 'rsp-subtree-include=relations'
 
@@ -32,5 +44,16 @@ class InterfacePortChannelRelationsApi():
                 self.interface_pc_relations_mo[key][section_key] = {}
                 for attribute in section[section_key]['attributes']:
                     self.interface_pc_relations_mo[key][section_key][attribute] = section[section_key]['attributes'][attribute]
+
+        self.log.apic_mo(
+            'pcAggrIfRelations.%s' % (key),
+            self.interface_pc_relations_mo[key]
+        )
+
+        self.set_object_cache(
+            'pcAggrIfRelations',
+            self.interface_pc_relations_mo[key],
+            object_selector=key
+        )
 
         return self.interface_pc_relations_mo[key]

@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy l2 --apic apic11 --name default --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+------------------+--------------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type  | Ref Policy Name    |
@@ -14,6 +14,8 @@ Apic: apic11
 |             | pod-1/bl206-eu-spdc | 21              | PC/VPC Interface | pod4a-MX_PolGrp    | 
 |             | pod-1/cl201-eu-spdc | 44              |                  |                    | 
 |             | pod-1/cl202-eu-spdc | 48              |                  |                    | 
+|             | pod-1/cl209-eu-spdc | 28              |                  |                    | 
+|             | pod-1/cl210-eu-spdc | 28              |                  |                    | 
 |             | pod-1/rl301-eu-spdc | 24              |                  |                    | 
 |             | pod-1/rl302-eu-spdc | 24              |                  |                    | 
 +-------------+---------------------+-----------------+------------------+--------------------+
@@ -26,7 +28,7 @@ Developer
 # iserver get aci policy l2 --apic apic11 --name default --view usage
 
 {
-    "duration": 1558,
+    "duration": 1925,
     "apic": {
         "read": true,
         "success": 4,
@@ -34,10 +36,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 392,
+        "connect_time": 429,
         "disconnect_time": 0,
-        "mo_time": 1022,
-        "total_time": 1414
+        "mo_time": 1068,
+        "total_time": 1497
     },
     "error": {
         "read": false,
@@ -50,16 +52,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	392	-	connect apic11o.emea-sp.cisco.com
-True	324	6	apic11o.emea-sp.cisco.com class l2IfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	402	414	apic11o.emea-sp.cisco.com class l1RsL2IfPolCons
-True	296	11	apic11o.emea-sp.cisco.com class fabricNode
+True	429	-	connect apic11o.emea-sp.cisco.com
+True	343	6	apic11o.emea-sp.cisco.com class l2IfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	410	470	apic11o.emea-sp.cisco.com class l1RsL2IfPolCons
+True	315	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyL2.md)

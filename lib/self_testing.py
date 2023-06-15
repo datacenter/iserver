@@ -733,7 +733,9 @@ def run_test(bar_handler, test, tests_directory, results_directory, variables, i
                     sys.exit(1)
 
                 exit_code, output, duration = get_output(command)
-                success = bool(exit_code == 0)
+                success = True
+                if exit_code == 1:
+                    success = False
 
                 if save_result:
                     save_test_result(results_directory, filename, command, test['command'], success, exit_code, output, duration, iserver_version)

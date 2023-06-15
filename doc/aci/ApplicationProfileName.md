@@ -7,7 +7,7 @@ Example: name
 ```
 # iserver get aci ap --apic apic21 --name *k8s*
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +---------------------+------------------+-------------+
 | Application Profile | Application EPGs | Priority    |
@@ -40,7 +40,7 @@ Developer
 # iserver get aci ap --apic apic21 --name *k8s*
 
 {
-    "duration": 1210,
+    "duration": 1363,
     "apic": {
         "read": true,
         "success": 3,
@@ -48,10 +48,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 386,
+        "connect_time": 423,
         "disconnect_time": 0,
-        "mo_time": 643,
-        "total_time": 1029
+        "mo_time": 729,
+        "total_time": 1152
     },
     "error": {
         "read": false,
@@ -64,15 +64,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	386	-	connect apic21o.emea-sp.cisco.com
-True	297	12	apic21o.emea-sp.cisco.com class fvAp
-True	346	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	423	-	connect apic21o.emea-sp.cisco.com
+True	322	12	apic21o.emea-sp.cisco.com class fvAp
+True	407	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
 ```
 
 Example: tenant and name
@@ -80,7 +81,7 @@ Example: tenant and name
 ```
 # iserver get aci ap --apic apic21 --name k8s/k8s_ANP
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +---------------------+------------------+-------------+
 | Application Profile | Application EPGs | Priority    |
@@ -113,7 +114,7 @@ Developer
 # iserver get aci ap --apic apic21 --name k8s/k8s_ANP
 
 {
-    "duration": 1174,
+    "duration": 1387,
     "apic": {
         "read": true,
         "success": 3,
@@ -121,10 +122,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 394,
+        "connect_time": 443,
         "disconnect_time": 0,
-        "mo_time": 653,
-        "total_time": 1047
+        "mo_time": 710,
+        "total_time": 1153
     },
     "error": {
         "read": false,
@@ -137,15 +138,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	394	-	connect apic21o.emea-sp.cisco.com
-True	294	12	apic21o.emea-sp.cisco.com class fvAp
-True	359	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	443	-	connect apic21o.emea-sp.cisco.com
+True	325	12	apic21o.emea-sp.cisco.com class fvAp
+True	385	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
 ```
 
 [[Back]](./ApplicationProfile.md)

@@ -23,6 +23,17 @@ class TenantApi():
         if self.tenant_mo is not None:
             return self.tenant_mo
 
+        cache = self.get_object_cache(
+            'fvAEPg'
+        )
+        if cache is not None:
+            self.tenant_mo = cache
+            self.log.apic_mo(
+                'fvTenant',
+                self.tenant_mo
+            )
+            return self.tenant_mo
+
         managed_objects = self.get_class(
             'fvTenant'
         )
@@ -36,6 +47,11 @@ class TenantApi():
             )
 
         self.log.apic_mo(
+            'fvTenant',
+            self.tenant_mo
+        )
+
+        self.set_object_cache(
             'fvTenant',
             self.tenant_mo
         )

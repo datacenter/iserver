@@ -25,10 +25,11 @@ Options:
   --password TEXT              APIC Password
   --name TEXT                  Filter by pool name
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\0b429838d56d
+Info: finished in 52 ms and logs saved in /tmp/iserver\0796c42357c5
 ```
 
 [[Back]](./README.md)

@@ -6,6 +6,17 @@ class DomainVmmEpgApi():
         if self.domain_vmm_epg_mo is not None:
             return self.domain_vmm_epg_mo
 
+        cache = self.get_object_cache(
+            'vmmEpPD'
+        )
+        if cache is not None:
+            self.domain_vmm_epg_mo = cache
+            self.log.apic_mo(
+                'vmmEpPD',
+                self.domain_vmm_epg_mo
+            )
+            return self.domain_vmm_epg_mo
+
         managed_objects = self.get_class(
             'vmmEpPD',
             node_class=True
@@ -26,6 +37,11 @@ class DomainVmmEpgApi():
             )
 
         self.log.apic_mo(
+            'vmmEpPD',
+            self.domain_vmm_epg_mo
+        )
+
+        self.set_object_cache(
             'vmmEpPD',
             self.domain_vmm_epg_mo
         )

@@ -5,20 +5,20 @@
 ```
 # iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc --view vrf
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: cl201-eu-spdc
 
 +---------------------+-------------------------------+-----------+--------+-----------------+------------------------+-----------+-------------+
 | Node                | VRF                           | BGP State | Mode   | Router ID       | RD                     | Neighbors | Established |
 +---------------------+-------------------------------+-----------+--------+-----------------+------------------------+-----------+-------------+
-| pod-1/cl201-eu-spdc | common:Infra_BGP_VRF          | up        | fabric | 10.58.24.158    | rd:as2-nn4:201:2424848 | 0         | 0           | 
+| pod-1/cl201-eu-spdc | common:Infra_BGP_VRF          | up        | fabric | 10.58.50.126    | rd:as2-nn4:201:2424848 | 0         | 0           | 
 | pod-1/cl201-eu-spdc | common:Infra_privIP_VRF       | up        | fabric | 15.100.161.126  | rd:as2-nn4:201:2097161 | 0         | 0           | 
-| pod-1/cl201-eu-spdc | common:Infra_VRF              | up        | fabric | 15.254.254.254  | rd:as2-nn4:201:2686976 | 0         | 0           | 
-| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2261001 | 8         | 4           | 
-| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2392070 | 6         | 2           | 
+| pod-1/cl201-eu-spdc | common:Infra_VRF              | up        | fabric | 192.168.0.14    | rd:as2-nn4:201:2686976 | 0         | 0           | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2261001 | 8         | 0           | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2392070 | 6         | 0           | 
 | pod-1/cl201-eu-spdc | common:smi5Gc-cvim1_VRF       | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2883586 | 3         | 0           | 
-| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2523141 | 8         | 1           | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2523141 | 8         | 0           | 
 | pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N6_VRF    | up        | fabric | 201.201.201.201 | rd:as2-nn4:201:2850822 | 6         | 0           | 
 | pod-1/cl201-eu-spdc | common:smi5Gc-cvim4_VRF       | up        | fabric | 15.100.100.254  | rd:as2-nn4:201:2621441 | 0         | 0           | 
 | pod-1/cl201-eu-spdc | cvim1a:cvim1a-tenant_VRF      | up        | fabric | 0.0.0.0         | rd:as2-nn4:201:2129925 | 0         | 0           | 
@@ -51,7 +51,7 @@ Developer
 # iserver get aci proto bgp --apic apic11 --node cl201-eu-spdc --view vrf
 
 {
-    "duration": 1779,
+    "duration": 2219,
     "apic": {
         "read": true,
         "success": 5,
@@ -59,10 +59,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 379,
+        "connect_time": 437,
         "disconnect_time": 0,
-        "mo_time": 1276,
-        "total_time": 1655
+        "mo_time": 1369,
+        "total_time": 1806
     },
     "error": {
         "read": false,
@@ -75,17 +75,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	379	-	connect apic11o.emea-sp.cisco.com
-True	313	11	apic11o.emea-sp.cisco.com class fabricNode
-True	291	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bgp/inst
-True	303	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom
-True	369	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
+True	437	-	connect apic11o.emea-sp.cisco.com
+True	338	13	apic11o.emea-sp.cisco.com class fabricNode
+True	331	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bgp/inst
+True	316	30	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom
+True	384	113	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/bgpDom query query-target=subtree&target-subtree-class=bgpPeer&target-subtree-class=bgpPeerEntry&target-subtree-class=bgpPeerAfEntry
 ```
 
 [[Back]](./ProtocolBgp.md)

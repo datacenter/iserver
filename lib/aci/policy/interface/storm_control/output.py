@@ -45,10 +45,10 @@ class PolicyInterfaceStormControlOutput():
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_list(
+            self.my_output.expand_lists(
                 [info],
                 order,
-                'packetType'
+                ['packetType']
             ),
             order=order,
             headers=headers,
@@ -135,10 +135,10 @@ class PolicyInterfaceStormControlOutput():
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_list(
+            self.my_output.expand_lists(
                 info,
                 order,
-                'packetType'
+                ['packetType']
             ),
             order=order,
             headers=headers,

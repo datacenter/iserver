@@ -6,11 +6,13 @@ import yaml
 
 from lib import ip_helper
 from lib import file_helper
+from lib import log_helper
 from lib import output_helper
 
 
 class Template():
-    def __init__(self, verbose=False, debug=False):
+    def __init__(self, verbose=False, debug=False, log_id=None):
+        self.log = log_helper.Log(log_id=log_id)
         self.my_output = output_helper.OutputHelper(verbose=verbose, debug=debug)
 
     def get_template_directory(self, subdirectory):
@@ -90,13 +92,20 @@ class Template():
         return content
 
     def get_template(self, template_filename, variables, replace_variables_enabled=True, check_remaining_variables=True, yaml_conversion=False, yaml_check=False):
-        success, content = file_helper.get_file(template_filename)
-        if not success:
-            self.my_output.error(content)
+        content = file_helper.get_file(template_filename)
+        if content is None:
+            self.log.error(
+                'get_template',
+                'File read failed: %s' % (template_filename)
+            )
             return None
 
         content = self.replace_attributes(content, variables)
         if content is None:
+            self.log.error(
+                'get_template',
+                'Variable replace failed: %s' % (template_filename)
+            )
             return None
 
         if check_remaining_variables:
@@ -412,14 +421,14 @@ class Template():
         return True, value
 
     def validate_input(self, rules_subdirectory, input_type, user_input):
-        success, rules = file_helper.get_file_yaml(
+        rules = file_helper.get_file_yaml(
             self.get_template_filename(
                 rules_subdirectory,
                 'rules',
                 '%s.yaml' % (input_type)
             )
         )
-        if not success:
+        if rules is None:
             self.my_output.error('Rules %s not defined for %s' % (input_type, rules_subdirectory))
             return None
 

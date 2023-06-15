@@ -5,7 +5,7 @@
 ```
 # iserver get aci pool vlan --apic apic21
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +------------------------+-----------------+-----------------------+----------+-----------------------+-----------+
 | VLAN Pool Name         | Allocation Mode | Encapsulation Block   | Role     | Domain                | EPG Usage |
@@ -25,8 +25,8 @@ Apic: apic21
 |                        |                 |                       |          | L3_Domain_vsfo        |           | 
 |                        |                 |                       |          | uni/l2dom-Infra_L2dom |           | 
 +------------------------+-----------------+-----------------------+----------+-----------------------+-----------+
-| k8s_esx_VlanPool       | dynamic         | [1300-1499] (inherit) | external | k8s_esx_PhysDom       | 15/200    | 
-|                        |                 |                       |          | VMware                |           | 
+| k8s_esx_VlanPool       | dynamic         | [800-809] (static)    | external | k8s_esx_PhysDom       | 15/210    | 
+|                        |                 | [1300-1499] (inherit) | external | VMware                |           | 
 +------------------------+-----------------+-----------------------+----------+-----------------------+-----------+
 | k8s_phys_VlanPool      | static          | [800-809] (inherit)   | external | k8s_phys_L3Dom        | 0/14      | 
 |                        |                 | [810-813] (static)    | external | k8s_phys_PhysDom      |           | 
@@ -57,7 +57,7 @@ Developer
 # iserver get aci pool vlan --apic apic21
 
 {
-    "duration": 1522,
+    "duration": 1492,
     "apic": {
         "read": true,
         "success": 3,
@@ -65,10 +65,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 670,
+        "connect_time": 454,
         "disconnect_time": 0,
-        "mo_time": 626,
-        "total_time": 1296
+        "mo_time": 722,
+        "total_time": 1176
     },
     "error": {
         "read": false,
@@ -81,15 +81,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	670	-	connect apic21o.emea-sp.cisco.com
-True	311	13	apic21o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
-True	315	32	apic21o.emea-sp.cisco.com class vmmEpPD
+True	454	-	connect apic21o.emea-sp.cisco.com
+True	355	13	apic21o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	367	32	apic21o.emea-sp.cisco.com class vmmEpPD
 ```
 
 [[Back]](./PoolVlan.md)

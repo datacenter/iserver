@@ -39,12 +39,13 @@ Options:
   --node TEXT                     Filter by node name
   --unused                        Filter unused
   --used                          Filter used
-  -o, --output [default|json]     [default: default]
   -v, --view [default|usage|intf|verbose]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 25 ms and logs saved in /tmp/iserver\8929a5e63e47
+Info: finished in 36 ms and logs saved in /tmp/iserver\399909da1ded
 ```
 
 [[Back]](./README.md)

@@ -7,6 +7,18 @@ class ProtocolBfdInterfaceApi():
         if key in self.bfd_interfaces_mo:
             return self.bfd_interfaces_mo[key]
 
+        cache = self.get_object_cache(
+            'bfdIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bfd_interfaces_mo[key] = cache
+            self.log.apic_mo(
+                'bfdIf.%s' % (key),
+                self.bfd_interfaces_mo[key]
+            )
+            return self.bfd_interfaces_mo[key]
+
         # url: https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/bfd/inst.json?query-target=children&target-subtree-class=bfdIf&subscription=yes
         distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst' % (pod_id, node_id)
         query = 'query-target=children&target-subtree-class=bfdIf'
@@ -29,8 +41,14 @@ class ProtocolBfdInterfaceApi():
             )
 
         self.log.apic_mo(
-            'bfd.interface.%s' % (key),
+            'bfdIf.%s' % (key),
             self.bfd_interfaces_mo[key]
+        )
+
+        self.set_object_cache(
+            'bfdIf',
+            self.bfd_interfaces_mo[key],
+            object_selector=key
         )
 
         return self.bfd_interfaces_mo[key]

@@ -8,17 +8,25 @@
     --node bl205-eu-spdc
     --subnet 172.16.30.0/24
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
-+---------------------+-----------+-------+------+-------+-------------+-------------------------------+----------------+----------------+---------------+-----------+------+
-| Node                | Interface | Admin | Oper | Layer | Tunnel Type | Type                          | Req            | Source         | Destination   | VRF       | MTU  |
-+---------------------+-----------+-------+------+-------+-------------+-------------------------------+----------------+----------------+---------------+-----------+------+
-| pod-1/bl205-eu-spdc | tunnel16  | up    | up   | l3    | ivxlan      | dci-ucast,fabric-ext,physical | inst-overlay-1 | 10.3.192.64/32 | 172.16.30.88  | overlay-1 | 9000 | 
-| pod-1/bl205-eu-spdc | tunnel17  | up    | up   | l3    | ivxlan      | dci-ucast,fabric-ext,physical | inst-overlay-1 | 10.3.192.64/32 | 172.16.30.121 | overlay-1 | 9000 | 
-| pod-1/bl205-eu-spdc | tunnel18  | up    | up   | l3    | ivxlan      | dci-ucast,fabric-ext,physical | inst-overlay-1 | 10.3.192.64/32 | 172.16.30.161 | overlay-1 | 9000 | 
-+---------------------+-----------+-------+------+-------+-------------+-------------------------------+----------------+----------------+---------------+-----------+------+
++---------------------+-----------+-------+------+-------+--------+-----------------+----------------+-------------+----------------+-----------+------+
+| Node                | Interface | Admin | Oper | Layer | Encap  | Type            | Req            | Source IP   | Destination IP | VRF       | MTU  |
++---------------------+-----------+-------+------+-------+--------+-----------------+----------------+-------------+----------------+-----------+------+
+| pod-1/bl205-eu-spdc | tunnel15  | up    | up   | l3    | ivxlan | Fabric External | bgp            | 10.3.192.64 | 172.16.30.121  | overlay-1 | 9000 | 
+|                     |           |       |      |       |        | Physical        |                |             |                |           |      | 
+|                     |           |       |      |       |        | dci-ucast       |                |             |                |           |      | 
++---------------------+-----------+-------+------+-------+--------+-----------------+----------------+-------------+----------------+-----------+------+
+| pod-1/bl205-eu-spdc | tunnel16  | up    | up   | l3    | ivxlan | Fabric External | bgp            | 10.3.192.64 | 172.16.30.161  | overlay-1 | 9000 | 
+|                     |           |       |      |       |        | Physical        |                |             |                |           |      | 
+|                     |           |       |      |       |        | dci-ucast       |                |             |                |           |      | 
++---------------------+-----------+-------+------+-------+--------+-----------------+----------------+-------------+----------------+-----------+------+
+| pod-1/bl205-eu-spdc | tunnel28  | up    | up   | l3    | ivxlan | Fabric External | inst-overlay-1 | 10.3.192.64 | 172.16.30.88   | overlay-1 | 9000 | 
+|                     |           |       |      |       |        | Physical        |                |             |                |           |      | 
+|                     |           |       |      |       |        | dci-ucast       |                |             |                |           |      | 
++---------------------+-----------+-------+------+-------+--------+-----------------+----------------+-------------+----------------+-----------+------+
 ```
 
 Developer
@@ -30,7 +38,7 @@ Developer
     --subnet 172.16.30.0/24
 
 {
-    "duration": 1137,
+    "duration": 1098,
     "apic": {
         "read": true,
         "success": 3,
@@ -38,10 +46,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 391,
+        "connect_time": 388,
         "disconnect_time": 0,
-        "mo_time": 633,
-        "total_time": 1024
+        "mo_time": 612,
+        "total_time": 1000
     },
     "error": {
         "read": false,
@@ -54,15 +62,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	391	-	connect apic11o.emea-sp.cisco.com
-True	314	11	apic11o.emea-sp.cisco.com class fabricNode
-True	319	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/tunnelIf
+True	388	-	connect apic11o.emea-sp.cisco.com
+True	296	13	apic11o.emea-sp.cisco.com class fabricNode
+True	316	19	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/tunnelIf
 ```
 
 [[Back]](./InterfaceTunnel.md)

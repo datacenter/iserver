@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy link-fc --apic apic11 --name default --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+-------------------------------+-----------------------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type               | Ref Policy Name             |
@@ -14,10 +14,10 @@ Apic: apic11
 |             | pod-1/bl206-eu-spdc | 28              | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp          | 
 |             | pod-1/cl201-eu-spdc | 102             | Leaf Access Port Policy Group | ESX-CDC_PolGrp              | 
 |             | pod-1/cl202-eu-spdc | 102             | Leaf Access Port Policy Group | ESX-R3DC-DVS_PolGrp         | 
-|             | pod-1/rl301-eu-spdc | 41              | Leaf Access Port Policy Group | IKS1-mgmt_PolGrp            | 
-|             | pod-1/rl302-eu-spdc | 41              | Leaf Access Port Policy Group | IKS2-mgmt_PolGrp            | 
-|             |                     |                 | Leaf Access Port Policy Group | Infra-BGP_PolGrp            | 
-|             |                     |                 | Leaf Access Port Policy Group | Infra-L3_PolGrp             | 
+|             | pod-1/cl209-eu-spdc | 28              | Leaf Access Port Policy Group | IKS1-mgmt_PolGrp            | 
+|             | pod-1/cl210-eu-spdc | 28              | Leaf Access Port Policy Group | IKS2-mgmt_PolGrp            | 
+|             | pod-1/rl301-eu-spdc | 41              | Leaf Access Port Policy Group | Infra-BGP_PolGrp            | 
+|             | pod-1/rl302-eu-spdc | 41              | Leaf Access Port Policy Group | Infra-L3_PolGrp             | 
 |             |                     |                 | Leaf Access Port Policy Group | Infra_PolGrp                | 
 |             |                     |                 | Leaf Access Port Policy Group | P5G-ACI1-Napoli_PolGrp      | 
 |             |                     |                 | Leaf Access Port Policy Group | P5G-CU-PCIe1-A_PolGrp       | 
@@ -102,7 +102,7 @@ Developer
 # iserver get aci policy link-fc --apic apic11 --name default --view usage
 
 {
-    "duration": 1886,
+    "duration": 2450,
     "apic": {
         "read": true,
         "success": 4,
@@ -110,10 +110,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 386,
+        "connect_time": 418,
         "disconnect_time": 0,
-        "mo_time": 1023,
-        "total_time": 1409
+        "mo_time": 1038,
+        "total_time": 1456
     },
     "error": {
         "read": false,
@@ -126,16 +126,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	386	-	connect apic11o.emea-sp.cisco.com
-True	320	2	apic11o.emea-sp.cisco.com class qosLlfcIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	409	344	apic11o.emea-sp.cisco.com class l1RsQosLlfcIfPolCons
-True	294	11	apic11o.emea-sp.cisco.com class fabricNode
+True	418	-	connect apic11o.emea-sp.cisco.com
+True	331	2	apic11o.emea-sp.cisco.com class qosLlfcIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	391	400	apic11o.emea-sp.cisco.com class l1RsQosLlfcIfPolCons
+True	316	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLinkFc.md)

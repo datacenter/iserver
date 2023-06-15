@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy cdp --apic apic11 --name cdp-enabled --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+-------------------------------+----------------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type               | Ref Policy Name      |
@@ -24,7 +24,7 @@ Developer
 # iserver get aci policy cdp --apic apic11 --name cdp-enabled --view usage
 
 {
-    "duration": 1616,
+    "duration": 1841,
     "apic": {
         "read": true,
         "success": 4,
@@ -32,10 +32,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 385,
+        "connect_time": 412,
         "disconnect_time": 0,
-        "mo_time": 1092,
-        "total_time": 1477
+        "mo_time": 1071,
+        "total_time": 1483
     },
     "error": {
         "read": false,
@@ -48,16 +48,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	385	-	connect apic11o.emea-sp.cisco.com
-True	324	8	apic11o.emea-sp.cisco.com class cdpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	442	370	apic11o.emea-sp.cisco.com class l1RsCdpIfPolCons
-True	326	11	apic11o.emea-sp.cisco.com class fabricNode
+True	412	-	connect apic11o.emea-sp.cisco.com
+True	335	8	apic11o.emea-sp.cisco.com class cdpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	399	426	apic11o.emea-sp.cisco.com class l1RsCdpIfPolCons
+True	337	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyCdp.md)

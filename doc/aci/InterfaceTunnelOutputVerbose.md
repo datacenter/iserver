@@ -9,11 +9,11 @@
     --id tunnel16
     --view verbose
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
-Interface tunnel
+Interface Tunnel
 ----------------
 - Interface          : tunnel16
 - Admin State        : up
@@ -22,8 +22,9 @@ Interface tunnel
 - Tunnel Layer       : l3
 - Tunnel Type        : ivxlan
 - Type               : dci-ucast,fabric-ext,physical
-- Source             : 10.3.192.64/32
-- Destination        : 172.16.30.88
+- Source IP          : 10.3.192.64
+- Destination IP     : 172.16.30.161
+- Destiation Node    :
 - VRF                : overlay-1
 - MTU                : 9000
 - Keepalive Interval : 10
@@ -40,7 +41,7 @@ Developer
     --view verbose
 
 {
-    "duration": 1301,
+    "duration": 1101,
     "apic": {
         "read": true,
         "success": 3,
@@ -48,10 +49,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 494,
+        "connect_time": 410,
         "disconnect_time": 0,
-        "mo_time": 673,
-        "total_time": 1167
+        "mo_time": 618,
+        "total_time": 1028
     },
     "error": {
         "read": false,
@@ -64,15 +65,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	494	-	connect apic11o.emea-sp.cisco.com
-True	373	11	apic11o.emea-sp.cisco.com class fabricNode
-True	300	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/tunnelIf
+True	410	-	connect apic11o.emea-sp.cisco.com
+True	298	13	apic11o.emea-sp.cisco.com class fabricNode
+True	320	19	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/tunnelIf
 ```
 
 [[Back]](./InterfaceTunnel.md)

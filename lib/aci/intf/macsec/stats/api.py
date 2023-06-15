@@ -11,6 +11,18 @@ class InterfaceMacSecStatsApi():
         if key in self.interface_macsec_stats_mo:
             return self.interface_macsec_stats_mo[key]
 
+        cache = self.get_object_cache(
+            'macsecIfStats',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_macsec_stats_mo[key] = cache
+            self.log.apic_mo(
+                'macsecIfStats.%s' % (key),
+                self.interface_macsec_stats_mo[key]
+            )
+            return self.interface_macsec_stats_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/macsec/inst/if-[%s]' % (
             pod_id,
             node_id,
@@ -44,6 +56,12 @@ class InterfaceMacSecStatsApi():
         self.log.apic_mo(
             'macsecIfStats.%s' % (key),
             self.interface_macsec_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'macsecIfStats',
+            self.interface_macsec_stats_mo[key],
+            object_selector=key
         )
 
         return self.interface_macsec_stats_mo[key]

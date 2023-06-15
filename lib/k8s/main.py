@@ -12,16 +12,18 @@ from lib.k8s.common import K8sCommon
 from lib.k8s.namespace.main import K8sNamespace
 from lib.k8s.node.main import K8sNode
 from lib.k8s.pod.main import K8sPod
+from lib.k8s.pv.main import K8sPv
 from lib.k8s.pvc.main import K8sPvc
 from lib.k8s.service.main import K8sService
 
 
-class K8s(K8sCommon, K8sNamespace, K8sNode, K8sPod, K8sPvc, K8sService):
+class K8s(K8sCommon, K8sNamespace, K8sNode, K8sPod, K8sPv, K8sPvc, K8sService):
     def __init__(self, kubeconfig_filename, verbose=False, debug=False, log_id=None):
         K8sCommon.__init__(self)
         K8sNamespace.__init__(self)
         K8sNode.__init__(self)
         K8sPod.__init__(self)
+        K8sPv.__init__(self)
         K8sPvc.__init__(self)
         K8sService.__init__(self)
 

@@ -7,6 +7,18 @@ class ProtocolIsisDomainApi():
         if key in self.isis_domains_mo:
             return self.isis_domains_mo[key]
 
+        cache = self.get_object_cache(
+            'isisDom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.isis_domains_mo[key] = cache
+            self.log.apic_mo(
+                'isisDom.%s' % (key),
+                self.isis_domains_mo[key]
+            )
+            return self.isis_domains_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/isis' % (pod_id, node_id)
         query = 'query-target=subtree&target-subtree-class=isisDom'
         managed_objects = self.get_managed_object(
@@ -30,6 +42,12 @@ class ProtocolIsisDomainApi():
         self.log.apic_mo(
             'isisDom.%s' % (key),
             self.isis_domains_mo[key]
+        )
+
+        self.set_object_cache(
+            'isisDom',
+            self.isis_domains_mo[key],
+            object_selector=key
         )
 
         return self.isis_domains_mo[key]

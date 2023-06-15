@@ -5,8 +5,7 @@
 ```
 # iserver get aci proto ipv6 --apic apic11 --node rl --view summary
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
@@ -61,7 +60,7 @@ Developer
 # iserver get aci proto ipv6 --apic apic11 --node rl --view summary
 
 {
-    "duration": 14929,
+    "duration": 15895,
     "apic": {
         "read": true,
         "success": 42,
@@ -69,10 +68,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 41,
-        "connect_time": 423,
+        "connect_time": 414,
         "disconnect_time": 0,
-        "mo_time": 13742,
-        "total_time": 14165
+        "mo_time": 13826,
+        "total_time": 14240
     },
     "error": {
         "read": false,
@@ -85,54 +84,55 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	423	-	connect apic11o.emea-sp.cisco.com
-True	416	11	apic11o.emea-sp.cisco.com class fabricNode
-True	366	19	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6 query query-target=children&target-subtree-class=uribv6Dom
-True	329	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-black-hole query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	306	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-overlay-1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	375	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:CU-DU-Infra_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	323	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-UC3-CL2023-Demo:default query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	294	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-management query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	370	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-E-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	325	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-SPIN_InnoLab:SPIN_RDC3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	314	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-common:Infra_BGP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	307	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-mgmt:EU-SPDC-ERSPAN-VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	386	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-E-sPBR-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	325	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC:MPC-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	310	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-Residential-R3DC_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	357	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-ECMP-demo:MPC-RDC-3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	417	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-F5T:F5-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	322	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-mgmt:inb query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	372	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-F5T:F5-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	340	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-common:Infra_privIP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	412	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-SPN_IntraLab:SPN_VRF1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	357	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-ECMP-demo:INT-ext_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	352	19	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6 query query-target=children&target-subtree-class=uribv6Dom
-True	359	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-black-hole query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	304	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-overlay-1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	308	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:CU-DU-Infra_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	371	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-management query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	319	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-UC3-CL2023-Demo:default query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	326	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-SPIN_InnoLab:SPIN_RDC3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	297	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-E-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	296	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-mgmt:EU-SPDC-ERSPAN-VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	291	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-E-sPBR-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	311	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-common:Infra_BGP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	308	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-Residential-R3DC_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	321	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC:MPC-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	288	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-ECMP-demo:INT-ext_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	307	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-F5T:F5-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	295	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-SPN_IntraLab:SPN_VRF1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	278	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-mgmt:inb query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	304	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-F5T:F5-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	406	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-ECMP-demo:MPC-RDC-3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
-True	378	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-common:Infra_privIP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	414	-	connect apic11o.emea-sp.cisco.com
+True	306	13	apic11o.emea-sp.cisco.com class fabricNode
+True	302	19	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6 query query-target=children&target-subtree-class=uribv6Dom
+True	324	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-black-hole query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	331	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-overlay-1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	342	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-SPIN_InnoLab:SPIN_RDC3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	334	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-E-sPBR-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	303	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:CU-DU-Infra_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	313	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-E-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	314	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-management query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	306	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-UC3-CL2023-Demo:default query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	343	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-mgmt:EU-SPDC-ERSPAN-VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	344	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-common:Infra_BGP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	320	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC:MPC-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	388	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-E:MPC-Residential-R3DC_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	320	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-ECMP-demo:INT-ext_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	335	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-F5T:F5-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	313	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-MPC-F5T:F5-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	376	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-SPN_IntraLab:SPN_VRF1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	339	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-mgmt:inb query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	342	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-common:Infra_privIP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	346	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/uribv6/dom-ECMP-demo:MPC-RDC-3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	336	19	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6 query query-target=children&target-subtree-class=uribv6Dom
+True	351	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-black-hole query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	338	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-overlay-1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	321	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:CU-DU-Infra_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	350	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-SPIN_InnoLab:SPIN_RDC3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	326	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-E-sPBR-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	366	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-E-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	346	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-UC3-CL2023-Demo:default query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	334	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-management query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	326	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-common:Infra_BGP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	340	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-mgmt:EU-SPDC-ERSPAN-VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	320	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC:MPC-sPBR-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	397	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-E:MPC-Residential-R3DC_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	326	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-ECMP-demo:INT-ext_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	332	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-F5T:F5-IN_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	378	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-MPC-F5T:F5-OUT_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	368	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-SPN_IntraLab:SPN_VRF1 query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	322	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-common:Infra_privIP_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	326	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-ECMP-demo:MPC-RDC-3_VRF query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
+True	382	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/uribv6/dom-mgmt:inb query query-target=subtree&target-subtree-class=uribv6Route&target-subtree-class=uribv6Nexthop
 ```
 
 [[Back]](./ProtocolIpv6.md)

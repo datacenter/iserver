@@ -39,15 +39,16 @@ Options:
   --node TEXT                   Node name patterns
   --role [any|leaf|spine]       [default: any]
   --id TEXT                     Port name
-  --ip TEXT                     Filter by IP
+  --address TEXT                Filter by IP
   --subnet TEXT                 Filter by subnet
   -v, --view [default|verbose]
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --empty                       No error on empty result
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 37 ms and logs saved in /tmp/iserver\5f8e0149ec03
+Info: finished in 31 ms and logs saved in /tmp/iserver\efa31d2ec039
 ```
 
 [[Back]](./Interface.md)

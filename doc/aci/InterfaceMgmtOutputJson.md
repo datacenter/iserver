@@ -35,14 +35,17 @@
             },
             "backplaneMac": "4C:71:0D:23:FA:38",
             "dn": "topology/pod-1/node-201/sys/mgmt-[mgmt0]/mgmt",
-            "lastLinkStChg": "2023-03-03T01:15:14.143+02:00",
+            "lastLinkStChg": "2023-06-12T09:14:02.581+02:00",
             "operDuplex": "full",
             "operMtu": "1500",
             "operRouterMac": "4C:71:0D:23:FA:38",
             "operSpeed": "1G",
             "operSt": "up",
             "operStQual": "link-up",
-            "vdcId": "1"
+            "vdcId": "1",
+            "pod_id": "pod-1",
+            "node_id": "node-201",
+            "interface_id": "mgmt0"
         },
         "stats": {
             "__Output": {
@@ -57,7 +60,10 @@
             "operStQual": "link-up-connected",
             "pref": "0",
             "type": "primary",
-            "vpcPeer": "0.0.0.0"
+            "vpcPeer": "0.0.0.0",
+            "pod_id": "pod-1",
+            "node_id": "node-201",
+            "interface_id": "mgmt0"
         }
     }
 ]

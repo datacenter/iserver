@@ -10,6 +10,18 @@ class InterfacePhyFcStatsApi():
         if key in self.interface_phy_fc_stats_mo:
             return self.interface_phy_fc_stats_mo[key]
 
+        cache = self.get_object_cache(
+            'ethpmFcot',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_phy_fc_stats_mo[key] = cache
+            self.log.apic_mo(
+                'ethpmFcot.%s' % (key),
+                self.interface_phy_fc_stats_mo[key]
+            )
+            return self.interface_phy_fc_stats_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/ethpmFcot' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -31,6 +43,12 @@ class InterfacePhyFcStatsApi():
         self.log.apic_mo(
             'ethpmFcot.%s' % (key),
             self.interface_phy_fc_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'ethpmFcot',
+            self.interface_phy_fc_stats_mo[key],
+            object_selector=key
         )
 
         return self.interface_phy_fc_stats_mo[key]

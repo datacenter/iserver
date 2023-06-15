@@ -10,7 +10,7 @@
 ```
 # iserver get aci l3out --apic apic11 --view epg
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +------------------------------------------+--------------------------------+-------------------------------+-----------------------------+
 | L3Out Name                               | VRF                            | L3 Domain                     | External EPG                |
@@ -53,8 +53,8 @@ Apic: apic11
 +------------------------------------------+--------------------------------+-------------------------------+-----------------------------+
 | MPC-F5T/F5-OUT                           | MPC-F5T/F5-OUT_VRF             | UCSB1_L3Dom                   | F5_ExtEPG                   | 
 +------------------------------------------+--------------------------------+-------------------------------+-----------------------------+
-| MPC/MPC-OUT                              | MPC/MPC-sPBR-OUT_VRF           | Infra_L3Dom                   | Residential-Gaming          | 
-|                                          |                                |                               | MPC-OUT                     | 
+| MPC/MPC-OUT                              | MPC/MPC-sPBR-OUT_VRF           | Infra_L3Dom                   | MPC-OUT                     | 
+|                                          |                                |                               | Residential-Gaming          | 
 +------------------------------------------+--------------------------------+-------------------------------+-----------------------------+
 | MPC/MPC-sPBR-IN                          | MPC/MPC-sPBR-IN_VRF            | Infra_L3Dom                   | MPC-sPBR-IN                 | 
 +------------------------------------------+--------------------------------+-------------------------------+-----------------------------+
@@ -117,7 +117,7 @@ Developer
 # iserver get aci l3out --apic apic11 --view epg
 
 {
-    "duration": 1337,
+    "duration": 1496,
     "apic": {
         "read": true,
         "success": 3,
@@ -125,10 +125,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 389,
+        "connect_time": 418,
         "disconnect_time": 0,
-        "mo_time": 767,
-        "total_time": 1156
+        "mo_time": 739,
+        "total_time": 1157
     },
     "error": {
         "read": false,
@@ -141,15 +141,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	389	-	connect apic11o.emea-sp.cisco.com
-True	441	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	326	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	418	-	connect apic11o.emea-sp.cisco.com
+True	397	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	342	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./L3Out.md)

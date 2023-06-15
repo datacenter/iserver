@@ -5,10 +5,10 @@
 ```
 # iserver get aci epg --apic apic21 --app k8s_ANP
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------+-------------------+--------------------+-----------+----------+
-| Up | EPG                    | Bridge Domain     | Subnets            | Endpoints | Contract |
+| Up | EPG                    | Bridge Domain     | BD Subnets         | Endpoints | Contract |
 +----+------------------------+-------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/backbone1  | k8s/VM2VM_BD      |                    | 2         |          | 
 +----+------------------------+-------------------+--------------------+-----------+----------+
@@ -36,10 +36,10 @@ Apic: apic21
 +----+------------------------+-------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/SRIoV_A    | k8s/SRIoV_A_BD    | 15.20.16.254/24    | 1         | V        | 
 +----+------------------------+-------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/SRIoV_B    | k8s/SRIoV_B_BD    | 15.20.17.254/24    | 2         |          | 
+| V  | k8s/k8s_ANP/SRIoV_B    | k8s/SRIoV_B_BD    | 15.20.17.254/24    | 1         |          | 
 +----+------------------------+-------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/Test       | k8s/Test          | 169.169.170.254/24 | 0         |          | 
-|    |                        |                   | 169.169.169.254/24 |           |          | 
+| V  | k8s/k8s_ANP/Test       | k8s/Test          | 169.169.169.254/24 | 0         |          | 
+|    |                        |                   | 169.169.170.254/24 |           |          | 
 +----+------------------------+-------------------+--------------------+-----------+----------+
 | V  | k8s/k8s_ANP/vk8s_1     | k8s/vk8s_1_BD     | 10.58.24.174/28    | 8         | V        | 
 +----+------------------------+-------------------+--------------------+-----------+----------+
@@ -57,7 +57,7 @@ Developer
 # iserver get aci epg --apic apic21 --app k8s_ANP
 
 {
-    "duration": 2704,
+    "duration": 3524,
     "apic": {
         "read": true,
         "success": 6,
@@ -65,10 +65,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 441,
+        "connect_time": 414,
         "disconnect_time": 0,
-        "mo_time": 1963,
-        "total_time": 2404
+        "mo_time": 2834,
+        "total_time": 3248
     },
     "error": {
         "read": false,
@@ -81,18 +81,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	441	-	connect apic21o.emea-sp.cisco.com
-True	381	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	446	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	326	13	apic21o.emea-sp.cisco.com class fabricNode
-True	402	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	408	71	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	414	-	connect apic21o.emea-sp.cisco.com:443
+True	337	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	1359	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	323	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	400	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	415	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

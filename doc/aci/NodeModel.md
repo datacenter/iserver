@@ -5,15 +5,15 @@
 ```
 # iserver get aci node --apic apic11 --model *c9336*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +---------------------+---------+--------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
 | Node Name           | Node ID | Pod ID | IP Address    | Admin State | Fabric State | Role        | Model            | Serial      | Version        |
 +---------------------+---------+--------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
-| pod-1/cl201-eu-spdc | 201     | 1      | 10.3.192.67   | on          | active       | leaf        | N9K-C93360YC-FX2 | FDO23350LNB | n9000-15.2(7f) | 
-| pod-1/cl202-eu-spdc | 202     | 1      | 10.3.192.68   | on          | active       | leaf        | N9K-C93360YC-FX2 | FDO23350LJY | n9000-15.2(7f) | 
-| pod-1/rl301-eu-spdc | 301     | 1      | 172.16.30.160 | on          | active       | remote leaf | N9K-C9336C-FX2   | FDO2346137N | n9000-15.2(7f) | 
-| pod-1/rl302-eu-spdc | 302     | 1      | 172.16.30.120 | on          | active       | remote leaf | N9K-C9336C-FX2   | FDO234613DB | n9000-15.2(7f) | 
+| pod-1/cl201-eu-spdc | 201     | 1      | 10.3.192.67   | on          | active       | leaf        | N9K-C93360YC-FX2 | FDO23350LNB | n9000-15.2(7g) | 
+| pod-1/cl202-eu-spdc | 202     | 1      | 10.3.192.68   | on          | active       | leaf        | N9K-C93360YC-FX2 | FDO23350LJY | n9000-15.2(7g) | 
+| pod-1/rl301-eu-spdc | 301     | 1      | 172.16.30.160 | on          | active       | remote leaf | N9K-C9336C-FX2   | FDO2346137N | n9000-15.2(7g) | 
+| pod-1/rl302-eu-spdc | 302     | 1      | 172.16.30.120 | on          | active       | remote leaf | N9K-C9336C-FX2   | FDO234613DB | n9000-15.2(7g) | 
 +---------------------+---------+--------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
 ```
 
@@ -23,7 +23,7 @@ Developer
 # iserver get aci node --apic apic11 --model *c9336*
 
 {
-    "duration": 791,
+    "duration": 922,
     "apic": {
         "read": true,
         "success": 2,
@@ -31,10 +31,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 407,
+        "connect_time": 447,
         "disconnect_time": 0,
-        "mo_time": 296,
-        "total_time": 703
+        "mo_time": 337,
+        "total_time": 784
     },
     "error": {
         "read": false,
@@ -47,14 +47,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	407	-	connect apic11o.emea-sp.cisco.com
-True	296	11	apic11o.emea-sp.cisco.com class fabricNode
+True	447	-	connect apic11o.emea-sp.cisco.com
+True	337	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./Node.md)

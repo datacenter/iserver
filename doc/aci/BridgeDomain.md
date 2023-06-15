@@ -41,15 +41,16 @@ Options:
   --tenant TEXT                   Filter by tenant name
   --vrf TEXT                      Filter by vrf name
   --epg TEXT                      Filter by epg name
-  --ip TEXT                       Filter by subnet with IP
+  --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
   -v, --view [default|l2|l3|mcast|vrf|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\f48ffc45dbc8
+Info: finished in 59 ms and logs saved in /tmp/iserver\f59e0b23507d
 ```
 
 [[Back]](./README.md)

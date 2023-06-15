@@ -5,17 +5,15 @@
 ```
 # iserver get aci proto bfd --apic apic11 --node cl201-eu-spdc --view instance
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: cl201-eu-spdc
 
-+---------------------+---------+-------------+-----------------+-----------+-----------------+--------------------+
-| Node                | Admin   | Echo Intf   | Session Summary | Interface | Interface State | Interface Sessions |
-+---------------------+---------+-------------+-----------------+-----------+-----------------+--------------------+
-| pod-1/cl201-eu-spdc | enabled | unspecified | 4/5             | vlan469   | enabled         | 2/2                | 
-|                     |         |             |                 | vlan468   | enabled         | 0/1                | 
-+---------------------+---------+-------------+-----------------+-----------+-----------------+--------------------+
++---------------------+---------+-------------+-----------------+
+| Node                | Admin   | Echo Intf   | Session Summary |
++---------------------+---------+-------------+-----------------+
+| pod-1/cl201-eu-spdc | enabled | unspecified | 0/0             | 
++---------------------+---------+-------------+-----------------+
 ```
 
 Developer
@@ -24,7 +22,7 @@ Developer
 # iserver get aci proto bfd --apic apic11 --node cl201-eu-spdc --view instance
 
 {
-    "duration": 1612,
+    "duration": 2101,
     "apic": {
         "read": true,
         "success": 5,
@@ -32,10 +30,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 387,
+        "connect_time": 462,
         "disconnect_time": 0,
-        "mo_time": 1147,
-        "total_time": 1534
+        "mo_time": 1360,
+        "total_time": 1822
     },
     "error": {
         "read": false,
@@ -48,17 +46,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	387	-	connect apic11o.emea-sp.cisco.com
-True	301	11	apic11o.emea-sp.cisco.com class fabricNode
-True	280	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst
-True	282	5	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
-True	284	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
+True	462	-	connect apic11o.emea-sp.cisco.com
+True	353	13	apic11o.emea-sp.cisco.com class fabricNode
+True	331	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst
+True	327	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdSess
+True	349	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
 ```
 
 [[Back]](./ProtocolBfd.md)

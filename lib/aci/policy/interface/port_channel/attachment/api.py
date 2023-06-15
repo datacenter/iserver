@@ -10,6 +10,17 @@ class PolicyInterfacePortChannelAttachmentApi():
         if self.policy_interface_port_channel_attachment_mo is not None:
             return self.policy_interface_port_channel_attachment_mo
 
+        cache = self.get_object_cache(
+            'L2IfPolToEthIf'
+        )
+        if cache is not None:
+            self.policy_interface_port_channel_attachment_mo = cache
+            self.log.apic_mo(
+                'L2IfPolToEthIf',
+                self.policy_interface_port_channel_attachment_mo
+            )
+            return self.policy_interface_port_channel_attachment_mo
+
         self.policy_interface_port_channel_attachment_mo = []
         self.policy_interface_port_channel_nodes = []
 
@@ -69,6 +80,11 @@ class PolicyInterfacePortChannelAttachmentApi():
                                             self.policy_interface_port_channel_attachment_mo.append(info)
 
         self.log.apic_mo(
+            'L2IfPolToEthIf',
+            self.policy_interface_port_channel_attachment_mo
+        )
+
+        self.set_object_cache(
             'L2IfPolToEthIf',
             self.policy_interface_port_channel_attachment_mo
         )

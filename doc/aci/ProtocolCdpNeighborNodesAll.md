@@ -5,13 +5,14 @@
 ```
 # iserver get aci proto cdp --apic apic11 --node any
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
 - node: s101-eu-spdc
@@ -87,18 +88,18 @@ Developer
 # iserver get aci proto cdp --apic apic11 --node any
 
 {
-    "duration": 8808,
+    "duration": 12999,
     "apic": {
         "read": true,
-        "success": 26,
+        "success": 32,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 25,
-        "connect_time": 398,
+        "mo": 31,
+        "connect_time": 516,
         "disconnect_time": 0,
-        "mo_time": 7820,
-        "total_time": 8218
+        "mo_time": 10980,
+        "total_time": 11496
     },
     "error": {
         "read": false,
@@ -111,38 +112,45 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	398	-	connect apic11o.emea-sp.cisco.com
-True	303	11	apic11o.emea-sp.cisco.com class fabricNode
-True	302	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst
-True	290	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	314	29	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	382	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/cdp/inst
-True	311	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	289	29	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	282	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst
-True	302	17	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	310	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	293	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/cdp/inst
-True	295	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	358	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	293	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst
-True	295	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	305	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	304	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst
-True	478	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	303	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	291	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/cdp/inst
-True	296	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	283	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
-True	296	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/cdp/inst
-True	306	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
-True	339	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	516	-	connect apic11o.emea-sp.cisco.com
+True	332	13	apic11o.emea-sp.cisco.com class fabricNode
+True	310	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst
+True	301	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	313	29	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	305	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/cdp/inst
+True	332	8	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	364	29	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	331	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst
+True	335	17	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	416	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	364	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/cdp/inst
+True	373	15	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	374	100	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	342	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-209/sys/cdp/inst
+True	342	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-209/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	360	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	326	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-210/sys/cdp/inst
+True	339	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-210/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	340	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	362	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst
+True	360	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	376	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	646	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst
+True	465	4	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	371	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	333	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/cdp/inst
+True	312	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-101/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	308	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
+True	321	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/cdp/inst
+True	316	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-102/sys/cdp/inst query query-target=subtree&target-subtree-class=cdpAdjEp
+True	311	17	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/cdpIf query rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
 ```
 
 [[Back]](./ProtocolCdp.md)

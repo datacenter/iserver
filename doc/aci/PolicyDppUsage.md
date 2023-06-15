@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy dpp --apic apic11 --name default --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+-------------------------------+---------------------------------------------------------------------------------------------------------------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type               | Ref Policy Name                                                                                                     |
@@ -106,10 +106,10 @@ Apic: apic11
 |             | pod-1/bl206-eu-spdc | 33              | Leaf Access Port Policy Group | BERLIN-35-RDC-3-vlan                                                                                                | 
 |             | pod-1/cl201-eu-spdc | 130             | Leaf Access Port Policy Group | BERLIN-35-RDC-3-vlan                                                                                                | 
 |             | pod-1/cl202-eu-spdc | 130             | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp                                                                                                  | 
-|             | pod-1/rl301-eu-spdc | 44              | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp                                                                                                  | 
-|             | pod-1/rl302-eu-spdc | 44              | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp                                                                                                  | 
-|             |                     |                 | Leaf Access Port Policy Group | ESX-CDC_PolGrp                                                                                                      | 
-|             |                     |                 | Leaf Access Port Policy Group | ESX-CDC_PolGrp                                                                                                      | 
+|             | pod-1/cl209-eu-spdc | 28              | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp                                                                                                  | 
+|             | pod-1/cl210-eu-spdc | 28              | Leaf Access Port Policy Group | ESX-CDC-DVS_PolGrp                                                                                                  | 
+|             | pod-1/rl301-eu-spdc | 44              | Leaf Access Port Policy Group | ESX-CDC_PolGrp                                                                                                      | 
+|             | pod-1/rl302-eu-spdc | 44              | Leaf Access Port Policy Group | ESX-CDC_PolGrp                                                                                                      | 
 |             |                     |                 | Leaf Access Port Policy Group | ESX-CDC_PolGrp                                                                                                      | 
 |             |                     |                 | Leaf Access Port Policy Group | ESX-R3DC-DVS_PolGrp                                                                                                 | 
 |             |                     |                 | Leaf Access Port Policy Group | ESX-R3DC-DVS_PolGrp                                                                                                 | 
@@ -361,7 +361,7 @@ Developer
 # iserver get aci policy dpp --apic apic11 --name default --view usage
 
 {
-    "duration": 3738,
+    "duration": 4712,
     "apic": {
         "read": true,
         "success": 4,
@@ -369,10 +369,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 395,
+        "connect_time": 437,
         "disconnect_time": 0,
-        "mo_time": 1177,
-        "total_time": 1572
+        "mo_time": 1098,
+        "total_time": 1535
     },
     "error": {
         "read": false,
@@ -385,16 +385,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	395	-	connect apic11o.emea-sp.cisco.com
-True	474	2	apic11o.emea-sp.cisco.com class qosDppPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	399	414	apic11o.emea-sp.cisco.com class l1RsQosEgressDppIfPolCons
-True	304	11	apic11o.emea-sp.cisco.com class fabricNode
+True	437	-	connect apic11o.emea-sp.cisco.com
+True	368	2	apic11o.emea-sp.cisco.com class qosDppPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	413	470	apic11o.emea-sp.cisco.com class l1RsQosEgressDppIfPolCons
+True	317	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyDpp.md)

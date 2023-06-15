@@ -52,7 +52,7 @@ class TenantInfo():
 
         return True
 
-    def get_tenants(self, tenant_filter=None):
+    def get_tenants(self, tenant_filter=None, count_info=False):
         all_tenants = self.get_tenants_info()
         if all_tenants is None:
             return None
@@ -63,35 +63,36 @@ class TenantInfo():
             if not self.match_tenant(tenant_info, tenant_filter):
                 continue
 
-            tenant_info['bdCount'] = self.get_bridge_domain_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['vrfCount'] = self.get_vrf_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['apCount'] = self.get_application_profile_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['aEpgCount'] = self.get_epg_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['l2OutCount'] = self.get_l2out_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['l3OutCount'] = self.get_l3out_count(
-                tenant_name=tenant_info['name'],
-                mpls='no'
-            )
-            tenant_info['mplsL3OutCount'] = self.get_l3out_count(
-                tenant_name=tenant_info['name'],
-                mpls='yes'
-            )
-            tenant_info['contractCount'] = self.get_contract_count(
-                tenant_name=tenant_info['name']
-            )
-            tenant_info['endpointCount'] = self.get_endpoint_count(
-                tenant_name=tenant_info['name']
-            )
+            if count_info:
+                tenant_info['bdCount'] = self.get_bridge_domain_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['vrfCount'] = self.get_vrf_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['apCount'] = self.get_application_profile_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['aEpgCount'] = self.get_epg_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['l2OutCount'] = self.get_l2out_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['l3OutCount'] = self.get_l3out_count(
+                    tenant_name=tenant_info['name'],
+                    mpls='no'
+                )
+                tenant_info['mplsL3OutCount'] = self.get_l3out_count(
+                    tenant_name=tenant_info['name'],
+                    mpls='yes'
+                )
+                tenant_info['contractCount'] = self.get_contract_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['endpointCount'] = self.get_endpoint_count(
+                    tenant_name=tenant_info['name']
+                )
 
             tenants.append(tenant_info)
 

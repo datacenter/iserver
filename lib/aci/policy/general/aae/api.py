@@ -6,6 +6,17 @@ class PolicyGeneralAaeApi():
         if self.policy_global_aae_mo is not None:
             return self.policy_global_aae_mo
 
+        cache = self.get_object_cache(
+            'infraAttEntityP'
+        )
+        if cache is not None:
+            self.policy_global_aae_mo = cache
+            self.log.apic_mo(
+                'infraAttEntityP',
+                self.policy_global_aae_mo
+            )
+            return self.policy_global_aae_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP'
         managed_objects = self.get_class(
             'infraAttEntityP',
@@ -39,6 +50,11 @@ class PolicyGeneralAaeApi():
             )
 
         self.log.apic_mo(
+            'infraAttEntityP',
+            self.policy_global_aae_mo
+        )
+
+        self.set_object_cache(
             'infraAttEntityP',
             self.policy_global_aae_mo
         )

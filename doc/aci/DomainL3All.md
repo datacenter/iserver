@@ -5,7 +5,7 @@
 ```
 # iserver get aci domain l3 --apic apic11
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------------------------+-----------------------------+-----------------------------------+-----------------------+-----------+
 | Domain Name                   | AAEP                        | VLAN Pool                         | Encapsulation Block   | EPG Usage |
@@ -21,7 +21,7 @@ Apic: apic11
 |                               |                             |                                   | [2373-2373] (static)  |           | 
 |                               |                             |                                   | [2374-2374] (static)  |           | 
 +-------------------------------+-----------------------------+-----------------------------------+-----------------------+-----------+
-| Infra-2_L3Dom                 | {}                          | Infra_VlanPool                    | [1-1000] (inherit)    | 0/1001    | 
+| Infra-2_L3Dom                 |                             | Infra_VlanPool                    | [1-1000] (inherit)    | 0/1001    | 
 |                               |                             |                                   | [2000-2000] (inherit) |           | 
 +-------------------------------+-----------------------------+-----------------------------------+-----------------------+-----------+
 | Infra-BGP_L3Dom               | Infra_L3_AAEP               | Infra_VlanPool                    | [1-1000] (inherit)    | 0/1001    | 
@@ -81,7 +81,7 @@ Developer
 # iserver get aci domain l3 --apic apic11
 
 {
-    "duration": 1811,
+    "duration": 1611,
     "apic": {
         "read": true,
         "success": 4,
@@ -89,10 +89,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 425,
+        "connect_time": 422,
         "disconnect_time": 0,
-        "mo_time": 1139,
-        "total_time": 1564
+        "mo_time": 979,
+        "total_time": 1401
     },
     "error": {
         "read": false,
@@ -105,16 +105,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	425	-	connect apic11o.emea-sp.cisco.com
-True	338	18	apic11o.emea-sp.cisco.com class l3extDomP query rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain
-True	456	25	apic11o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
-True	345	39	apic11o.emea-sp.cisco.com class vmmEpPD
+True	422	-	connect apic11o.emea-sp.cisco.com
+True	313	18	apic11o.emea-sp.cisco.com class l3extDomP query rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain
+True	342	25	apic11o.emea-sp.cisco.com class fvnsVlanInstP query rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs
+True	324	39	apic11o.emea-sp.cisco.com class vmmEpPD
 ```
 
 [[Back]](./DomainL3.md)

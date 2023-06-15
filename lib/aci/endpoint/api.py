@@ -6,12 +6,24 @@ class EndpointApi():
         if self.endpoints_mo is not None:
             return self.endpoints_mo
 
-        query = 'rsp-subtree-include=health&rsp-subtree=children'
+        cache = self.get_object_cache(
+            'fvCEp'
+        )
+        if cache is not None:
+            self.endpoints_mo = cache
+            self.log.apic_mo(
+                'fvCEp',
+                self.endpoints_mo
+            )
+            return self.endpoints_mo
 
+        query = 'rsp-subtree-include=health&rsp-subtree=children'
         children = [
             'fvIp',
+            'fvRsCEpToPathEp',
             'fvRsToVm',
-            'fvRsHyper'
+            'fvRsHyper',
+            'fvRsToNic'
         ]
         for child in children:
             query = '%s&rsp-subtree-class=%s' % (query, child)
@@ -38,6 +50,12 @@ class EndpointApi():
                 'fvIp'
             )
 
+            attributes['fvRsCEpToPathEp'] = self.get_mo_child_attributes(
+                'fvCEp',
+                managed_object,
+                'fvRsCEpToPathEp'
+            )
+
             attributes['fvRsToVm'] = self.get_mo_child_attributes(
                 'fvCEp',
                 managed_object,
@@ -50,11 +68,22 @@ class EndpointApi():
                 'fvRsHyper'
             )
 
+            attributes['fvRsToNic'] = self.get_mo_child_attributes(
+                'fvCEp',
+                managed_object,
+                'fvRsToNic'
+            )
+
             self.endpoints_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
+            'fvCEp',
+            self.endpoints_mo
+        )
+
+        self.set_object_cache(
             'fvCEp',
             self.endpoints_mo
         )

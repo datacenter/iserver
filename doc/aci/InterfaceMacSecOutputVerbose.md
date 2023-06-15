@@ -9,7 +9,7 @@
     --id eth1/28
     --view verbose
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
@@ -61,7 +61,7 @@ Developer
     --view verbose
 
 {
-    "duration": 3545,
+    "duration": 2851,
     "apic": {
         "read": true,
         "success": 9,
@@ -69,10 +69,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 8,
-        "connect_time": 596,
+        "connect_time": 398,
         "disconnect_time": 0,
-        "mo_time": 2524,
-        "total_time": 3120
+        "mo_time": 2315,
+        "total_time": 2713
     },
     "error": {
         "read": false,
@@ -85,21 +85,22 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	596	-	connect apic11o.emea-sp.cisco.com
-True	315	11	apic11o.emea-sp.cisco.com class fabricNode
-True	319	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
-True	296	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	323	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	378	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsectx
-True	285	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsecrx
-True	295	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecIfStats
-True	313	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecCAStats
+True	398	-	connect apic11o.emea-sp.cisco.com
+True	309	13	apic11o.emea-sp.cisco.com class fabricNode
+True	288	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	291	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	298	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	297	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsectx
+True	275	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsecrx
+True	274	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecIfStats
+True	283	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecCAStats
 ```
 
 [[Back]](./InterfaceMacSec.md)

@@ -48,7 +48,7 @@ class NodeTempInfo():
             info['nodeId']
         )
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['nodeName']
@@ -60,7 +60,7 @@ class NodeTempInfo():
         if self.nodes_temp is not None:
             return self.nodes_temp
 
-        nodes_temp_mo = self.get_nodes_temp_mo()
+        nodes_temp_mo = self.get_node_temp_mo()
         if nodes_temp_mo is not None:
             self.nodes_temp = []
             for node_temp_mo in nodes_temp_mo:

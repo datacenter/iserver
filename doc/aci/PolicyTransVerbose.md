@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy transceiver --apic apic11 --name default --view verbose
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 Transceiver Policy Properties
 -----------------------------
@@ -93,7 +93,7 @@ Developer
 # iserver get aci policy transceiver --apic apic11 --name default --view verbose
 
 {
-    "duration": 1545,
+    "duration": 1930,
     "apic": {
         "read": true,
         "success": 4,
@@ -101,10 +101,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 383,
+        "connect_time": 452,
         "disconnect_time": 0,
-        "mo_time": 1040,
-        "total_time": 1423
+        "mo_time": 1083,
+        "total_time": 1535
     },
     "error": {
         "read": false,
@@ -117,16 +117,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	383	-	connect apic11o.emea-sp.cisco.com
-True	310	2	apic11o.emea-sp.cisco.com class xcvrOpticsIfPol
-True	418	414	apic11o.emea-sp.cisco.com class l1RsSynceEthIfPolCons
-True	312	11	apic11o.emea-sp.cisco.com class fabricNode
+True	452	-	connect apic11o.emea-sp.cisco.com
+True	342	2	apic11o.emea-sp.cisco.com class xcvrOpticsIfPol
+True	405	470	apic11o.emea-sp.cisco.com class l1RsSynceEthIfPolCons
+True	336	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyTrans.md)

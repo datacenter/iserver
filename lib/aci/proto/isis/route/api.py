@@ -12,6 +12,18 @@ class ProtocolIsisRouteApi():
         if key in self.isis_domain_routes_mo:
             return self.isis_domain_routes_mo[key]
 
+        cache = self.get_object_cache(
+            'isisRoute',
+            object_selector=key
+        )
+        if cache is not None:
+            self.isis_domain_routes_mo[key] = cache
+            self.log.apic_mo(
+                'isisRoute.%s' % (key),
+                self.isis_domain_routes_mo[key]
+            )
+            return self.isis_domain_routes_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/isis/inst-%s/dom-%s' % (
             pod_id,
             node_id,
@@ -55,6 +67,12 @@ class ProtocolIsisRouteApi():
         self.log.apic_mo(
             'isisRoute.%s' % (key),
             self.isis_domain_routes_mo[key]
+        )
+
+        self.set_object_cache(
+            'isisRoute',
+            self.isis_domain_routes_mo[key],
+            object_selector=key
         )
 
         return self.isis_domain_routes_mo[key]

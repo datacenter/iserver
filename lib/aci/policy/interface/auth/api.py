@@ -6,6 +6,17 @@ class PolicyInterfaceAuthApi():
         if self.policy_interface_auth_mo is not None:
             return self.policy_interface_auth_mo
 
+        cache = self.get_object_cache(
+            'l2PortAuthPol'
+        )
+        if cache is not None:
+            self.policy_interface_auth_mo = cache
+            self.log.apic_mo(
+                'l2PortAuthPol',
+                self.policy_interface_auth_mo
+            )
+            return self.policy_interface_auth_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'l2PortAuthPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceAuthApi():
             )
 
         self.log.apic_mo(
+            'l2PortAuthPol',
+            self.policy_interface_auth_mo
+        )
+
+        self.set_object_cache(
             'l2PortAuthPol',
             self.policy_interface_auth_mo
         )

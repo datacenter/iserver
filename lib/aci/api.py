@@ -3,25 +3,30 @@ import time
 import traceback
 import requests
 
+from progress.bar import Bar
+
 
 class Api():
-    def __init__(self, apic_name, username, password):
-        self.apic_name = apic_name
+    def __init__(self, apic_ip, apic_port, username, password):
+        self.apic_ip = apic_ip
+        self.apic_port = apic_port
         self.apic_username = username
         self.apic_password = password
 
         self.session_connected = False
         self.token = None
-        self.get_token()
 
-    def get_apic_name(self):
-        return self.apic_name
+    def get_apic_ip(self):
+        return self.apic_ip
 
     def get_token(self):
         if self.token is not None:
             return
 
-        url = "https://%s/api/aaaLogin.json" % (self.apic_name)
+        url = "https://%s:%s/api/aaaLogin.json" % (
+            self.apic_ip,
+            self.apic_port
+        )
 
         payload = {
             "aaaUser": {
@@ -56,20 +61,31 @@ class Api():
             )
             self.session_connected = False
             self.my_output.error(
-                'Failed to connect: %s' % (self.apic_name)
+                'Failed to connect: %s:%s' % (
+                    self.apic_ip,
+                    self.apic_port
+                )
             )
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
         self.log.apic(
-            'connect %s' % (self.apic_name),
+            'connect %s:%s' % (
+                self.apic_ip,
+                self.apic_port
+            ),
             self.session_connected,
             duration_ms
         )
 
     def is_connected(self):
-        if self.token is None:
+        if self.apic_settings is not None and not self.apic_settings['online']:
             return False
+
+        if self.token is None:
+            self.get_token()
+            if self.token is None:
+                return False
         return True
 
     def get_mo_children_attributes(self, mo_name, managed_object, child_name):
@@ -96,17 +112,24 @@ class Api():
             return None
 
         if node_class:
-            url = "https://%s/api/node/class/%s.%s" % (
-                self.apic_name,
+            url = "https://%s:%s/api/node/class/%s.%s" % (
+                self.apic_ip,
+                self.apic_port,
                 class_name,
                 response_format
             )
         else:
-            url = "https://%s/api/class/%s.%s" % (
-                self.apic_name,
+            url = "https://%s:%s/api/class/%s.%s" % (
+                self.apic_ip,
+                self.apic_port,
                 class_name,
                 response_format
             )
+
+        # if query is None:
+        #     query = 'page=0&page-size=10000'
+        # else:
+        #     query = '%s&page=0&page-size=10000' % (query)
 
         if query is not None:
             url = '%s?%s' % (
@@ -172,8 +195,9 @@ class Api():
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
 
-        log_info = '%s class %s' % (
-            self.apic_name,
+        log_info = '%s:%s class %s' % (
+            self.apic_ip,
+            self.apic_port,
             class_name
         )
         if query_target_filter is not None:
@@ -201,14 +225,16 @@ class Api():
             return None
 
         if node_mo:
-            url = "https://%s/api/node/mo/%s.%s" % (
-                self.apic_name,
+            url = "https://%s:%s/api/node/mo/%s.%s" % (
+                self.apic_ip,
+                self.apic_port,
                 distinguished_name,
                 response_format
             )
         else:
-            url = "https://%s/api/mo/%s.%s" % (
-                self.apic_name,
+            url = "https://%s:%s/api/mo/%s.%s" % (
+                self.apic_ip,
+                self.apic_port,
                 distinguished_name,
                 response_format
             )
@@ -277,8 +303,9 @@ class Api():
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
 
-        log_info = '%s mo %s' % (
-            self.apic_name,
+        log_info = '%s:%s mo %s' % (
+            self.apic_ip,
+            self.apic_port,
             distinguished_name
         )
         if query_target_filter is not None:
@@ -300,3 +327,778 @@ class Api():
         )
 
         return response
+
+    def get_mos(self, bar_enabled=False):
+        if bar_enabled:
+            bar_handler = Bar('Global Objects', max=79)
+            bar_handler.goto(0)
+
+        self.get_application_profile_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_bridge_domains_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_contracts_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_filters_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_subjects_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_taboos_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_taboo_subjects_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_aaa_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_l2_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_l3_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_phy_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_vmm_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_domain_vmm_epg_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_endpoints_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_endpoint_vmm_vnic_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_endpoint_vmm_vm_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_endpoint_vmm_hv_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_epgs_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_epgs_deployed_leaves_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_l2out_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_l3out_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_l3out_node_profile_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_power_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_psu_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_sensor_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_system_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_node_temp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_fabric_path_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_group_access_interface_breakout_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_group_access_interface_port_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_group_access_interface_vpc_node_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_group_access_interface_vpc_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_global_aae_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_auth_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_auth_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_cdp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_cdp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_copp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_copp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_copp_protocol_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_dpp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_dpp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_fc_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_fc_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_l2_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_l2_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_flap_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_flap_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_level_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_level_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_level_fc_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_link_level_fc_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_lldp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_lldp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_mcp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_mcp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_pfc_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_pfc_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_channel_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policies_interface_port_channel_info()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_channel_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_channel_member_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_channel_member_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_security_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_port_security_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_slow_drain_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_slow_drain_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_storm_control_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_storm_control_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_stp_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_stp_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_synce_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_synce_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_transceiver_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_policy_interface_transceiver_attachment_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_pool_vlan_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_tenant_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        self.get_vrfs_mo()
+        if bar_enabled:
+            bar_handler.next()
+
+        if bar_enabled:
+            bar_handler.finish()
+
+        nodes = self.get_nodes()
+        for node in nodes:
+            if bar_enabled:
+                bar_handler = Bar('Node Objects: %s' % (node['id']), max=59)
+
+            self.get_adjacency_cdp_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_adjacency_lacp_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_adjacency_lldp_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_cloudsec_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_encap_routed_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_fc_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_fcpc_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_node_address_ipv4_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_node_interface_ipv4_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_node_address_ipv6_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_node_interface_ipv6_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interfaces_lacp_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_lacp_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_loopback_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_macsec_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_management_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_management_state_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_management_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_cap_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_eee_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_load_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_pc_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_rmon_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_ether_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_fc_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_phy_qos_stats_mo(
+                node['podId'],
+                node['id'],
+                cache_enabled=False
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_port_channels_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_svi_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_tunnel_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interface_vfc_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_interfaces_virtual_port_channel_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_vlan_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_node_interface_policy_profile_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_arp_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_arp_adjacencies_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bfd_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bfd_interfaces_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bfd_sessions_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bgp_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bgp_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_bgp_neighbors_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_cdp_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_cdp_interfaces_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_cdp_neighbors_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_hsrp_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_hsrp_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_hsrp_interfaces_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_ipv4_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_ipv6_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_isis_domains_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_isis_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_lacp_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_lldp_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_lldp_stats_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_nd_domain_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_nd_instance_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_nd_interface_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            self.get_protocol_nd_neighbor_mo(
+                node['podId'],
+                node['id']
+            )
+            if bar_enabled:
+                bar_handler.next()
+
+            if bar_enabled:
+                bar_handler.finish()
+
+        # get_interface_fault_counts_mo(self, pod_id, node_id, interface_type, interface_id)
+
+        # get_interface_macsec_castats_mo(self, pod_id, node_id, interface_id)
+        # get_interface_macsec_rx_mo(self, pod_id, node_id, interface_id)
+        # get_interface_macsec_stats_mo(self, pod_id, node_id, interface_id)
+        # get_interface_macsec_tx_mo(self, pod_id, node_id, interface_id)
+
+        # get_interface_phy_epg_stats_mo(self, pod_id, node_id, interface_id)
+
+        # get_interface_policy_profile_mo(self, profile_name)
+        # get_interface_port_channel_relations_mo(self, pod_id, node_id, port_channel_id)
+        # get_interface_virtual_port_channel_members_mo(self, pod_id, node_id, vpc_domain_id)
+        # get_policy_group_access_interface_vpc_port_mo(self, policy_group_name, node_id)
+        # get_policy_snoop_igmp_mo(self, tenant, name)
+        # get_policy_snoop_mld_mo(self, tenant, name)
+        # get_protocol_bfd_session_peer_mo(self, pod_id, node_id, session_id)
+        # get_protocol_bfd_session_stats_mo(self, pod_id, node_id, session_id)
+        # get_protocol_bgp_neighbor_stats_mo(self, pod_id, node_id, bgp_domain_name, bgp_peer_addr, bgp_state_addr)
+        # get_protocol_ipv4_routes_mo(self, pod_id, node_id, ipv4_domain_name)
+        # get_protocol_ipv6_routes_mo(self, pod_id, node_id, ipv6_domain_name)
+        # get_protocol_isis_domain_interfaces_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_protocol_isis_domain_lsps_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_protocol_isis_domain_neighbors_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_protocol_isis_domain_routes_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_protocol_isis_domain_trees_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_protocol_isis_domain_tunnels_mo(self, pod_id, node_id, instance_name, domain_name)
+        # get_vrf_ipv4_mo(self, tenant, name)
+        # get_vrf_ipv6_mo(self, tenant, name)

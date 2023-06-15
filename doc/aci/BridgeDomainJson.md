@@ -59,9 +59,9 @@
                 "network": "10.58.24.160/28",
                 "gateway": "10.58.24.174",
                 "size": 14,
-                "endpoints": 10,
-                "usage": "10/14",
-                "available": 4
+                "endpoints": 1,
+                "usage": "1/14",
+                "available": 13
             }
         ],
         "fvSubnetCount": 1,
@@ -238,9 +238,9 @@
                             "network": "10.58.24.160/28",
                             "gateway": "10.58.24.174",
                             "size": 14,
-                            "endpoints": 10,
-                            "usage": "10/14",
-                            "available": 4
+                            "endpoints": 1,
+                            "usage": "1/14",
+                            "available": 13
                         }
                     ],
                     "fvSubnetCount": 1,
@@ -299,14 +299,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:11:50",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:11:50",
                         "name": "00:50:56:B4:11:50",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -316,14 +316,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.161",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14045]",
@@ -346,14 +339,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:3D:19",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:3D:19",
                         "name": "00:50:56:B4:3D:19",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -363,14 +356,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.170",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14067]",
@@ -393,14 +379,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:67:1F",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:67:1F",
                         "name": "00:50:56:B4:67:1F",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -410,14 +396,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.167",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14060]",
@@ -440,14 +419,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:85:73",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2207/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:85:73",
                         "name": "00:50:56:B4:85:73",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -457,20 +436,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.162",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            },
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.165",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14058]",
@@ -493,14 +459,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:9C:81",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:9C:81",
                         "name": "00:50:56:B4:9C:81",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -510,20 +476,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.163",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            },
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.168",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14068]",
@@ -546,14 +499,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:9E:D0",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2207/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:9E:D0",
                         "name": "00:50:56:B4:9E:D0",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -563,14 +516,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.169",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14069]",
@@ -593,7 +539,7 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:D2:45",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
                         "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:D2:45",
@@ -633,14 +579,14 @@
                         "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                         "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:EB:6A",
                         "encap": "vlan-1367",
-                        "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                        "lcC": "learned,vmm",
+                        "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                        "lcC": "vmm",
                         "lcOwn": "local",
                         "mac": "00:50:56:B4:EB:6A",
                         "name": "00:50:56:B4:EB:6A",
                         "userdom": "all",
                         "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                        "flags": "LV",
+                        "flags": "V",
                         "tenant": "k8s",
                         "vrfTenant": "common",
                         "vrfCtx": "Infra_VRF",
@@ -650,14 +596,7 @@
                         "bdName": "k8s/vk8s_1_BD",
                         "epgName": "vk8s_1",
                         "apName": "k8s_ANP",
-                        "fvIp": [
-                            {
-                                "__Output": {},
-                                "addr": "10.58.24.166",
-                                "baseEpgDn": "",
-                                "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                            }
-                        ],
+                        "fvIp": [],
                         "fvRsToVm": {
                             "__Output": {},
                             "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14059]",
@@ -686,14 +625,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:11:50",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:11:50",
                 "name": "00:50:56:B4:11:50",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -703,14 +642,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.161",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14045]",
@@ -729,23 +661,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Other (32-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14045",
                     "name": "ocp-devel-installer",
                     "oid": "vm-14045",
                     "os": "Red Hat Fedora (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14045/vnic-00:50:56:B4:11:50",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -785,14 +717,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:3D:19",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:3D:19",
                 "name": "00:50:56:B4:3D:19",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -802,14 +734,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.170",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14067]",
@@ -828,23 +753,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14067",
                     "name": "devel-5tt4q-worker-ggl7q",
                     "oid": "vm-14067",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14067/vnic-00:50:56:B4:3D:19",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -884,14 +809,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:67:1F",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:67:1F",
                 "name": "00:50:56:B4:67:1F",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -901,14 +826,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.167",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14060]",
@@ -927,23 +845,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14060",
                     "name": "devel-5tt4q-master-2",
                     "oid": "vm-14060",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14060/vnic-00:50:56:B4:67:1F",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -983,14 +901,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:85:73",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2207/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:85:73",
                 "name": "00:50:56:B4:85:73",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -1000,20 +918,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.162",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    },
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.165",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14058]",
@@ -1032,23 +937,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14058",
                     "name": "devel-5tt4q-master-0",
                     "oid": "vm-14058",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14058/vnic-00:50:56:B4:85:73",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -1088,14 +993,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:9C:81",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:9C:81",
                 "name": "00:50:56:B4:9C:81",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -1105,20 +1010,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.163",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    },
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.168",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14068]",
@@ -1137,23 +1029,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14068",
                     "name": "devel-5tt4q-worker-d6c8p",
                     "oid": "vm-14068",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14068/vnic-00:50:56:B4:9C:81",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -1193,14 +1085,14 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:9E:D0",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2207/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:9E:D0",
                 "name": "00:50:56:B4:9E:D0",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -1210,14 +1102,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.169",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14069]",
@@ -1236,23 +1121,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14069",
                     "name": "devel-5tt4q-worker-wfvql",
                     "oid": "vm-14069",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14069/vnic-00:50:56:B4:9E:D0",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {
@@ -1292,7 +1177,7 @@
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:D2:45",
                 "encap": "vlan-1367",
-                "fabricPathDn": "",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
                 "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:D2:45",
@@ -1334,7 +1219,7 @@
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14056",
                     "name": "devel-5tt4q-rhcos",
                     "oid": "vm-14056",
-                    "os": "",
+                    "os": "Red Hat Enterprise Linux 8 (64-bit)",
                     "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
@@ -1360,21 +1245,38 @@
                     "state": "poweredOn",
                     "vmm": "EU-SPDC-POD2B"
                 },
-                "fabric": []
+                "fabric": [
+                    {
+                        "dn": "topology/pod-1/node-2207/sys/phys-[eth1/1/1]",
+                        "pod_id": "1",
+                        "node_id": "2207",
+                        "node_name": "cl2207-eu-spdc",
+                        "port_id": "eth1/1/1",
+                        "ep": "pod-1 node-2207 eth1/1/1 (k8s_esx71_PolGrp)"
+                    },
+                    {
+                        "dn": "topology/pod-1/node-2208/sys/phys-[eth1/1/1]",
+                        "pod_id": "1",
+                        "node_id": "2208",
+                        "node_name": "cl2208-eu-spdc",
+                        "port_id": "eth1/1/1",
+                        "ep": "pod-1 node-2208 eth1/1/1 (k8s_esx71_PolGrp)"
+                    }
+                ]
             },
             {
                 "__Output": {},
                 "bdDn": "uni/tn-k8s/BD-vk8s_1_BD",
                 "dn": "uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1/cep-00:50:56:B4:EB:6A",
                 "encap": "vlan-1367",
-                "fabricPathDn": "topology/pod-1/paths-2208/pathep-[k8s_esx71_PolGrp]",
-                "lcC": "learned,vmm",
+                "fabricPathDn": "topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx71_PolGrp]",
+                "lcC": "vmm",
                 "lcOwn": "local",
                 "mac": "00:50:56:B4:EB:6A",
                 "name": "00:50:56:B4:EB:6A",
                 "userdom": "all",
                 "vrfDn": "uni/tn-common/ctx-Infra_VRF",
-                "flags": "LV",
+                "flags": "V",
                 "tenant": "k8s",
                 "vrfTenant": "common",
                 "vrfCtx": "Infra_VRF",
@@ -1384,14 +1286,7 @@
                 "bdName": "k8s/vk8s_1_BD",
                 "epgName": "vk8s_1",
                 "apName": "k8s_ANP",
-                "fvIp": [
-                    {
-                        "__Output": {},
-                        "addr": "10.58.24.166",
-                        "baseEpgDn": "",
-                        "vrfDn": "uni/tn-common/ctx-Infra_VRF"
-                    }
-                ],
+                "fvIp": [],
                 "fvRsToVm": {
                     "__Output": {},
                     "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14059]",
@@ -1410,23 +1305,23 @@
                 },
                 "vm": {
                     "__Output": {
-                        "state": "Green"
+                        "state": "Red"
                     },
                     "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14059",
                     "name": "devel-5tt4q-master-1",
                     "oid": "vm-14059",
                     "os": "Red Hat Enterprise Linux 8 (64-bit)",
-                    "state": "poweredOn",
+                    "state": "poweredOff",
                     "vmm": "EU-SPDC-POD2B"
                 },
                 "vnic": {
                     "__Output": {
-                        "operSt": "Green"
+                        "operSt": "Red"
                     },
                     "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-14059/vnic-00:50:56:B4:EB:6A",
                     "name": "Network adapter 1",
-                    "operSt": "up",
+                    "operSt": "down",
                     "adapterType": "Vmxnet3"
                 },
                 "hv": {

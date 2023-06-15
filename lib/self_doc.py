@@ -3,7 +3,6 @@ import sys
 import json
 import shutil
 import traceback
-import yaml
 
 from lib import file_helper
 from lib import template_helper
@@ -311,11 +310,10 @@ def get_redfish_test_endpoints():
         print('Redfish tests definition not found: %s' % (tests_filename))
         return None
 
-    try:
-        with open(tests_filename, 'r', encoding='utf-8') as file_handler:
-            tests = yaml.safe_load(file_handler)
-
-    except BaseException:
+    tests = file_helper.get_file_yaml(
+        tests_filename
+    )
+    if tests is None:
         print('Redfish tests definition read failed: %s' % (tests_filename))
         return None
 
@@ -889,3 +887,5 @@ def generate_template_docs(template_names=[]):
                     return False
 
                 print('Created')
+
+    return True

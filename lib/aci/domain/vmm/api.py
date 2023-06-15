@@ -6,6 +6,17 @@ class DomainVmmApi():
         if self.domain_vmm_mo is not None:
             return self.domain_vmm_mo
 
+        cache = self.get_object_cache(
+            'vmmDomP'
+        )
+        if cache is not None:
+            self.domain_vmm_mo = cache
+            self.log.apic_mo(
+                'vmmDomP',
+                self.domain_vmm_mo
+            )
+            return self.domain_vmm_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=infraRtDomP,vmmUplinkPCont,infraRsVlanNs,vmmUsrAccP,vmmCtrlrP,vmmVSwitchPolicyCont'
         managed_objects = self.get_class(
             'vmmDomP',
@@ -65,6 +76,11 @@ class DomainVmmApi():
             )
 
         self.log.apic_mo(
+            'vmmDomP',
+            self.domain_vmm_mo
+        )
+
+        self.set_object_cache(
             'vmmDomP',
             self.domain_vmm_mo
         )

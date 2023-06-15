@@ -6,6 +6,17 @@ class EndpointVmmHvApi():
         if self.endpoint_vmm_hv_mo is not None:
             return self.endpoint_vmm_hv_mo
 
+        cache = self.get_object_cache(
+            'compHv'
+        )
+        if cache is not None:
+            self.endpoint_vmm_hv_mo = cache
+            self.log.apic_mo(
+                'compHv',
+                self.endpoint_vmm_hv_mo
+            )
+            return self.endpoint_vmm_hv_mo
+
         managed_objects = self.get_class(
             'compHv'
         )
@@ -25,6 +36,11 @@ class EndpointVmmHvApi():
             )
 
         self.log.apic_mo(
+            'compHv',
+            self.endpoint_vmm_hv_mo
+        )
+
+        self.set_object_cache(
             'compHv',
             self.endpoint_vmm_hv_mo
         )

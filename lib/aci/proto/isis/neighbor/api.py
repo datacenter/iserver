@@ -12,6 +12,18 @@ class ProtocolIsisNeighborApi():
         if key in self.isis_domain_neighbors_mo:
             return self.isis_domain_neighbors_mo[key]
 
+        cache = self.get_object_cache(
+            'isisAdjEp',
+            object_selector=key
+        )
+        if cache is not None:
+            self.isis_domain_neighbors_mo[key] = cache
+            self.log.apic_mo(
+                'isisAdjEp.%s' % (key),
+                self.isis_domain_neighbors_mo[key]
+            )
+            return self.isis_domain_neighbors_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/isis/inst-%s/dom-%s' % (
             pod_id,
             node_id,
@@ -47,6 +59,12 @@ class ProtocolIsisNeighborApi():
         self.log.apic_mo(
             'isisAdjEp.%s' % (key),
             self.isis_domain_neighbors_mo[key]
+        )
+
+        self.set_object_cache(
+            'isisAdjEp',
+            self.isis_domain_neighbors_mo[key],
+            object_selector=key
         )
 
         return self.isis_domain_neighbors_mo[key]

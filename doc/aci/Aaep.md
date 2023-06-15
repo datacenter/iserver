@@ -25,10 +25,11 @@ Options:
   --password TEXT              APIC Password
   --name TEXT                  Filter by profile name
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 46 ms and logs saved in /tmp/iserver\f6b7e6648f23
+Info: finished in 35 ms and logs saved in /tmp/iserver\bbf33e10c5a3
 ```
 
 [[Back]](./README.md)

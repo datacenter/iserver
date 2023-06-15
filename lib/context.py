@@ -14,6 +14,21 @@ class Context(Settings):
             'context'
         )
 
+    def initialize_apic(self, apic_name):
+        context = {}
+        context['apic'] = [apic_name]
+        context['node'] = {}
+        context['node'][apic_name] = []
+        context['interface'] = {}
+        context['interface'][apic_name] = []
+        return context
+
+    def is_interface_defined(self, context):
+        for apic_name in context['apic']:
+            if len(context['interface'][apic_name]) > 0:
+                return True
+        return False
+
     def get(self, key):
         contexts = self.get_contexts()
         if contexts is None:

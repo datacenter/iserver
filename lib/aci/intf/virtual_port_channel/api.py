@@ -7,6 +7,18 @@ class InterfaceVirtualPortChannelApi():
         if key in self.interfaces_vpc_mo:
             return self.interfaces_vpc_mo[key]
 
+        cache = self.get_object_cache(
+            'vpcDom',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interfaces_vpc_mo[key] = cache
+            self.log.apic_mo(
+                'vpcDom.%s' % (key),
+                self.interfaces_vpc_mo[key]
+            )
+            return self.interfaces_vpc_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/vpcDom' % (pod_id, node_id)
         managed_objects = self.get_class(
             class_name
@@ -29,6 +41,12 @@ class InterfaceVirtualPortChannelApi():
         self.log.apic_mo(
             'vpcDom.%s' % (key),
             self.interfaces_vpc_mo[key]
+        )
+
+        self.set_object_cache(
+            'vpcDom',
+            self.interfaces_vpc_mo[key],
+            object_selector=key
         )
 
         return self.interfaces_vpc_mo[key]

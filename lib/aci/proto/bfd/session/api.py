@@ -7,6 +7,18 @@ class ProtocolBfdSessionApi():
         if key in self.bfd_sessions_mo:
             return self.bfd_sessions_mo[key]
 
+        cache = self.get_object_cache(
+            'bfdSess',
+            object_selector=key
+        )
+        if cache is not None:
+            self.bfd_sessions_mo[key] = cache
+            self.log.apic_mo(
+                'bfdSess.%s' % (key),
+                self.bfd_sessions_mo[key]
+            )
+            return self.bfd_sessions_mo[key]
+
         # url: url: https://apic11o-eu-spdc.cisco.com/api/node/mo/topology/pod-1/node-201/sys/bfd/inst.json?query-target=children&target-subtree-class=bfdSess&subscription=yes
         distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst' % (pod_id, node_id)
         query = 'query-target=children&target-subtree-class=bfdSess'
@@ -29,8 +41,14 @@ class ProtocolBfdSessionApi():
             )
 
         self.log.apic_mo(
-            'bfd.sessions.%s' % (key),
+            'bfdSess.%s' % (key),
             self.bfd_sessions_mo[key]
+        )
+
+        self.set_object_cache(
+            'bfdSess',
+            self.bfd_sessions_mo[key],
+            object_selector=key
         )
 
         return self.bfd_sessions_mo[key]

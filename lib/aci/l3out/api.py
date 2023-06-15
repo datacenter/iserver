@@ -6,6 +6,17 @@ class L3OutApi():
         if self.l3out_mo is not None:
             return self.l3out_mo
 
+        cache = self.get_object_cache(
+            'l3extOut'
+        )
+        if cache is not None:
+            self.l3out_mo = cache
+            self.log.apic_mo(
+                'l3extOut',
+                self.l3out_mo
+            )
+            return self.l3out_mo
+
         children = [
             'bgpExtP',
             'ospfExtP',
@@ -47,6 +58,11 @@ class L3OutApi():
             )
 
         self.log.apic_mo(
+            'l3extOut',
+            self.l3out_mo
+        )
+
+        self.set_object_cache(
             'l3extOut',
             self.l3out_mo
         )

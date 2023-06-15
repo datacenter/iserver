@@ -1,10 +1,21 @@
 class BridgeDomainApi():
     def __init__(self):
-        self.bridge_domains_mo = None
+        self.bridge_domain_mo = None
 
     def get_bridge_domains_mo(self):
-        if self.bridge_domains_mo is not None:
-            return self.bridge_domains_mo
+        if self.bridge_domain_mo is not None:
+            return self.bridge_domain_mo
+
+        cache = self.get_object_cache(
+            'fvBD'
+        )
+        if cache is not None:
+            self.bridge_domain_mo = cache
+            self.log.apic_mo(
+                'fvBD',
+                self.bridge_domain_mo
+            )
+            return self.bridge_domain_mo
 
         query = 'rsp-subtree-include=health&rsp-subtree=children'
 
@@ -41,12 +52,7 @@ class BridgeDomainApi():
             )
             return None
 
-        self.log.apic_mo(
-            'fvBD',
-            managed_objects['imdata']
-        )
-
-        self.bridge_domains_mo = []
+        self.bridge_domain_mo = []
 
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvBD']['attributes']
@@ -92,13 +98,18 @@ class BridgeDomainApi():
                 'healthInst'
             )
 
-            self.bridge_domains_mo.append(
+            self.bridge_domain_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'fvBD',
-            self.bridge_domains_mo
+            self.bridge_domain_mo
         )
 
-        return self.bridge_domains_mo
+        self.set_object_cache(
+            'fvBD',
+            self.bridge_domain_mo
+        )
+
+        return self.bridge_domain_mo

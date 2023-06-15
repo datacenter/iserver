@@ -13,7 +13,7 @@ class PolicyInterfaceDppAttachmentInfo():
             info['nodeId'],
             pod_id=info['podId']
         )
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['nodeName']

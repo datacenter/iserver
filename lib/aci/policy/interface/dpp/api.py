@@ -6,6 +6,17 @@ class PolicyInterfaceDppApi():
         if self.policy_interface_dpp_mo is not None:
             return self.policy_interface_dpp_mo
 
+        cache = self.get_object_cache(
+            'qosDppPol'
+        )
+        if cache is not None:
+            self.policy_interface_dpp_mo = cache
+            self.log.apic_mo(
+                'qosDppPol',
+                self.policy_interface_dpp_mo
+            )
+            return self.policy_interface_dpp_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'qosDppPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceDppApi():
             )
 
         self.log.apic_mo(
+            'qosDppPol',
+            self.policy_interface_dpp_mo
+        )
+
+        self.set_object_cache(
             'qosDppPol',
             self.policy_interface_dpp_mo
         )

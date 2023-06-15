@@ -5,7 +5,7 @@
 ```
 # iserver get aci ap --apic apic21
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +------------------------------+-----------------------+-------------+
 | Application Profile          | Application EPGs      | Priority    |
@@ -68,7 +68,7 @@ Developer
 # iserver get aci ap --apic apic21
 
 {
-    "duration": 1206,
+    "duration": 1501,
     "apic": {
         "read": true,
         "success": 3,
@@ -76,10 +76,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 385,
+        "connect_time": 443,
         "disconnect_time": 0,
-        "mo_time": 663,
-        "total_time": 1048
+        "mo_time": 724,
+        "total_time": 1167
     },
     "error": {
         "read": false,
@@ -92,15 +92,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	385	-	connect apic21o.emea-sp.cisco.com
-True	317	12	apic21o.emea-sp.cisco.com class fvAp
-True	346	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	443	-	connect apic21o.emea-sp.cisco.com
+True	348	12	apic21o.emea-sp.cisco.com class fvAp
+True	376	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
 ```
 
 [[Back]](./ApplicationProfile.md)

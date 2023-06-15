@@ -5,15 +5,15 @@
 ```
 # iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view lldp
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
 +---------------------+-----------+------+-------------------------------+-------------------+---------------+---------------+-------------------+-------------------+
 | Node                | Interface | Oper | LLDP System Name              | Port ID           | Capability    | Mgmt IP       | Mgmt MAC          | State             |
 +---------------------+-----------+------+-------------------------------+-------------------+---------------+---------------+-------------------+-------------------+
-| pod-1/bl205-eu-spdc | 1/1       | up   | FI-ucsb1-eu-spdc-A.cisco.com  | Ethernet1/51      | bridge,router | 10.58.24.17   | 00:3A:9C:BD:92:40 | portvlan-mismatch | 
-| pod-1/bl205-eu-spdc | 1/2       | up   | FI-ucsb1-eu-spdc-B.cisco.com  | Ethernet1/51      | bridge,router | 10.58.24.18   | 00:3A:9C:BD:8F:40 | portvlan-mismatch | 
+| pod-1/bl205-eu-spdc | 1/1       | up   | FI-ucsb1-eu-spdc-A.cisco.com  | Eth1/51           | bridge,router | 10.58.24.17   | 00:3A:9C:BD:92:40 | portvlan-mismatch | 
+| pod-1/bl205-eu-spdc | 1/2       | up   | FI-ucsb1-eu-spdc-B.cisco.com  | Eth1/51           | bridge,router | 10.58.24.18   | 00:3A:9C:BD:8F:40 | portvlan-mismatch | 
 | pod-1/bl205-eu-spdc | 1/3       | down |                               |                   |               |               |                   |                   | 
 | pod-1/bl205-eu-spdc | 1/4       | down |                               |                   |               |               |                   |                   | 
 | pod-1/bl205-eu-spdc | 1/5       | down |                               |                   |               |               |                   |                   | 
@@ -58,7 +58,7 @@ Developer
 # iserver get aci intf phy --apic apic11 --node bl205-eu-spdc --view lldp
 
 {
-    "duration": 2258,
+    "duration": 1807,
     "apic": {
         "read": true,
         "success": 5,
@@ -66,10 +66,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 512,
+        "connect_time": 393,
         "disconnect_time": 0,
-        "mo_time": 1491,
-        "total_time": 2003
+        "mo_time": 1207,
+        "total_time": 1600
     },
     "error": {
         "read": false,
@@ -82,17 +82,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	512	-	connect apic11o.emea-sp.cisco.com
-True	388	11	apic11o.emea-sp.cisco.com class fabricNode
-True	338	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	322	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	443	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	393	-	connect apic11o.emea-sp.cisco.com
+True	302	13	apic11o.emea-sp.cisco.com class fabricNode
+True	302	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	308	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	295	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./InterfacePhy.md)

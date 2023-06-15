@@ -57,7 +57,7 @@ class NodePowerInfo():
             info['nodeId']
         )
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['nodeName']
@@ -72,7 +72,7 @@ class NodePowerInfo():
         if self.nodes_power is not None:
             return self.nodes_power
 
-        nodes_power_mo = self.get_nodes_power_mo()
+        nodes_power_mo = self.get_node_power_mo()
         if nodes_power_mo is not None:
             self.nodes_power = []
             for node_power_mo in nodes_power_mo:

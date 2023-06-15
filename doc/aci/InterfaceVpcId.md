@@ -5,12 +5,14 @@
 ```
 # iserver get aci intf vpc --apic apic11 --node any --id 100
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
 - node: s101-eu-spdc
@@ -30,18 +32,18 @@ Developer
 # iserver get aci intf vpc --apic apic11 --node any --id 100
 
 {
-    "duration": 4100,
+    "duration": 4352,
     "apic": {
         "read": true,
-        "success": 12,
+        "success": 14,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 11,
-        "connect_time": 397,
+        "mo": 13,
+        "connect_time": 385,
         "disconnect_time": 0,
-        "mo_time": 3533,
-        "total_time": 3930
+        "mo_time": 3796,
+        "total_time": 4181
     },
     "error": {
         "read": false,
@@ -54,24 +56,27 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	397	-	connect apic11o.emea-sp.cisco.com
-True	313	11	apic11o.emea-sp.cisco.com class fabricNode
-True	289	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
-True	298	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
-True	292	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
-True	318	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
-True	312	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
-True	322	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
-True	302	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
-True	328	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
-True	408	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
-True	351	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
+True	385	-	connect apic11o.emea-sp.cisco.com
+True	297	13	apic11o.emea-sp.cisco.com class fabricNode
+True	290	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/vpcDom
+True	280	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/vpcDom
+True	281	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/vpcDom
+True	290	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-201/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	281	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/vpcDom
+True	357	28	apic11o.emea-sp.cisco.com mo topology/pod-1/node-202/sys/vpc/inst/dom-100 query query-target=children&target-subtree-class=vpcIf
+True	285	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/vpcDom
+True	292	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/vpcDom
+True	283	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/vpcDom
+True	297	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/vpcDom
+True	284	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/vpcDom
+True	279	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/vpcDom
 ```
 
 [[Back]](./InterfaceVpc.md)

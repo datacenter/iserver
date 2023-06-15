@@ -5,8 +5,7 @@
 ```
 # iserver get aci proto isis --apic apic11 --node rl
 
-Apic: apic11
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
@@ -25,7 +24,7 @@ Developer
 # iserver get aci proto isis --apic apic11 --node rl
 
 {
-    "duration": 2093,
+    "duration": 2796,
     "apic": {
         "read": true,
         "success": 6,
@@ -33,10 +32,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 462,
+        "connect_time": 382,
         "disconnect_time": 0,
-        "mo_time": 1511,
-        "total_time": 1973
+        "mo_time": 2148,
+        "total_time": 2530
     },
     "error": {
         "read": false,
@@ -49,18 +48,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	462	-	connect apic11o.emea-sp.cisco.com
-True	323	11	apic11o.emea-sp.cisco.com class fabricNode
-True	288	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis
-True	301	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis query query-target=subtree&target-subtree-class=isisDom
-True	290	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis
-True	309	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	382	-	connect apic11o.emea-sp.cisco.com
+True	295	13	apic11o.emea-sp.cisco.com class fabricNode
+True	953	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis
+True	312	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-301/sys/isis query query-target=subtree&target-subtree-class=isisDom
+True	283	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis
+True	305	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-302/sys/isis query query-target=subtree&target-subtree-class=isisDom
 ```
 
 [[Back]](./ProtocolIsis.md)

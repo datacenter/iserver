@@ -7,7 +7,6 @@ from lib.ocp.lcm.delete import OcpDelete
 from lib.ocp.lcm.validate import OcpValidate
 from lib.ocp.lcm.vsphere.main import OcpVsphere
 from lib.ocp import settings as ocp_settings
-from lib.ocp.state import kubeconfig as ocp_kubeconfig
 
 
 class Ocp(OcpCommon, OcpCreate, OcpDelete, OcpValidate, OcpVsphere):
@@ -29,4 +28,3 @@ class Ocp(OcpCommon, OcpCreate, OcpDelete, OcpValidate, OcpVsphere):
         )
         self.log = log_helper.Log(log_id=log_id)
         self.ocp_settings_handler = ocp_settings.OcpSettings(log_id=log_id)
-        self.ocp_kubeconfig_handler = ocp_kubeconfig.OcpKubeconfig(log_id=log_id)

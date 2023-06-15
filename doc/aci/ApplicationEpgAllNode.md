@@ -16,141 +16,141 @@ Use '--view node' to get deployed node properties of selected epgs
 ```
 # iserver get aci epg --apic apic21 --view node
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 | Up | EPG                                | Node Name      | IP Address    | Admin | Fabric | Model            | Serial      | Version        |
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | common/privIP_TEST/privIP_TEST     | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7f) | 
-|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
+| V  | common/privIP_TEST/privIP_TEST     | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
+|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7g) | 
+|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 | V  | common/Test_ANP/Test_EPG           |                |               |       |        |                  |             |                | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | hefernan_ni-demo/APP/EPG1          | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
+| V  | hefernan_ni-demo/APP/EPG1          | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | hefernan_ni-demo/APP/EPG2          | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
+| V  | hefernan_ni-demo/APP/EPG2          | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 | V  | infra/access/default               |                |               |       |        |                  |             |                | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 | V  | infra/ave-ctrl/ave-ctrl            |                |               |       |        |                  |             |                | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/backbone1              | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/backbone1              | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/bmk8s_1                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/bmk8s_1                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/bmk8s_2                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/bmk8s_2                | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/bmk8s_prov             | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/bmk8s_prov             | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/csr1_lan               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/csr1_lan               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/csr2_lan               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/csr2_lan               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/csr_b2b                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/csr_b2b                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/MGMT                   | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/MGMT                   | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/site1_lan              | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/site1_lan              | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/site1_pe               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/site1_pe               | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/site2_lan              | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/site2_lan              | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/site2_pe               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/site2_pe               | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/SRIoV_A                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/SRIoV_A                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/SRIoV_B                | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/SRIoV_B                | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 | V  | k8s/k8s_ANP/Test                   |                |               |       |        |                  |             |                | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/vk8s_1                 | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/vk8s_1                 | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/vk8s_2                 | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/vk8s_2                 | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/vk8s_3                 | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/vk8s_3                 | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | k8s/k8s_ANP/vk8s_4                 | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | k8s/k8s_ANP/vk8s_4                 | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
+| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7f) | 
-|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
+| V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | cl2208-eu-spdc | 10.5.240.35   | on    | active | N9K-C9336C-FX2   | FDO234807ED | n9000-15.2(7g) | 
+|    |                                    | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | nidemo/streamz/appserver           | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
+| V  | nidemo/streamz/appserver           | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | nidemo/streamz/database            | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7f) | 
+| V  | nidemo/streamz/database            | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | nidemo/streamz/frontend            | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
-|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
+| V  | nidemo/streamz/frontend            | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7g) | 
+|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
+|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | nidemo/streamz/management          | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7f) | 
-|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7f) | 
+| V  | nidemo/streamz/management          | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7g) | 
+|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
+| V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
+|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | vEPC/vSFO_ANP/WWW                  | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7f) | 
-|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7f) | 
+| V  | vEPC/vSFO_ANP/WWW                  | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | rl2701-eu-spdc | 172.16.70.208 | on    | active | N9K-C93108TC-EX  | FDO21010LJC | n9000-15.2(7g) | 
+|    |                                    | rl2702-eu-spdc | 172.16.70.24  | on    | active | N9K-C93108TC-EX  | FDO20501N3W | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
+| V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
+|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_CTRL       | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
+| V  | vEPC_demo/vEPG_ANP/vEPG_CTRL       | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_INT        | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
+| V  | vEPC_demo/vEPG_ANP/vEPG_INT        | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7f) | 
-|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7f) | 
-|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7f) | 
-|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7f) | 
-|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7f) | 
+| V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | cl2207-eu-spdc | 10.5.240.34   | on    | active | N9K-C9336C-FX2   | FDO23490E4G | n9000-15.2(7g) | 
+|    |                                    | cl2201-eu-spdc | 10.5.80.96    | on    | active | N9K-C93360YC-FX2 | FDO2441006U | n9000-15.2(7g) | 
+|    |                                    | cl2202-eu-spdc | 10.5.216.67   | on    | active | N9K-C93360YC-FX2 | FDO24350A1T | n9000-15.2(7g) | 
+|    |                                    | bl2205-eu-spdc | 10.5.216.66   | on    | active | N9K-C93600CD-GX  | FDO24280TYP | n9000-15.2(7g) | 
+|    |                                    | bl2206-eu-spdc | 10.5.216.64   | on    | active | N9K-C93600CD-GX  | FDO243707PU | n9000-15.2(7g) | 
 +----+------------------------------------+----------------+---------------+-------+--------+------------------+-------------+----------------+
 ```
 
@@ -160,7 +160,7 @@ Developer
 # iserver get aci epg --apic apic21 --view node
 
 {
-    "duration": 2768,
+    "duration": 2821,
     "apic": {
         "read": true,
         "success": 6,
@@ -168,10 +168,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 414,
+        "connect_time": 408,
         "disconnect_time": 0,
-        "mo_time": 1879,
-        "total_time": 2293
+        "mo_time": 1908,
+        "total_time": 2316
     },
     "error": {
         "read": false,
@@ -184,18 +184,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	414	-	connect apic21o.emea-sp.cisco.com
-True	363	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	395	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	319	13	apic21o.emea-sp.cisco.com class fabricNode
-True	410	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	392	73	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	408	-	connect apic21o.emea-sp.cisco.com:443
+True	363	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	374	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	343	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	396	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	432	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

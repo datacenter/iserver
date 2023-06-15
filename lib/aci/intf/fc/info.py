@@ -50,7 +50,7 @@ class InterfaceFcInfo():
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             self.get_node_name(
@@ -73,14 +73,16 @@ class InterfaceFcInfo():
             return self.interface_fc[key]
 
         interfaces_mo = self.get_interface_fc_mo(pod_id, node_id)
-        if interfaces_mo is not None:
-            self.interface_fc[key] = []
-            for interface_mo in interfaces_mo:
-                self.interface_fc[key].append(
-                    self.get_interface_fc_info(
-                        interface_mo
-                    )
+        if interfaces_mo is None:
+            return None
+
+        self.interface_fc[key] = []
+        for interface_mo in interfaces_mo:
+            self.interface_fc[key].append(
+                self.get_interface_fc_info(
+                    interface_mo
                 )
+            )
 
         self.log.apic_mo(
             'l1FcPhysIf.info.%s' % (key),

@@ -49,10 +49,11 @@ Options:
   --node-subnet TEXT              Filter by subnet within subnet
   -v, --view [default|intf|ip|power|psu|sensor|temp]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 40 ms and logs saved in /tmp/iserver\2dd468e4b455
+Info: finished in 50 ms and logs saved in /tmp/iserver\8f8736ab66d7
 ```
 
 [[Back]](./README.md)

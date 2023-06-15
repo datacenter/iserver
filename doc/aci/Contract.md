@@ -38,10 +38,11 @@ Options:
                                   [default: all]
   -v, --view [default|prop|usage]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 29 ms and logs saved in /tmp/iserver\9266472984a2
+Info: finished in 44 ms and logs saved in /tmp/iserver\32d0b3397d7d
 ```
 
 [[Back]](./README.md)

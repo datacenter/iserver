@@ -6,6 +6,17 @@ class DomainAaaApi():
         if self.domain_aaa_mo is not None:
             return self.domain_aaa_mo
 
+        cache = self.get_object_cache(
+            'aaaDomain'
+        )
+        if cache is not None:
+            self.domain_aaa_mo = cache
+            self.log.apic_mo(
+                'aaaDomain',
+                self.domain_aaa_mo
+            )
+            return self.domain_aaa_mo
+
         managed_objects = self.get_class(
             'aaaDomain',
             node_class=True
@@ -22,6 +33,11 @@ class DomainAaaApi():
             )
 
         self.log.apic_mo(
+            'aaaDomain',
+            self.domain_aaa_mo
+        )
+
+        self.set_object_cache(
             'aaaDomain',
             self.domain_aaa_mo
         )

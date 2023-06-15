@@ -11,6 +11,7 @@ Filter options:
   - [IP address](./ApplicationEpgIp.md)
   - [deployed node](./ApplicationEpgNode.md)
   - [contract](./ApplicationEpgContract.md)
+  - [pcTag](./ApplicationEpgPcTag.md)
 
 View options:
   - [default](./ApplicationEpgAllDefault.md)

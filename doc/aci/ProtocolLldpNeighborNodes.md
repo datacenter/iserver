@@ -5,7 +5,7 @@
 ```
 # iserver get aci proto lldp --apic apic11 --node bl --view nei
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:on)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
@@ -16,8 +16,8 @@ Pod: 1
 | pod-1/bl205-eu-spdc | eth1/35      | 120       | s101-eu-spdc                  | 4c:71:0d:55:d1:d1 | Eth1/5          |      | topology/pod-1/paths-101/pathep-[eth1/5] | bridge,router | 
 | pod-1/bl205-eu-spdc | eth1/36      | 120       | s102-eu-spdc                  | 8c:94:1f:fa:54:25 | Eth1/5          |      | topology/pod-1/paths-102/pathep-[eth1/5] | bridge,router | 
 | pod-1/bl205-eu-spdc | mgmt0        | 120       | r22-eu-spdc.emea-sp.cisco.com | 70:61:7b:d8:60:da | Ethernet1/27    | 12   | ***** BL-205-206 ACI1 Management *****   | bridge,router | 
-| pod-1/bl205-eu-spdc | eth1/1       | 120       | FI-ucsb1-eu-spdc-A.cisco.com  | 00:3a:9c:bd:92:40 | Ethernet1/51    | 1    | U: Uplink                                | bridge,router | 
-| pod-1/bl205-eu-spdc | eth1/2       | 120       | FI-ucsb1-eu-spdc-B.cisco.com  | 00:3a:9c:bd:8f:40 | Ethernet1/51    | 1    | U: Uplink                                | bridge,router | 
+| pod-1/bl205-eu-spdc | eth1/1       | 120       | FI-ucsb1-eu-spdc-A.cisco.com  | 00:3a:9c:bd:92:40 | Eth1/51         | 1    | U: Uplink                                | bridge,router | 
+| pod-1/bl205-eu-spdc | eth1/2       | 120       | FI-ucsb1-eu-spdc-B.cisco.com  | 00:3a:9c:bd:8f:40 | Eth1/51         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl205-eu-spdc | eth1/11      | 120       | HX1-eu-spdc-A.cisco.com       | 00:3a:9c:c0:04:80 | Eth1/51         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl205-eu-spdc | eth1/12      | 120       | HX1-eu-spdc-B.cisco.com       | 00:3a:9c:c0:04:20 | Eth1/51         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl205-eu-spdc | eth1/15      | 121       |                               | 3c:fd:fe:e2:f8:18 |                 |      |                                          |               | 
@@ -29,8 +29,8 @@ Pod: 1
 | pod-1/bl206-eu-spdc | eth1/35      | 120       | s101-eu-spdc                  | 4c:71:0d:55:d1:d2 | Eth1/6          |      | topology/pod-1/paths-101/pathep-[eth1/6] | bridge,router | 
 | pod-1/bl206-eu-spdc | eth1/36      | 120       | s102-eu-spdc                  | 8c:94:1f:fa:54:26 | Eth1/6          |      | topology/pod-1/paths-102/pathep-[eth1/6] | bridge,router | 
 | pod-1/bl206-eu-spdc | mgmt0        | 120       | r22-eu-spdc.emea-sp.cisco.com | 70:61:7b:d8:60:db | Ethernet1/28    | 12   | ***** BL-205-206 ACI1 Management *****   | bridge,router | 
-| pod-1/bl206-eu-spdc | eth1/1       | 120       | FI-ucsb1-eu-spdc-A.cisco.com  | 00:3a:9c:bd:92:44 | Ethernet1/52    | 1    | U: Uplink                                | bridge,router | 
-| pod-1/bl206-eu-spdc | eth1/2       | 120       | FI-ucsb1-eu-spdc-B.cisco.com  | 00:3a:9c:bd:8f:44 | Ethernet1/52    | 1    | U: Uplink                                | bridge,router | 
+| pod-1/bl206-eu-spdc | eth1/1       | 120       | FI-ucsb1-eu-spdc-A.cisco.com  | 00:3a:9c:bd:92:44 | Eth1/52         | 1    | U: Uplink                                | bridge,router | 
+| pod-1/bl206-eu-spdc | eth1/2       | 120       | FI-ucsb1-eu-spdc-B.cisco.com  | 00:3a:9c:bd:8f:44 | Eth1/52         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl206-eu-spdc | eth1/11      | 120       | HX1-eu-spdc-A.cisco.com       | 00:3a:9c:c0:04:84 | Eth1/52         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl206-eu-spdc | eth1/12      | 120       | HX1-eu-spdc-B.cisco.com       | 00:3a:9c:c0:04:24 | Eth1/52         | 1    | U: Uplink                                | bridge,router | 
 | pod-1/bl206-eu-spdc | eth1/24      | 120       | ipn-eu-spdc.emea-sp.cisco.com | cc:90:70:e6:96:28 | Ethernet2/25    |      | ***** BGP Peering to ACI1 BL206  ******* | bridge,router | 
@@ -46,19 +46,7 @@ Developer
 # iserver get aci proto lldp --apic apic11 --node bl --view nei
 
 {
-    "duration": 4131,
-    "apic": {
-        "read": true,
-        "success": 8,
-        "failed": 0,
-        "connect": 1,
-        "disconnect": 0,
-        "mo": 7,
-        "connect_time": 454,
-        "disconnect_time": 0,
-        "mo_time": 3355,
-        "total_time": 3809
-    },
+    "duration": 229,
     "error": {
         "read": false,
         "lines": 0
@@ -70,20 +58,9 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 4
 }
-
-Log: apic
-----------
-
-True	454	-	connect apic11o.emea-sp.cisco.com
-True	815	11	apic11o.emea-sp.cisco.com class fabricNode
-True	518	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
-True	415	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
-True	478	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
-True	396	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst
-True	346	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/lldpInstStats
-True	387	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

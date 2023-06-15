@@ -86,12 +86,13 @@ Options:
   --nei TEXT                      Filter by cdp/lldp neight system name
   --ctx TEXT                      Filter by context
   -v, --view [default|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|live|verbose]
+  --no-cache                      Disable cache
   -o, --output [default|json]     [default: default]
   --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 32 ms and logs saved in /tmp/iserver\a15293fcfe49
+Info: finished in 42 ms and logs saved in /tmp/iserver\00ced21d905e
 ```
 
 [[Back]](./Interface.md)

@@ -6,6 +6,17 @@ class PolicyInterfaceSlowDrainApi():
         if self.policy_interface_slow_drain_mo is not None:
             return self.policy_interface_slow_drain_mo
 
+        cache = self.get_object_cache(
+            'qosSdIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_slow_drain_mo = cache
+            self.log.apic_mo(
+                'qosSdIfPol',
+                self.policy_interface_slow_drain_mo
+            )
+            return self.policy_interface_slow_drain_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'qosSdIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceSlowDrainApi():
             )
 
         self.log.apic_mo(
+            'qosSdIfPol',
+            self.policy_interface_slow_drain_mo
+        )
+
+        self.set_object_cache(
             'qosSdIfPol',
             self.policy_interface_slow_drain_mo
         )

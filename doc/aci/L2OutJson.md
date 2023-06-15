@@ -49,8 +49,8 @@
             }
         ],
         "path": [
-            "topology/pod-1/paths-2207/pathep-[eth1/30]",
-            "topology/pod-1/protpaths-2207-2208/pathep-[k8s_ocp_bm_5_PolGrp]"
+            "topology/pod-1/protpaths-2207-2208/pathep-[k8s_ocp_bm_5_PolGrp]",
+            "topology/pod-1/paths-2207/pathep-[eth1/30]"
         ]
     }
 ]

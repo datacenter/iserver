@@ -11,6 +11,18 @@ class InterfaceMacSecRxApi():
         if key in self.interface_macsec_rx_mo:
             return self.interface_macsec_rx_mo[key]
 
+        cache = self.get_object_cache(
+            'dbgIfMacsecrx',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_macsec_rx_mo[key] = cache
+            self.log.apic_mo(
+                'dbgIfMacsecrx.%s' % (key),
+                self.interface_macsec_rx_mo[key]
+            )
+            return self.interface_macsec_rx_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s/sys/phys-[%s]/dbgIfMacsecrx' % (
             pod_id,
             node_id,
@@ -40,6 +52,12 @@ class InterfaceMacSecRxApi():
         self.log.apic_mo(
             'dbgIfMacsecrx.%s' % (key),
             self.interface_macsec_rx_mo[key]
+        )
+
+        self.set_object_cache(
+            'dbgIfMacsecrx',
+            self.interface_macsec_rx_mo[key],
+            object_selector=key
         )
 
         return self.interface_macsec_rx_mo[key]

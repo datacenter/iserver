@@ -5,12 +5,14 @@
 ```
 # iserver get aci intf macsec --apic apic11 --node any
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
+- node: cl209-eu-spdc
+- node: cl210-eu-spdc
 - node: rl301-eu-spdc
 - node: rl302-eu-spdc
 - node: s101-eu-spdc
@@ -279,6 +281,62 @@ Pod: 1
 | pod-1/cl202-eu-spdc | eth1/100  | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/cl202-eu-spdc | eth1/101  | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/cl202-eu-spdc | eth1/102  | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/1    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/2    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/3    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/4    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/5    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/6    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/7    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/8    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/9    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/10   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/11   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/12   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/13   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/14   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/15   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/16   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/17   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/18   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/19   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/20   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/21   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/22   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/23   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/24   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/25   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/26   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/27   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl209-eu-spdc | eth1/28   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/1    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/2    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/3    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/4    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/5    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/6    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/7    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/8    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/9    | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/10   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/11   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/12   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/13   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/14   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/15   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/16   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/17   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/18   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/19   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/20   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/21   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/22   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/23   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/24   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/25   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/26   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/27   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
+| pod-1/cl210-eu-spdc | eth1/28   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/1    | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/2    | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/3    | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
@@ -302,18 +360,18 @@ Pod: 1
 | pod-1/rl301-eu-spdc | eth1/21   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/22   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/23   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/rl301-eu-spdc | eth1/24/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/24/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/24/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/24/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
-| pod-1/rl301-eu-spdc | eth1/24/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/25/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/25/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/25/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/25/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
-| pod-1/rl301-eu-spdc | eth1/26/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/26/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/26/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/26/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/rl301-eu-spdc | eth1/26/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/27/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/27/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl301-eu-spdc | eth1/27/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
@@ -345,18 +403,18 @@ Pod: 1
 | pod-1/rl302-eu-spdc | eth1/21   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/22   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/23   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
-| pod-1/rl302-eu-spdc | eth1/24/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/24/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/24/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/24/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/rl302-eu-spdc | eth1/24/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/25/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/25/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/25/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/25/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/rl302-eu-spdc | eth1/26/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/26/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/26/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/26/4 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
-| pod-1/rl302-eu-spdc | eth1/26/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/27/1 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/27/2 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/27/3 | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
@@ -366,7 +424,7 @@ Pod: 1
 | pod-1/rl302-eu-spdc | eth1/30   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/rl302-eu-spdc | eth1/36   | disabled    | down       | admin-down | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
 | pod-1/s101-eu-spdc  | eth1/16   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
-| pod-1/s102-eu-spdc  | eth1/16   | disabled    | down       | if-down    | not-initialized | 0     | gcm-aes-xpn-256 | offset-0      | 16              | 64            | 
+| pod-1/s102-eu-spdc  | eth1/16   | disabled    | down       | admin-down | not-initialized | 0     | 0               | 0             | 16              | 64            | 
 +---------------------+-----------+-------------+------------+------------+-----------------+-------+-----------------+---------------+-----------------+---------------+
 ```
 
@@ -376,18 +434,18 @@ Developer
 # iserver get aci intf macsec --apic apic11 --node any
 
 {
-    "duration": 10012,
+    "duration": 11766,
     "apic": {
         "read": true,
-        "success": 26,
+        "success": 32,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 25,
-        "connect_time": 411,
+        "mo": 31,
+        "connect_time": 394,
         "disconnect_time": 0,
-        "mo_time": 8345,
-        "total_time": 8756
+        "mo_time": 9786,
+        "total_time": 10180
     },
     "error": {
         "read": false,
@@ -400,38 +458,45 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	411	-	connect apic11o.emea-sp.cisco.com
-True	301	11	apic11o.emea-sp.cisco.com class fabricNode
-True	307	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
-True	303	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	312	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	357	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/macsecIf
-True	327	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
-True	316	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
-True	357	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/macsecIf
-True	343	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
-True	375	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
-True	339	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/macsecIf
-True	391	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
-True	362	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
-True	319	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/macsecIf
-True	351	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
-True	359	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
-True	319	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/macsecIf
-True	331	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
-True	366	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
-True	331	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/macsecIf
-True	299	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
-True	293	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
-True	313	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/macsecIf
-True	304	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
-True	370	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
+True	394	-	connect apic11o.emea-sp.cisco.com
+True	311	13	apic11o.emea-sp.cisco.com class fabricNode
+True	302	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	300	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	305	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	292	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/macsecIf
+True	304	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
+True	322	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
+True	329	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/macsecIf
+True	329	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
+True	427	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
+True	313	102	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/macsecIf
+True	321	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
+True	418	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
+True	303	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/macsecIf
+True	306	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/l1PhysIf
+True	333	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/ethpmPhysIf
+True	293	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/macsecIf
+True	296	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/l1PhysIf
+True	299	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/ethpmPhysIf
+True	314	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/macsecIf
+True	309	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
+True	314	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
+True	301	43	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/macsecIf
+True	327	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
+True	308	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
+True	277	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/macsecIf
+True	333	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
+True	294	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
+True	305	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/macsecIf
+True	291	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
+True	310	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
 ```
 
 [[Back]](./InterfaceMacSec.md)

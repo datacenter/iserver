@@ -2,21 +2,31 @@ class InterfaceManagementStateApi():
     def __init__(self):
         self.interface_mgmt_state_mo = {}
 
-    def get_interface_management_state_mo(self, pod_id, node_id, interface_id):
-        key = '%s.%s.%s' % (
+    def get_interface_management_state_mo(self, pod_id, node_id):
+        key = '%s.%s' % (
             pod_id,
-            node_id,
-            interface_id
+            node_id
         )
         if key in self.interface_mgmt_state_mo:
             return self.interface_mgmt_state_mo[key]
 
-        distinguished_name = 'topology/pod-%s/node-%s/sys/mgmt-[%s]' % (
-            pod_id,
-            node_id,
-            interface_id
+        cache = self.get_object_cache(
+            'imMgmtIf',
+            object_selector=key
         )
-        query = 'query-target=children&target-subtree-class=imMgmtIf'
+        if cache is not None:
+            self.interface_mgmt_state_mo[key] = cache
+            self.log.apic_mo(
+                'imMgmtIf.%s' % (key),
+                self.interface_mgmt_state_mo[key]
+            )
+            return self.interface_mgmt_state_mo[key]
+
+        distinguished_name = 'topology/pod-%s/node-%s/sys' % (
+            pod_id,
+            node_id
+        )
+        query = 'query-target=subtree&target-subtree-class=imMgmtIf'
 
         managed_objects = self.get_managed_object(
             distinguished_name,
@@ -30,18 +40,21 @@ class InterfaceManagementStateApi():
             )
             return None
 
-        if managed_objects['totalCount'] != '1':
-            self.log.error(
-                'get_interface_management_state_mo',
-                'Unexpected object count'
+        self.interface_mgmt_state_mo[key] = []
+        for managed_object in managed_objects['imdata']:
+            self.interface_mgmt_state_mo[key].append(
+                managed_object['imMgmtIf']['attributes']
             )
-            return None
-
-        self.interface_mgmt_state_mo[key] = managed_objects['imdata'][0]['imMgmtIf']['attributes']
 
         self.log.apic_mo(
-            'mgmtState.%s' % (key),
+            'imMgmtIf.%s' % (key),
             self.interface_mgmt_state_mo[key]
+        )
+
+        self.set_object_cache(
+            'imMgmtIf',
+            self.interface_mgmt_state_mo[key],
+            object_selector=key
         )
 
         return self.interface_mgmt_state_mo[key]

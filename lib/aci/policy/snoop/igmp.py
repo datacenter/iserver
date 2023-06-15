@@ -1,8 +1,27 @@
 class PolicySnoopIgmp():
     def __init__(self):
-        pass
+        self.policy_snoop_igmp_mo = {}
 
     def get_policy_snoop_igmp_mo(self, tenant, name):
+        key = '%s.%s' % (
+            tenant,
+            name
+        )
+        if key in self.policy_snoop_igmp_mo:
+            return self.policy_snoop_igmp_mo[key]
+
+        cache = self.get_object_cache(
+            'igmpSnoopPol',
+            object_selector=key
+        )
+        if cache is not None:
+            self.policy_snoop_igmp_mo[key] = cache
+            self.log.apic_mo(
+                'igmpSnoopPol.%s' % (key),
+                self.policy_snoop_igmp_mo[key]
+            )
+            return self.policy_snoop_igmp_mo[key]
+
         distinguished_name = 'uni/tn-%s/snPol-%s' % (
             tenant,
             name
@@ -17,12 +36,20 @@ class PolicySnoopIgmp():
         if managed_objects['totalCount'] != '1':
             return None
 
+        self.policy_snoop_igmp_mo[key] = managed_objects['imdata'][0]['igmpSnoopPol']['attributes']
+
         self.log.apic_mo(
             'igmpSnoopPol',
-            managed_objects['imdata'][0]
+            self.policy_snoop_igmp_mo[key]
         )
 
-        return managed_objects['imdata'][0]['igmpSnoopPol']['attributes']
+        self.set_object_cache(
+            'igmpSnoopPol',
+            self.policy_snoop_igmp_mo[key],
+            object_selector=key
+        )
+
+        return self.policy_snoop_igmp_mo[key]
 
     def get_policy_snoop_igmp_info(self, managed_object):
         # "adminSt": "enabled",
@@ -84,4 +111,5 @@ class PolicySnoopIgmp():
         managed_object = self.get_policy_snoop_igmp_mo(tenant, name)
         if managed_object is None:
             return None
+
         return self.get_policy_snoop_igmp_info(managed_object)

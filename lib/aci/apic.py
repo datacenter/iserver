@@ -2,6 +2,8 @@ from lib import output_helper
 from lib import log_helper
 from lib import context
 
+from lib.aci import settings
+
 from lib.aci.api import Api
 from lib.aci.cache import Cache
 
@@ -45,7 +47,7 @@ class Apic(
         Tenant,
         Vrf
         ):
-    def __init__(self, apic_name, username, password, label=None, verbose=False, debug=False, log_id=None, cache_enabled=False):
+    def __init__(self, apic_ip, apic_port, username, password, apic_name=None, verbose=False, debug=False, log_id=None, no_cache=False):
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
             verbose=verbose,
@@ -54,14 +56,22 @@ class Apic(
         self.log = log_helper.Log(log_id=log_id)
 
         self.context_handler = context.Context(log_id=log_id)
-        self.apic_label = label
+        self.apic_name = apic_name
+        self.apic_settings = None
+        if apic_name is not None:
+            settings_handler = settings.ApicSettings()
+            self.apic_settings = settings_handler.get_apic_controller(
+                apic_name
+            )
+
         Api.__init__(
             self,
-            apic_name,
+            apic_ip,
+            apic_port,
             username,
             password
         )
-        Cache.__init__(self, cache_enabled)
+        Cache.__init__(self, self.apic_name, no_cache=no_cache)
 
         ApplicationProfile.__init__(self)
         BridgeDomain.__init__(self)
@@ -80,3 +90,8 @@ class Apic(
         Protocol.__init__(self)
         Tenant.__init__(self)
         Vrf.__init__(self)
+
+    def get_apic_name(self):
+        if self.apic_name is None:
+            return self.apic_ip
+        return self.apic_name

@@ -63,3 +63,100 @@ class ApicOutput(
 
     def set_apic_off(self):
         self.is_apic = False
+
+    def print_apic_controllers(self, controllers, show_password=True):
+        controllers = sorted(
+            controllers,
+            key=lambda i: i['name']
+        )
+
+        for controller in controllers:
+            controller['__Output'] = {}
+
+            if controller['online']:
+                controller['onlineTick'] = '\u2713'
+                controller['__Output']['onlineTick'] = 'Green'
+            else:
+                controller['onlineTick'] = '\u2717'
+                controller['__Output']['onlineTick'] = 'Red'
+
+            if controller['cache']['enabled']:
+                controller['cache']['enabledTick'] = '\u2713'
+                controller['__Output']['cache.enabledTick'] = 'Green'
+            else:
+                controller['cache']['enabledTick'] = '\u2717'
+                controller['__Output']['cache.enabledTick'] = 'Red'
+
+            if controller['cache']['enabled']:
+                if len(controller['cache']['object']):
+                    controller['cache']['objectTick'] = '\u2713'
+                    controller['__Output']['cache.objectTick'] = 'Green'
+                else:
+                    controller['cache']['objectTick'] = '\u2717'
+                    controller['__Output']['cache.objectTick'] = 'Red'
+
+            if not controller['cache']['enabled']:
+                controller['cache']['ttlT'] = '--'
+                controller['cache']['objectTick'] = '--'
+
+            if not show_password:
+                controller['password'] = '******'
+
+        order = [
+            'name',
+            'ip',
+            'port',
+            'username',
+            'password',
+            'domain',
+            'onlineTick',
+            'cache.enabledTick',
+            'cache.ttlT',
+            'cache.objectTick'
+        ]
+
+        headers = [
+            'Name',
+            'IP',
+            'Port',
+            'Username',
+            'Password',
+            'Domain',
+            'Online',
+            'Cache',
+            'TTL',
+            'TTL Overrides'
+        ]
+
+        self.my_output.my_table(
+            controllers,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            table=True
+        )
+
+    def print_cache_stats(self, info):
+        order = [
+            'object',
+            'selector',
+            'ttlT',
+            'ageT',
+            'validTick'
+        ]
+
+        headers = [
+            'Object Name',
+            'Object Key',
+            'TTL',
+            'Age',
+            'Valid'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            table=True
+        )

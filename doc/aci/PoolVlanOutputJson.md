@@ -1129,6 +1129,20 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
+                "allocMode": "static",
+                "descr": "Managed by Terraform",
+                "dn": null,
+                "from": "vlan-800",
+                "name": "",
+                "rn": "from-[vlan-800]-to-[vlan-809]",
+                "role": "external",
+                "to": "vlan-809",
+                "fromVlan": "800",
+                "toVlan": "809",
+                "blockInfo": "[800-809] (static)"
+            },
+            {
+                "__Output": {},
                 "allocMode": "inherit",
                 "descr": "Managed by Terraform",
                 "dn": null,
@@ -1142,7 +1156,7 @@
                 "blockInfo": "[1300-1499] (inherit)"
             }
         ],
-        "vlanCount": 200,
+        "vlanCount": 210,
         "epg": [
             {
                 "__Output": {},
@@ -2166,7 +2180,7 @@
             }
         ],
         "epgCount": 15,
-        "epgUsage": "15/200",
+        "epgUsage": "15/210",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},

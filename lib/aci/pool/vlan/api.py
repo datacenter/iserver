@@ -26,6 +26,17 @@ class PoolVlanApi():
         if self.pool_vlan_mo is not None:
             return self.pool_vlan_mo
 
+        cache = self.get_object_cache(
+            'fvnsVlanInstP'
+        )
+        if cache is not None:
+            self.pool_vlan_mo = cache
+            self.log.apic_mo(
+                'fvnsVlanInstP',
+                self.pool_vlan_mo
+            )
+            return self.pool_vlan_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs'
         managed_objects = self.get_class(
             'fvnsVlanInstP',
@@ -49,6 +60,11 @@ class PoolVlanApi():
             )
 
         self.log.apic_mo(
+            'fvnsVlanInstP',
+            self.pool_vlan_mo
+        )
+
+        self.set_object_cache(
             'fvnsVlanInstP',
             self.pool_vlan_mo
         )

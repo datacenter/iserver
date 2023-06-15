@@ -10,6 +10,18 @@ class InterfaceCloudSecApi():
         if key in self.interface_cloudsec_mo:
             return self.interface_cloudsec_mo[key]
 
+        cache = self.get_object_cache(
+            'cloudsecIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_cloudsec_mo[key] = cache
+            self.log.apic_mo(
+                'cloudsecIf.%s' % (key),
+                self.interface_cloudsec_mo[key]
+            )
+            return self.interface_cloudsec_mo[key]
+
         distinguished_name = 'topology/pod-%s/node-%s' % (pod_id, node_id)
         query = 'query-target=subtree&target-subtree-class=cloudsecIf'
         managed_objects = self.get_managed_object(
@@ -34,6 +46,12 @@ class InterfaceCloudSecApi():
         self.log.apic_mo(
             'cloudsecIf.%s' % (key),
             self.interface_cloudsec_mo[key]
+        )
+
+        self.set_object_cache(
+            'cloudsecIf',
+            self.interface_cloudsec_mo[key],
+            object_selector=key
         )
 
         return self.interface_cloudsec_mo[key]

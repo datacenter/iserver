@@ -46,15 +46,17 @@ Options:
   --oper [any|up|down]          [default: any]
   --layer [any|l2|l3]           [default: any]
   --vrf TEXT                    Filter by vrf
-  --ip TEXT                     Filter by IP
+  --address TEXT                Filter by IP
   --subnet TEXT                 Filter by subnet
   -v, --view [default|verbose]
+  -r, --resolve                 Resolve identifiers
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --empty                       No error on empty result
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 38 ms and logs saved in /tmp/iserver\deb73b2e7560
+Info: finished in 31 ms and logs saved in /tmp/iserver\ed24979b58a3
 ```
 
 [[Back]](./Interface.md)

@@ -5,10 +5,10 @@
 ```
 # iserver get aci epg --apic apic21 --node *2207*
 
-Apic: apic21
+Apic: apic21 (mode:online, cache:off)
 
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
-| Up | EPG                           | Bridge Domain     | Subnets         | Endpoints | Contract |
+| Up | EPG                           | Bridge Domain     | BD Subnets      | Endpoints | Contract |
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
 | V  | k8s/k8s_ANP/backbone1         | k8s/VM2VM_BD      |                 | 2         |          | 
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
@@ -36,7 +36,7 @@ Apic: apic21
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
 | V  | k8s/k8s_ANP/SRIoV_A           | k8s/SRIoV_A_BD    | 15.20.16.254/24 | 1         | V        | 
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
-| V  | k8s/k8s_ANP/SRIoV_B           | k8s/SRIoV_B_BD    | 15.20.17.254/24 | 2         |          | 
+| V  | k8s/k8s_ANP/SRIoV_B           | k8s/SRIoV_B_BD    | 15.20.17.254/24 | 1         |          | 
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
 | V  | k8s/k8s_ANP/vk8s_1            | k8s/vk8s_1_BD     | 10.58.24.174/28 | 8         | V        | 
 +----+-------------------------------+-------------------+-----------------+-----------+----------+
@@ -58,7 +58,7 @@ Developer
 # iserver get aci epg --apic apic21 --node *2207*
 
 {
-    "duration": 3519,
+    "duration": 2623,
     "apic": {
         "read": true,
         "success": 6,
@@ -66,10 +66,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 431,
+        "connect_time": 426,
         "disconnect_time": 0,
-        "mo_time": 2792,
-        "total_time": 3223
+        "mo_time": 1915,
+        "total_time": 2341
     },
     "error": {
         "read": false,
@@ -82,18 +82,19 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	431	-	connect apic21o.emea-sp.cisco.com
-True	366	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	1364	53	apic21o.emea-sp.cisco.com class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	298	13	apic21o.emea-sp.cisco.com class fabricNode
-True	387	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	377	72	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper
+True	426	-	connect apic21o.emea-sp.cisco.com:443
+True	376	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
+True	363	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
+True	348	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	418	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	410	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./ApplicationEpg.md)

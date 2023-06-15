@@ -6,20 +6,56 @@ class OcpApiSriovNetworkNodePolicy():
     def __init__(self):
         self.sriov_network_node_policies = None
 
-    def is_ocp_sriov_network_node_policy(self, sriov_network_node_policy_namespace, sriov_network_node_policy_name, cache=True):
-        if self.get_ocp_sriov_network_node_policy(sriov_network_node_policy_namespace, sriov_network_node_policy_name, cache=cache) is None:
+    def is_ocp_sriov_network_node_policy(self, namespace, name, cache=True):
+        if self.get_ocp_sriov_network_node_policy(namespace, name, cache=cache) is None:
             return False
         return True
 
-    def get_ocp_sriov_network_node_policy(self, sriov_network_node_policy_namespace, sriov_network_node_policy_name, cache=True):
+    def get_ocp_sriov_network_node_policy(self, namespace, name, cache=True):
         if not self.get_ocp_sriov_network_node_policies(cache=cache):
             return None
 
-        for data_volume in self.sriov_network_node_policies:
-            if data_volume['metadata']['name'] == sriov_network_node_policy_name and data_volume['metadata']['namespace'] == sriov_network_node_policy_namespace:
-                return data_volume
+        for policy in self.sriov_network_node_policies:
+            if policy['metadata']['namespace'] == namespace and policy['metadata']['name'] == name:
+                return policy
 
         return None
+
+    def get_ocp_sriov_network_node_policy_with_resource_name(self, resource_name, cache=True):
+        if not self.get_ocp_sriov_network_node_policies(cache=cache):
+            return None
+
+        for policy in self.sriov_network_node_policies:
+            if policy['spec']['resourceName'] == resource_name:
+                return policy
+
+        return None
+
+    def get_ocp_sriov_network_node_policy_with_interface(self, interface_name, cache=True):
+        if not self.get_ocp_sriov_network_node_policies(cache=cache):
+            return None
+
+        policies = []
+        for policy in self.sriov_network_node_policies:
+            if 'pfNames' in policy['spec']['nicSelector']:
+                found = False
+                for pf_name in policy['spec']['nicSelector']['pfNames']:
+                    if len(pf_name.split('#')) == 1:
+                        if pf_name == interface_name:
+                            found = True
+                            break
+
+                    if len(pf_name.split('#')) == 2:
+                        if pf_name.split('#')[0] == interface_name:
+                            found = True
+                            break
+
+                if found:
+                    policies.append(
+                        policy
+                    )
+
+        return policies
 
     def get_ocp_sriov_network_node_policies(self, cache=True):
         if not self.connect():

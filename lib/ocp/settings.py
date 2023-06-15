@@ -3,6 +3,8 @@ import json
 import shutil
 import traceback
 
+from lib import file_helper
+from lib import filter_helper
 from lib import log_helper
 from lib import output_helper
 from lib.settings_helper import Settings
@@ -116,12 +118,43 @@ class OcpSettings(Settings):
 
         return names
 
-    def get_ocp_clusters(self):
+    def match_cluster(self, cluster_settings, cluster_filter):
+        if cluster_filter is None or len(cluster_filter) == 0:
+            return True
+
+        for ap_rule in cluster_filter:
+            (key, value) = ap_rule.split(':')
+
+            key_found = False
+
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_string(value, cluster_settings['name']):
+                    return False
+
+            if not key_found:
+                self.log.error(
+                    'match_cluster',
+                    'Unsupported key: %s' % (key)
+                )
+
+        return True
+
+    def get_ocp_clusters(self, cluster_filter=None):
         settings = self.get_ocp_settings()
         if settings is None:
             return None
 
-        clusters = settings['Clusters']
+        all_clusters = settings['Clusters']
+        clusters = []
+        for cluster in all_clusters:
+            if not self.match_cluster(cluster, cluster_filter):
+                continue
+
+            clusters.append(
+                cluster
+            )
+
         clusters = sorted(
             clusters,
             key=lambda i: i['name']
@@ -166,9 +199,11 @@ class OcpSettings(Settings):
 
         return None
 
+    # LCM
     def get_ocp_cluster_parameters(self, ocp_name):
         return self.get_ocp_cluster_parameter(ocp_name, 'parameters')
 
+    # LCM
     def get_ocp_cluster_parameter(self, ocp_name, parameter_name):
         clusters = self.get_ocp_clusters()
         if clusters is None:
@@ -181,6 +216,7 @@ class OcpSettings(Settings):
 
         return None
 
+    # LCM, kubeadmin, cluster_id
     def set_ocp_cluster_parameter(self, ocp_name, parameter_name, parameter_value):
         clusters = self.get_ocp_clusters()
         if clusters is None:
@@ -273,59 +309,3 @@ class OcpSettings(Settings):
             shutil.rmtree(cluster_directory)
 
         return self.set_ocp_clusters(new_clusters)
-
-    def print_ocp_clusters(self, clusters):
-        order = [
-            'name',
-            'parameters.ocp.installation',
-            'parameters.ocp.release',
-            'parameters.cni.type'
-        ]
-
-        headers = [
-            'Name',
-            'Type',
-            'Release',
-            'CNI'
-        ]
-
-        self.my_output.my_table(
-            clusters,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            table=True
-        )
-
-    def print_ocp_clusters_iwo(self, clusters):
-        order = [
-            'name',
-            'installation',
-            'release',
-            'installedTick',
-            'connectedTick',
-            'hostname',
-            'ips'
-        ]
-
-        headers = [
-            'Name',
-            'Type',
-            'Release',
-            'Installed',
-            'Connected',
-            'Hostnames',
-            'IP Addresses'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                clusters,
-                order,
-                ['hostname', 'ips']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            table=True
-        )

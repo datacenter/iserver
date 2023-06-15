@@ -3,40 +3,29 @@
 ## Show instance summary for selected nodes
 
 ```
-# iserver get aci proto lldp --apic apic11 --node bl
+# iserver get aci proto lldp --apic apic11 --node bl --view summary
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:on)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
 
-+---------------------+-------------+-----------+-----------------+------------------------+-----------+
-| Node                | Admin State | Hold Time | Init Delay Time | Transmission Frequency | Neighbors |
-+---------------------+-------------+-----------+-----------------+------------------------+-----------+
-| pod-1/bl205-eu-spdc | enabled     | 120       | 2               | 30                     | 13        | 
-| pod-1/bl206-eu-spdc | enabled     | 120       | 2               | 30                     | 10        | 
-+---------------------+-------------+-----------+-----------------+------------------------+-----------+
++---------------------+-------------+-----------+-----------------+------------------------+-----------+--------+
+| Node                | Admin State | Hold Time | Init Delay Time | Transmission Frequency | Neighbors | Errors |
++---------------------+-------------+-----------+-----------------+------------------------+-----------+--------+
+| pod-1/bl205-eu-spdc | enabled     | 120       | 2               | 30                     | 13        | X      | 
+| pod-1/bl206-eu-spdc | enabled     | 120       | 2               | 30                     | 10        | X      | 
++---------------------+-------------+-----------+-----------------+------------------------+-----------+--------+
+Interface context: lldp
 ```
 
 Developer
 
 ```
-# iserver get aci proto lldp --apic apic11 --node bl
+# iserver get aci proto lldp --apic apic11 --node bl --view summary
 
 {
-    "duration": 3902,
-    "apic": {
-        "read": true,
-        "success": 8,
-        "failed": 0,
-        "connect": 1,
-        "disconnect": 0,
-        "mo": 7,
-        "connect_time": 414,
-        "disconnect_time": 0,
-        "mo_time": 3279,
-        "total_time": 3693
-    },
+    "duration": 202,
     "error": {
         "read": false,
         "lines": 0
@@ -48,20 +37,9 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 8
 }
-
-Log: apic
-----------
-
-True	414	-	connect apic11o.emea-sp.cisco.com
-True	1362	11	apic11o.emea-sp.cisco.com class fabricNode
-True	345	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst
-True	316	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/lldpInstStats
-True	340	13	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
-True	294	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst
-True	321	1	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/lldpInstStats
-True	301	10	apic11o.emea-sp.cisco.com mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

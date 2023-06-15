@@ -2,9 +2,9 @@ import os
 import traceback
 import subprocess
 import shutil
-import yaml
 
 from lib.settings_helper import Settings
+from lib import file_helper
 
 
 class IntersightAccount(Settings):
@@ -66,14 +66,16 @@ class IntersightAccount(Settings):
         if filename is None:
             filename = self.isctl_configuration_filename
 
-        if os.path.isfile(filename):
-            try:
-                with open(filename, 'r', encoding='utf-8') as file_handler:
-                    config = yaml.safe_load(file_handler)
-                return config
-            except BaseException:
-                self.log.error('iaccount_helper.get_isctl_configuration', traceback.format_exc())
-        return None
+        content = file_helper.get_file_yaml(
+            filename
+        )
+        if content is None:
+            self.log.error(
+                'iaccount_helper.get_isctl_configuration',
+                'Yaml load failed: %s' % (filename)
+            )
+
+        return content
 
     def verify_isctl_configuration(self, filename=None):
         configuration = self.get_isctl_configuration(filename=filename)
@@ -102,14 +104,17 @@ class IntersightAccount(Settings):
             server: intersight.com
         '''
         filename = self.get_iaccount_configuration_filename(iaccount)
-        if os.path.isfile(filename):
-            try:
-                with open(filename, 'r', encoding='utf-8') as file_handler:
-                    config = yaml.safe_load(file_handler)
-                return config
-            except BaseException:
-                self.log.error('iaccount_helper.get_iaccount_configuration', traceback.format_exc())
-        return None
+
+        content = file_helper.get_file_yaml(
+            filename
+        )
+        if content is None:
+            self.log.error(
+                'iaccount_helper.get_iaccount_configuration',
+                'Yaml load failed: %s' % (filename)
+            )
+
+        return content
 
     def copy_key_file(self, iaccount, source):
         if not os.path.isfile(source):

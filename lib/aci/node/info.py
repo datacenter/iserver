@@ -81,7 +81,7 @@ class NodeInfo():
 
         info['podId'] = managed_object['dn'].split('/')[1][4:]
 
-        info['apic'] = self.apic_label
+        info['apic'] = self.apic_name
         info['pod_node_name'] = 'pod-%s/%s' % (
             info['podId'],
             info['name']
@@ -114,7 +114,7 @@ class NodeInfo():
         if self.nodes is not None:
             return self.nodes
 
-        nodes_mo = self.get_nodes_mo()
+        nodes_mo = self.get_node_mo()
         if nodes_mo is not None:
             self.nodes = []
             for node_mo in nodes_mo:

@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy drain --apic apic11 --name default --view verbose
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 Slow Drain Policy Properties
 ----------------------------
@@ -15,7 +15,7 @@ Slow Drain Policy Properties
 - Congestion Detect Multiplier : 10
 - Flush Admin State            : disabled
 - Flush Timeout [msec]         : 500
-- Interfaces                   : 344
+- Interfaces                   : 400
 - Ref Policies                 : 83
 
 
@@ -282,6 +282,62 @@ Slow Drain Policy Properties
 | pod-1/bl206-eu-spdc | eth1/7    | 
 | pod-1/bl206-eu-spdc | eth1/8    | 
 | pod-1/bl206-eu-spdc | eth1/9    | 
+| pod-1/cl209-eu-spdc | eth1/1    | 
+| pod-1/cl209-eu-spdc | eth1/10   | 
+| pod-1/cl209-eu-spdc | eth1/11   | 
+| pod-1/cl209-eu-spdc | eth1/12   | 
+| pod-1/cl209-eu-spdc | eth1/13   | 
+| pod-1/cl209-eu-spdc | eth1/14   | 
+| pod-1/cl209-eu-spdc | eth1/15   | 
+| pod-1/cl209-eu-spdc | eth1/16   | 
+| pod-1/cl209-eu-spdc | eth1/17   | 
+| pod-1/cl209-eu-spdc | eth1/18   | 
+| pod-1/cl209-eu-spdc | eth1/19   | 
+| pod-1/cl209-eu-spdc | eth1/2    | 
+| pod-1/cl209-eu-spdc | eth1/20   | 
+| pod-1/cl209-eu-spdc | eth1/21   | 
+| pod-1/cl209-eu-spdc | eth1/22   | 
+| pod-1/cl209-eu-spdc | eth1/23   | 
+| pod-1/cl209-eu-spdc | eth1/24   | 
+| pod-1/cl209-eu-spdc | eth1/25   | 
+| pod-1/cl209-eu-spdc | eth1/26   | 
+| pod-1/cl209-eu-spdc | eth1/27   | 
+| pod-1/cl209-eu-spdc | eth1/28   | 
+| pod-1/cl209-eu-spdc | eth1/3    | 
+| pod-1/cl209-eu-spdc | eth1/4    | 
+| pod-1/cl209-eu-spdc | eth1/5    | 
+| pod-1/cl209-eu-spdc | eth1/6    | 
+| pod-1/cl209-eu-spdc | eth1/7    | 
+| pod-1/cl209-eu-spdc | eth1/8    | 
+| pod-1/cl209-eu-spdc | eth1/9    | 
+| pod-1/cl210-eu-spdc | eth1/1    | 
+| pod-1/cl210-eu-spdc | eth1/10   | 
+| pod-1/cl210-eu-spdc | eth1/11   | 
+| pod-1/cl210-eu-spdc | eth1/12   | 
+| pod-1/cl210-eu-spdc | eth1/13   | 
+| pod-1/cl210-eu-spdc | eth1/14   | 
+| pod-1/cl210-eu-spdc | eth1/15   | 
+| pod-1/cl210-eu-spdc | eth1/16   | 
+| pod-1/cl210-eu-spdc | eth1/17   | 
+| pod-1/cl210-eu-spdc | eth1/18   | 
+| pod-1/cl210-eu-spdc | eth1/19   | 
+| pod-1/cl210-eu-spdc | eth1/2    | 
+| pod-1/cl210-eu-spdc | eth1/20   | 
+| pod-1/cl210-eu-spdc | eth1/21   | 
+| pod-1/cl210-eu-spdc | eth1/22   | 
+| pod-1/cl210-eu-spdc | eth1/23   | 
+| pod-1/cl210-eu-spdc | eth1/24   | 
+| pod-1/cl210-eu-spdc | eth1/25   | 
+| pod-1/cl210-eu-spdc | eth1/26   | 
+| pod-1/cl210-eu-spdc | eth1/27   | 
+| pod-1/cl210-eu-spdc | eth1/28   | 
+| pod-1/cl210-eu-spdc | eth1/3    | 
+| pod-1/cl210-eu-spdc | eth1/4    | 
+| pod-1/cl210-eu-spdc | eth1/5    | 
+| pod-1/cl210-eu-spdc | eth1/6    | 
+| pod-1/cl210-eu-spdc | eth1/7    | 
+| pod-1/cl210-eu-spdc | eth1/8    | 
+| pod-1/cl210-eu-spdc | eth1/9    | 
 | pod-1/rl301-eu-spdc | eth1/1    | 
 | pod-1/rl301-eu-spdc | eth1/10   | 
 | pod-1/rl301-eu-spdc | eth1/11   | 
@@ -464,7 +520,7 @@ Developer
 # iserver get aci policy drain --apic apic11 --name default --view verbose
 
 {
-    "duration": 1852,
+    "duration": 2578,
     "apic": {
         "read": true,
         "success": 4,
@@ -472,10 +528,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 399,
+        "connect_time": 445,
         "disconnect_time": 0,
-        "mo_time": 1012,
-        "total_time": 1411
+        "mo_time": 1051,
+        "total_time": 1496
     },
     "error": {
         "read": false,
@@ -488,16 +544,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	399	-	connect apic11o.emea-sp.cisco.com
-True	322	1	apic11o.emea-sp.cisco.com class qosSdIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	391	344	apic11o.emea-sp.cisco.com class l1RsQosSdIfPolCons
-True	299	11	apic11o.emea-sp.cisco.com class fabricNode
+True	445	-	connect apic11o.emea-sp.cisco.com
+True	340	1	apic11o.emea-sp.cisco.com class qosSdIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	394	400	apic11o.emea-sp.cisco.com class l1RsQosSdIfPolCons
+True	317	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyDrain.md)

@@ -6,6 +6,17 @@ class PolicyGroupAccessInterfacePortApi():
         if self.policy_group_access_interface_port_mo is not None:
             return self.policy_group_access_interface_port_mo
 
+        cache = self.get_object_cache(
+            'infraAccPortGrp'
+        )
+        if cache is not None:
+            self.policy_group_access_interface_port_mo = cache
+            self.log.apic_mo(
+                'infraAccPortGrp',
+                self.policy_group_access_interface_port_mo
+            )
+            return self.policy_group_access_interface_port_mo
+
         # url: https://apic21o-eu-spdc.cisco.com/api/node/mo/uni/infra/funcprof.json?
         # query-target=subtree&target-subtree-class=infraAccPortGrp&query-target-filter=not(wcard(infraAccPortGrp.dn,"__ui_"))&rsp-subtree=children&rsp-subtree-class=infraRsCdpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsMonIfInfraPol,infraRsStpIfPol,infraRsMcpIfPol,infraRsStormctrlIfPol
         # &subscription=yes&order-by=infraAccPortGrp.name|asc&page=0&page-size=15
@@ -108,6 +119,11 @@ class PolicyGroupAccessInterfacePortApi():
             )
 
         self.log.apic_mo(
+            'infraAccPortGrp',
+            self.policy_group_access_interface_port_mo
+        )
+
+        self.set_object_cache(
             'infraAccPortGrp',
             self.policy_group_access_interface_port_mo
         )

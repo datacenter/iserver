@@ -5,7 +5,7 @@
 ```
 # iserver get aci l3out --apic apic11 --bgp
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | L3Out                                    | MPLS | BGP | Border Leaf             | Router ID       |
@@ -19,8 +19,8 @@ Apic: apic11
 | ECMP-demo/L3OUT-ACC_L3out                | X    | V   | topology/pod-1/node-301 | 31.31.31.1      | 
 |                                          |      |     | topology/pod-1/node-302 | 32.32.32.1      | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| ECMP-demo/L3OUT-INT_L3out                | X    | V   | topology/pod-1/node-302 | 32.32.32.2      | 
-|                                          |      |     | topology/pod-1/node-301 | 31.31.31.2      | 
+| ECMP-demo/L3OUT-INT_L3out                | X    | V   | topology/pod-1/node-301 | 31.31.31.2      | 
+|                                          |      |     | topology/pod-1/node-302 | 32.32.32.2      | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | infra/CDC-2_SRL3out                      | V    | V   | topology/pod-1/node-205 | 125.125.125.125 | 
 |                                          |      |     | topology/pod-1/node-206 | 126.126.126.126 | 
@@ -52,14 +52,14 @@ Apic: apic11
 | smi5Gc/4G_RAN_L3Out                      | X    | V   | topology/pod-1/node-201 | 201.201.201.201 | 
 |                                          |      |     | topology/pod-1/node-202 | 202.202.202.202 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| smi5Gc/smi5Gc-cvim1-4G-PDN_L3Out         | X    | V   | topology/pod-1/node-201 | 201.201.201.201 | 
-|                                          |      |     | topology/pod-1/node-202 | 202.202.202.202 | 
+| smi5Gc/smi5Gc-cvim1-4G-PDN_L3Out         | X    | V   | topology/pod-1/node-202 | 202.202.202.202 | 
+|                                          |      |     | topology/pod-1/node-201 | 201.201.201.201 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | smi5Gc/smi5Gc-cvim1-4G_RAN_L3Out         | X    | V   | topology/pod-1/node-202 | 202.202.202.202 | 
 |                                          |      |     | topology/pod-1/node-201 | 201.201.201.201 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| smi5Gc/smi5Gc-cvim1-BACKBONE_L3Out       | X    | V   | topology/pod-1/node-206 | 124.124.124.124 | 
-|                                          |      |     | topology/pod-1/node-205 | 123.123.123.123 | 
+| smi5Gc/smi5Gc-cvim1-BACKBONE_L3Out       | X    | V   | topology/pod-1/node-205 | 123.123.123.123 | 
+|                                          |      |     | topology/pod-1/node-206 | 124.124.124.124 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | smi5Gc/smi5Gc-cvim1-Control_SBI_L3Out    | X    | V   | topology/pod-1/node-202 | 202.202.202.202 | 
 |                                          |      |     | topology/pod-1/node-201 | 201.201.201.201 | 
@@ -67,8 +67,8 @@ Apic: apic11
 | smi5Gc/smi5Gc-cvim1-N3-N4-BACKBONE_L3Out | X    | V   | topology/pod-1/node-206 | 122.122.122.122 | 
 |                                          |      |     | topology/pod-1/node-205 | 121.121.121.121 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| smi5Gc/smi5Gc-cvim1-N3-N4_L3Out          | X    | V   | topology/pod-1/node-201 | 201.201.201.201 | 
-|                                          |      |     | topology/pod-1/node-202 | 202.202.202.202 | 
+| smi5Gc/smi5Gc-cvim1-N3-N4_L3Out          | X    | V   | topology/pod-1/node-202 | 202.202.202.202 | 
+|                                          |      |     | topology/pod-1/node-201 | 201.201.201.201 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | smi5Gc/smi5Gc-cvim1-N6_L3Out             | X    | V   | topology/pod-1/node-202 | 202.202.202.202 | 
 |                                          |      |     | topology/pod-1/node-201 | 201.201.201.201 | 
@@ -88,8 +88,8 @@ Apic: apic11
 | smi5Gc/TEST_FSVI_MODULE_L3Out            | X    | V   | topology/pod-1/node-201 | 201.201.201.201 | 
 |                                          |      |     | topology/pod-1/node-202 | 202.202.202.202 | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| SPIN_InnoLab/Calico_L3Out                | X    | V   | topology/pod-1/node-202 | 1.1.1.2         | 
-|                                          |      |     | topology/pod-1/node-201 | 1.1.1.1         | 
+| SPIN_InnoLab/Calico_L3Out                | X    | V   | topology/pod-1/node-201 | 1.1.1.1         | 
+|                                          |      |     | topology/pod-1/node-202 | 1.1.1.2         | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 | SPIN_InnoLab/Calico_RDC_L3Out            | X    | V   | topology/pod-1/node-301 | 1.1.1.3         | 
 |                                          |      |     | topology/pod-1/node-302 | 1.1.1.4         | 
@@ -97,11 +97,11 @@ Apic: apic11
 | SPIN_InnoLab/IPN_L3Out                   | X    | V   | topology/pod-1/node-205 | 205.205.205.15  | 
 |                                          |      |     | topology/pod-1/node-206 | 206.206.206.15  | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| UC3-CL2023-Demo/K8S                      | X    | V   | topology/pod-1/node-206 | 206.206.206.25  | 
-|                                          |      |     | topology/pod-1/node-205 | 205.205.205.25  | 
+| UC3-CL2023-Demo/K8S                      | X    | V   | topology/pod-1/node-205 | 205.205.205.25  | 
+|                                          |      |     | topology/pod-1/node-206 | 206.206.206.25  | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
-| UC3-CL2023-Demo/LAB_Backbone             | X    | V   | topology/pod-1/node-206 | 206.206.206.25  | 
-|                                          |      |     | topology/pod-1/node-205 | 205.205.205.25  | 
+| UC3-CL2023-Demo/LAB_Backbone             | X    | V   | topology/pod-1/node-205 | 205.205.205.25  | 
+|                                          |      |     | topology/pod-1/node-206 | 206.206.206.25  | 
 +------------------------------------------+------+-----+-------------------------+-----------------+
 ```
 
@@ -111,7 +111,7 @@ Developer
 # iserver get aci l3out --apic apic11 --bgp
 
 {
-    "duration": 1526,
+    "duration": 1892,
     "apic": {
         "read": true,
         "success": 3,
@@ -119,10 +119,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 406,
+        "connect_time": 437,
         "disconnect_time": 0,
-        "mo_time": 808,
-        "total_time": 1214
+        "mo_time": 756,
+        "total_time": 1193
     },
     "error": {
         "read": false,
@@ -135,15 +135,16 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	406	-	connect apic11o.emea-sp.cisco.com
-True	462	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
-True	346	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
+True	437	-	connect apic11o.emea-sp.cisco.com
+True	411	46	apic11o.emea-sp.cisco.com class l3extOut query rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,bgpExtP,ospfExtP,eigrpExtP,pimExtP,l3extRsEctx,l3extRsL3DomAtt
+True	345	43	apic11o.emea-sp.cisco.com class l3extLNodeP query rsp-subtree=children&rsp-subtree-class=l3extRsNodeL3OutAtt
 ```
 
 [[Back]](./L3Out.md)

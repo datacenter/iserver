@@ -40,12 +40,13 @@ Options:
   --ref TEXT                      Filter by ref policy name
   --unused                        Filter unused
   --used                          Filter used
-  -o, --output [default|json]     [default: default]
   -v, --view [default|usage|intf|verbose]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 26 ms and logs saved in /tmp/iserver\57c1f005bfe3
+Info: finished in 80 ms and logs saved in /tmp/iserver\cb3844586bab
 ```
 
 [[Back]](./README.md)

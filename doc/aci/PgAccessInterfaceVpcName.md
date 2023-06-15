@@ -5,7 +5,7 @@
 ```
 # iserver get aci pg access intf vpc --apic apic11 --name HX*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-----------------+-------------------------+------------+------------+-------------+-------------+-----------+---------+---------+--------------+---------------+---------------+
 | Name            | Attached Entity Profile | CDP        | Link Level | LLDP        | LACP        | Link Flap | MCP     | STP     | L2           | Storm Control | Port Security |
@@ -21,7 +21,7 @@ Developer
 # iserver get aci pg access intf vpc --apic apic11 --name HX*
 
 {
-    "duration": 1518,
+    "duration": 1145,
     "apic": {
         "read": true,
         "success": 2,
@@ -29,10 +29,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 490,
+        "connect_time": 431,
         "disconnect_time": 0,
-        "mo_time": 866,
-        "total_time": 1356
+        "mo_time": 546,
+        "total_time": 977
     },
     "error": {
         "read": false,
@@ -45,14 +45,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	490	-	connect apic11o.emea-sp.cisco.com
-True	866	37	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree=children&rsp-subtree-class=infraRsCdpIfPol,infraRsMcpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsLacpPol,infraRsMonIfInfraPol,infraAccBndlSubgrp,infraRsStpIfPol,infraRsAttEntP,infraRsSpanVSrcGrp,infraRsSpanVDestGrp,infraRsL2IfPol,infraRsStormctrlIfPol,infraRsQosEgressDppIfPol,infraRsQosIngressDppIfPol,infraRsQosSdIfPol,infraRsQosPfcIfPol,infraRsQosEgressDppIfPol,infraRsL2PortSecurityPol,infraRsFcIfPol,infraRsMacsecIfPol
+True	431	-	connect apic11o.emea-sp.cisco.com
+True	546	37	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree=children&rsp-subtree-class=infraRsCdpIfPol,infraRsMcpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsLacpPol,infraRsMonIfInfraPol,infraAccBndlSubgrp,infraRsStpIfPol,infraRsAttEntP,infraRsSpanVSrcGrp,infraRsSpanVDestGrp,infraRsL2IfPol,infraRsStormctrlIfPol,infraRsQosEgressDppIfPol,infraRsQosIngressDppIfPol,infraRsQosSdIfPol,infraRsQosPfcIfPol,infraRsQosEgressDppIfPol,infraRsL2PortSecurityPol,infraRsFcIfPol,infraRsMacsecIfPol
 ```
 
 [[Back]](./PgAccessInterfaceVpc.md)

@@ -6,6 +6,17 @@ class SubjectApi():
         if self.subjects_mo is not None:
             return self.subjects_mo
 
+        cache = self.get_object_cache(
+            'vzSubj'
+        )
+        if cache is not None:
+            self.subjects_mo = cache
+            self.log.apic_mo(
+                'vzSubj',
+                self.subjects_mo
+            )
+            return self.subjects_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt'
         managed_objects = self.get_class(
             'vzSubj',
@@ -32,6 +43,11 @@ class SubjectApi():
             )
 
         self.log.apic_mo(
+            'vzSubj',
+            self.subjects_mo
+        )
+
+        self.set_object_cache(
             'vzSubj',
             self.subjects_mo
         )

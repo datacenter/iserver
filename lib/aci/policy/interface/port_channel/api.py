@@ -6,6 +6,17 @@ class PolicyInterfacePortChannelApi():
         if self.policy_interface_port_channel_mo is not None:
             return self.policy_interface_port_channel_mo
 
+        cache = self.get_object_cache(
+            'lacpLagPol'
+        )
+        if cache is not None:
+            self.policy_interface_port_channel_mo = cache
+            self.log.apic_mo(
+                'lacpLagPol',
+                self.policy_interface_port_channel_mo
+            )
+            return self.policy_interface_port_channel_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'lacpLagPol',
@@ -33,6 +44,11 @@ class PolicyInterfacePortChannelApi():
             )
 
         self.log.apic_mo(
+            'lacpLagPol',
+            self.policy_interface_port_channel_mo
+        )
+
+        self.set_object_cache(
             'lacpLagPol',
             self.policy_interface_port_channel_mo
         )

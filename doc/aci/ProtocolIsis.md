@@ -41,10 +41,11 @@ Options:
   --domain TEXT                   Filter by domain name
   -v, --view [default|intf|lsp|neighbor|route|tree|tunnel|verbose]
   -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 28 ms and logs saved in /tmp/iserver\ffcbd77aeec3
+Info: finished in 36 ms and logs saved in /tmp/iserver\67886a6d5624
 ```
 
 [[Back]](./Protocol.md)

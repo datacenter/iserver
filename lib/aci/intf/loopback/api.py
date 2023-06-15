@@ -10,6 +10,18 @@ class InterfaceLoopbackApi():
         if key in self.interface_lb_mo:
             return self.interface_lb_mo[key]
 
+        cache = self.get_object_cache(
+            'l3LbRtdIf',
+            object_selector=key
+        )
+        if cache is not None:
+            self.interface_lb_mo[key] = cache
+            self.log.apic_mo(
+                'l3LbRtdIf.%s' % (key),
+                self.interface_lb_mo[key]
+            )
+            return self.interface_lb_mo[key]
+
         class_name = 'topology/pod-%s/node-%s/l3LbRtdIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf'
 
@@ -40,6 +52,12 @@ class InterfaceLoopbackApi():
         self.log.apic_mo(
             'l3LbRtdIf.%s' % (key),
             self.interface_lb_mo[key]
+        )
+
+        self.set_object_cache(
+            'l3LbRtdIf',
+            self.interface_lb_mo[key],
+            object_selector=key
         )
 
         return self.interface_lb_mo[key]

@@ -8,6 +8,17 @@ class PolicyGroupAccessInterfaceBreakoutApi():
 
         # url: https://apic21o-eu-spdc.cisco.com/api/node/class/infraBrkoutPortGrp.json
 
+        cache = self.get_object_cache(
+            'infraBrkoutPortGrp'
+        )
+        if cache is not None:
+            self.policy_group_access_interface_breakout_mo = cache
+            self.log.apic_mo(
+                'infraBrkoutPortGrp',
+                self.policy_group_access_interface_breakout_mo
+            )
+            return self.policy_group_access_interface_breakout_mo
+
         managed_objects = self.get_class(
             'infraBrkoutPortGrp',
             node_class=True
@@ -28,6 +39,11 @@ class PolicyGroupAccessInterfaceBreakoutApi():
             )
 
         self.log.apic_mo(
+            'infraBrkoutPortGrp',
+            self.policy_group_access_interface_breakout_mo
+        )
+
+        self.set_object_cache(
             'infraBrkoutPortGrp',
             self.policy_group_access_interface_breakout_mo
         )

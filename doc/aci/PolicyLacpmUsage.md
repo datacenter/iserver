@@ -5,7 +5,7 @@
 ```
 # iserver get aci policy lacp-m --apic apic11 --name default --view usage
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------+---------------------+-----------------+-----------------+-----------------+
 | Policy Name | Node                | Interface Count | Ref Policy Type | Ref Policy Name |
@@ -26,7 +26,7 @@ Developer
 # iserver get aci policy lacp-m --apic apic11 --name default --view usage
 
 {
-    "duration": 1493,
+    "duration": 1765,
     "apic": {
         "read": true,
         "success": 4,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 403,
+        "connect_time": 393,
         "disconnect_time": 0,
-        "mo_time": 934,
-        "total_time": 1337
+        "mo_time": 1088,
+        "total_time": 1481
     },
     "error": {
         "read": false,
@@ -50,16 +50,17 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	403	-	connect apic11o.emea-sp.cisco.com
-True	294	1	apic11o.emea-sp.cisco.com class lacpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
-True	339	70	apic11o.emea-sp.cisco.com class l1RsLacpIfPolCons
-True	301	11	apic11o.emea-sp.cisco.com class fabricNode
+True	393	-	connect apic11o.emea-sp.cisco.com
+True	313	1	apic11o.emea-sp.cisco.com class lacpIfPol query rsp-subtree=children&rsp-subtree-class=relnFrom
+True	376	70	apic11o.emea-sp.cisco.com class l1RsLacpIfPolCons
+True	399	13	apic11o.emea-sp.cisco.com class fabricNode
 ```
 
 [[Back]](./PolicyLacpm.md)

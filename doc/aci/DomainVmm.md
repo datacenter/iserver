@@ -31,10 +31,11 @@ Options:
   --name TEXT                   Filter by domain name
   -v, --view [default|prop|vc]
   -o, --output [default|json]   [default: default]
+  --no-cache                    Disable cache
   --devel                       Developer output
   --help                        Show this message and exit.
 
-Info: finished in 26 ms and logs saved in /tmp/iserver\bcdba560f817
+Info: finished in 48 ms and logs saved in /tmp/iserver\29e2ecbadee8
 ```
 
 [[Back]](./README.md)

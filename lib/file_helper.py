@@ -2,6 +2,7 @@ import sys
 import os
 import platform
 import uuid
+import traceback
 import yaml
 
 
@@ -25,7 +26,7 @@ def get_main_dir():
 
 def get_file(filename):
     if not os.path.isfile(filename):
-        return False, 'File not found: %s' % (filename)
+        return None
 
     my_os = platform.system()
     try:
@@ -38,23 +39,23 @@ def get_file(filename):
         content = content.decode('utf-8')
 
     except BaseException:
-        return False, 'File read failed: %s' % (filename)
+        return None
 
-    return True, content
+    return content
 
 
 def get_file_yaml(filename):
     if not os.path.isfile(filename):
-        return False, 'File not found: %s' % (filename)
+        return None
 
     try:
-        with open(filename, 'rb') as file_handler:
+        with open(filename, 'r', encoding='utf-8') as file_handler:
             content = yaml.safe_load(file_handler)
 
     except BaseException:
-        return False, 'YAML format required: %s' % (filename)
+        return None
 
-    return True, content
+    return content
 
 
 def set_file(filename, content):

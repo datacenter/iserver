@@ -29,10 +29,11 @@ Options:
   --tenant TEXT                Filter by tenant name
   --epg TEXT                   Filter by epg name
   -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
   --devel                      Developer output
   --help                       Show this message and exit.
 
-Info: finished in 17 ms and logs saved in /tmp/iserver\36eac15600c5
+Info: finished in 50 ms and logs saved in /tmp/iserver\e684e09f5ada
 ```
 
 [[Back]](./README.md)

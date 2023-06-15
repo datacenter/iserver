@@ -4,14 +4,14 @@ import traceback
 
 class K8sPodApi():
     def __init__(self):
-        self.pods = None
+        self.pod_mo = None
 
-    def get_pods(self, cache=True):
+    def get_pods_mo(self, cache=True):
         if not self.connect():
-            return False
+            return None
 
-        if self.pods is not None and cache:
-            return True
+        if self.pod_mo is not None and cache:
+            return self.pod_mo
 
         try:
             start_time = int(time.time() * 1000)
@@ -33,17 +33,17 @@ class K8sPodApi():
                 False,
                 int(time.time() * 1000) - start_time
             )
-            return False
+            return None
 
-        self.pods = []
+        self.pod_mo = []
         for item in response.items:
             pod = self.convert_pod(item)
             if pod is not None:
-                self.pods.append(pod)
+                self.pod_mo.append(pod)
 
         self.log.k8s_mo(
             'pod',
-            self.pods
+            self.pod_mo
         )
 
-        return True
+        return self.pod_mo

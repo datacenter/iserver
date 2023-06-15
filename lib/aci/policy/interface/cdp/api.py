@@ -6,6 +6,17 @@ class PolicyInterfaceCdpApi():
         if self.policy_interface_cdp_mo is not None:
             return self.policy_interface_cdp_mo
 
+        cache = self.get_object_cache(
+            'cdpIfPol'
+        )
+        if cache is not None:
+            self.policy_interface_cdp_mo = cache
+            self.log.apic_mo(
+                'cdpIfPol',
+                self.policy_interface_cdp_mo
+            )
+            return self.policy_interface_cdp_mo
+
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(
             'cdpIfPol',
@@ -28,6 +39,11 @@ class PolicyInterfaceCdpApi():
             )
 
         self.log.apic_mo(
+            'cdpIfPol',
+            self.policy_interface_cdp_mo
+        )
+
+        self.set_object_cache(
             'cdpIfPol',
             self.policy_interface_cdp_mo
         )

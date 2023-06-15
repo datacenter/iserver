@@ -560,6 +560,7 @@ class Log():
         result['error'] = self.analyze_log(self.error_filename)
         result['info'] = self.analyze_log(self.info_filename)
         result['debug'] = self.analyze_log(self.debug_filename)
+        result['cache_hits'] = self.analyze_cache_hit()
 
         return result
 
@@ -630,6 +631,29 @@ class Log():
                 content[filename] = self.get_file(self.mapping[filename])
 
         return content
+
+    def analyze_cache_hit(self):
+        content = self.get_file(self.cache_filename)
+        if content is None:
+            return 0
+        return len(content.split('\n'))
+
+    def cache_hit(self, object_type, object_scope, object_name, filename, ttl, age):
+        msg = "%s\t%s\t%s\t%s\t%s\t%s\n" % (
+            ttl,
+            age,
+            object_type,
+            object_scope,
+            object_name,
+            filename
+        )
+
+        success = self.safe_append(
+            self.cache_filename,
+            msg
+        )
+        if not success:
+            print('SSH log failed...')
 
     def is_cache(self, key):
         filename = '%s.%s' % (
@@ -845,6 +869,7 @@ class Log():
 
     def apic_mo(self, name, managed_object):
         try:
+            name = name.replace('/', '_')
             filename = os.path.join(
                 self.logs_directory,
                 'apic.mo.%s' % (name)

@@ -6,6 +6,17 @@ class PolicyGroupAccessInterfaceVpcNodeApi():
         if self.policy_group_access_interface_vpc_node_mo is not None:
             return self.policy_group_access_interface_vpc_node_mo
 
+        cache = self.get_object_cache(
+            'AccBaseGrpToEthIf'
+        )
+        if cache is not None:
+            self.policy_group_access_interface_vpc_node_mo = cache
+            self.log.apic_mo(
+                'AccBaseGrpToEthIf',
+                self.policy_group_access_interface_vpc_node_mo
+            )
+            return self.policy_group_access_interface_vpc_node_mo
+
         distinguished_name = 'uni/infra/funcprof'
         query = 'query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree-include=full-deployment&target-path=AccBaseGrpToEthIf'
 
@@ -39,6 +50,11 @@ class PolicyGroupAccessInterfaceVpcNodeApi():
             )
 
         self.log.apic_mo(
+            'AccBaseGrpToEthIf',
+            self.policy_group_access_interface_vpc_node_mo
+        )
+
+        self.set_object_cache(
             'AccBaseGrpToEthIf',
             self.policy_group_access_interface_vpc_node_mo
         )

@@ -6,6 +6,17 @@ class PolicyInterfaceAuthAttachmentApi():
         if self.policy_interface_auth_attachment_mo is not None:
             return self.policy_interface_auth_attachment_mo
 
+        cache = self.get_object_cache(
+            'l1RsL2PortAuthCons'
+        )
+        if cache is not None:
+            self.policy_interface_auth_attachment_mo = cache
+            self.log.apic_mo(
+                'l1RsL2PortAuthCons',
+                self.policy_interface_auth_attachment_mo
+            )
+            return self.policy_interface_auth_attachment_mo
+
         managed_objects = self.get_class(
             'l1RsL2PortAuthCons'
         )
@@ -20,6 +31,11 @@ class PolicyInterfaceAuthAttachmentApi():
             )
 
         self.log.apic_mo(
+            'l1RsL2PortAuthCons',
+            self.policy_interface_auth_attachment_mo
+        )
+
+        self.set_object_cache(
             'l1RsL2PortAuthCons',
             self.policy_interface_auth_attachment_mo
         )

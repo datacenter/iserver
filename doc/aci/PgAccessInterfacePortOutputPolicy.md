@@ -5,7 +5,7 @@
 ```
 # iserver get aci pg access intf port --apic apic11 --name P5G*
 
-Apic: apic11
+Apic: apic11 (mode:online, cache:off)
 
 +-------------------------+-------------------------+------------+-----------+---------+---------+-------------+---------+---------------+
 | Name                    | Attached Entity Profile | Link Level | Link Flap | CDP     | MCP     | LLDP        | STP     | Storm Control |
@@ -26,7 +26,7 @@ Developer
 # iserver get aci pg access intf port --apic apic11 --name P5G*
 
 {
-    "duration": 1171,
+    "duration": 1219,
     "apic": {
         "read": true,
         "success": 2,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 401,
+        "connect_time": 406,
         "disconnect_time": 0,
-        "mo_time": 622,
-        "total_time": 1023
+        "mo_time": 496,
+        "total_time": 902
     },
     "error": {
         "read": false,
@@ -50,14 +50,15 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	401	-	connect apic11o.emea-sp.cisco.com
-True	622	46	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccPortGrp&rsp-subtree=children&rsp-subtree-class=infraRsAttEntP,infraRsCdpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsMonIfInfraPol,infraRsStpIfPol,infraRsMcpIfPol,infraRsStormctrlIfPol
+True	406	-	connect apic11o.emea-sp.cisco.com
+True	496	46	apic11o.emea-sp.cisco.com mo uni/infra/funcprof query query-target=subtree&target-subtree-class=infraAccPortGrp&rsp-subtree=children&rsp-subtree-class=infraRsAttEntP,infraRsCdpIfPol,infraRsHIfPol,infraRsLinkFlapPol,infraRsLldpIfPol,infraRsMonIfInfraPol,infraRsStpIfPol,infraRsMcpIfPol,infraRsStormctrlIfPol
 ```
 
 [[Back]](./PgAccessInterfacePort.md)

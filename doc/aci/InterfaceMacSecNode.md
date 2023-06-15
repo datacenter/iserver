@@ -5,7 +5,7 @@
 ```
 # iserver get aci intf macsec --apic apic11 --node bl205-eu-spdc
 
-Apic: apic11o.emea-sp.cisco.com
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 Node: bl205-eu-spdc
 
@@ -49,7 +49,7 @@ Developer
 # iserver get aci intf macsec --apic apic11 --node bl205-eu-spdc
 
 {
-    "duration": 2007,
+    "duration": 1743,
     "apic": {
         "read": true,
         "success": 5,
@@ -57,10 +57,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 413,
+        "connect_time": 393,
         "disconnect_time": 0,
-        "mo_time": 1289,
-        "total_time": 1702
+        "mo_time": 1211,
+        "total_time": 1604
     },
     "error": {
         "read": false,
@@ -73,17 +73,18 @@ Developer
     "debug": {
         "read": false,
         "lines": 0
-    }
+    },
+    "cache_hits": 0
 }
 
 Log: apic
 ----------
 
-True	413	-	connect apic11o.emea-sp.cisco.com
-True	371	11	apic11o.emea-sp.cisco.com class fabricNode
-True	300	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
-True	289	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	329	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	393	-	connect apic11o.emea-sp.cisco.com
+True	294	13	apic11o.emea-sp.cisco.com class fabricNode
+True	298	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
+True	293	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
+True	326	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
 ```
 
 [[Back]](./InterfaceMacSec.md)
