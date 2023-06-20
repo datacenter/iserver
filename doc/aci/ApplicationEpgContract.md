@@ -35,7 +35,7 @@ Developer
 # iserver get aci epg --apic apic21 --contract comm*/k8s* --view contract
 
 {
-    "duration": 2129,
+    "duration": 2623,
     "apic": {
         "read": true,
         "success": 6,
@@ -43,10 +43,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 377,
+        "connect_time": 422,
         "disconnect_time": 0,
-        "mo_time": 1564,
-        "total_time": 1941
+        "mo_time": 1748,
+        "total_time": 2170
     },
     "error": {
         "read": false,
@@ -66,12 +66,12 @@ Developer
 Log: apic
 ----------
 
-True	377	-	connect apic21o.emea-sp.cisco.com:443
-True	366	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	283	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	310	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	303	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	302	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	422	-	connect apic21o.emea-sp.cisco.com:443
+True	387	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	321	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	351	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	339	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	350	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./ApplicationEpg.md)

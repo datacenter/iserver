@@ -5,6 +5,8 @@ Get default properties of [all](./VrfAllDefault.md) VRFs in selected APIC.
 Filter options:
   - [name](./VrfName.md)
   - [tenant](./VrfTenant.md)
+  - [pcTag](./VrfPcTag.md)
+  - [vnid](./VrfVnid.md)
   - [bridge domain](./VrfBridgeDomain.md)
   - [epg](./VrfEpg.md)
   - [subnet](./VrfSubnet.md)

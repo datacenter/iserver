@@ -1,4 +1,4 @@
-# Application Endpoint Group (EPG)
+# Virtual Routing and Forwarding (VRF)
 
 ## Filter by pcTag
 
@@ -10,13 +10,13 @@ Supported pcTag filtering options by example:
 - --pctag 32000-32100
 
 ```
-DOC_TEMPLATE:get_aci_epg.pctag:iserver.output.default
+DOC_TEMPLATE:get_aci_vrf.pctag:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.pctag:devel.debug
+DOC_TEMPLATE:get_aci_vrf.pctag:devel.debug
 ```
 
-[[Back]](./ApplicationEpg.md)
+[[Back]](./Vrf.md)

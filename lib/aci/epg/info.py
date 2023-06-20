@@ -373,10 +373,17 @@ class EpgInfo():
         else:
             info['__Output']['configSt'] = 'Red'
 
-        # pcTag global
+        # pcTag Number Ranges
+        # System Reserved pcTag – This pcTag is used for system internal rules (1-15).
+        # Globally scoped pcTag – This pcTag is used for shared service (16-16385).
+        # Locally scoped pcTag – This pcTag is locally used per VRF (range from 16386-65535).
         info['pcTagT'] = info['pcTag']
-        if int(info['pcTag']) < 16384:
+        if 15 < int(info['pcTag']) < 16386:
             info['pcTagT'] = '%s (global)' % (info['pcTag'])
+            info['__Output']['pcTagT'] = 'Red'
+
+        if int(info['pcTag']) < 16:
+            info['pcTagT'] = '%s (system)' % (info['pcTag'])
             info['__Output']['pcTagT'] = 'Red'
 
         # Dn format
@@ -571,10 +578,14 @@ class EpgInfo():
             if key == 'pctag':
                 key_found = True
                 if value == 'global':
-                    if int(epg_info['pcTag']) >= 16384:
+                    if int(epg_info['pcTag']) >= 16386:
                         return False
 
-                if value != 'global':
+                if value == 'system':
+                    if int(epg_info['pcTag']) >= 16:
+                        return False
+
+                if value not in ['global', 'system']:
                     if not filter_helper.match_integer(value, epg_info['pcTag']):
                         return False
 

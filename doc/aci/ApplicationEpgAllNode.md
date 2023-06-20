@@ -21,21 +21,17 @@ Apic: apic21 (mode:online, cache:off)
 EPG Deployed Nodes
 ------------------
 
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
-| EPG                | Node Name      | IP Address  | Admin | Fabric | Model          | Serial      | Version        |
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
-| k8s/k8s_ANP/vk8s_1 | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
-|                    | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
-| k8s/k8s_ANP/vk8s_2 | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
-|                    | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
-| k8s/k8s_ANP/vk8s_3 | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
-|                    | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
-| k8s/k8s_ANP/vk8s_4 | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
-|                    | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
-+--------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
+| EPG                | Node Name | IP Address | Admin | Fabric | Model | Serial | Version |
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
+| k8s/k8s_ANP/vk8s_1 |           |            |       |        |       |        |         | 
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
+| k8s/k8s_ANP/vk8s_2 |           |            |       |        |       |        |         | 
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
+| k8s/k8s_ANP/vk8s_3 |           |            |       |        |       |        |         | 
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
+| k8s/k8s_ANP/vk8s_4 |           |            |       |        |       |        |         | 
++--------------------+-----------+------------+-------+--------+-------+--------+---------+
 ```
 
 Use '--pivot' option to get the node specific output
@@ -48,19 +44,9 @@ Apic: apic21 (mode:online, cache:off)
 EPG Deployed Nodes (pivot view)
 -------------------------------
 
-+----------------+-------------+-------+--------+----------------+-------------+----------------+--------------------+
-| Node Name      | IP Address  | Admin | Fabric | Model          | Serial      | Version        | EPG                |
-+----------------+-------------+-------+--------+----------------+-------------+----------------+--------------------+
-| cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | k8s/k8s_ANP/vk8s_1 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_2 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_3 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_4 | 
-+----------------+-------------+-------+--------+----------------+-------------+----------------+--------------------+
-| cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | k8s/k8s_ANP/vk8s_1 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_2 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_3 | 
-|                |             |       |        |                |             |                | k8s/k8s_ANP/vk8s_4 | 
-+----------------+-------------+-------+--------+----------------+-------------+----------------+--------------------+
++-----------+------------+-------+--------+-------+--------+---------+-----+
+| Node Name | IP Address | Admin | Fabric | Model | Serial | Version | EPG |
++-----------+------------+-------+--------+-------+--------+---------+-----+
 ```
 
 Developer
@@ -69,7 +55,7 @@ Developer
 # iserver get aci epg --apic apic21 --name vk8s* --view node
 
 {
-    "duration": 1868,
+    "duration": 1834,
     "apic": {
         "read": true,
         "success": 4,
@@ -77,10 +63,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 429,
+        "connect_time": 439,
         "disconnect_time": 0,
-        "mo_time": 1032,
-        "total_time": 1461
+        "mo_time": 1039,
+        "total_time": 1478
     },
     "error": {
         "read": false,
@@ -100,10 +86,10 @@ Developer
 Log: apic
 ----------
 
-True	429	-	connect apic21o.emea-sp.cisco.com:443
-True	380	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	311	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	341	152	apic21o.emea-sp.cisco.com:443 class fvLocale
+True	439	-	connect apic21o.emea-sp.cisco.com:443
+True	406	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	314	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	319	152	apic21o.emea-sp.cisco.com:443 class fvLocale
 ```
 
 [[Back]](./ApplicationEpg.md)

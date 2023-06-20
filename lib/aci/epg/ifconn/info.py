@@ -29,6 +29,8 @@ class EpgIfConnInfo():
             'attEntitypathatt'
         ]
 
+        self.epg_ifconn_unsupported_dn = []
+
     def get_epg_ifconn_summary(self, ifconns):
         info = {}
 
@@ -417,6 +419,24 @@ class EpgIfConnInfo():
                 'get_epg_ifconn_info',
                 'Unsupported dn: %s' % (info['dn'])
             )
+            return None
+
+        is_supported_dn = True
+        unsupported_dns = [
+            '/LDevInst-['
+        ]
+        for unsupported_dn in unsupported_dns:
+            if unsupported_dn in info['dn']:
+                # Avoid log debug of every unsupported dn
+                if unsupported_dn not in self.epg_ifconn_unsupported_dn:
+                    self.epg_ifconn_unsupported_dn.append(
+                        unsupported_dn
+                    )
+                    self.log.debug(
+                        'get_epg_ifconn_info',
+                        'Unsupported dn: %s' % (info['dn'])
+                    )
+
             return None
 
         info = self.get_epg_ifconn_type_info(

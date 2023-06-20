@@ -3,6 +3,7 @@
 ## Filter by pcTag
 
 Supported pcTag filtering options by example:
+- --pctag system
 - --pctag global
 - --pctag 32770
 - --pctag lt100
@@ -35,7 +36,7 @@ Developer
 # iserver get aci epg --apic apic11 --pctag global --view prop
 
 {
-    "duration": 2059,
+    "duration": 3179,
     "apic": {
         "read": true,
         "success": 3,
@@ -43,10 +44,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 435,
+        "connect_time": 392,
         "disconnect_time": 0,
-        "mo_time": 1258,
-        "total_time": 1693
+        "mo_time": 1798,
+        "total_time": 2190
     },
     "error": {
         "read": false,
@@ -66,9 +67,9 @@ Developer
 Log: apic
 ----------
 
-True	435	-	connect apic11o.emea-sp.cisco.com:443
-True	948	245	apic11o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	310	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	392	-	connect apic11o.emea-sp.cisco.com:443
+True	1427	245	apic11o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	371	13	apic11o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./ApplicationEpg.md)

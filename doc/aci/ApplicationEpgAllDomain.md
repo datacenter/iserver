@@ -164,7 +164,7 @@ Developer
 # iserver get aci epg --apic apic21 --tenant k8s --view domain
 
 {
-    "duration": 1951,
+    "duration": 1974,
     "apic": {
         "read": true,
         "success": 4,
@@ -172,10 +172,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 421,
+        "connect_time": 403,
         "disconnect_time": 0,
-        "mo_time": 1012,
-        "total_time": 1433
+        "mo_time": 1076,
+        "total_time": 1479
     },
     "error": {
         "read": false,
@@ -195,10 +195,10 @@ Developer
 Log: apic
 ----------
 
-True	421	-	connect apic21o.emea-sp.cisco.com:443
-True	367	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	303	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	342	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
+True	403	-	connect apic21o.emea-sp.cisco.com:443
+True	405	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	317	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	354	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
 ```
 
 [[Back]](./ApplicationEpg.md)

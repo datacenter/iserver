@@ -14,7 +14,7 @@ Developer
 # iserver get aci epg --apic apic21 --contract k8s_esx71_PolGrp --view member
 
 {
-    "duration": 1129,
+    "duration": 1372,
     "apic": {
         "read": true,
         "success": 3,
@@ -22,10 +22,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 393,
+        "connect_time": 422,
         "disconnect_time": 0,
-        "mo_time": 651,
-        "total_time": 1044
+        "mo_time": 708,
+        "total_time": 1130
     },
     "error": {
         "read": false,
@@ -45,9 +45,9 @@ Developer
 Log: apic
 ----------
 
-True	393	-	connect apic21o.emea-sp.cisco.com:443
-True	375	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	276	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	422	-	connect apic21o.emea-sp.cisco.com:443
+True	394	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	314	15	apic21o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./ApplicationEpg.md)

@@ -123,7 +123,7 @@ Developer
 # iserver get aci epg --apic apic21 --tenant k8s --view contract
 
 {
-    "duration": 3397,
+    "duration": 3570,
     "apic": {
         "read": true,
         "success": 8,
@@ -131,10 +131,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 7,
-        "connect_time": 422,
+        "connect_time": 423,
         "disconnect_time": 0,
-        "mo_time": 2389,
-        "total_time": 2811
+        "mo_time": 2514,
+        "total_time": 2937
     },
     "error": {
         "read": false,
@@ -154,14 +154,14 @@ Developer
 Log: apic
 ----------
 
-True	422	-	connect apic21o.emea-sp.cisco.com:443
-True	424	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	314	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	343	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	313	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	331	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	320	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	344	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	423	-	connect apic21o.emea-sp.cisco.com:443
+True	423	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	329	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	372	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	356	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	356	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	338	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	340	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
 ```
 
 [[Back]](./ApplicationEpg.md)

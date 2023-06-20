@@ -10,7 +10,9 @@ class VrfOutput():
             'knwMcastAct',
             'pcEnfDir',
             'pcEnfPref',
-            'bdEnforcedEnable'
+            'bdEnforcedEnable',
+            'pcTag',
+            'seg'
         ]
 
         headers = [
@@ -20,7 +22,9 @@ class VrfOutput():
             'Multicast',
             'Policy Control Enforcement Direction',
             'Policy Control Enforcement Preference',
-            'Bridge Domain Enforcement Status'
+            'Bridge Domain Enforcement Status',
+            'Class ID',
+            'VNID'
         ]
 
         if 'endpointsCount' in info:
@@ -131,7 +135,9 @@ class VrfOutput():
             'knwMcastAct',
             'pcEnfPref',
             'pcEnfDir',
-            'bdEnforcedEnable'
+            'bdEnforcedEnable',
+            'pcTag',
+            'seg'
         ]
 
         headers = [
@@ -140,7 +146,9 @@ class VrfOutput():
             'Mcast',
             'PCE Preference',
             'PCE Direction',
-            'BD Enforced'
+            'BD Enforced',
+            'Class ID',
+            'VNID'
         ]
 
         self.my_output.my_table(
@@ -197,6 +205,8 @@ class VrfOutput():
             'nameTenant',
             'pcEnfPref',
             'pcEnfDir',
+            'pcTag',
+            'seg',
             'fvAEPg.nameApTenant',
             'fvBD.nameTenant',
             'fvSubnet.ip',
@@ -207,6 +217,8 @@ class VrfOutput():
             'VRF',
             'PCE Preference',
             'PCE Direction',
+            'Class ID',
+            'VNID',
             'Associated EPG',
             'Associated BD',
             'BD Subnets',

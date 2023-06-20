@@ -4,6 +4,7 @@ from lib import filter_helper
 class EpgLocaleInfo():
     def __init__(self):
         self.epg_locale = None
+        self.epg_locale_unsupported_dn = []
 
     def get_epg_locale_node(self, locales_info):
         info = []
@@ -145,6 +146,24 @@ class EpgLocaleInfo():
                 'get_epg_locale_info',
                 'Unsupported dn: %s' % (info['dn'])
             )
+            return None
+
+        is_supported_dn = True
+        unsupported_dns = [
+            '/LDevInst-['
+        ]
+        for unsupported_dn in unsupported_dns:
+            if unsupported_dn in info['dn']:
+                # Avoid log debug of every unsupported dn
+                if unsupported_dn not in self.epg_locale_unsupported_dn:
+                    self.epg_locale_unsupported_dn.append(
+                        unsupported_dn
+                    )
+                    self.log.debug(
+                        'get_epg_locale_info',
+                        'Unsupported dn: %s' % (info['dn'])
+                    )
+
             return None
 
         if info['dn'].startswith('uni/epp/fv-'):

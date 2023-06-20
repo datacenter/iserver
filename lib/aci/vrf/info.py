@@ -31,6 +31,8 @@ class VrfInfo():
             'name',
             'pcEnfDir',
             'pcEnfPref',
+            'pcTag',
+            'seg',
             'userdom',
             'vrfIndex'
         ]
@@ -51,6 +53,19 @@ class VrfInfo():
             info['tenant'],
             info['name']
         )
+
+        # pcTag Number Ranges
+        # System Reserved pcTag – This pcTag is used for system internal rules (1-15).
+        # Globally scoped pcTag – This pcTag is used for shared service (16-16385).
+        # Locally scoped pcTag – This pcTag is locally used per VRF (range from 16386-65535).
+        info['pcTagT'] = info['pcTag']
+        if 15 < int(info['pcTag']) < 16386:
+            info['pcTagT'] = '%s (global)' % (info['pcTag'])
+            info['__Output']['pcTagT'] = 'Red'
+
+        if int(info['pcTag']) < 16:
+            info['pcTagT'] = '%s (system)' % (info['pcTag'])
+            info['__Output']['pcTagT'] = 'Red'
 
         return info
 
@@ -141,19 +156,26 @@ class VrfInfo():
 
         for vrf_rule in vrf_filter:
             (key, value) = vrf_rule.split(':')
+            key_found = False
+
             if key == 'name':
-                if not filter_helper.match_string(value, vrf_info['name']):
+                key_found = True
+                if not filter_helper.match_tenant_name(value, vrf_info['nameTenant']):
                     return False
 
             if key == 'dn':
+                key_found = True
                 if not filter_helper.match_string(value, vrf_info['dn']):
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, vrf_info['tenant']):
                     return False
 
             if key == 'bd':
+                key_found = True
+
                 if 'fvBD' not in vrf_info or vrf_info['fvBD'] is None:
                     return False
 
@@ -167,6 +189,8 @@ class VrfInfo():
                     return False
 
             if key == 'epg':
+                key_found = True
+
                 if 'fvAEPg' not in vrf_info or vrf_info['fvAEPg'] is None:
                     return False
 
@@ -180,6 +204,8 @@ class VrfInfo():
                     return False
 
             if key == 'l3out':
+                key_found = True
+
                 if 'l3out' not in vrf_info or vrf_info['l3out'] is None:
                     return False
 
@@ -193,6 +219,8 @@ class VrfInfo():
                     return False
 
             if key == 'subnet':
+                key_found = True
+
                 if 'fvSubnet' not in vrf_info or vrf_info['fvSubnet'] is None:
                     return False
 
@@ -206,6 +234,8 @@ class VrfInfo():
                     return False
 
             if key == 'ip':
+                key_found = True
+
                 if 'fvSubnet' not in vrf_info or vrf_info['fvSubnet'] is None:
                     return False
 
@@ -217,6 +247,33 @@ class VrfInfo():
 
                 if not found:
                     return False
+
+            if key == 'pctag':
+                key_found = True
+
+                if value == 'global':
+                    if int(vrf_info['pcTag']) >= 16386:
+                        return False
+
+                if value == 'system':
+                    if int(vrf_info['pcTag']) >= 16:
+                        return False
+
+                if value not in ['global', 'system']:
+                    if not filter_helper.match_integer(value, vrf_info['pcTag']):
+                        return False
+
+            if key == 'vnid':
+                key_found = True
+
+                if not filter_helper.match_integer(value, vrf_info['seg']):
+                    return False
+
+            if not key_found:
+                self.log.error(
+                    'match_vrf',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

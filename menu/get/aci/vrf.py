@@ -31,6 +31,8 @@ class NoResultExit(Exception):
 @click.option("--password", "controller_password", default='', help="APIC Password")
 @click.option("--name", "vrf_name", default='', callback=validations.validate_apic_tenant_name, help="VRF name")
 @click.option("--tenant", "tenant_name", default='', callback=validations.empty_string_to_none, help="Tenant name")
+@click.option("--pctag", default='', callback=validations.empty_string_to_none, help="Filter by pcTag")
+@click.option("--vnid", default='', callback=validations.empty_string_to_none, help="Filter by vnid")
 @click.option("--bd", "bd_name", default='', callback=validations.empty_string_to_none, help="Filter by bridge domain name")
 @click.option("--epg", "epg_name", default='', callback=validations.empty_string_to_none, help="Filter by epg name")
 @click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
@@ -49,6 +51,8 @@ def get_aci_vrf_command(
         controller_password,
         vrf_name,
         tenant_name,
+        pctag,
+        vnid,
         bd_name,
         epg_name,
         ip_address,
@@ -119,6 +123,16 @@ def get_aci_vrf_command(
         if epg_name is not None:
             vrf_filter.append(
                 'epg:%s' % (epg_name)
+            )
+
+        if pctag is not None:
+            vrf_filter.append(
+                'pctag:%s' % (pctag)
+            )
+
+        if vnid is not None:
+            vrf_filter.append(
+                'vnid:%s' % (vnid)
             )
 
         if len(ip_subnet) > 0:
