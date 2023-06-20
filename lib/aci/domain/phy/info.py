@@ -73,7 +73,7 @@ class DomainPhyInfo():
 
         return True
 
-    def get_domains_phy(self, domain_filter=None, vlan_info=False):
+    def get_domains_phy(self, domain_filter=None, vlan_info=False, vlan_usage_info=False):
         all_domains = self.get_domains_phy_info()
 
         domains = []
@@ -86,7 +86,8 @@ class DomainPhyInfo():
                 domain_info['vlan_info'] = None
                 if domain_info['vlan'] is not None:
                     domain_info['vlan_info'] = self.get_pool_vlan(
-                        domain_info['vlan']
+                        domain_info['vlan'],
+                        vlan_usage_info=vlan_usage_info
                     )
 
             domains.append(domain_info)
@@ -97,3 +98,14 @@ class DomainPhyInfo():
         )
 
         return domains
+
+    def get_domain_phy(self, domain_name, vlan_info=False, vlan_usage_info=False):
+        domain_filter = ['name:%s' % (domain_name)]
+        domains = self.get_domains_phy(
+            domain_filter=domain_filter,
+            vlan_info=vlan_info,
+            vlan_usage_info=vlan_usage_info
+        )
+        if domains is None or len(domains) != 1:
+            return None
+        return domains[0]

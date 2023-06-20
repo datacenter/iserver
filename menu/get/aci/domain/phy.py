@@ -78,7 +78,8 @@ def get_aci_domain_phy_command(
 
         domains = apic_handler.get_domains_phy(
             domain_filter=domain_filter,
-            vlan_info=True
+            vlan_info=True,
+            vlan_usage_info=True
         )
 
         ctx.busy = False

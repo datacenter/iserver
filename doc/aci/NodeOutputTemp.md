@@ -24,7 +24,7 @@ Developer
 # iserver get aci node --apic apic11 --view temp --name bl205*
 
 {
-    "duration": 1864,
+    "duration": 2026,
     "apic": {
         "read": true,
         "success": 3,
@@ -32,10 +32,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 442,
+        "connect_time": 527,
         "disconnect_time": 0,
-        "mo_time": 1257,
-        "total_time": 1699
+        "mo_time": 1288,
+        "total_time": 1815
     },
     "error": {
         "read": false,
@@ -55,9 +55,9 @@ Developer
 Log: apic
 ----------
 
-True	442	-	connect apic11o.emea-sp.cisco.com
-True	328	13	apic11o.emea-sp.cisco.com class fabricNode
-True	929	1996	apic11o.emea-sp.cisco.com class eqptTemp
+True	527	-	connect apic11o.emea-sp.cisco.com:443
+True	403	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	885	1996	apic11o.emea-sp.cisco.com:443 class eqptTemp
 ```
 
 [[Back]](./Node.md)

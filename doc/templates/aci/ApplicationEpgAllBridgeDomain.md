@@ -9,13 +9,13 @@ Use '--view bd' to get bridge domain properties of selected epgs
 - associated L3 Out
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_bd:iserver.output.default
+DOC_TEMPLATE:get_aci_epg.view_bd:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_bd:devel.debug
+DOC_TEMPLATE:get_aci_epg.view_bd:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

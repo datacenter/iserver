@@ -93,18 +93,11 @@ class ApplicationProfileInfo():
             if key == 'epg':
                 key_found = True
                 if 'epgs' in application_profile_info:
-                    (epg_tenant, epg_name) = filter_helper.get_tenant_name(value)
-
                     found = False
                     for epg_info in application_profile_info['epgs']:
-                        if filter_helper.match_string(epg_name, epg_info['name']):
-                            if epg_tenant is None:
-                                found = True
-                                break
-
-                            if filter_helper.match_string(epg_tenant, epg_info['tenant']):
-                                found = True
-                                break
+                        if filter_helper.match_tenant_name(value, epg_info['nameTenant']):
+                            found = True
+                            break
 
                     if not found:
                         return False

@@ -4,18 +4,22 @@
 
 Use '--view contract' to get contract properties of selected epgs
 - epg name, application profile and tenant
-- contracts consumed and provided
-
-Following with contract and filter details of all related objects.
+- contracts consumed, provided and taboo
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_contract:iserver.output.default
+DOC_TEMPLATE:get_aci_epg.view_contract:iserver.output.default
+```
+
+Use '--pivot' flag to get contract specific output
+
+```
+DOC_TEMPLATE:get_aci_epg.view_contract_pivot:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_contract:devel.debug
+DOC_TEMPLATE:get_aci_epg.view_contract:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

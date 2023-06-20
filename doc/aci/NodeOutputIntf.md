@@ -29,7 +29,7 @@ Developer
 # iserver get aci node --apic apic11 --view intf
 
 {
-    "duration": 9864,
+    "duration": 9985,
     "apic": {
         "read": true,
         "success": 22,
@@ -37,10 +37,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 21,
-        "connect_time": 445,
+        "connect_time": 475,
         "disconnect_time": 0,
-        "mo_time": 7590,
-        "total_time": 8035
+        "mo_time": 7866,
+        "total_time": 8341
     },
     "error": {
         "read": false,
@@ -60,28 +60,28 @@ Developer
 Log: apic
 ----------
 
-True	445	-	connect apic11o.emea-sp.cisco.com
-True	337	13	apic11o.emea-sp.cisco.com class fabricNode
-True	360	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l1PhysIf
-True	365	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ethpmPhysIf
-True	328	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/l1PhysIf
-True	358	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/ethpmPhysIf
-True	342	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/l1PhysIf
-True	355	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/ethpmPhysIf
-True	382	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l1PhysIf
-True	423	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ethpmPhysIf
-True	397	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l1PhysIf
-True	351	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ethpmPhysIf
-True	346	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l1PhysIf
-True	314	16	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ethpmPhysIf
-True	357	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l1PhysIf
-True	363	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ethpmPhysIf
-True	366	52	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l1PhysIf
-True	373	48	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ethpmPhysIf
-True	396	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l1PhysIf
-True	377	108	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ethpmPhysIf
-True	321	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	379	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
+True	475	-	connect apic11o.emea-sp.cisco.com:443
+True	324	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	343	52	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-302/l1PhysIf
+True	357	48	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-302/ethpmPhysIf
+True	351	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-209/l1PhysIf
+True	412	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-209/ethpmPhysIf
+True	345	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-210/l1PhysIf
+True	356	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-210/ethpmPhysIf
+True	346	108	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-201/l1PhysIf
+True	427	108	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-201/ethpmPhysIf
+True	384	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-206/l1PhysIf
+True	343	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-206/ethpmPhysIf
+True	322	16	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-102/l1PhysIf
+True	378	16	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-102/ethpmPhysIf
+True	362	16	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-101/l1PhysIf
+True	378	16	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-101/ethpmPhysIf
+True	386	52	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-301/l1PhysIf
+True	392	48	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-301/ethpmPhysIf
+True	472	108	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-202/l1PhysIf
+True	383	108	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-202/ethpmPhysIf
+True	404	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-205/l1PhysIf
+True	401	36	apic11o.emea-sp.cisco.com:443 class topology/pod-1/node-205/ethpmPhysIf
 ```
 
 [[Back]](./Node.md)

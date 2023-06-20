@@ -14,13 +14,19 @@ Use '--view node' to get deployed node properties of selected epgs
     - version
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_node:iserver.output.default
+DOC_TEMPLATE:get_aci_epg.view_node:iserver.output.default
+```
+
+Use '--pivot' option to get the node specific output
+
+```
+DOC_TEMPLATE:get_aci_epg.view_node_pivot:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_node:devel.debug
+DOC_TEMPLATE:get_aci_epg.view_node:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

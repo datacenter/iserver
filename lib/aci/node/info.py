@@ -195,12 +195,36 @@ class NodeInfo():
                     return False
 
             if key == 'ip':
-                if not filter_helper.match_string(value, node_info['address']):
-                    return False
+                if 'system' in node_info:
+                    found = False
+
+                    if filter_helper.match_string(value, node_info['address']):
+                        found = True
+
+                    if not found and filter_helper.match_string(value, node_info['system']['inbMgmtAddr']):
+                        found = True
+
+                    if not found and filter_helper.match_string(value, node_info['system']['oobMgmtAddr']):
+                        found = True
+
+                    if not found:
+                        return False
 
             if key == 'subnet':
-                if not ip_helper.is_ipv4_in_cidr(node_info['address'], value):
-                    return False
+                if 'system' in node_info:
+                    found = False
+
+                    if ip_helper.is_ipv4_in_cidr(node_info['address'], value):
+                        found = True
+
+                    if not found and ip_helper.is_ipv4_in_cidr(node_info['system']['inbMgmtAddr'], value):
+                        found = True
+
+                    if not found and ip_helper.is_ipv4_in_cidr(node_info['system']['oobMgmtAddr'], value):
+                        found = True
+
+                    if not found:
+                        return False
 
             if key == 'role':
                 if value == '!controller':
@@ -255,6 +279,8 @@ class NodeInfo():
                     node_info['podId'],
                     node_info['id']
                 )
+                if not self.match_node(node_info, node_filter):
+                    continue
 
             if temp_info:
                 node_info['temp'] = self.get_node_temp(

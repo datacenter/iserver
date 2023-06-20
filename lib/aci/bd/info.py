@@ -171,13 +171,8 @@ class BridgeDomainInfo():
                 if bridge_domain_info['fvRsCtx'] is None or 'name' not in bridge_domain_info['fvRsCtx']:
                     return False
 
-                (vrf_tenant, vrf_name) = filter_helper.get_tenant_name(value)
-                if not filter_helper.match_string(vrf_name, bridge_domain_info['fvRsCtx']['name']):
+                if not filter_helper.match_tenant_name(value, bridge_domain_info['fvRsCtx']['nameTenant']):
                     return False
-
-                if vrf_tenant is not None:
-                    if not filter_helper.match_string(vrf_tenant, bridge_domain_info['fvRsCtx']['tenant']):
-                        return False
 
             if key == 'epg':
                 key_found = True
@@ -185,16 +180,10 @@ class BridgeDomainInfo():
                     return False
 
                 found = False
-                (epg_tenant, epg_name) = filter_helper.get_tenant_name(value)
                 for epg_info in bridge_domain_info['fvAEPg']:
-                    if filter_helper.match_string(epg_name, epg_info['name']):
-                        if epg_tenant is None:
-                            found = True
-                            break
-
-                        if filter_helper.match_string(epg_tenant, epg_info['tenant']):
-                            found = True
-                            break
+                    if filter_helper.match_tenant_name(value, epg_info['nameTenant']):
+                        found = True
+                        break
 
                 if not found:
                     return False
@@ -205,16 +194,10 @@ class BridgeDomainInfo():
                     return False
 
                 found = False
-                (l3out_tenant, l3out_name) = filter_helper.get_tenant_name(value)
                 for l3out_info in bridge_domain_info['fvRsBDToOut']:
-                    if filter_helper.match_string(l3out_name, l3out_info['name']):
-                        if l3out_tenant is None:
-                            found = True
-                            break
-
-                        if filter_helper.match_string(l3out_tenant, l3out_info['tenant']):
-                            found = True
-                            break
+                    if filter_helper.match_tenant_name(value, l3out_info['nameTenant']):
+                        found = True
+                        break
 
                 if not found:
                     return False

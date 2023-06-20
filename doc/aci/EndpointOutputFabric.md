@@ -14,7 +14,7 @@ Developer
 # iserver get aci ep --apic apic11 --subnet 15.100.100.0/24 --view fabric
 
 {
-    "duration": 2223,
+    "duration": 1044,
     "apic": {
         "read": true,
         "success": 2,
@@ -22,10 +22,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 446,
+        "connect_time": 400,
         "disconnect_time": 0,
-        "mo_time": 1536,
-        "total_time": 1982
+        "mo_time": 514,
+        "total_time": 914
     },
     "error": {
         "read": false,
@@ -45,8 +45,8 @@ Developer
 Log: apic
 ----------
 
-True	446	-	connect apic11o.emea-sp.cisco.com
-True	1536	190	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	400	-	connect apic11o.emea-sp.cisco.com:443
+True	514	208	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./Endpoint.md)

@@ -16,6 +16,7 @@ class Failure(Exception):
 def create_menu(ctx):
     """Create commands"""
 
+
 create_menu.add_command(create_nso_menu)
 create_menu.add_command(create_ocp_menu)
 create_menu.add_command(create_os_install_menu)

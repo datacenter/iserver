@@ -64,7 +64,7 @@ class ApicOutput(
     def set_apic_off(self):
         self.is_apic = False
 
-    def print_apic_controllers(self, controllers, show_password=True):
+    def print_apic_controllers(self, controllers, show_password=False):
         controllers = sorted(
             controllers,
             key=lambda i: i['name']

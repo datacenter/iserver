@@ -18,6 +18,168 @@ class EndpointInfo():
         )
         return len(endpoints)
 
+    def get_endpoint_info(self, managed_object):
+        # "attributes": {
+        #     "annotation": "",
+        #     "baseEpgDn": "",
+        #     "bdDn": "uni/tn-MPC-E/BD-E-sPBR-IPS-IN_BD",
+        #     "childAction": "",
+        #     "contName": "mpc-e-IPS-NF32",
+        #     "dn": "uni/tn-MPC-E/LDevInst-[uni/tn-MPC-E/lDevVip-IPS]-ctx-MPC-E-sPBR-IN_VRF/G-IPSctxMPC-E-sPBR-IN_VRF-N-E-sPBR-IPS-IN_BD-C-mpc-IPS-IN/cep-00:50:56:B2:82:3A",
+        #     "encap": "vlan-3004",
+        #     "esgUsegDn": "",
+        #     "extMngdBy": "",
+        #     "fabricPathDn": "",
+        #     "hostingServer": "esx52-eu-spdc.cisco.com",
+        #     "id": "0",
+        #     "idepdn": "",
+        #     "lcC": "vmm",
+        #     "lcOwn": "local",
+        #     "mac": "00:50:56:B2:82:3A",
+        #     "mcastAddr": "not-applicable",
+        #     "modTs": "2022-12-22T00:05:11.549+01:00",
+        #     "monPolDn": "uni/tn-common/monepg-default",
+        #     "name": "00:50:56:B2:82:3A",
+        #     "nameAlias": "",
+        #     "reportingControllerName": "EU-SPDC-R3DC",
+        #     "status": "",
+        #     "uid": "0",
+        #     "userdom": "all",
+        #     "uuid": "",
+        #     "vmmSrc": "dvs",
+        #     "vrfDn": "uni/tn-MPC-E/ctx-MPC-E-sPBR-IN_VRF"
+        # }
+
+        info = {}
+        info['__Output'] = {}
+
+        keys = [
+            'bdDn',
+            'dn',
+            'encap',
+            'fabricPathDn',
+            'lcC',
+            'lcOwn',
+            'mac',
+            'name',
+            'userdom',
+            'vrfDn'
+        ]
+
+        for key in keys:
+            info[key] = None
+            if key in managed_object:
+                info[key] = managed_object[key]
+
+        info['flags'] = ''
+        if 'learned' in managed_object['lcC'].split(','):
+            info['flags'] = '%sL' % (info['flags'])
+        if 'vmm' in managed_object['lcC'].split(','):
+            info['flags'] = '%sV' % (info['flags'])
+
+        info['encapT'] = info['encap']
+        if info['encap'].startswith('vlan-'):
+            info['encapT'] = info['encap'].split('vlan-')[1]
+
+        # Dn format
+        # [0]: uni/tn-{name}/ap-{name}/esg-{name}/cep-{name}
+        # [1]: uni/tn-{name}/Tnlepg-{name}/cep-{name}
+        # [2]: uni/ldev-[{priKey}]-ctx-[{ctxDn}]-bd-[{bdDn}]/cep-{name}
+        # [3]: uni/tn-{name}/LDevInst-[{priKey}]-ctx-{ctxName}/G-{graphRn}-N-{nodeRn}-C-{connRn}/cep-{name}
+        # [4]: uni/vDev-[{priKey}]-tn-[{tnDn}]-ctx-{ctxName}/rndrInfo/eppContr/G-{graphRn}-N-{nodeRn}-C-{connRn}/cep-{name}
+        # [5]: uni/tn-{name}/ctx-{name}/cep-{name}
+        # [6]: uni/tn-{name}/ap-{name}/epg-{name}/cep-{name}
+        # [7]: uni/tn-{name}/l2out-{name}/instP-{name}/cep-{name}
+
+        info['tenant'] = ''
+        info['vrfTenant'] = ''
+        info['vrfName'] = ''
+        info['vrfNameTenant'] = ''
+        info['bdTenant'] = ''
+        info['bdName'] = ''
+        info['bdNameTenant'] = ''
+        info['epgName'] = ''
+        info['apName'] = ''
+        info['epgNameApTenant'] = ''
+
+        if info['bdDn'] is not None and len(info['bdDn']) > 0:
+            info['bdTenant'] = info['bdDn'].split('/')[1].split('tn-')[1]
+            info['bdName'] = info['bdDn'].split('/')[2].split('BD-')[1]
+            info['bdNameTenant'] = '%s/%s' % (
+                info['bdTenant'],
+                info['bdName']
+            )
+
+        if info['vrfDn'] is not None and len(info['vrfDn']) > 0:
+            info['vrfTenant'] = info['vrfDn'].split('/')[1].split('tn-')[1]
+            info['vrfName'] = info['vrfDn'].split('/')[2].split('ctx-')[1]
+            info['vrfNameTenant'] = '%s/%s' % (
+                info['vrfTenant'],
+                info['vrfName']
+            )
+
+        if info['dn'].startswith('uni/tn-'):
+            info['tenant'] = info['dn'].split('/')[1][3:]
+
+        if info['dn'].startswith('uni/tn-') and '/ap-' in info['dn']:
+            info['epgName'] = info['dn'].split('/')[3][4:]
+            info['apName'] = info['dn'].split('/')[2][3:]
+            info['epgNameApTenant'] = '%s/%s/%s' % (
+                info['tenant'],
+                info['apName'],
+                info['epgName']
+            )
+
+        info['fvIp'] = []
+        for ip_managed_object in managed_object['fvIp']:
+            info['fvIp'].append(
+                self.get_endpoint_ip_info(
+                    ip_managed_object
+                )
+            )
+
+        info['fvRsToVm'] = None
+        if 'fvRsToVm' in managed_object and managed_object['fvRsToVm'] is not None:
+            info['fvRsToVm'] = self.get_endpoint_vm_info(
+                managed_object['fvRsToVm']
+            )
+
+        info['fvRsHyper'] = None
+        if 'fvRsHyper' in managed_object and managed_object['fvRsHyper'] is not None:
+            info['fvRsHyper'] = self.get_endpoint_hv_info(
+                managed_object['fvRsHyper']
+            )
+
+        if len(info['fabricPathDn']) == 0:
+            if managed_object['fvRsCEpToPathEp'] is not None:
+                if 'tDn' in managed_object['fvRsCEpToPathEp']:
+                    info['fabricPathDn'] = managed_object['fvRsCEpToPathEp']['tDn']
+
+        return info
+
+    def get_endpoints_info(self):
+        if self.endpoints is not None:
+            return self.endpoints
+
+        managed_objects = self.get_endpoints_mo()
+        if managed_objects is None:
+            return None
+
+        self.endpoints = []
+        for managed_object in managed_objects:
+            self.endpoints.append(
+                self.get_endpoint_info(
+                    managed_object
+                )
+            )
+
+        self.log.apic_mo(
+            'fvCEp.info',
+            self.endpoints
+        )
+
+        return self.endpoints
+
     def match_endpoint(self, endpoint_info, endpoint_filter):
         if endpoint_filter is None or len(endpoint_filter) == 0:
             return True
@@ -47,7 +209,7 @@ class EndpointInfo():
                     return False
 
             if key == 'bd':
-                if not filter_helper.match_string(value, endpoint_info['bdName']):
+                if not filter_helper.match_tenant_name(value, endpoint_info['bdNameTenant']):
                     return False
 
             if key == 'epg':
@@ -59,11 +221,15 @@ class EndpointInfo():
                     return False
 
             if key == 'vrf':
-                if not filter_helper.match_string(value, endpoint_info['vrfName']):
+                if not filter_helper.match_tenant_name(value, endpoint_info['vrfName']):
                     return False
 
             if key == 'bdDn':
                 if not filter_helper.match_string(value, endpoint_info['bdDn']):
+                    return False
+
+            if key == 'vlan':
+                if not filter_helper.match_integer(value, endpoint_info['encapT']):
                     return False
 
             if key == 'ip':
@@ -125,158 +291,6 @@ class EndpointInfo():
                         return False
 
         return True
-
-    def get_endpoint_info(self, managed_object):
-        # "attributes": {
-        #     "annotation": "",
-        #     "baseEpgDn": "",
-        #     "bdDn": "uni/tn-MPC-E/BD-E-sPBR-IPS-IN_BD",
-        #     "childAction": "",
-        #     "contName": "mpc-e-IPS-NF32",
-        #     "dn": "uni/tn-MPC-E/LDevInst-[uni/tn-MPC-E/lDevVip-IPS]-ctx-MPC-E-sPBR-IN_VRF/G-IPSctxMPC-E-sPBR-IN_VRF-N-E-sPBR-IPS-IN_BD-C-mpc-IPS-IN/cep-00:50:56:B2:82:3A",
-        #     "encap": "vlan-3004",
-        #     "esgUsegDn": "",
-        #     "extMngdBy": "",
-        #     "fabricPathDn": "",
-        #     "hostingServer": "esx52-eu-spdc.cisco.com",
-        #     "id": "0",
-        #     "idepdn": "",
-        #     "lcC": "vmm",
-        #     "lcOwn": "local",
-        #     "mac": "00:50:56:B2:82:3A",
-        #     "mcastAddr": "not-applicable",
-        #     "modTs": "2022-12-22T00:05:11.549+01:00",
-        #     "monPolDn": "uni/tn-common/monepg-default",
-        #     "name": "00:50:56:B2:82:3A",
-        #     "nameAlias": "",
-        #     "reportingControllerName": "EU-SPDC-R3DC",
-        #     "status": "",
-        #     "uid": "0",
-        #     "userdom": "all",
-        #     "uuid": "",
-        #     "vmmSrc": "dvs",
-        #     "vrfDn": "uni/tn-MPC-E/ctx-MPC-E-sPBR-IN_VRF"
-        # }
-
-        info = {}
-        info['__Output'] = {}
-
-        keys = [
-            'bdDn',
-            'dn',
-            'encap',
-            'fabricPathDn',
-            'lcC',
-            'lcOwn',
-            'mac',
-            'name',
-            'userdom',
-            'vrfDn'
-        ]
-
-        for key in keys:
-            info[key] = None
-            if key in managed_object:
-                info[key] = managed_object[key]
-
-        info['flags'] = ''
-        if 'learned' in managed_object['lcC'].split(','):
-            info['flags'] = '%sL' % (info['flags'])
-        if 'vmm' in managed_object['lcC'].split(','):
-            info['flags'] = '%sV' % (info['flags'])
-
-        # Dn format
-        # [0]: uni/tn-{name}/ap-{name}/esg-{name}/cep-{name}
-        # [1]: uni/tn-{name}/Tnlepg-{name}/cep-{name}
-        # [2]: uni/ldev-[{priKey}]-ctx-[{ctxDn}]-bd-[{bdDn}]/cep-{name}
-        # [3]: uni/tn-{name}/LDevInst-[{priKey}]-ctx-{ctxName}/G-{graphRn}-N-{nodeRn}-C-{connRn}/cep-{name}
-        # [4]: uni/vDev-[{priKey}]-tn-[{tnDn}]-ctx-{ctxName}/rndrInfo/eppContr/G-{graphRn}-N-{nodeRn}-C-{connRn}/cep-{name}
-        # [5]: uni/tn-{name}/ctx-{name}/cep-{name}
-        # [6]: uni/tn-{name}/ap-{name}/epg-{name}/cep-{name}
-        # [7]: uni/tn-{name}/l2out-{name}/instP-{name}/cep-{name}
-
-        info['tenant'] = ''
-        info['vrfTenant'] = ''
-        info['vrfCtx'] = ''
-        info['vrfName'] = ''
-        info['bdTenant'] = ''
-        info['bdCtx'] = ''
-        info['bdName'] = ''
-        info['epgName'] = ''
-        info['apName'] = ''
-
-        if info['bdDn'] is not None and len(info['bdDn']) > 0:
-            info['bdTenant'] = info['bdDn'].split('/')[1].split('tn-')[1]
-            info['bdCtx'] = info['bdDn'].split('/')[2].split('BD-')[1]
-            info['bdName'] = '%s/%s' % (
-                info['bdTenant'],
-                info['bdCtx']
-            )
-
-        if info['vrfDn'] is not None and len(info['vrfDn']) > 0:
-            info['vrfTenant'] = info['vrfDn'].split('/')[1].split('tn-')[1]
-            info['vrfCtx'] = info['vrfDn'].split('/')[2].split('ctx-')[1]
-            info['vrfName'] = '%s/%s' % (
-                info['vrfTenant'],
-                info['vrfCtx']
-            )
-
-        if info['dn'].startswith('uni/tn-'):
-            info['tenant'] = info['dn'].split('/')[1][3:]
-
-        if info['dn'].startswith('uni/tn-') and '/ap-' in info['dn']:
-            info['epgName'] = info['dn'].split('/')[3][4:]
-            info['apName'] = info['dn'].split('/')[2][3:]
-
-        info['fvIp'] = []
-        for ip_managed_object in managed_object['fvIp']:
-            info['fvIp'].append(
-                self.get_endpoint_ip_info(
-                    ip_managed_object
-                )
-            )
-
-        info['fvRsToVm'] = None
-        if 'fvRsToVm' in managed_object and managed_object['fvRsToVm'] is not None:
-            info['fvRsToVm'] = self.get_endpoint_vm_info(
-                managed_object['fvRsToVm']
-            )
-
-        info['fvRsHyper'] = None
-        if 'fvRsHyper' in managed_object and managed_object['fvRsHyper'] is not None:
-            info['fvRsHyper'] = self.get_endpoint_hv_info(
-                managed_object['fvRsHyper']
-            )
-
-        if len(info['fabricPathDn']) == 0:
-            if managed_object['fvRsCEpToPathEp'] is not None:
-                if 'tDn' in managed_object['fvRsCEpToPathEp']:
-                    info['fabricPathDn'] = managed_object['fvRsCEpToPathEp']['tDn']
-
-        return info
-
-    def get_endpoints_info(self):
-        if self.endpoints is not None:
-            return self.endpoints
-
-        managed_objects = self.get_endpoints_mo()
-        if managed_objects is None:
-            return None
-
-        self.endpoints = []
-        for managed_object in managed_objects:
-            self.endpoints.append(
-                self.get_endpoint_info(
-                    managed_object
-                )
-            )
-
-        self.log.apic_mo(
-            'fvCEp.info',
-            self.endpoints
-        )
-
-        return self.endpoints
 
     def get_endpoints(self, endpoint_filter=None, vm_info=False, fabric_info=False):
         all_endpoints = self.get_endpoints_info()

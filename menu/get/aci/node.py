@@ -34,8 +34,8 @@ class NoResultExit(Exception):
 @click.option("--id", "node_id", default='', callback=validations.empty_string_to_none, help="Filter by node id")
 @click.option("--name", "node_name", default='', callback=validations.empty_string_to_none, help="Filter by node name")
 @click.option("--model", default='', callback=validations.empty_string_to_none, help="Filter by model")
-@click.option("--node-ip", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
-@click.option("--node-subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
+@click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
+@click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
 @click.option("--view", "-v", type=click.Choice(['default', 'intf', 'ip', 'power', 'psu', 'sensor', 'temp'], case_sensitive=False), multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
@@ -89,6 +89,12 @@ def get_aci_node_command(
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
+        power_info = False
+        psu_info = False
+        sensor_info = False
+        temp_info = False
+        system_info = False
+
         node_filter = []
         if node_id is not None:
             node_filter.append(
@@ -116,11 +122,13 @@ def get_aci_node_command(
             )
 
         if len(ip_subnet) > 0:
+            system_info = True
             node_filter.append(
                 'subnet:%s' % (ip_subnet)
             )
 
         if len(ip_address) > 0:
+            system_info = True
             node_filter.append(
                 'ip:%s' % (ip_address)
             )
@@ -133,23 +141,18 @@ def get_aci_node_command(
                     'role:!controller'
                 )
 
-        power_info = False
         if 'power' in view:
             power_info = True
 
-        psu_info = False
         if 'psu' in view:
             psu_info = True
 
-        sensor_info = False
         if 'sensor' in view:
             sensor_info = True
 
-        system_info = False
         if 'ip' in view:
             system_info = True
 
-        temp_info = False
         if 'temp' in view:
             temp_info = True
 

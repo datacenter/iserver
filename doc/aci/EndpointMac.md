@@ -14,7 +14,7 @@ Developer
 # iserver get aci ep --apic apic11 --tenant smi5Gc --mac e6
 
 {
-    "duration": 1454,
+    "duration": 1840,
     "apic": {
         "read": true,
         "success": 2,
@@ -22,10 +22,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 469,
+        "connect_time": 481,
         "disconnect_time": 0,
-        "mo_time": 587,
-        "total_time": 1056
+        "mo_time": 1252,
+        "total_time": 1733
     },
     "error": {
         "read": false,
@@ -45,8 +45,8 @@ Developer
 Log: apic
 ----------
 
-True	469	-	connect apic11o.emea-sp.cisco.com
-True	587	191	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	481	-	connect apic11o.emea-sp.cisco.com:443
+True	1252	209	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./Endpoint.md)

@@ -116,7 +116,7 @@ def set_aci_cache_command(
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
         aci_output_handler.print_apic_controllers(
             controllers,
-            show_password=True
+            show_password=False
         )
 
     except ErrorExit:

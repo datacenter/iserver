@@ -264,7 +264,7 @@ class VrfInfo():
                         self.get_epgs(
                             epg_filter=['bd:%s/%s' % (bd_info['tenant'], bd_info['name'])],
                             bd_info=True,
-                            deployed_leaves_info=True,
+                            locale_info=True,
                             endpoint_info=True
                         )
                     )

@@ -14,11 +14,10 @@ class EndpointOutput():
             'flags',
             'mac',
             'fvIp.addr',
-            'tenant',
-            'bdName',
-            'epgName',
-            'apName',
-            'vrfName'
+            'epgNameApTenant',
+            'encapT',
+            'bdNameTenant',
+            'vrfNameTenant'
         ]
 
         headers = []
@@ -29,15 +28,14 @@ class EndpointOutput():
             'SF',
             'MAC Address',
             'IP Address',
-            'Tenant',
-            'BD',
             'EPG',
-            'Ap',
+            'Encap',
+            'BD',
             'VRF'
         ]
 
         if not bridge_domain_name:
-            order.remove('bdName')
+            order.remove('bdNameTenant')
             headers.remove('BD')
 
         self.my_output.my_table(
@@ -65,6 +63,8 @@ class EndpointOutput():
             'flags',
             'mac',
             'fvIp.addr',
+            'epgName',
+            'encapT',
             'fabric.ep'
         ]
 
@@ -76,6 +76,8 @@ class EndpointOutput():
             'SF',
             'MAC Address',
             'IP Address',
+            'EPG',
+            'Encapsulation',
             'Fabric'
         ]
 

@@ -1,3 +1,21 @@
+def get_values_from_range(value):
+    values = []
+
+    if value is not None and len(value) > 0:
+        # 1,9-20,22-23,37-38
+        for item in value.split(','):
+            if len(item.split('-')) == 1:
+                values.append(int(item))
+
+            if len(item.split('-')) == 2:
+                (start, end) = item.split('-')
+                for idx in range(int(start), int(end) + 1):
+                    values.append(idx)
+
+    values = sorted(values)
+    return values
+
+
 def get_tenant_name(value):
     if len(value.split('/')) == 1:
         return (None, value)
@@ -5,7 +23,116 @@ def get_tenant_name(value):
     if len(value.split('/')) == 2:
         return value.split('/')
 
-    return None
+    return None, None
+
+
+def match_tenant_name(key, value, strict=False):
+    if key is None and value is None:
+        return True
+
+    if key is None and value is not None:
+        return False
+
+    if key is not None and value is None:
+        return False
+
+    if not isinstance(key, str):
+        return False
+
+    if not isinstance(value, str):
+        return False
+
+    if len(key) == 0:
+        return True
+
+    if len(value) == 0:
+        return False
+
+    if len(value.split('/')) != 2:
+        return False
+
+    if len(key.split('/')) > 2:
+        return False
+
+    (key_tenant, key_name) = get_tenant_name(key)
+    (value_tenant, value_name) = get_tenant_name(value)
+
+    if key_tenant is not None:
+        if not match_string(key_tenant, value_tenant):
+            return False
+        if not match_string(key_name, value_name):
+            return False
+
+    if key_tenant is None:
+        if not match_string(key_name, value_name):
+            return False
+
+    return True
+
+
+def get_tenant_ap_name(value):
+    if len(value.split('/')) == 1:
+        return (None, None, value)
+
+    if len(value.split('/')) == 2:
+        return (None, value.split('/')[0], value.split('/')[1])
+
+    if len(value.split('/')) == 3:
+        return value.split('/')
+
+    return None, None, None
+
+
+def match_tenant_ap_name(key, value, strict=False):
+    if key is None and value is None:
+        return True
+
+    if key is None and value is not None:
+        return False
+
+    if key is not None and value is None:
+        return False
+
+    if not isinstance(key, str):
+        return False
+
+    if not isinstance(value, str):
+        return False
+
+    if len(key) == 0:
+        return True
+
+    if len(value) == 0:
+        return False
+
+    if len(value.split('/')) != 3:
+        return False
+
+    if len(key.split('/')) > 3:
+        return False
+
+    (key_tenant, key_ap, key_name) = get_tenant_ap_name(key)
+    (value_tenant, value_ap, value_name) = get_tenant_ap_name(value)
+
+    if key_tenant is not None:
+        if not match_string(key_tenant, value_tenant):
+            return False
+        if not match_string(key_ap, value_ap):
+            return False
+        if not match_string(key_name, value_name):
+            return False
+
+    if key_tenant is None and key_ap is not None:
+        if not match_string(key_ap, value_ap):
+            return False
+        if not match_string(key_name, value_name):
+            return False
+
+    if key_tenant is None and key_ap is None:
+        if not match_string(key_name, value_name):
+            return False
+
+    return True
 
 
 def match_integer(key, value):

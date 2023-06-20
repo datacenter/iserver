@@ -12,13 +12,13 @@ Use '--view props' to get properties of selected epgs
 - label match
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_properties:iserver.output.default
+DOC_TEMPLATE:get_aci_epg.view_properties:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_properties:devel.debug
+DOC_TEMPLATE:get_aci_epg.view_properties:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

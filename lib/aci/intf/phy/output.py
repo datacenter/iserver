@@ -1,3 +1,6 @@
+from lib import filter_helper
+
+
 class InterfacePhyOutput():
     def __init__(self):
         pass
@@ -274,6 +277,143 @@ class InterfacePhyOutput():
                 interfaces,
                 order,
                 ['epg_stats']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def get_interface_phy_vlans(self, interfaces):
+        info = []
+        nodes = []
+        for interface in interfaces:
+            if interface['pod_node_name'] not in nodes:
+                nodes.append(
+                    interface['pod_node_name']
+                )
+
+        for node in nodes:
+            vlans = {}
+            for interface in interfaces:
+                if interface['pod_node_name'] != node:
+                    continue
+
+                if interface['stats'] is None:
+                    continue
+
+                interace_vlans = filter_helper.get_values_from_range(
+                    interface['stats']['allowedVlans']
+                )
+                for interface_vlan in interace_vlans:
+                    if interface_vlan not in vlans:
+                        vlans[interface_vlan] = {}
+                        vlans[interface_vlan]['apic'] = interface['apic']
+                        vlans[interface_vlan]['pod_node_name'] = node
+                        vlans[interface_vlan]['interface'] = []
+                        vlans[interface_vlan]['vlan'] = interface_vlan
+                        vlans[interface_vlan]['evlan'] = None
+                        vlans[interface_vlan]['fvxlan'] = None
+                        vlans[interface_vlan]['epg'] = None
+
+                    vlans[interface_vlan]['interface'].append(
+                        interface['id']
+                    )
+
+                    if 'epg_stats' not in interface or interface['epg_stats'] is None:
+                        continue
+
+                    for epg_info in interface['epg_stats']:
+                        if 'vlan' not in epg_info or epg_info['vlan'] is None:
+                            continue
+
+                        if int(epg_info['vlan']['id']) != interface_vlan:
+                            continue
+
+                        if vlans[interface_vlan]['epg'] is not None and vlans[interface_vlan]['epg'] != epg_info['nameApTenant']:
+                            self.log.error(
+                                'get_interfaces_phy_vlans',
+                                'Unexpected epg allocation: %s' % (interface)
+                            )
+                            continue
+
+                        vlans[interface_vlan]['epg'] = epg_info['nameApTenant']
+
+                        if epg_info['vlan']['evlan'] is not None and len(epg_info['vlan']['evlan']) > 0:
+                            if vlans[interface_vlan]['evlan'] is not None and vlans[interface_vlan]['evlan'] != epg_info['vlan']['evlan']:
+                                self.log.error(
+                                    'get_interfaces_phy_vlans',
+                                    'Unexpected evlan allocation: %s' % (interface)
+                                )
+                                continue
+
+                            vlans[interface_vlan]['evlan'] = epg_info['vlan']['evlan']
+
+                        if epg_info['vlan']['fvxlan'] is not None and len(epg_info['vlan']['fvxlan']) > 0:
+                            if vlans[interface_vlan]['fvxlan'] is not None and vlans[interface_vlan]['fvxlan'] != epg_info['vlan']['fvxlan']:
+                                self.log.error(
+                                    'get_interfaces_phy_vlans',
+                                    'Unexpected fvxlan allocation: %s' % (interface)
+                                )
+                                continue
+
+                            vlans[interface_vlan]['fvxlan'] = epg_info['vlan']['fvxlan']
+
+            for vlan_id in vlans:
+                info.append(
+                    vlans[vlan_id]
+                )
+
+        info = sorted(
+            info,
+            key=lambda i: i['vlan']
+        )
+
+        return info
+
+    def print_interfaces_phy_vlan_pivot(self, info):
+        if len(info) == 0:
+            self.my_output.default(
+                'No interface'
+            )
+            return
+
+        info = self.get_interface_phy_vlans(
+            info
+        )
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'vlan',
+            'epg',
+            'evlan',
+            'fxvlan',
+            'interface'
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Internal VLAN',
+            'EPG',
+            'Encap',
+            'Fabric',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['interface']
             ),
             order=order,
             headers=headers,

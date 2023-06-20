@@ -1,4 +1,3 @@
-import time
 import copy
 
 from lib import filter_helper
@@ -7,8 +6,7 @@ from lib import ip_helper
 
 class EpgInfo():
     def __init__(self):
-        self.epgs = None
-        self.epgs_with_leaves = None
+        self.epg = None
 
     def get_epg_count(self, tenant_name=None):
         epg_filter = None
@@ -31,62 +29,7 @@ class EpgInfo():
 
         return None
 
-    def get_epg_info(self, managed_object):
-        keys = [
-            'annotation',
-            'configSt',
-            'descr',
-            'dn',
-            'exceptionTag',
-            'floodOnEncap',
-            'hasMcastSource',
-            'isAttrBasedEPg',
-            'matchT',
-            'name',
-            'nameAlias',
-            'pcEnfPref',
-            'pcTag',
-            'prefGrMemb',
-            'prio',
-            'shutdown'
-        ]
-
-        info = {}
-        info['__Output'] = {}
-
-        for key in keys:
-            info[key] = None
-            if key in managed_object:
-                info[key] = managed_object[key]
-
-        if info['shutdown'] == 'no':
-            info['adminUp'] = True
-            info['adminUpTick'] = '\u2713'
-            info['__Output']['adminUpTick'] = 'Green'
-        else:
-            info['adminUp'] = False
-            info['adminUpTick'] = '\u2717'
-            info['__Output']['adminUpTick'] = 'Red'
-
-        if info['configSt'] == 'applied':
-            info['__Output']['configSt'] = 'Green'
-        else:
-            info['__Output']['configSt'] = 'Red'
-
-        # Dn format
-        # [0]: uni/tn-{name}/ap-{name}/epg-{name}
-        info['tenant'] = info['dn'].split('/')[1][3:]
-        info['nameTenant'] = '%s/%s' % (
-            info['tenant'],
-            info['name']
-        )
-        info['application_profile'] = info['dn'].split('/')[2][3:]
-        info['nameApTenant'] = '%s/%s/%s' % (
-            info['tenant'],
-            info['application_profile'],
-            info['name']
-        )
-
+    def get_epg_contract_info(self, managed_object, info):
         info['contractConsumed'] = []
         for item in managed_object['fvRsCons']:
             if item['tCl'] == 'vzBrCP':
@@ -135,14 +78,42 @@ class EpgInfo():
                     contract['nameTenant'] = item['tnVzBrCPName']
                     info['contractProvided'].append(contract)
 
+        info['contractTaboo'] = []
+        for item in managed_object['fvRsProtBy']:
+            if item['tCl'] == 'vzTaboo':
+                if item['state'] == 'formed':
+                    contract = {}
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = item['tDn'].split('/')[1][3:]
+                    contract['name'] = item['tDn'].split('/')[2][6:]
+                    contract['nameTenant'] = '%s/%s' % (
+                        contract['tenant'],
+                        contract['name']
+                    )
+                    info['contractTaboo'].append(contract)
+
+                if item['state'] != 'formed':
+                    contract = {}
+                    contract['__Output'] = {}
+                    contract['__Output']['nameTenant'] = 'Red'
+                    contract['dn'] = item['tDn']
+                    contract['tenant'] = None
+                    contract['name'] = item['tnVzTabooName']
+                    contract['nameTenant'] = item['tnVzTabooName']
+                    info['contractTaboo'].append(contract)
+
+        info['contractCount'] = len(info['contractConsumed']) + len(info['contractProvided']) + len(info['contractTaboo'])
         info['contractTick'] = ''
-        if len(info['contractConsumed']) > 0 or len(info['contractProvided']) > 0:
+        if info['contractCount'] > 0:
             info['contractTick'] = '\u2713'
             info['__Output']['contractTick'] = 'Green'
 
+        return info
+
+    def get_epg_bd_info(self, managed_object, info):
         if len(managed_object['fvBD']) != 1:
             self.log.error(
-                'get_epg_info',
+                'get_epg_bd_info',
                 'Unexpected fvBD count: %s' % (managed_object)
             )
             return None
@@ -159,54 +130,341 @@ class EpgInfo():
             info['bd_state'] = bd_mo['state']
             info['__Output']['bd_tenant_name'] = 'Red'
 
+        return info
+
+    def get_epg_static_ports_info(self, managed_object, info):
+        # "annotation": "",
+        # "childAction": "",
+        # "descr": "",
+        # "encap": "vlan-3000",
+        # "extMngdBy": "",
+        # "forceResolve": "yes",
+        # "instrImedcy": "lazy",
+        # "lcC": "",
+        # "lcOwn": "local",
+        # "modTs": "2023-03-06T21:44:13.066+02:00",
+        # "mode": "regular",
+        # "monPolDn": "uni/tn-common/monepg-default",
+        # "primaryEncap": "unknown",
+        # "rType": "mo",
+        # "rn": "rspathAtt-[topology/pod-1/paths-2702/pathep-[eth1/19]]",
+        # "state": "unformed",
+        # "stateQual": "none",
+        # "status": "",
+        # "tCl": "fabricPathEp",
+        # "tDn": "topology/pod-1/paths-2702/pathep-[eth1/19]",
+        # "tType": "mo",
+        # "uid": "15374",
+        # "userdom": ":all:common:"
+        info['staticPort'] = []
+
+        for item in managed_object['fvRsPathAtt']:
+            keys = [
+                'encap',
+                'forceResolve',
+                'instrImedcy',
+                'mode',
+                'primaryEncap',
+                'state',
+                'rn',
+                'tCl',
+                'tDn'
+            ]
+            port_info = {}
+            port_info['__Output'] = {}
+
+            for key in keys:
+                port_info[key] = None
+                if key in item:
+                    port_info[key] = item[key]
+
+            port_info['modeT'] = port_info['mode']
+            if port_info['mode'] == 'regular':
+                port_info['modeT'] = 'Trunk'
+
+            if port_info['tCl'] != 'fabricPathEp':
+                self.log.error(
+                    'get_epg_static_ports_info',
+                    'Unsupported tCl: %s' % (port_info['tCl'])
+                )
+
+            port_info['pathNode'] = ''
+            port_info['pathNodeName'] = []
+            port_info['pathType'] = ''
+            port_info['pathEp'] = ''
+            if port_info['tCl'] == 'fabricPathEp':
+                if port_info['tDn'].split('/')[2].startswith('protpaths-'):
+                    # "topology/pod-1/protpaths-2207-2208/pathep-[k8s_ocp_bm_1_PolGrp]"
+                    port_info['pathType'] = 'PG'
+                    port_info['podId'] = port_info['tDn'].split('/')[1][4:]
+                    port_info['pathNode'] = port_info['tDn'].split('/')[2][10:]
+                    port_info['pathNodeT'] = 'node-%s' % (port_info['pathNode'])
+                    for node_id in port_info['pathNode'].split('-'):
+                        port_info['pathNodeName'].append(
+                            'pod-%s/%s' % (
+                                port_info['podId'],
+                                self.get_node_name(
+                                    node_id
+                                )
+                            )
+                        )
+                    port_info['pathEp'] = port_info['tDn'].split('[')[1].split(']')[0]
+
+                if port_info['tDn'].split('/')[2].startswith('paths-'):
+                    # "topology/pod-1/paths-2207/pathep-[eth1/3/1]"
+                    port_info['pathType'] = 'Intf'
+                    port_info['podId'] = port_info['tDn'].split('/')[1][4:]
+                    port_info['pathNode'] = port_info['tDn'].split('/')[2][6:]
+                    port_info['pathNodeT'] = 'node-%s' % (port_info['pathNode'])
+                    for node_id in port_info['pathNode'].split('-'):
+                        port_info['pathNodeName'].append(
+                            'pod-%s/%s' % (
+                                port_info['podId'],
+                                self.get_node_name(
+                                    node_id
+                                )
+                            )
+                        )
+                    port_info['pathEp'] = port_info['tDn'].split('[')[1].split(']')[0]
+
+            info['staticPort'].append(
+                port_info
+            )
+
+        info['staticPort'] = sorted(
+            info['staticPort'],
+            key=lambda i: (
+                i['pathNode'],
+                i['pathEp']
+            )
+        )
+        info['staticPortCount'] = len(info['staticPort'])
+
+        return info
+
+    def get_epg_domain_info(self, managed_object, info):
+        # "annotation": "orchestrator:terraform",
+        # "bindingType": "none",
+        # "childAction": "",
+        # "classPref": "encap",
+        # "configIssues": "",
+        # "customEpgName": "",
+        # "delimiter": "",
+        # "encap": "unknown",
+        # "encapMode": "auto",
+        # "epgCos": "Cos0",
+        # "epgCosPref": "disabled",
+        # "extMngdBy": "",
+        # "forceResolve": "yes",
+        # "instrImedcy": "lazy",
+        # "lagPolicyName": "",
+        # "lcOwn": "local",
+        # "modTs": "2023-04-05T21:31:58.171+02:00",
+        # "mode": "default",
+        # "monPolDn": "uni/tn-common/monepg-default",
+        # "netflowDir": "both",
+        # "netflowPref": "disabled",
+        # "numPorts": "0",
+        # "portAllocation": "none",
+        # "primaryEncap": "unknown",
+        # "primaryEncapInner": "unknown",
+        # "rType": "mo",
+        # "resImedcy": "lazy",
+        # "rn": "rsdomAtt-[uni/phys-k8s_phys_PhysDom]",
+        # "secondaryEncapInner": "unknown",
+        # "state": "formed",
+        # "stateQual": "none",
+        # "status": "",
+        # "switchingMode": "native",
+        # "tCl": "physDomP",
+        # "tDn": "uni/phys-k8s_phys_PhysDom",
+        # "tType": "mo",
+        # "triggerSt": "not_triggerable",
+        # "txId": "7493989779975624787",
+        # "uid": "15374",
+        # "untagged": "no",
+        # "userdom": ":all:common:",
+        # "vnetOnly": "no"
+        info['domain'] = []
+
+        for item in managed_object['fvRsDomAtt']:
+            domain_info = {}
+            domain_info['__Output'] = {}
+
+            for key in item:
+                domain_info[key] = item[key]
+
+            if domain_info['tCl'] not in ['physDomP', 'vmmDomP']:
+                self.log.error(
+                    'get_epg_domain_info',
+                    'Unsupported epg domain type: %s' % (domain_info['tCl'])
+                )
+                return None
+
+            domain_info['type'] = domain_info['tCl']
+            if domain_info['type'] == 'physDomP':
+                # "tDn": "uni/phys-k8s_phys_PhysDom"
+                domain_info['typeT'] = 'Physical'
+                domain_info['name'] = domain_info['tDn'].split('/')[1][5:]
+
+            if domain_info['type'] == 'vmmDomP':
+                # "tDn": "uni/vmmp-VMware/dom-EU-SPDC-POD2B"
+                domain_info['typeT'] = 'VMM'
+                domain_info['vmmType'] = domain_info['tDn'].split('/')[1][5:]
+                domain_info['vmmName'] = domain_info['tDn'].split('/')[2][4:]
+                domain_info['name'] = '%s/%s' % (
+                    domain_info['vmmType'],
+                    domain_info['vmmName']
+                )
+
+            info['domain'].append(
+                domain_info
+            )
+
+        info['domain'] = sorted(
+            info['domain'],
+            key=lambda i: i['name']
+        )
+
+        info['domainCount'] = len(info['domain'])
+
+        return info
+
+    def get_epg_info(self, managed_object):
+        keys = [
+            'annotation',
+            'configSt',
+            'descr',
+            'dn',
+            'exceptionTag',
+            'floodOnEncap',
+            'hasMcastSource',
+            'isAttrBasedEPg',
+            'matchT',
+            'name',
+            'nameAlias',
+            'pcEnfPref',
+            'pcTag',
+            'prefGrMemb',
+            'prio',
+            'shutdown'
+        ]
+
+        info = {}
+        info['__Output'] = {}
+
+        for key in keys:
+            info[key] = None
+            if key in managed_object:
+                info[key] = managed_object[key]
+
+        # state
+        if info['shutdown'] == 'no':
+            info['adminUp'] = True
+            info['adminUpTick'] = '\u2713'
+            info['__Output']['adminUpTick'] = 'Green'
+        else:
+            info['adminUp'] = False
+            info['adminUpTick'] = '\u2717'
+            info['__Output']['adminUpTick'] = 'Red'
+
+        if info['configSt'] == 'applied':
+            info['__Output']['configSt'] = 'Green'
+        else:
+            info['__Output']['configSt'] = 'Red'
+
         # pcTag global
         info['pcTagT'] = info['pcTag']
         if int(info['pcTag']) < 16384:
             info['pcTagT'] = '%s (global)' % (info['pcTag'])
             info['__Output']['pcTagT'] = 'Red'
 
-        return info
-
-    def get_epgs_info(self, deployed_leaves_info=False):
-        if self.epgs is None:
-            epgs = self.get_epgs_mo()
-            if epgs is not None:
-                self.epgs = []
-                for managed_object in epgs:
-                    self.epgs.append(
-                        self.get_epg_info(
-                            managed_object
-                        )
-                    )
-
-        if not deployed_leaves_info:
-            return self.epgs
-
-        if self.epgs_with_leaves is not None:
-            return self.epgs_with_leaves
-
-        epgs_with_leaves_mo = self.get_epgs_deployed_leaves_mo()
-        if epgs_with_leaves_mo is None:
-            return None
-
-        self.epgs_with_leaves = copy.deepcopy(
-            self.epgs
+        # Dn format
+        # [0]: uni/tn-{name}/ap-{name}/epg-{name}
+        info['tenant'] = info['dn'].split('/')[1][3:]
+        info['nameTenant'] = '%s/%s' % (
+            info['tenant'],
+            info['name']
+        )
+        info['application_profile'] = info['dn'].split('/')[2][3:]
+        info['nameApTenant'] = '%s/%s/%s' % (
+            info['tenant'],
+            info['application_profile'],
+            info['name']
         )
 
-        for epg_with_leaves_info in self.epgs_with_leaves:
-            epg_with_leaves_info['fabricNode'] = []
-            for managed_object in epgs_with_leaves_mo:
-                if epg_with_leaves_info['dn'] == managed_object['epgPKey']:
-                    for item in managed_object['fvLocale']:
-                        node_info = copy.deepcopy(
-                            self.get_node(node_id=item['id'])
-                        )
-                        if node_info is not None:
-                            epg_with_leaves_info['fabricNode'].append(
-                                node_info
-                            )
+        info = self.get_epg_contract_info(
+            managed_object,
+            info
+        )
+        if info is None:
+            return None
 
-        return self.epgs_with_leaves
+        info = self.get_epg_bd_info(
+            managed_object,
+            info
+        )
+        if info is None:
+            return None
+
+        info = self.get_epg_static_ports_info(
+            managed_object,
+            info
+        )
+        if info is None:
+            return None
+
+        info = self.get_epg_domain_info(
+            managed_object,
+            info
+        )
+        if info is None:
+            return None
+
+        return info
+
+    def get_epgs_info(self):
+        if self.epg is not None:
+            return self.epg
+
+        epgs_mo = self.get_epg_mo()
+        if epgs_mo is None:
+            return None
+
+        self.epg = []
+        for epg_mo in epgs_mo:
+            epg_info = self.get_epg_info(
+                epg_mo
+            )
+            if epg_info is None:
+                continue
+
+            self.epg.append(
+                epg_info
+            )
+
+        self.log.apic_mo(
+            'fvAEPg.info',
+            self.epg
+        )
+
+        return self.epg
+
+    def match_epg_member(self, epg_member_info, epg_filter):
+        if epg_filter is None or len(epg_filter) == 0:
+            return True
+
+        for aepg_rule in epg_filter:
+            (key, value) = aepg_rule.split(':')
+
+            if key == 'pg':
+                if epg_member_info['pathType'] != 'Policy Group':
+                    return False
+
+                if not filter_helper.match_string(value, epg_member_info['pathName']):
+                    return False
+
+        return True
 
     def match_epg(self, epg_info, epg_filter):
         if epg_filter is None or len(epg_filter) == 0:
@@ -215,16 +473,6 @@ class EpgInfo():
         for aepg_rule in epg_filter:
             (key, value) = aepg_rule.split(':')
             key_found = False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_string(value, epg_info['name']):
-                    return False
-
-            if key == 'dn':
-                key_found = True
-                if not filter_helper.match_string(value, epg_info['dn']):
-                    return False
 
             if key == 'tenant':
                 key_found = True
@@ -236,27 +484,45 @@ class EpgInfo():
                 if not filter_helper.match_string(value, epg_info['application_profile']):
                     return False
 
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_tenant_ap_name(value, epg_info['nameApTenant']):
+                    return False
+
+            if key == 'dn':
+                key_found = True
+                if not filter_helper.match_string(value, epg_info['dn']):
+                    return False
+
             if key == 'node':
                 key_found = True
-                found = False
-                for node_info in epg_info['fabricNode']:
-                    if filter_helper.match_string(value, node_info['name']):
-                        found = True
-                        break
+                if 'fabricNode' in epg_info:
+                    found = False
 
-                if not found:
-                    return False
+                    for node_info in epg_info['fabricNode']:
+                        if filter_helper.match_string(value, node_info['name']):
+                            found = True
+                            break
+
+                    if not found:
+                        return False
 
             if key == 'contract':
                 key_found = True
                 found = False
+
                 for contract in epg_info['contractConsumed']:
-                    if filter_helper.match_string(value, contract['nameTenant']):
+                    if filter_helper.match_tenant_name(value, contract['nameTenant']):
                         found = True
                         break
 
                 for contract in epg_info['contractProvided']:
-                    if filter_helper.match_string(value, contract['nameTenant']):
+                    if filter_helper.match_tenant_name(value, contract['nameTenant']):
+                        found = True
+                        break
+
+                for contract in epg_info['contractTaboo']:
+                    if filter_helper.match_tenant_name(value, contract['nameTenant']):
                         found = True
                         break
 
@@ -269,7 +535,7 @@ class EpgInfo():
                     if epg_info['fvBD'] is None:
                         return False
 
-                    if not filter_helper.match_string(value, epg_info['fvBD']['nameTenant']):
+                    if not filter_helper.match_tenant_name(value, epg_info['nameTenant']):
                         return False
 
             if key == 'subnet':
@@ -310,6 +576,50 @@ class EpgInfo():
 
                 if value != 'global':
                     if not filter_helper.match_integer(value, epg_info['pcTag']):
+                        return False
+
+            if key == 'domain':
+                key_found = True
+                if 'domain' in epg_info:
+                    found = False
+
+                    for domain_info in epg_info['domain']:
+                        if filter_helper.match_string(value, domain_info['name']):
+                            found = True
+                            break
+
+                    if not found:
+                        return False
+
+            if key == 'pg':
+                key_found = True
+                if 'member' in epg_info:
+                    found = False
+
+                    for member_info in epg_info['member']:
+                        if member_info['pathType'] == 'Policy Group':
+                            if filter_helper.match_string(value, member_info['pathName']):
+                                found = True
+                                break
+
+                    if not found:
+                        return False
+
+            if key == 'member_type':
+                key_found = True
+                if 'member' in epg_info:
+                    found = False
+
+                    for member_info in epg_info['member']:
+                        if member_info['memberType'] == 'dynamic' and value == 'dyn':
+                            found = True
+                            break
+
+                        if member_info['memberType'] == 'static' and value == 'st':
+                            found = True
+                            break
+
+                    if not found:
                         return False
 
             if not key_found:
@@ -354,6 +664,21 @@ class EpgInfo():
 
         return contract_filter
 
+    def get_epgs_taboo_filter(self, epgs_info):
+        contracts = []
+        for epg in epgs_info:
+            for contract in epg['contractTaboo']:
+                if contract['nameTenant'] not in contracts:
+                    contracts.append(
+                        contract['nameTenant']
+                    )
+
+        contract_filter = ''
+        if len(contracts) > 0:
+            contract_filter = ['names:%s' % (','.join(contracts))]
+
+        return contract_filter
+
     def get_epg_l3out_filter(self, epg_info):
         l3outs = []
         for l3out in epg_info['fvBD']['fvRsBDToOut']:
@@ -367,12 +692,20 @@ class EpgInfo():
 
         return l3out_filter
 
-    def get_epgs(self, epg_filter=None, bd_info=False, deployed_leaves_info=False, endpoint_info=False, endpoint_vm_info=False, endpoint_fabric_info=False, contract_info=False, vrf_info=False, l3out_info=False):
-        start_time = int(time.time() * 1000)
-
-        all_epgs = self.get_epgs_info(
-            deployed_leaves_info=deployed_leaves_info
-        )
+    def get_epgs(
+            self,
+            epg_filter=None,
+            bd_info=False,
+            locale_info=False,
+            ifconn_info=False,
+            endpoint_info=False,
+            endpoint_vm_info=False,
+            endpoint_fabric_info=False,
+            contract_info=False,
+            vrf_info=False,
+            l3out_info=False
+            ):
+        all_epgs = self.get_epgs_info()
         if all_epgs is None:
             return None
 
@@ -382,11 +715,52 @@ class EpgInfo():
             if not self.match_epg(epg_info, epg_filter):
                 continue
 
+            if ifconn_info:
+                epg_info['ifconn'] = self.get_epg_ifconn(
+                    epg_ifconn_filter=['name:%s' % (epg_info['nameApTenant'])]
+                )
+
+                epg_info['ifconnSummary'] = self.get_epg_ifconn_summary(
+                    epg_info['ifconn']
+                )
+
+                epg_info['member'] = []
+                for ifconn in epg_info['ifconn']:
+                    if ifconn['type'] in ['stpathatt', 'dyatt']:
+                        if self.match_epg_member(ifconn, epg_filter):
+                            epg_info['member'].append(
+                                ifconn
+                            )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
+
+            if locale_info:
+                epg_info['locale'] = self.get_epg_locale(
+                    epg_locale_filter=['name:%s' % (epg_info['nameApTenant'])]
+                )
+
+                epg_info['fabricNode'] = self.get_epg_locale_node(
+                    epg_info['locale']
+                )
+
+                epg_info['nodeCount'] = 0
+                if epg_info['fabricNode'] is not None:
+                    epg_info['nodeCount'] = len(
+                        epg_info['fabricNode']
+                    )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
+
             if bd_info:
                 epg_info['fvBD'] = self.get_bridge_domain(
                     epg_info['bd_tenant_name'],
                     epg_info['bd_name']
                 )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
 
             if endpoint_info:
                 endpoint_filter = ['epg:%s' % (epg_info['name'])]
@@ -396,9 +770,9 @@ class EpgInfo():
                     fabric_info=endpoint_fabric_info
                 )
 
-                epg_info['endpointsCount'] = 0
+                epg_info['endpointCount'] = 0
                 if epg_info['fvCEp'] is not None:
-                    epg_info['endpointsCount'] = len(
+                    epg_info['endpointCount'] = len(
                         epg_info['fvCEp']
                     )
 
@@ -407,6 +781,9 @@ class EpgInfo():
                         epg_info['fvBD']['fvSubnet'],
                         epg_info['fvCEp']
                     )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
 
             if contract_info:
                 epg_info['contractConsumedInfo'] = []
@@ -431,6 +808,20 @@ class EpgInfo():
                         )
                     )
 
+                epg_info['contractTabooInfo'] = []
+                contract_filter = self.get_epg_contract_filter(
+                    epg_info['contractTaboo']
+                )
+                if len(contract_filter) > 0:
+                    epg_info['contractTabooInfo'] = copy.deepcopy(
+                        self.get_taboos(
+                            taboo_filter=contract_filter
+                        )
+                    )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
+
             if vrf_info:
                 if epg_info['fvBD'] is not None:
                     vrf_dn = epg_info['fvBD']['fvRsCtx']['dn']
@@ -439,6 +830,9 @@ class EpgInfo():
                             vrf_dn
                         )
                     )
+
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
 
             if l3out_info:
                 if epg_info['fvBD'] is not None:
@@ -453,16 +847,14 @@ class EpgInfo():
                             )
                         )
 
+                if not self.match_epg(epg_info, epg_filter):
+                    continue
+
             epgs.append(epg_info)
 
         epgs = sorted(
             epgs,
             key=lambda i: i['nameApTenant'].lower()
-        )
-
-        self.log.apic_mo(
-            'fvAEPg.info',
-            epgs
         )
 
         return epgs

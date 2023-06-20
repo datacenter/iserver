@@ -19,7 +19,7 @@ Apic: apic11 (mode:online, cache:off)
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
 | V  | 00:50:56:B2:6F:76 |              | EU-SPDC-CDC | esx14-eu-spdc.cisco.com | CNC-installer  | poweredOff | Network adapter 1 | down       | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
-| LV | 00:50:56:B2:92:87 | 10.58.239.45 | EU-SPDC-CDC | esx11-eu-spdc.cisco.com | cnc41-worker-2 | poweredOn  | Network adapter 1 | up         | 
+| LV | 00:50:56:B2:92:87 | 10.58.239.45 | EU-SPDC-CDC | esx3-eu-spdc.cisco.com  | cnc41-worker-2 | poweredOn  | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
 | LV | 00:50:56:B2:9D:19 | 10.58.239.54 | EU-SPDC-CDC | esx4-eu-spdc.cisco.com  | cnc50-worker-1 | poweredOn  | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
@@ -40,9 +40,9 @@ Apic: apic11 (mode:online, cache:off)
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
 | V  | 00:50:56:B2:D1:41 |              | EU-SPDC-CDC | esx4-eu-spdc.cisco.com  | cnc50-dg-1     | poweredOn  | Network adapter 3 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
-| LV | 00:50:56:B2:DB:D9 | 10.58.239.55 | EU-SPDC-CDC | esx5-eu-spdc.cisco.com  | cnc50-worker-2 | poweredOn  | Network adapter 1 | up         | 
+| LV | 00:50:56:B2:DB:D9 | 10.58.239.55 | EU-SPDC-CDC | esx7-eu-spdc.cisco.com  | cnc50-worker-2 | poweredOn  | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
-| LV | 00:50:56:B2:DD:ED | 10.58.239.42 | EU-SPDC-CDC | esx9-eu-spdc.cisco.com  | cnc41-hybrid-2 | poweredOn  | Network adapter 1 | up         | 
+| LV | 00:50:56:B2:DD:ED | 10.58.239.42 | EU-SPDC-CDC | esx6-eu-spdc.cisco.com  | cnc41-hybrid-2 | poweredOn  | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
 | LV | 00:50:56:B2:F1:E8 | 10.58.239.44 | EU-SPDC-CDC | esx14-eu-spdc.cisco.com | cnc41-worker-1 | poweredOn  | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+------------+-------------------+------------+
@@ -58,7 +58,7 @@ Developer
 # iserver get aci ep --apic apic11 --vm *cnc* --view vm
 
 {
-    "duration": 5435,
+    "duration": 5839,
     "apic": {
         "read": true,
         "success": 5,
@@ -66,10 +66,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 432,
+        "connect_time": 403,
         "disconnect_time": 0,
-        "mo_time": 2660,
-        "total_time": 3092
+        "mo_time": 4575,
+        "total_time": 4978
     },
     "error": {
         "read": false,
@@ -89,11 +89,11 @@ Developer
 Log: apic
 ----------
 
-True	432	-	connect apic11o.emea-sp.cisco.com
-True	625	192	apic11o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
-True	772	658	apic11o.emea-sp.cisco.com class compVm
-True	919	1874	apic11o.emea-sp.cisco.com class compVNic
-True	344	68	apic11o.emea-sp.cisco.com class compHv
+True	403	-	connect apic11o.emea-sp.cisco.com:443
+True	632	209	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	630	654	apic11o.emea-sp.cisco.com:443 class compVm
+True	750	1870	apic11o.emea-sp.cisco.com:443 class compVNic
+True	2563	68	apic11o.emea-sp.cisco.com:443 class compHv
 ```
 
 [[Back]](./Endpoint.md)

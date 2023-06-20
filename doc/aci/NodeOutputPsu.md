@@ -45,7 +45,7 @@ Developer
 # iserver get aci node --apic apic11 --view psu
 
 {
-    "duration": 1386,
+    "duration": 1313,
     "apic": {
         "read": true,
         "success": 3,
@@ -53,10 +53,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 452,
+        "connect_time": 421,
         "disconnect_time": 0,
-        "mo_time": 686,
-        "total_time": 1138
+        "mo_time": 642,
+        "total_time": 1063
     },
     "error": {
         "read": false,
@@ -76,9 +76,9 @@ Developer
 Log: apic
 ----------
 
-True	452	-	connect apic11o.emea-sp.cisco.com
-True	333	13	apic11o.emea-sp.cisco.com class fabricNode
-True	353	26	apic11o.emea-sp.cisco.com class eqptPsu
+True	421	-	connect apic11o.emea-sp.cisco.com:443
+True	325	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	317	26	apic11o.emea-sp.cisco.com:443 class eqptPsu
 ```
 
 [[Back]](./Node.md)

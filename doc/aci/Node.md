@@ -37,6 +37,7 @@ Usage: iserver.py get aci node [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -45,15 +46,15 @@ Options:
   --id TEXT                       Filter by node id
   --name TEXT                     Filter by node name
   --model TEXT                    Filter by model
-  --node-ip TEXT                  Filter by subnet with IP
-  --node-subnet TEXT              Filter by subnet within subnet
+  --address TEXT                  Filter by subnet with IP
+  --subnet TEXT                   Filter by subnet within subnet
   -v, --view [default|intf|ip|power|psu|sensor|temp]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 50 ms and logs saved in /tmp/iserver\8f8736ab66d7
+Info: finished in 70 ms and logs saved in /tmp/iserver\7a05f1489f0c
 ```
 
 [[Back]](./README.md)

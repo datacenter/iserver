@@ -12,7 +12,7 @@
     --xd server:10.58.29.58
     --view nei
 
-Apic: apic11 (mode:online, cache:on)
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
@@ -63,7 +63,7 @@ Interface context: lldp
 ```
 # iserver get aci intf phy --apic apic11 --role leaf --ctx lldp
 
-Apic: apic11 (mode:online, cache:on)
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: cl201-eu-spdc
 - node: cl202-eu-spdc
@@ -91,13 +91,25 @@ Developer
     --view nei
 
 {
-    "duration": 8687,
+    "duration": 12863,
     "isctl": {
         "read": true,
         "calls": 3,
         "success": 3,
         "failed": 0,
-        "total_time": 7982
+        "total_time": 7779
+    },
+    "apic": {
+        "read": true,
+        "success": 10,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 9,
+        "connect_time": 398,
+        "disconnect_time": 0,
+        "mo_time": 4193,
+        "total_time": 4591
     },
     "error": {
         "read": false,
@@ -111,15 +123,30 @@ Developer
         "read": true,
         "lines": 71
     },
-    "cache_hits": 10
+    "cache_hits": 0
 }
 
 Log: isctl
 -----------
 
-2023-06-15 09:59:07.784022	True	4300	100	isctl get compute rackunit   -o json --top 100
-2023-06-15 09:59:09.761929	True	1973	5	isctl get compute rackunit   -o json --top 100 --skip 100
-2023-06-15 09:59:11.559517	True	1709	2	isctl get compute blade   -o json --top 100
+2023-06-15 16:50:57.939012	True	3788	100	isctl get compute rackunit   -o json --top 100
+2023-06-15 16:51:00.072343	True	2130	5	isctl get compute rackunit   -o json --top 100 --skip 100
+2023-06-15 16:51:02.050577	True	1861	2	isctl get compute blade   -o json --top 100
+
+
+Log: apic
+----------
+
+True	398	-	connect apic11o.emea-sp.cisco.com:443
+True	292	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	542	13	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	556	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	663	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	492	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	742	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	299	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	307	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	300	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back Protocol]](./ProtocolLldp.md) [[Back Cross Domain]](./XdServer.md)

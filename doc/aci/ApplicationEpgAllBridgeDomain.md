@@ -9,98 +9,33 @@ Use '--view bd' to get bridge domain properties of selected epgs
 - associated L3 Out
 
 ```
-# iserver get aci epg --apic apic21 --view bd
+# iserver get aci epg --apic apic21 --name vk8s* --view bd
 
 Apic: apic21 (mode:online, cache:off)
 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| Up | EPG                                | Bridge Domain             | BD Subnets         | Usage | L3Out                     |
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | common/privIP_TEST/privIP_TEST     | common/Infra_privIP_BD    | 15.254.254.254/28  | 1/14  | common/Infra_privIP_L3out | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | common/Test_ANP/Test_EPG           | common/Test_BD            |                    |       |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | hefernan_ni-demo/APP/EPG1          | hefernan_ni-demo/BD1      | 169.254.100.1/24   | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | hefernan_ni-demo/APP/EPG2          | hefernan_ni-demo/BD2      | 169.254.101.1/24   | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | infra/access/default               | infra/default             | 10.5.0.30/27       | 1/30  |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | infra/ave-ctrl/ave-ctrl            | infra/ave-ctrl            |                    |       |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/backbone1              | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/bmk8s_1                | k8s/bmk8s_1_BD            | 10.58.24.78/28     | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/bmk8s_2                | k8s/bmk8s_2_BD            | 10.58.24.94/28     | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/bmk8s_prov             | k8s/bmk8s_prov_BD         | 10.58.29.94/28     | 5/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/csr1_lan               | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/csr2_lan               | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/csr_b2b                | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/MGMT                   | k8s/MGMT_BD               | 10.58.25.174/28    | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/site1_lan              | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/site1_pe               | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/site2_lan              | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/site2_pe               | k8s/VM2VM_BD              |                    |       | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/SRIoV_A                | k8s/SRIoV_A_BD            | 15.20.16.254/24    | 2/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 2/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.169.254/24 | 1/254 | common/Infra_L3out        | 
-|    |                                    |                           | 169.169.170.254/24 | 1/254 | common/Infra_privIP_L3out | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_1                 | k8s/vk8s_1_BD             | 10.58.24.174/28    | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_2                 | k8s/vk8s_2_BD             | 10.58.24.190/28    | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_3                 | k8s/vk8s_3_BD             | 10.58.24.206/28    | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 1/14  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | mgmt/EU-SPDC-BD1          |                    |       |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/appserver           | nidemo/appserver          | 10.0.2.1/24        | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/database            | nidemo/database           | 10.0.3.1/24        | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | nidemo/streamz/management          | nidemo/management         | 10.0.4.1/24        | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 1/254 |                           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | vEPC/vSFO_ANP/WWW                  | vEPC/vSFO_BD              | 15.16.132.254/24   | 1/254 | vEPC/vSFO_L3out           | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | vEPC_demo/ACC_BD          | 15.20.0.254/24     | 1/254 | vEPC_demo/ACC_L3out       | 
-|    |                                    |                           |                    |       | vEPC_demo/SX_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_CTRL       | vEPC_demo/vEPC-CTRL-SX_BD |                    |       | vEPC_demo/SX_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_INT        | vEPC_demo/INT_BD          | 15.20.3.254/24     | 1/254 | vEPC_demo/INT_L3out       | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | vEPC_demo/MGMT_BD         | 10.58.25.158/27    | 1/30  | common/Infra_L3out        | 
-+----+------------------------------------+---------------------------+--------------------+-------+---------------------------+
+EPG BD Properties
+-----------------
+
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
+| Up | EPG                | Bridge Domain | BD Subnets      | Usage | VRF              | L3Out              |
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
+| V  | k8s/k8s_ANP/vk8s_1 | k8s/vk8s_1_BD | 10.58.24.174/28 | 2/14  | common/Infra_VRF | common/Infra_L3out | 
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
+| V  | k8s/k8s_ANP/vk8s_2 | k8s/vk8s_2_BD | 10.58.24.190/28 | 1/14  | common/Infra_VRF | common/Infra_L3out | 
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
+| V  | k8s/k8s_ANP/vk8s_3 | k8s/vk8s_3_BD | 10.58.24.206/28 | 2/14  | common/Infra_VRF | common/Infra_L3out | 
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
+| V  | k8s/k8s_ANP/vk8s_4 | k8s/vk8s_4_BD | 10.58.24.222/28 | 2/14  | common/Infra_VRF | common/Infra_L3out | 
++----+--------------------+---------------+-----------------+-------+------------------+--------------------+
 ```
 
 Developer
 
 ```
-# iserver get aci epg --apic apic21 --view bd
+# iserver get aci epg --apic apic21 --name vk8s* --view bd
 
 {
-    "duration": 2654,
+    "duration": 2867,
     "apic": {
         "read": true,
         "success": 6,
@@ -108,10 +43,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 407,
+        "connect_time": 428,
         "disconnect_time": 0,
-        "mo_time": 1894,
-        "total_time": 2301
+        "mo_time": 1784,
+        "total_time": 2212
     },
     "error": {
         "read": false,
@@ -131,12 +66,12 @@ Developer
 Log: apic
 ----------
 
-True	407	-	connect apic21o.emea-sp.cisco.com:443
-True	361	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	361	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	325	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	425	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	422	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	428	-	connect apic21o.emea-sp.cisco.com:443
+True	388	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	312	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	421	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	366	93	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	297	23	apic21o.emea-sp.cisco.com:443 class fvCtx
 ```
 
 [[Back]](./ApplicationEpg.md)

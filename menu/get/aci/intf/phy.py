@@ -52,6 +52,7 @@ class NoResultExit(Exception):
 @click.option("--nei", default='', callback=validations.empty_string_to_none, help="Filter by cdp/lldp neight system name")
 @click.option("--ctx", "user_context", default='', callback=validations.validate_context, help="Filter by context")
 @click.option("--view", "-v", type=click.Choice(['default', 'trans', 'vlan', 'epg', 'load', 'eee', 'nei', 'cdp', 'lldp', 'pg', 'pol', 'aaep', 'ether', 'err', 'qos', 'live', 'verbose'], case_sensitive=False), multiple=True)
+@click.option("--pivot", is_flag=True, show_default=True, default=False, help="Pivot view")
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -83,6 +84,7 @@ def get_aci_node_intf_phy_command(
         nei,
         user_context,
         view,
+        pivot,
         output,
         no_cache,
         devel
@@ -421,9 +423,15 @@ def get_aci_node_intf_phy_command(
             )
 
         if 'vlan' in view:
-            aci_output_handler.print_interfaces_phy_vlan(
-                interfaces
-            )
+            if pivot:
+                aci_output_handler.print_interfaces_phy_vlan_pivot(
+                    interfaces
+                )
+
+            if not pivot:
+                aci_output_handler.print_interfaces_phy_vlan(
+                    interfaces
+                )
 
         if 'load' in view:
             aci_output_handler.print_interfaces_phy_load(

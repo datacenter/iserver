@@ -7,11 +7,11 @@
 
 Apic: apic11 (mode:online, cache:off)
 
-+--------------------+---------+--------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
-| Node Name          | Node ID | Pod ID | IP Address  | Admin State | Fabric State | Role  | Model         | Serial      | Version        |
-+--------------------+---------+--------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
-| pod-1/s101-eu-spdc | 101     | 1      | 10.3.192.65 | on          | active       | spine | N9K-C9316D-GX | FDO233806C2 | n9000-15.2(7g) | 
-+--------------------+---------+--------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
++--------------------+---------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
+| Node Name          | Node ID | VTEP IP     | Admin State | Fabric State | Role  | Model         | Serial      | Version        |
++--------------------+---------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
+| pod-1/s101-eu-spdc | 101     | 10.3.192.65 | on          | active       | spine | N9K-C9316D-GX | FDO233806C2 | n9000-15.2(7g) | 
++--------------------+---------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
 ```
 
 Developer
@@ -20,7 +20,7 @@ Developer
 # iserver get aci node --apic apic11 --id 101
 
 {
-    "duration": 897,
+    "duration": 965,
     "apic": {
         "read": true,
         "success": 2,
@@ -28,10 +28,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 427,
+        "connect_time": 399,
         "disconnect_time": 0,
-        "mo_time": 339,
-        "total_time": 766
+        "mo_time": 344,
+        "total_time": 743
     },
     "error": {
         "read": false,
@@ -51,8 +51,8 @@ Developer
 Log: apic
 ----------
 
-True	427	-	connect apic11o.emea-sp.cisco.com
-True	339	13	apic11o.emea-sp.cisco.com class fabricNode
+True	399	-	connect apic11o.emea-sp.cisco.com:443
+True	344	13	apic11o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./Node.md)

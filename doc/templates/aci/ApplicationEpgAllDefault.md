@@ -9,13 +9,13 @@ Get all epgs from selected APIC. Default view shows main properties of epgs as w
 - contract
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_default:iserver.output.default
+DOC_TEMPLATE:get_aci_epg.view_default:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_epg.all_default:devel.debug
+DOC_TEMPLATE:get_aci_epg.view_default:devel.debug
 ```
 
 [[Back]](./ApplicationEpg.md)

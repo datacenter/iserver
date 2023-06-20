@@ -233,19 +233,15 @@ class ContractInfo():
         for contract_rule in contract_filter:
             (key, value) = contract_rule.split(':')
             if key == 'name':
-                if not filter_helper.match_string(value, contract_info['name']):
+                if not filter_helper.match_tenant_name(value, contract_info['nameTenant']):
                     return False
 
             if key == 'names':
                 found = False
                 for name in value.split(','):
-                    if '/' in name:
-                        if filter_helper.match_string(name, contract_info['nameTenant']):
-                            found = True
-                            break
-                    else:
-                        if not filter_helper.match_string(name, contract_info['name']):
-                            return False
+                    if filter_helper.match_tenant_name(name, contract_info['nameTenant']):
+                        found = True
+                        break
 
                 if not found:
                     return False
@@ -257,7 +253,7 @@ class ContractInfo():
             if key == 'filter':
                 found = False
                 for filter_info in contract_info['vzFilter']:
-                    if filter_helper.match_string(value, filter_info['nameTenant']):
+                    if filter_helper.match_tenant_name(value, filter_info['nameTenant']):
                         found = True
                         break
 

@@ -35,7 +35,7 @@ class PoolVlanInfo():
 
         return info
 
-    def get_pool_vlan_block_info(self, managed_object):
+    def get_pool_vlan_block_info(self, managed_object, parent_alloc_mode):
         keys = [
             'allocMode',
             'descr',
@@ -54,6 +54,9 @@ class PoolVlanInfo():
             info[key] = None
             if key in managed_object:
                 info[key] = managed_object[key]
+
+        if info['allocMode'] == 'inherit':
+            info['allocMode'] = parent_alloc_mode
 
         info['fromVlan'] = info['from'][5:]
         info['toVlan'] = info['to'][5:]
@@ -83,15 +86,12 @@ class PoolVlanInfo():
 
         info['fvnsEncapBlk'] = []
         info['vlanCount'] = 0
-        domain_vmm_epg_filter = []
-        domain_vmm_epg_filter.append(
-            'pool:%s' % (
-                info['name']
-            )
-        )
+
+        domain_vmm_epg_filter = ['pool:%s' % (info['name'])]
         for block_managed_object in managed_object['fvnsEncapBlk']:
             block_info = self.get_pool_vlan_block_info(
-                block_managed_object
+                block_managed_object,
+                info['allocMode']
             )
 
             domain_vmm_epg_filter.append(
@@ -106,19 +106,6 @@ class PoolVlanInfo():
             info['fvnsEncapBlk'].append(
                 block_info
             )
-
-        info['epg'] = self.get_domain_vmm_epgs(
-            domain_vmm_epg_filter=domain_vmm_epg_filter
-        )
-
-        info['epgCount'] = len(
-            info['epg']
-        )
-
-        info['epgUsage'] = '%s/%s' % (
-            info['epgCount'],
-            info['vlanCount']
-        )
 
         info['fvnsEncapBlk'] = sorted(
             info['fvnsEncapBlk'],
@@ -178,7 +165,7 @@ class PoolVlanInfo():
 
         return True
 
-    def get_pool_vlans(self, pool_vlan_filter=None):
+    def get_pool_vlans(self, pool_vlan_filter=None, vlan_usage_info=False):
         all_pools = self.get_pool_vlan_mo()
         if all_pools is None:
             return None
@@ -192,6 +179,21 @@ class PoolVlanInfo():
 
             if not self.match_pool_vlan(pool_vlan_info, pool_vlan_filter):
                 continue
+
+            if vlan_usage_info:
+                domain_vmm_epg_filter = ['pool:%s' % (pool_vlan_info['name'])]
+                pool_vlan_info['epg'] = self.get_domain_vmm_epgs(
+                    domain_vmm_epg_filter=domain_vmm_epg_filter
+                )
+
+                pool_vlan_info['epgCount'] = len(
+                    pool_vlan_info['epg']
+                )
+
+                pool_vlan_info['epgUsage'] = '%s/%s' % (
+                    pool_vlan_info['epgCount'],
+                    pool_vlan_info['vlanCount']
+                )
 
             pool_vlans.append(pool_vlan_info)
 
@@ -207,9 +209,10 @@ class PoolVlanInfo():
 
         return pool_vlans
 
-    def get_pool_vlan(self, name):
+    def get_pool_vlan(self, name, vlan_usage_info=False):
         vlans = self.get_pool_vlans(
-            pool_vlan_filter=['name:%s' % (name)]
+            pool_vlan_filter=['name:%s' % (name)],
+            vlan_usage_info=vlan_usage_info
         )
 
         if vlans is None or len(vlans) == 0:

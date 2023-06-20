@@ -13,6 +13,9 @@ Supported pcTag filtering options by example:
 
 Apic: apic11 (mode:online, cache:off)
 
+EPG Policy Properties
+---------------------
+
 +----+---------------------------------+------------------+----------+----------------+-------------+------------+-------------+
 | Up | EPG                             | Preferred Member | Flood    | Class ID       | QoS Class   | Isolation  | Label Match |
 +----+---------------------------------+------------------+----------+----------------+-------------+------------+-------------+
@@ -32,18 +35,18 @@ Developer
 # iserver get aci epg --apic apic11 --pctag global --view prop
 
 {
-    "duration": 3837,
+    "duration": 2059,
     "apic": {
         "read": true,
-        "success": 6,
+        "success": 3,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 5,
-        "connect_time": 407,
+        "mo": 2,
+        "connect_time": 435,
         "disconnect_time": 0,
-        "mo_time": 2903,
-        "total_time": 3310
+        "mo_time": 1258,
+        "total_time": 1693
     },
     "error": {
         "read": false,
@@ -63,12 +66,9 @@ Developer
 Log: apic
 ----------
 
-True	407	-	connect apic11o.emea-sp.cisco.com:443
-True	616	245	apic11o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	596	314	apic11o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	321	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	817	264	apic11o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	553	193	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	435	-	connect apic11o.emea-sp.cisco.com:443
+True	948	245	apic11o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	310	13	apic11o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./ApplicationEpg.md)

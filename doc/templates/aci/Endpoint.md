@@ -9,6 +9,7 @@ Filter options:
   - [tenant](./EndpointTenant.md)
   - [bridge domain](./EndpointBd.md)
   - [epg](./EndpointEpg.md)
+  - [vlan](./EndpointVlan.md)
   - [application profile](./EndpointAp.md)
   - [vrf](./EndpointVrf.md)
   - [node](./EndpointNode.md)

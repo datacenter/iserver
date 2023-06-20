@@ -9,6 +9,7 @@ Filter options:
   - [tenant](./EndpointTenant.md)
   - [bridge domain](./EndpointBd.md)
   - [epg](./EndpointEpg.md)
+  - [vlan](./EndpointVlan.md)
   - [application profile](./EndpointAp.md)
   - [vrf](./EndpointVrf.md)
   - [node](./EndpointNode.md)
@@ -39,6 +40,7 @@ Usage: iserver.py get aci ep [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --mac TEXT                      MAC filter
@@ -47,6 +49,7 @@ Options:
   --tenant TEXT                   Tenant filter
   --bd TEXT                       Bridge Domain filter
   --epg TEXT                      EPG filter
+  --vlan TEXT                     VLAN filter
   --ap TEXT                       App filter
   --vrf TEXT                      VRF filter
   --node TEXT                     Node filter
@@ -60,7 +63,7 @@ Options:
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 78 ms and logs saved in /tmp/iserver\cbafd89204b9
+Info: finished in 48 ms and logs saved in /tmp/iserver\889c7878b94e
 ```
 
 [[Back]](./README.md)

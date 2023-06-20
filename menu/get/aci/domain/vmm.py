@@ -82,7 +82,8 @@ def get_aci_domain_vmm_command(
 
         domains = apic_handler.get_domains_vmm(
             domain_filter=domain_filter,
-            vlan_info=True
+            vlan_info=True,
+            vlan_usage_info=True
         )
 
         ctx.busy = False

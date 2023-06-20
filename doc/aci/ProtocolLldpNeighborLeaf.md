@@ -5,7 +5,7 @@
 ```
 # iserver get aci proto lldp --apic apic11 --role leaf --view nei
 
-Apic: apic11 (mode:online, cache:on)
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
@@ -61,6 +61,8 @@ Pod: 1
 | pod-1/cl201-eu-spdc | eth1/14      | 121       |                                 | 3c:fd:fe:cb:ed:71 |                 |      |                                               |               | 
 | pod-1/cl201-eu-spdc | eth1/15      | 121       |                                 | 3c:fd:fe:cb:ed:72 |                 |      |                                               |               | 
 | pod-1/cl201-eu-spdc | eth1/23      | 121       |                                 | 3c:fd:fe:ce:0e:40 |                 |      |                                               |               | 
+| pod-1/cl201-eu-spdc | eth1/31      | 121       |                                 | 3c:fd:fe:ee:2d:40 |                 |      |                                               |               | 
+| pod-1/cl201-eu-spdc | eth1/32      | 121       |                                 | 3c:fd:fe:e0:ba:50 |                 |      |                                               |               | 
 | pod-1/cl201-eu-spdc | eth1/49      | 121       |                                 | 3c:fd:fe:f0:15:10 |                 |      |                                               |               | 
 | pod-1/cl201-eu-spdc | eth1/50      | 121       |                                 | 3c:fd:fe:f0:15:11 |                 |      |                                               |               | 
 | pod-1/cl201-eu-spdc | eth1/51      | 121       |                                 | 3c:fd:fe:f0:15:12 |                 |      |                                               |               | 
@@ -104,6 +106,8 @@ Pod: 1
 | pod-1/cl202-eu-spdc | eth1/14      | 121       |                                 | 3c:fd:fe:ce:0e:69 |                 |      |                                               |               | 
 | pod-1/cl202-eu-spdc | eth1/15      | 121       |                                 | 3c:fd:fe:ce:0e:6a |                 |      |                                               |               | 
 | pod-1/cl202-eu-spdc | eth1/23      | 121       |                                 | 3c:fd:fe:ce:11:b8 |                 |      |                                               |               | 
+| pod-1/cl202-eu-spdc | eth1/31      | 121       |                                 | 3c:fd:fe:ee:2d:41 |                 |      |                                               |               | 
+| pod-1/cl202-eu-spdc | eth1/32      | 121       |                                 | 3c:fd:fe:e0:ba:51 |                 |      |                                               |               | 
 | pod-1/cl202-eu-spdc | eth1/48      | 120       | rl401-eu-spdc                   | 34:73:2d:ea:4a:4a | Ethernet1/47    | 1    | Ethernet1/47                                  | bridge,router | 
 | pod-1/cl202-eu-spdc | eth1/49      | 121       |                                 | 40:a6:b7:08:fc:48 |                 |      |                                               |               | 
 | pod-1/cl202-eu-spdc | eth1/50      | 121       |                                 | 40:a6:b7:08:fc:49 |                 |      |                                               |               | 
@@ -182,7 +186,19 @@ Developer
 # iserver get aci proto lldp --apic apic11 --role leaf --view nei
 
 {
-    "duration": 613,
+    "duration": 4973,
+    "apic": {
+        "read": true,
+        "success": 10,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 9,
+        "connect_time": 773,
+        "disconnect_time": 0,
+        "mo_time": 3598,
+        "total_time": 4371
+    },
     "error": {
         "read": false,
         "lines": 0
@@ -195,8 +211,22 @@ Developer
         "read": false,
         "lines": 0
     },
-    "cache_hits": 10
+    "cache_hits": 0
 }
+
+Log: apic
+----------
+
+True	773	-	connect apic11o.emea-sp.cisco.com:443
+True	295	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	497	13	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	663	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	489	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	285	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	273	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	292	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	287	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	517	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

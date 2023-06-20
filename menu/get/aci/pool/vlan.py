@@ -93,7 +93,8 @@ def get_aci_pool_vlan_command(
             )
 
         vlans = apic_handler.get_pool_vlans(
-            pool_vlan_filter=pool_vlan_filter
+            pool_vlan_filter=pool_vlan_filter,
+            vlan_usage_info=True
         )
 
         ctx.busy = False

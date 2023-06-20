@@ -432,12 +432,13 @@ class OutputHelper():
                     if key not in value or value[key] is None or len(value[key]) == 0:
                         value[key] = ''
                     else:
-                        if '__Output' in value[key][0]:
-                            if '__Output' not in value:
-                                value['__Output'] = {}
+                        if isinstance(value[key][0], dict):
+                            if '__Output' in value[key][0]:
+                                if '__Output' not in value:
+                                    value['__Output'] = {}
 
-                            for output_key in value[key][0]['__Output']:
-                                value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
+                                for output_key in value[key][0]['__Output']:
+                                    value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
 
                         value[key] = value[key][0]
 
@@ -461,9 +462,10 @@ class OutputHelper():
                                 new_value[key] = ''
                             else:
                                 new_value[key] = copy.deepcopy(value[key][0])
-                                if '__Output' in value[key][0]:
-                                    for output_key in value[key][0]['__Output']:
-                                        new_value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
+                                if isinstance(value[key][0], dict):
+                                    if '__Output' in value[key][0]:
+                                        for output_key in value[key][0]['__Output']:
+                                            new_value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
 
                         new_values.append(new_value)
 
@@ -497,9 +499,10 @@ class OutputHelper():
                             if value[key] is not None:
                                 if len(value[key]) > index:
                                     new_value[key] = copy.deepcopy(value[key][index])
-                                    if '__Output' in value[key][index]:
-                                        for output_key in value[key][index]['__Output']:
-                                            new_value['__Output']['%s.%s' % (key, output_key)] = value[key][index]['__Output'][output_key]
+                                    if isinstance(value[key][index], dict):
+                                        if '__Output' in value[key][index]:
+                                            for output_key in value[key][index]['__Output']:
+                                                new_value['__Output']['%s.%s' % (key, output_key)] = value[key][index]['__Output'][output_key]
 
                         if index == max_key_length - 1:
                             new_value['__Last'] = True
@@ -554,7 +557,11 @@ class OutputHelper():
             new_values.append(value)
         return new_values
 
-    def my_table(self, values, spacing=3, underline=False, order=None, filtering_rules=None, allow_order_subkeys=False, headers=None, headers_upper=False, table=False, row_separator=False, remove_empty_columns=False, cast_none=False, stream='default', merge=False):
+    def my_table(self, values_ref, spacing=3, underline=False, order=None, filtering_rules=None, allow_order_subkeys=False, headers=None, headers_upper=False, table=False, row_separator=False, remove_empty_columns=False, cast_none=False, stream='default', merge=False):
+        values = copy.deepcopy(
+            values_ref
+        )
+
         if merge:
             values = self.merge_output(
                 values

@@ -71,7 +71,8 @@ class EpgOutput():
         if len(info['contractProvided']) > 0:
             self.my_output.default(
                 'Contract Provided',
-                underline=True
+                underline=True,
+                before_newline=True
             )
             for contract in info['contractProvided']:
                 self.my_output.default(
@@ -82,6 +83,23 @@ class EpgOutput():
             self.print_contracts(
                 info['contractProvidedInfo'],
                 show_contract_filters=True
+            )
+
+        if len(info['contractTaboo']) > 0:
+            self.my_output.default(
+                'Contract Taboo',
+                underline=True,
+                before_newline=True
+            )
+            for contract in info['contractTaboo']:
+                self.my_output.default(
+                    '- %s' % (contract['nameTenant'])
+                )
+
+        if len(info['contractTabooInfo']) > 0:
+            self.print_taboos(
+                info['contractTabooInfo'],
+                show_taboo_filters=True
             )
 
     def print_epg_bridge_domain(self, info):
@@ -122,7 +140,7 @@ class EpgOutput():
             )
 
     def print_epg_endpoints(self, info):
-        if info['endpointsCount'] > 0:
+        if info['endpointCount'] > 0:
             self.my_output.default(
                 'EPG Endpoints',
                 underline=True,
@@ -162,10 +180,13 @@ class EpgOutput():
             info
         )
 
-    def print_epgs_properties(self, info):
-        if len(info) == 0:
-            self.my_output.default('No application epg found')
-            return
+    def print_epgs_properties(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'EPG Policy Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'adminUpTick',
@@ -200,10 +221,13 @@ class EpgOutput():
             table=True
         )
 
-    def print_epgs_bridge_domain(self, info):
-        if len(info) == 0:
-            self.my_output.default('No application epg found')
-            return
+    def print_epgs_bridge_domain(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'EPG BD Properties',
+                underline=True,
+                before_newline=True
+            )
 
         for item in info:
             item['fvSubnet'] = None
@@ -218,6 +242,7 @@ class EpgOutput():
             'fvBD.nameTenant',
             'fvSubnet.ip',
             'fvSubnet.usage',
+            'fvBD.fvRsCtx.nameTenant',
             'fvRsBDToOut.nameTenant'
         ]
 
@@ -227,6 +252,7 @@ class EpgOutput():
             'Bridge Domain',
             'BD Subnets',
             'Usage',
+            'VRF',
             'L3Out'
         ]
 
@@ -244,30 +270,40 @@ class EpgOutput():
             table=True
         )
 
-    def print_epgs_contract(self, info):
+    def print_epgs_contract(self, info, title=False):
         if len(info) == 0:
-            self.my_output.default('No application epg found')
             return
+
+        if title:
+            self.my_output.default(
+                'EPG Contracts',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'adminUpTick',
             'nameApTenant',
+            'pcTagT',
             'contractConsumed.nameTenant',
-            'contractProvided.nameTenant'
+            'contractProvided.nameTenant',
+            'contractTaboo.nameTenant'
         ]
 
         headers = [
             'Up',
             'EPG',
+            'Class ID',
             'Contract Consumed',
-            'Contract Provided'
+            'Contract Provided',
+            'Contract Taboo'
         ]
 
         self.my_output.my_table(
             self.my_output.expand_lists(
                 info,
                 order,
-                ['contractConsumed', 'contractProvided']
+                ['contractConsumed', 'contractProvided', 'contractTaboo']
             ),
             order=order,
             headers=headers,
@@ -277,13 +313,121 @@ class EpgOutput():
             table=True
         )
 
-    def print_epgs_node(self, info):
+    def print_epgs_contract_pivot(self, info, title=False):
         if len(info) == 0:
-            self.my_output.default('No application epg found')
             return
 
+        if title:
+            self.my_output.default(
+                'EPG Contracts (pivot view)',
+                underline=True,
+                before_newline=True
+            )
+
+        contract_names = []
+        contracts = []
+        taboo_names = []
+        taboos = []
+        for epg_info in info:
+            for contract_info in epg_info['contractConsumed']:
+                if contract_info['nameTenant'] not in contract_names:
+                    contract_names.append(
+                        contract_info['nameTenant']
+                    )
+                    contract_info['type'] = 'Contract'
+                    contract_info['epg'] = []
+                    contracts.append(
+                        contract_info
+                    )
+
+            for contract_info in epg_info['contractProvided']:
+                if contract_info['nameTenant'] not in contract_names:
+                    contract_names.append(
+                        contract_info['nameTenant']
+                    )
+                    contract_info['type'] = 'Contract'
+                    contract_info['epg'] = []
+                    contracts.append(
+                        contract_info
+                    )
+
+            for contract_info in epg_info['contractTaboo']:
+                if contract_info['nameTenant'] not in taboo_names:
+                    taboo_names.append(
+                        contract_info['nameTenant']
+                    )
+                    contract_info['type'] = 'Taboo'
+                    contract_info['epg'] = []
+                    taboos.append(
+                        contract_info
+                    )
+
+        for contract_info in contracts:
+            for epg_info in info:
+                for epg_contract_info in epg_info['contractConsumed']:
+                    if epg_contract_info['nameTenant'] == contract_info['nameTenant']:
+                        contract_info['epg'].append(
+                            '%s (Consumed)' % (epg_info['nameApTenant'])
+                        )
+
+                for epg_contract_info in epg_info['contractProvided']:
+                    if epg_contract_info['nameTenant'] == contract_info['nameTenant']:
+                        contract_info['epg'].append(
+                            '%s (Provided)' % (epg_info['nameApTenant'])
+                        )
+
+        for taboo_info in taboos:
+            for epg_info in info:
+                for epg_contract_info in epg_info['contractTaboo']:
+                    if epg_contract_info['nameTenant'] == taboo_info['nameTenant']:
+                        taboo_info['epg'].append(
+                            epg_info['nameApTenant']
+                        )
+
+        all_contracts = contracts + taboos
+        all_contracts = sorted(
+            all_contracts,
+            key=lambda i: i['nameTenant']
+        )
+
         order = [
-            'adminUpTick',
+            'nameTenant',
+            'type',
+            'epg'
+        ]
+
+        headers = [
+            'Contract',
+            'Type',
+            'EPG'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                all_contracts,
+                order,
+                ['epg']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_node(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Deployed Nodes',
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
             'nameApTenant',
             'fabricNode.name',
             'fabricNode.address',
@@ -296,7 +440,6 @@ class EpgOutput():
         ]
 
         headers = [
-            'Up',
             'EPG',
             'Node Name',
             'IP Address',
@@ -321,10 +464,337 @@ class EpgOutput():
             table=True
         )
 
-    def print_epgs(self, epgs):
-        if len(epgs) == 0:
-            self.my_output.default('No application epg found')
+    def print_epgs_node_pivot(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'EPG Deployed Nodes (pivot view)',
+                underline=True,
+                before_newline=True
+            )
+
+        names = []
+        nodes = []
+        for epg_info in info:
+            for node_info in epg_info['fabricNode']:
+                if node_info['pod_node_name'] not in names:
+                    names.append(
+                        node_info['pod_node_name']
+                    )
+                    node_info['epg'] = []
+                    nodes.append(
+                        node_info
+                    )
+
+        for node_info in nodes:
+            for epg_info in info:
+                for epg_node_info in epg_info['fabricNode']:
+                    if epg_node_info['pod_node_name'] == node_info['pod_node_name']:
+                        node_info['epg'].append(
+                            epg_info['nameApTenant']
+                        )
+
+        order = [
+            'name',
+            'address',
+            'adSt',
+            'fabricSt',
+            'model',
+            'serial',
+            'version',
+            'epg',
+
+        ]
+
+        headers = [
+            'Node Name',
+            'IP Address',
+            'Admin',
+            'Fabric',
+            'Model',
+            'Serial',
+            'Version',
+            'EPG'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                nodes,
+                order,
+                ['epg']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_static_port(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Static Ports',
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'nameApTenant',
+            'staticPort.pathNodeT',
+            'staticPort.pathType',
+            'staticPort.pathEp',
+            'staticPort.encap',
+            'staticPort.modeT',
+            'staticPort.instrImedcy',
+            'staticPort.state'
+        ]
+
+        headers = [
+            'EPG',
+            'Path',
+            'Type',
+            'Ep',
+            'Encapsulation',
+            'Mode',
+            'Deployment Immediacy',
+            'State'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['staticPort']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_domain(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Domain',
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'nameApTenant',
+            'domain.name',
+            'domain.typeT',
+            'domain.instrImedcy',
+            'domain.resImedcy',
+            'domain.switchingMode',
+            'domain.encapMode',
+            'domain.epgCos'
+        ]
+
+        headers = [
+            'EPG',
+            'Domain Name',
+            'Domain Type',
+            'Deployment',
+            'Resolution',
+            'Switching Mode',
+            'Encap Mode',
+            'CoS'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['vlan', 'domain', 'domainVlanPool']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_domain_pivot(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Domain (pivot view)',
+                underline=True,
+                before_newline=True
+            )
+
+        names = []
+        domains = []
+        for epg_info in info:
+            for domain_info in epg_info['domain']:
+                if domain_info['name'] not in names:
+                    names.append(
+                        domain_info['name']
+                    )
+                    domain_info['epg'] = []
+                    domains.append(
+                        domain_info
+                    )
+
+        for domain_info in domains:
+            for epg_info in info:
+                for epg_domain_info in epg_info['domain']:
+                    if epg_domain_info['name'] == domain_info['name']:
+                        domain_info['epg'].append(
+                            epg_info['nameApTenant']
+                        )
+
+        order = [
+            'name',
+            'typeT',
+            'instrImedcy',
+            'resImedcy',
+            'switchingMode',
+            'encapMode',
+            'epgCos',
+            'epg',
+
+        ]
+
+        headers = [
+            'Domain Name',
+            'Domain Type',
+            'Deployment',
+            'Resolution',
+            'Switching Mode',
+            'Encap Mode',
+            'CoS',
+            'EPG'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                domains,
+                order,
+                ['epg']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_member(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Members',
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'nameApTenant',
+            'member.memberType',
+            'member.nodeName',
+            'member.pathType',
+            'member.pathName',
+            'member.encap'
+        ]
+
+        headers = [
+            'EPG',
+            'Member Type',
+            'Node',
+            'Type',
+            'ID',
+            'VLAN'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['member']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_epgs_endpoint(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Endpoints',
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'flags',
+            'mac',
+            'fvIp.addr',
+            'epgNameApTenant',
+            'encapT',
+            'bdNameTenant',
+            'vrfNameTenant'
+        ]
+
+        headers = [
+            'SF',
+            'MAC Address',
+            'IP Address',
+            'EPG',
+            'Encap',
+            'BD',
+            'VRF'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['fvIp']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            remove_empty_columns=True,
+            table=True
+        )
+
+    def print_epgs(self, epgs, title=False):
+        if len(epgs) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'EPG Summary',
+                underline=True,
+                before_newline=True
+            )
 
         for epg in epgs:
             epg['fvSubnet'] = epg['fvBD']['fvSubnet']
@@ -334,24 +804,34 @@ class EpgOutput():
             'nameApTenant',
             'fvBD.nameTenant',
             'fvSubnet.ip',
-            'endpointsCount',
-            'contractTick'
+            'endpointCount',
+            'fabricNode.pod_node_name',
+            'domain.name',
+            'contractCount',
+            'staticPortCount',
+            'ifconnSummary.fv.stpathatt',
+            'ifconnSummary.fv.dyatt'
         ]
 
         headers = [
             'Up',
             'EPG',
-            'Bridge Domain',
-            'BD Subnets',
-            'Endpoints',
-            'Contract'
+            'BD',
+            'BD Subnet',
+            'Endpoint',
+            'Node',
+            'Domain',
+            'Contract',
+            'StPort',
+            'StMember',
+            'DynMember'
         ]
 
         self.my_output.my_table(
             self.my_output.expand_lists(
                 epgs,
                 order,
-                ['fvSubnet']
+                ['fvSubnet', 'vlan', 'fabricNode', 'domain']
             ),
             order=order,
             headers=headers,

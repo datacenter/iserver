@@ -127,8 +127,19 @@ class TabooInfo():
 
         for taboo_rule in taboo_filter:
             (key, value) = taboo_rule.split(':')
+
             if key == 'name':
-                if not filter_helper.match_string(value, taboo_info['name']):
+                if not filter_helper.match_string(name, taboo_info['nameTenant']):
+                    return False
+
+            if key == 'names':
+                found = False
+                for name in value.split(','):
+                    if filter_helper.match_string(name, taboo_info['nameTenant']):
+                        found = True
+                        break
+
+                if not found:
                     return False
 
             if key == 'tenant':

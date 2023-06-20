@@ -5,7 +5,7 @@
 ```
 # iserver get aci proto lldp --apic apic11 --role leaf --device esx* --view nei
 
-Apic: apic11 (mode:online, cache:on)
+Apic: apic11 (mode:online, cache:off)
 Pod: 1
 - node: bl205-eu-spdc
 - node: bl206-eu-spdc
@@ -57,7 +57,19 @@ Developer
 # iserver get aci proto lldp --apic apic11 --role leaf --device esx* --view nei
 
 {
-    "duration": 253,
+    "duration": 3838,
+    "apic": {
+        "read": true,
+        "success": 10,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 9,
+        "connect_time": 379,
+        "disconnect_time": 0,
+        "mo_time": 3261,
+        "total_time": 3640
+    },
     "error": {
         "read": false,
         "lines": 0
@@ -70,8 +82,22 @@ Developer
         "read": false,
         "lines": 0
     },
-    "cache_hits": 10
+    "cache_hits": 0
 }
+
+Log: apic
+----------
+
+True	379	-	connect apic11o.emea-sp.cisco.com:443
+True	509	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	283	13	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	503	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	307	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	305	45	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	285	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	293	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	489	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
+True	287	21	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/lldp/inst query query-target=subtree&target-subtree-class=lldpAdjEp
 ```
 
 [[Back]](./ProtocolLldp.md)

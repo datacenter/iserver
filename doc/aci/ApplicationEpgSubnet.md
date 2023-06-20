@@ -9,84 +9,15 @@ EPGs associated with bridge domain with IP subnet that contains provided IP subn
 
 Apic: apic21 (mode:online, cache:off)
 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| Up | EPG                                | Bridge Domain             | BD Subnets         | Endpoints | Contract |
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | common/privIP_TEST/privIP_TEST     | common/Infra_privIP_BD    | 15.254.254.254/28  | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | common/Test_ANP/Test_EPG           | common/Test_BD            |                    | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | hefernan_ni-demo/APP/EPG1          | hefernan_ni-demo/BD1      | 169.254.100.1/24   | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | hefernan_ni-demo/APP/EPG2          | hefernan_ni-demo/BD2      | 169.254.101.1/24   | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | infra/access/default               | infra/default             | 10.5.0.30/27       | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | infra/ave-ctrl/ave-ctrl            | infra/ave-ctrl            |                    | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/backbone1              | k8s/VM2VM_BD              |                    | 2         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/bmk8s_1                | k8s/bmk8s_1_BD            | 10.58.24.78/28     | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/bmk8s_2                | k8s/bmk8s_2_BD            | 10.58.24.94/28     | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/bmk8s_prov             | k8s/bmk8s_prov_BD         | 10.58.29.94/28     | 4         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/csr1_lan               | k8s/VM2VM_BD              |                    | 1         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/csr2_lan               | k8s/VM2VM_BD              |                    | 1         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/csr_b2b                | k8s/VM2VM_BD              |                    | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/MGMT                   | k8s/MGMT_BD               | 10.58.25.174/28    | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/site1_lan              | k8s/VM2VM_BD              |                    | 1         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/site1_pe               | k8s/VM2VM_BD              |                    | 2         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/site2_lan              | k8s/VM2VM_BD              |                    | 1         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/site2_pe               | k8s/VM2VM_BD              |                    | 2         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/SRIoV_A                | k8s/SRIoV_A_BD            | 15.20.16.254/24    | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/SRIoV_B                | k8s/SRIoV_B_BD            | 15.20.17.254/24    | 1         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/Test                   | k8s/Test                  | 169.169.169.254/24 | 0         |          | 
-|    |                                    |                           | 169.169.170.254/24 |           |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/vk8s_1                 | k8s/vk8s_1_BD             | 10.58.24.174/28    | 8         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/vk8s_2                 | k8s/vk8s_2_BD             | 10.58.24.190/28    | 8         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/vk8s_3                 | k8s/vk8s_3_BD             | 10.58.24.206/28    | 8         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | k8s/k8s_ANP/vk8s_4                 | k8s/vk8s_4_BD             | 10.58.24.222/28    | 8         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN    | mgmt/EU-SPDC-ERSPAN_BD    | 99.100.100.254/24  | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | mgmt/EU-SPDC_ANP/EU-SPDC-MGMT      | mgmt/EU-SPDC-BD1          |                    | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | nidemo/streamz/appserver           | nidemo/appserver          | 10.0.2.1/24        | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | nidemo/streamz/database            | nidemo/database           | 10.0.3.1/24        | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | nidemo/streamz/frontend            | nidemo/frontend           | 10.0.1.1/24        | 4         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | nidemo/streamz/management          | nidemo/management         | 10.0.4.1/24        | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | SPN_IntraLab/SPN_Connect_ANP/TEST2 | SPN_IntraLab/SPN_BD1      | 192.168.1.254/24   | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | vEPC/vSFO_ANP/WWW                  | vEPC/vSFO_BD              | 15.16.132.254/24   | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_ACC        | vEPC_demo/ACC_BD          | 15.20.0.254/24     | 0         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_CTRL       | vEPC_demo/vEPC-CTRL-SX_BD |                    | 0         |          | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_INT        | vEPC_demo/INT_BD          | 15.20.3.254/24     | 1         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
-| V  | vEPC_demo/vEPG_ANP/vEPG_MGMT       | vEPC_demo/MGMT_BD         | 10.58.25.158/27    | 6         | V        | 
-+----+------------------------------------+---------------------------+--------------------+-----------+----------+
+EPG Summary
+-----------
+
++----+--------------------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
+| Up | EPG                | BD            | BD Subnet       | Endpoint | Node                 | Domain               | Contract | StPort | StMember | DynMember |
++----+--------------------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
+| V  | k8s/k8s_ANP/vk8s_3 | k8s/vk8s_3_BD | 10.58.24.206/28 | 8        | pod-1/cl2207-eu-spdc | VMware/EU-SPDC-POD2B | 1        | 0      | 0        | 4         | 
+|    |                    |               |                 |          | pod-1/cl2208-eu-spdc | k8s_esx_PhysDom      |          |        |          |           | 
++----+--------------------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
 ```
 
 Developer
@@ -95,18 +26,18 @@ Developer
 # iserver get aci epg --apic apic21 --subnet 10.58.24.206/28
 
 {
-    "duration": 2633,
+    "duration": 3812,
     "apic": {
         "read": true,
-        "success": 6,
+        "success": 10,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 5,
-        "connect_time": 422,
+        "mo": 9,
+        "connect_time": 383,
         "disconnect_time": 0,
-        "mo_time": 1893,
-        "total_time": 2315
+        "mo_time": 3003,
+        "total_time": 3386
     },
     "error": {
         "read": false,
@@ -126,12 +57,16 @@ Developer
 Log: apic
 ----------
 
-True	422	-	connect apic21o.emea-sp.cisco.com:443
-True	372	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	372	54	apic21o.emea-sp.cisco.com:443 class fvAREpP query rsp-subtree=children&rsp-subtree-class=fvLocale
-True	299	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	421	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	429	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	383	-	connect apic21o.emea-sp.cisco.com:443
+True	361	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	289	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	309	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
+True	314	152	apic21o.emea-sp.cisco.com:443 class fvLocale
+True	378	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	416	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	332	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	304	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	300	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./ApplicationEpg.md)

@@ -13,7 +13,6 @@ class NodeOutput():
         order = order + [
             'pod_node_name',
             'id',
-            'podId',
             'address',
             'adSt',
             'fabricSt',
@@ -30,8 +29,7 @@ class NodeOutput():
         headers = headers + [
             'Node Name',
             'Node ID',
-            'Pod ID',
-            'IP Address',
+            'VTEP IP',
             'Admin State',
             'Fabric State',
             'Role',
@@ -213,6 +211,8 @@ class NodeOutput():
             'system.inbMgmtGateway',
             'system.oobMgmtCidr',
             'system.oobMgmtGateway',
+            'system.controlPlaneMTU',
+            'system.tepPool'
         ]
 
         headers = []
@@ -221,11 +221,13 @@ class NodeOutput():
 
         headers = headers + [
             'Node Name',
-            'IP Address',
-            'Inband IP Address',
+            'VTEP IP',
+            'Inband IP',
             'Inband Gateway',
-            'Out of band IP Address',
-            'Out of band Gateway'
+            'OOB IP',
+            'OOB Gateway',
+            'MTU',
+            'TEP Pool'
         ]
 
         self.my_output.my_table(

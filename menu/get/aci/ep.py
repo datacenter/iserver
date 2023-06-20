@@ -36,6 +36,7 @@ class NoResultExit(Exception):
 @click.option("--tenant", "tenant_filter", default='', callback=validations.empty_string_to_none, help="Tenant filter")
 @click.option("--bd", "bd_filter", default='', callback=validations.empty_string_to_none, help="Bridge Domain filter")
 @click.option("--epg", "epg_filter", default='', callback=validations.empty_string_to_none, help="EPG filter")
+@click.option("--vlan", "vlan_filter", default='', callback=validations.empty_string_to_none, help="VLAN filter")
 @click.option("--ap", "ap_filter", default='', callback=validations.empty_string_to_none, help="App filter")
 @click.option("--vrf", "vrf_filter", default='', callback=validations.empty_string_to_none, help="VRF filter")
 @click.option("--node", "node_filter", multiple=True, help="Node filter")
@@ -60,6 +61,7 @@ def get_aci_ep_command(
         tenant_filter,
         bd_filter,
         epg_filter,
+        vlan_filter,
         ap_filter,
         vrf_filter,
         node_filter,
@@ -153,6 +155,11 @@ def get_aci_ep_command(
         if epg_filter is not None:
             endpoint_filter.append(
                 'epg:%s' % (epg_filter)
+            )
+
+        if vlan_filter is not None:
+            endpoint_filter.append(
+                'vlan:%s' % (vlan_filter)
             )
 
         if ap_filter is not None:

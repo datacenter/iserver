@@ -405,7 +405,7 @@ class Api():
         if bar_enabled:
             bar_handler.next()
 
-        self.get_epgs_deployed_leaves_mo()
+        self.get_epg_locale_mo()
         if bar_enabled:
             bar_handler.next()
 
