@@ -14,6 +14,9 @@ Use '--view vrf' to get configured VRF related properties of selected bridge dom
 
 Apic: apic21 (mode:online, cache:off)
 
+Bridge Domain VRF Properties
+----------------------------
+
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
 | Bridge Domain             | VRF                      | Learning | PCE Direction | PCE Preference | BD Enforcement |
 +---------------------------+--------------------------+----------+---------------+----------------+----------------+
@@ -97,18 +100,18 @@ Developer
 # iserver get aci bd --apic apic21 --view vrf
 
 {
-    "duration": 2823,
+    "duration": 3505,
     "apic": {
         "read": true,
-        "success": 5,
+        "success": 6,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 4,
-        "connect_time": 434,
+        "mo": 5,
+        "connect_time": 420,
         "disconnect_time": 0,
-        "mo_time": 1563,
-        "total_time": 1997
+        "mo_time": 1904,
+        "total_time": 2324
     },
     "error": {
         "read": false,
@@ -128,11 +131,12 @@ Developer
 Log: apic
 ----------
 
-True	434	-	connect apic21o.emea-sp.cisco.com
-True	409	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	337	23	apic21o.emea-sp.cisco.com class fvCtx
-True	382	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	435	93	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	420	-	connect apic21o.emea-sp.cisco.com:443
+True	405	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	340	23	apic21o.emea-sp.cisco.com:443 class fvCtx
+True	413	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	330	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	416	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./BridgeDomain.md)

@@ -217,7 +217,7 @@ class EpgOutput():
             allow_order_subkeys=True,
             underline=True,
             row_separator=True,
-            remove_empty_columns=True,
+            remove_empty_columns=False,
             table=True
         )
 
@@ -781,12 +781,12 @@ class EpgOutput():
             allow_order_subkeys=True,
             underline=True,
             row_separator=True,
-            remove_empty_columns=True,
+            remove_empty_columns=False,
             table=True
         )
 
-    def print_epgs(self, epgs, title=False):
-        if len(epgs) == 0:
+    def print_epgs(self, info, title=False):
+        if len(info) == 0:
             return
 
         if title:
@@ -796,12 +796,13 @@ class EpgOutput():
                 before_newline=True
             )
 
-        for epg in epgs:
+        for epg in info:
             epg['fvSubnet'] = epg['fvBD']['fvSubnet']
 
         order = [
             'adminUpTick',
             'nameApTenant',
+            'pcTag',
             'fvBD.nameTenant',
             'fvSubnet.ip',
             'endpointCount',
@@ -816,6 +817,7 @@ class EpgOutput():
         headers = [
             'Up',
             'EPG',
+            'Class ID',
             'BD',
             'BD Subnet',
             'Endpoint',
@@ -829,7 +831,7 @@ class EpgOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                epgs,
+                info,
                 order,
                 ['fvSubnet', 'vlan', 'fabricNode', 'domain']
             ),

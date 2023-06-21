@@ -154,78 +154,76 @@ class BridgeDomainOutput():
             order=order,
             headers=headers,
             allow_order_subkeys=True,
-            remove_empty_columns=True,
+            remove_empty_columns=False,
             underline=True,
             table=True
         )
 
     def print_bridge_domain_epgs(self, info):
-        if len(info['fvAEPg']) > 0:
+        self.my_output.default(
+            'Endpoint Groups',
+            underline=True,
+            before_newline=True
+        )
+
+        order = [
+            'adminUpTick',
+            'name',
+            'tenant',
+            'application_profile',
+            'endpointsCount',
+            'vzBrCP.tenant_name'
+        ]
+
+        headers = [
+            'Up',
+            'EPG Name',
+            'Tenant',
+            'App Profile',
+            'Endpoints',
+            'Contract'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info['fvAEPg'],
+                order,
+                ['vzBrCP']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_bridge_domain_endpoints(self, info):
+        self.my_output.default(
+            'Bridge Domain Endpoints',
+            underline=True
+        )
+
+        self.print_endpoints(
+            info['fvCEp']
+        )
+
+        vmm_endpoints = []
+        for endpoint_info in info['fvCEp']:
+            if 'fvRsToVm' in endpoint_info and endpoint_info['fvRsToVm'] is not None:
+                vmm_endpoints.append(
+                    endpoint_info
+                )
+
+        if len(vmm_endpoints) > 0:
             self.my_output.default(
-                'Endpoint Groups',
+                'Bridge Domain Endpoints with VMM information',
                 underline=True,
                 before_newline=True
             )
-
-            order = [
-                'adminUpTick',
-                'name',
-                'tenant',
-                'application_profile',
-                'endpointsCount',
-                'vzBrCP.tenant_name'
-            ]
-
-            headers = [
-                'Up',
-                'EPG Name',
-                'Tenant',
-                'App Profile',
-                'Endpoints',
-                'Contract'
-            ]
-
-            self.my_output.my_table(
-                self.my_output.expand_lists(
-                    info['fvAEPg'],
-                    order,
-                    ['vzBrCP']
-                ),
-                order=order,
-                headers=headers,
-                allow_order_subkeys=True,
-                underline=True,
-                row_separator=True,
-                table=True
+            self.print_endpoints_vmm(
+                vmm_endpoints
             )
-
-    def print_bridge_domain_endpoints(self, info):
-        if len(info['fvCEp']) > 0:
-            self.my_output.default(
-                'Bridge Domain Endpoints',
-                underline=True
-            )
-
-            self.print_endpoints(
-                info['fvCEp']
-            )
-
-            vmm_endpoints = []
-            for endpoint_info in info['fvCEp']:
-                if 'fvRsToVm' in endpoint_info and endpoint_info['fvRsToVm'] is not None:
-                    vmm_endpoints.append(
-                        endpoint_info
-                    )
-
-            if len(vmm_endpoints) > 0:
-                self.my_output.default(
-                    'Bridge Domain Endpoints with VMM information',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_endpoints_vmm(
-                    vmm_endpoints
-                )
 
     def print_bridge_domain(self, info):
         self.print_bridge_domain_properties(
@@ -252,26 +250,35 @@ class BridgeDomainOutput():
             info
         )
 
-        self.print_bridge_domain_subnets(
-            info['fvSubnet']
-        )
+        if len(info['fvSubnet']) > 0:
+            self.print_bridge_domain_subnets(
+                info['fvSubnet']
+            )
 
-        self.print_bridge_domain_epgs(
-            info
-        )
+        if len(info['fvAEPg']) > 0:
+            self.print_bridge_domain_epgs(
+                info
+            )
 
         self.print_vrf_properties(
             info['fvCtx']
         )
 
-        self.print_bridge_domain_endpoints(
-            info
-        )
+        if len(info['fvCEp']) > 0:
+            self.print_bridge_domain_endpoints(
+                info
+            )
 
-    def print_bridge_domains_l2(self, bridge_domains):
-        if len(bridge_domains) == 0:
-            self.my_output.default('No bridge domain found')
+    def print_bridge_domains_l2(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Bridge Domain L2 Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
@@ -292,7 +299,7 @@ class BridgeDomainOutput():
         ]
 
         self.my_output.my_table(
-            bridge_domains,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -301,10 +308,16 @@ class BridgeDomainOutput():
             table=True
         )
 
-    def print_bridge_domains_l3(self, bridge_domains):
-        if len(bridge_domains) == 0:
-            self.my_output.default('No bridge domain found')
+    def print_bridge_domains_l3(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Bridge Domain L3 Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
@@ -329,20 +342,26 @@ class BridgeDomainOutput():
         ]
 
         self.my_output.my_table(
-            bridge_domains,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
             row_separator=True,
-            remove_empty_columns=True,
+            remove_empty_columns=False,
             underline=True,
             table=True
         )
 
-    def print_bridge_domains_mcast(self, bridge_domains):
-        if len(bridge_domains) == 0:
-            self.my_output.default('No bridge domain found')
+    def print_bridge_domains_mcast(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Bridge Domain Multicast Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
@@ -365,7 +384,7 @@ class BridgeDomainOutput():
         ]
 
         self.my_output.my_table(
-            bridge_domains,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -374,10 +393,16 @@ class BridgeDomainOutput():
             table=True
         )
 
-    def print_bridge_domains_vrf(self, bridge_domains):
-        if len(bridge_domains) == 0:
-            self.my_output.default('No bridge domain found')
+    def print_bridge_domains_vrf(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Bridge Domain VRF Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
@@ -398,7 +423,7 @@ class BridgeDomainOutput():
         ]
 
         self.my_output.my_table(
-            bridge_domains,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -407,13 +432,21 @@ class BridgeDomainOutput():
             table=True
         )
 
-    def print_bridge_domains(self, bridge_domains):
-        if len(bridge_domains) == 0:
-            self.my_output.default('No bridge domain found')
+    def print_bridge_domains(self, info, title=False):
+        if len(info) == 0:
             return
+
+        if title:
+            self.my_output.default(
+                'Bridge Domain Summary',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
+            'pcTag',
+            'seg',
             'fvSubnet.ip',
             'fvSubnet.usage',
             'fvAEPg.nameTenant',
@@ -423,6 +456,8 @@ class BridgeDomainOutput():
 
         headers = [
             'Bridge Domain',
+            'Class ID',
+            'VNID',
             'Subnet',
             'Usage',
             'EPG',
@@ -432,7 +467,7 @@ class BridgeDomainOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                bridge_domains,
+                info,
                 order,
                 ['fvSubnet', 'fvRsBDToOut', 'fvAEPg']
             ),
@@ -440,7 +475,7 @@ class BridgeDomainOutput():
             headers=headers,
             allow_order_subkeys=True,
             row_separator=True,
-            remove_empty_columns=True,
+            remove_empty_columns=False,
             underline=True,
             table=True
         )

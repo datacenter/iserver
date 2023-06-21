@@ -542,7 +542,7 @@ class EpgInfo():
                     if epg_info['fvBD'] is None:
                         return False
 
-                    if not filter_helper.match_tenant_name(value, epg_info['nameTenant']):
+                    if not filter_helper.match_tenant_name(value, epg_info['fvBD']['nameTenant']):
                         return False
 
             if key == 'subnet':

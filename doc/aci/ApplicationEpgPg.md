@@ -3,29 +3,72 @@
 ## Filter by leaf policy group
 
 ```
-# iserver get aci epg --apic apic21 --contract k8s_esx71_PolGrp --view member
+# iserver get aci epg --apic apic21 --pg k8s_esx71_PolGrp --view member
 
 Apic: apic21 (mode:online, cache:off)
+
+EPG Members
+-----------
+
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| EPG                   | Member Type | Node           | Type         | ID               | VLAN      |
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/backbone1 | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1301 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1301 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/csr1_lan  | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1303 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1303 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/csr2_lan  | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1435 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1435 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/csr_b2b   | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1305 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1305 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/site1_lan | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1306 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1306 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/site1_pe  | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1304 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1304 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/site2_lan | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1437 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1437 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/site2_pe  | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1302 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1302 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/vk8s_1    | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1367 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1367 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/vk8s_2    | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1300 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1300 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/vk8s_3    | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1369 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1369 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
+| k8s/k8s_ANP/vk8s_4    | dynamic     | cl2207-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1368 | 
+|                       | dynamic     | cl2208-eu-spdc | Policy Group | k8s_esx71_PolGrp | vlan-1368 | 
++-----------------------+-------------+----------------+--------------+------------------+-----------+
 ```
 
 Developer
 
 ```
-# iserver get aci epg --apic apic21 --contract k8s_esx71_PolGrp --view member
+# iserver get aci epg --apic apic21 --pg k8s_esx71_PolGrp --view member
 
 {
-    "duration": 1372,
+    "duration": 2058,
     "apic": {
         "read": true,
-        "success": 3,
+        "success": 4,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 2,
-        "connect_time": 422,
+        "mo": 3,
+        "connect_time": 428,
         "disconnect_time": 0,
-        "mo_time": 708,
-        "total_time": 1130
+        "mo_time": 1044,
+        "total_time": 1472
     },
     "error": {
         "read": false,
@@ -45,9 +88,10 @@ Developer
 Log: apic
 ----------
 
-True	422	-	connect apic21o.emea-sp.cisco.com:443
-True	394	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	314	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	428	-	connect apic21o.emea-sp.cisco.com:443
+True	403	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	299	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	342	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
 ```
 
 [[Back]](./ApplicationEpg.md)

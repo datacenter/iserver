@@ -41,7 +41,17 @@ class VrfOutput():
             title_keys=headers
         )
 
-    def print_vrf_v4_route(self, info):
+    def print_vrf_v4_route(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'VRF IPv4 Routes',
+                underline=True,
+                before_newline=True
+            )
+
         order = [
             'pod',
             'node',
@@ -124,10 +134,16 @@ class VrfOutput():
                 info['v4route']
             )
 
-    def print_vrfs_properties(self, info):
+    def print_vrfs_properties(self, info, title=False):
         if len(info) == 0:
-            self.my_output.default('No vrf found')
             return
+
+        if title:
+            self.my_output.default(
+                'VRF Properties',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
@@ -161,52 +177,23 @@ class VrfOutput():
             table=True
         )
 
-    def print_vrfs_references(self, info):
+    def print_vrfs(self, info, title=False):
         if len(info) == 0:
-            self.my_output.default('No vrf found')
             return
+
+        if title:
+            self.my_output.default(
+                'VRF Summary',
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'nameTenant',
-            'fvAEPg.nameApTenant',
-            'fvBD.nameTenant',
-            'fvSubnet.ip',
-            'l3out.nameTenant'
-        ]
-
-        headers = [
-            'VRF',
-            'Associated EPG',
-            'Associated BD',
-            'BD Subnets',
-            'Associated L3Out'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['fvBD', 'fvSubnet', 'l3out', 'fvAEPg']
-            ),
-            order=order,
-            headers=headers,
-            underline=True,
-            allow_order_subkeys=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_vrfs(self, info):
-        if len(info) == 0:
-            self.my_output.default('No vrf found')
-            return
-
-        order = [
-            'nameTenant',
-            'pcEnfPref',
-            'pcEnfDir',
             'pcTag',
             'seg',
+            'pcEnfPref',
+            'pcEnfDir',
             'fvAEPg.nameApTenant',
             'fvBD.nameTenant',
             'fvSubnet.ip',
@@ -215,10 +202,10 @@ class VrfOutput():
 
         headers = [
             'VRF',
-            'PCE Preference',
-            'PCE Direction',
             'Class ID',
             'VNID',
+            'PCE Preference',
+            'PCE Direction',
             'Associated EPG',
             'Associated BD',
             'BD Subnets',

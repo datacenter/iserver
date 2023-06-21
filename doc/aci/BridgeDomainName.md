@@ -9,17 +9,20 @@ Example: domain name value
 
 Apic: apic21 (mode:online, cache:off)
 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| Bridge Domain | Subnet          | Usage | EPG        | VRF              | L3Out              |
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_1_BD | 10.58.24.174/28 | 1/14  | k8s/vk8s_1 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_2_BD | 10.58.24.190/28 | 1/14  | k8s/vk8s_2 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_3_BD | 10.58.24.206/28 | 1/14  | k8s/vk8s_3 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_4_BD | 10.58.24.222/28 | 1/14  | k8s/vk8s_4 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
+Bridge Domain Summary
+---------------------
+
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| Bridge Domain | Class ID | VNID     | Subnet          | Usage | EPG        | VRF              | L3Out              |
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_1_BD | 16399    | 15007706 | 10.58.24.174/28 | 2/14  | k8s/vk8s_1 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_2_BD | 32777    | 14745597 | 10.58.24.190/28 | 1/14  | k8s/vk8s_2 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_3_BD | 16400    | 15335346 | 10.58.24.206/28 | 2/14  | k8s/vk8s_3 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_4_BD | 32776    | 14843889 | 10.58.24.222/28 | 2/14  | k8s/vk8s_4 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
 ```
 
 Example: tenant and domain name value
@@ -29,17 +32,20 @@ Example: tenant and domain name value
 
 Apic: apic21 (mode:online, cache:off)
 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| Bridge Domain | Subnet          | Usage | EPG        | VRF              | L3Out              |
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_1_BD | 10.58.24.174/28 | 1/14  | k8s/vk8s_1 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_2_BD | 10.58.24.190/28 | 1/14  | k8s/vk8s_2 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_3_BD | 10.58.24.206/28 | 1/14  | k8s/vk8s_3 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
-| k8s/vk8s_4_BD | 10.58.24.222/28 | 1/14  | k8s/vk8s_4 | common/Infra_VRF | common/Infra_L3out | 
-+---------------+-----------------+-------+------------+------------------+--------------------+
+Bridge Domain Summary
+---------------------
+
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| Bridge Domain | Class ID | VNID     | Subnet          | Usage | EPG        | VRF              | L3Out              |
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_1_BD | 16399    | 15007706 | 10.58.24.174/28 | 2/14  | k8s/vk8s_1 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_2_BD | 32777    | 14745597 | 10.58.24.190/28 | 1/14  | k8s/vk8s_2 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_3_BD | 16400    | 15335346 | 10.58.24.206/28 | 2/14  | k8s/vk8s_3 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
+| k8s/vk8s_4_BD | 32776    | 14843889 | 10.58.24.222/28 | 2/14  | k8s/vk8s_4 | common/Infra_VRF | common/Infra_L3out | 
++---------------+----------+----------+-----------------+-------+------------+------------------+--------------------+
 ```
 
 Developer
@@ -48,18 +54,18 @@ Developer
 # iserver get aci bd --apic apic21 --name *vk8s*
 
 {
-    "duration": 2181,
+    "duration": 2776,
     "apic": {
         "read": true,
-        "success": 4,
+        "success": 5,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 3,
-        "connect_time": 428,
+        "mo": 4,
+        "connect_time": 426,
         "disconnect_time": 0,
-        "mo_time": 1182,
-        "total_time": 1610
+        "mo_time": 1561,
+        "total_time": 1987
     },
     "error": {
         "read": false,
@@ -79,10 +85,11 @@ Developer
 Log: apic
 ----------
 
-True	428	-	connect apic21o.emea-sp.cisco.com
-True	413	36	apic21o.emea-sp.cisco.com class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	351	37	apic21o.emea-sp.cisco.com class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRtMatchEPg
-True	418	93	apic21o.emea-sp.cisco.com class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	426	-	connect apic21o.emea-sp.cisco.com:443
+True	410	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	418	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	319	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	414	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
 ```
 
 [[Back]](./BridgeDomain.md)

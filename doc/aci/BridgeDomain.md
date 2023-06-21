@@ -35,6 +35,7 @@ Usage: iserver.py get aci bd [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --name TEXT                     Filter by bridge domain name
@@ -44,13 +45,14 @@ Options:
   --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -v, --view [default|l2|l3|mcast|vrf|verbose]
+  -v, --view [summary|l2|l3|mcast|vrf|all|verbose]
+                                  [default: summary]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 59 ms and logs saved in /tmp/iserver\f59e0b23507d
+Info: finished in 68 ms and logs saved in /tmp/iserver\e2831418739b
 ```
 
 [[Back]](./README.md)

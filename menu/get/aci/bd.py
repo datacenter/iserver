@@ -36,7 +36,7 @@ class NoResultExit(Exception):
 @click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
 @click.option("--l3out", "l3out_name", default='', callback=validations.empty_string_to_none, help="Filter by l3out name")
-@click.option("--view", "-v", type=click.Choice(['default', 'l2', 'l3', 'mcast', 'vrf', 'verbose'], case_sensitive=False), multiple=True)
+@click.option("--view", "-v", type=click.Choice(['summary', 'l2', 'l3', 'mcast', 'vrf', 'all', 'verbose'], case_sensitive=False), default='summary', show_default=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json', ], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -65,8 +65,6 @@ def get_aci_bd_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -136,38 +134,31 @@ def get_aci_bd_command(
                 'l3out:%s' % (l3out_name)
             )
 
-        if 'vrf' in view:
-            bridge_domains = apic_handler.get_bridge_domains(
-                bridge_domain_filter=bridge_domain_filter,
-                endpoint_info=True,
-                endpoint_vm_info=False,
-                endpoint_fabric_info=False,
-                snoop_info=False,
-                vrf_info=True,
-                epg_info=True
-            )
+        endpoint_info = True
+        endpoint_vm_info = False
+        endpoint_fabric_info = False
+        snoop_info = False
+        vrf_info = False
+        epg_info = True
 
-        if 'verbose' in view:
-            bridge_domains = apic_handler.get_bridge_domains(
-                bridge_domain_filter=bridge_domain_filter,
-                endpoint_info=True,
-                endpoint_vm_info=True,
-                endpoint_fabric_info=True,
-                snoop_info=True,
-                vrf_info=True,
-                epg_info=True
-            )
+        if view in ['vrf', 'all', 'verbose']:
+            vrf_info = True
+            epg_info = True
 
-        if 'vrf' not in view and 'verbose' not in view:
-            bridge_domains = apic_handler.get_bridge_domains(
-                bridge_domain_filter=bridge_domain_filter,
-                endpoint_info=True,
-                endpoint_vm_info=False,
-                endpoint_fabric_info=False,
-                snoop_info=False,
-                vrf_info=False,
-                epg_info=True
-            )
+        if view == 'verbose':
+            endpoint_vm_info = True
+            endpoint_fabric_info = True
+            snoop_info = True
+
+        bridge_domains = apic_handler.get_bridge_domains(
+            bridge_domain_filter=bridge_domain_filter,
+            endpoint_info=endpoint_info,
+            endpoint_vm_info=endpoint_vm_info,
+            endpoint_fabric_info=endpoint_fabric_info,
+            snoop_info=snoop_info,
+            vrf_info=vrf_info,
+            epg_info=epg_info
+        )
 
         ctx.busy = False
 
@@ -186,37 +177,42 @@ def get_aci_bd_command(
 
         ctx.my_output.json_output(bridge_domains)
 
-        if 'default' in view:
+        if view in ['summary', 'all']:
             aci_output_handler.print_bridge_domains(
-                bridge_domains
+                bridge_domains,
+                title=True
             )
 
-        if 'verbose' in view:
+        if view in ['l2', 'all']:
+            aci_output_handler.print_bridge_domains_l2(
+                bridge_domains,
+                title=True
+            )
+
+        if view in ['l3', 'all']:
+            aci_output_handler.print_bridge_domains_l3(
+                bridge_domains,
+                title=True
+            )
+
+        if view in ['mcast', 'all']:
+            aci_output_handler.print_bridge_domains_mcast(
+                bridge_domains,
+                title=True
+            )
+
+        if view in ['vrf', 'all']:
+            aci_output_handler.print_bridge_domains_vrf(
+                bridge_domains,
+                title=True
+            )
+
+        if view == 'verbose':
             aci_output_handler.print_bridge_domains(
                 bridge_domains
             )
             for bridge_domain in bridge_domains:
                 aci_output_handler.print_bridge_domain(bridge_domain)
-
-        if 'vrf' in view:
-            aci_output_handler.print_bridge_domains_vrf(
-                bridge_domains
-            )
-
-        if 'l2' in view:
-            aci_output_handler.print_bridge_domains_l2(
-                bridge_domains
-            )
-
-        if 'l3' in view:
-            aci_output_handler.print_bridge_domains_l3(
-                bridge_domains
-            )
-
-        if 'mcast' in view:
-            aci_output_handler.print_bridge_domains_mcast(
-                bridge_domains
-            )
 
     except NoResultExit:
         ctx.busy = False

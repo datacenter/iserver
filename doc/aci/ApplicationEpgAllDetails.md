@@ -10,15 +10,15 @@ Apic: apic21 (mode:online, cache:off)
 EPG Summary
 -----------
 
-+----+---------------------+----------------+-----------------+----------+------+------------------+----------+--------+----------+-----------+
-| Up | EPG                 | BD             | BD Subnet       | Endpoint | Node | Domain           | Contract | StPort | StMember | DynMember |
-+----+---------------------+----------------+-----------------+----------+------+------------------+----------+--------+----------+-----------+
-| V  | k8s/k8s_ANP/SRIoV_A | k8s/SRIoV_A_BD | 15.20.16.254/24 | 1        |      | k8s_esx_PhysDom  | 3        | 14     | 0        | 0         | 
-|    |                     |                |                 |          |      | k8s_phys_PhysDom |          |        |          |           | 
-+----+---------------------+----------------+-----------------+----------+------+------------------+----------+--------+----------+-----------+
-| V  | k8s/k8s_ANP/SRIoV_B | k8s/SRIoV_B_BD | 15.20.17.254/24 | 1        |      | k8s_esx_PhysDom  | 0        | 14     | 0        | 0         | 
-|    |                     |                |                 |          |      | k8s_phys_PhysDom |          |        |          |           | 
-+----+---------------------+----------------+-----------------+----------+------+------------------+----------+--------+----------+-----------+
++----+---------------------+----------+----------------+-----------------+----------+----------------------+------------------+----------+--------+----------+-----------+
+| Up | EPG                 | Class ID | BD             | BD Subnet       | Endpoint | Node                 | Domain           | Contract | StPort | StMember | DynMember |
++----+---------------------+----------+----------------+-----------------+----------+----------------------+------------------+----------+--------+----------+-----------+
+| V  | k8s/k8s_ANP/SRIoV_A | 32772    | k8s/SRIoV_A_BD | 15.20.16.254/24 | 1        | pod-1/cl2208-eu-spdc | k8s_esx_PhysDom  | 3        | 14     | 14       | 0         | 
+|    |                     |          |                |                 |          | pod-1/cl2207-eu-spdc | k8s_phys_PhysDom |          |        |          |           | 
++----+---------------------+----------+----------------+-----------------+----------+----------------------+------------------+----------+--------+----------+-----------+
+| V  | k8s/k8s_ANP/SRIoV_B | 32771    | k8s/SRIoV_B_BD | 15.20.17.254/24 | 2        | pod-1/cl2208-eu-spdc | k8s_esx_PhysDom  | 0        | 14     | 14       | 0         | 
+|    |                     |          |                |                 |          | pod-1/cl2207-eu-spdc | k8s_phys_PhysDom |          |        |          |           | 
++----+---------------------+----------+----------------+-----------------+----------+----------------------+------------------+----------+--------+----------+-----------+
 
 EPG Policy Properties
 ---------------------
@@ -52,6 +52,8 @@ EPG Endpoints
 +----+-------------------+-------------+---------------------+-------+----------------+-------------------+
 | L  | 02:CC:0F:00:00:56 | 15.20.17.15 | k8s/k8s_ANP/SRIoV_B | 807   | k8s/SRIoV_B_BD | k8s/k8s_SRIoV_VRF | 
 +----+-------------------+-------------+---------------------+-------+----------------+-------------------+
+| L  | 3A:E4:DD:1C:1F:8A |             | k8s/k8s_ANP/SRIoV_B | 807   | k8s/SRIoV_B_BD | k8s/k8s_SRIoV_VRF | 
++----+-------------------+-------------+---------------------+-------+----------------+-------------------+
 
 EPG Contracts
 -------------
@@ -80,24 +82,52 @@ EPG Domain
 EPG Deployed Nodes
 ------------------
 
-+---------------------+-----------+------------+-------+--------+-------+--------+---------+
-| EPG                 | Node Name | IP Address | Admin | Fabric | Model | Serial | Version |
-+---------------------+-----------+------------+-------+--------+-------+--------+---------+
-| k8s/k8s_ANP/SRIoV_A |           |            |       |        |       |        |         | 
-+---------------------+-----------+------------+-------+--------+-------+--------+---------+
-| k8s/k8s_ANP/SRIoV_B |           |            |       |        |       |        |         | 
-+---------------------+-----------+------------+-------+--------+-------+--------+---------+
++---------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
+| EPG                 | Node Name      | IP Address  | Admin | Fabric | Model          | Serial      | Version        |
++---------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
+| k8s/k8s_ANP/SRIoV_A | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
+|                     | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
++---------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
+| k8s/k8s_ANP/SRIoV_B | cl2208-eu-spdc | 10.5.240.35 | on    | active | N9K-C9336C-FX2 | FDO234807ED | n9000-16.0(2h) | 
+|                     | cl2207-eu-spdc | 10.5.240.34 | on    | active | N9K-C9336C-FX2 | FDO23490E4G | n9000-16.0(2h) | 
++---------------------+----------------+-------------+-------+--------+----------------+-------------+----------------+
 
 EPG Members
 -----------
 
-+---------------------+-------------+------+------+----+------+
-| EPG                 | Member Type | Node | Type | ID | VLAN |
-+---------------------+-------------+------+------+----+------+
-| k8s/k8s_ANP/SRIoV_A |             |      |      |    |      | 
-+---------------------+-------------+------+------+----+------+
-| k8s/k8s_ANP/SRIoV_B |             |      |      |    |      | 
-+---------------------+-------------+------+------+----+------+
++---------------------+-------------+----------------+------+----------+----------+
+| EPG                 | Member Type | Node           | Type | ID       | VLAN     |
++---------------------+-------------+----------------+------+----------+----------+
+| k8s/k8s_ANP/SRIoV_A | static      | cl2207-eu-spdc | Intf | eth1/3/1 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/3/2 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/3/3 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/3/4 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/4/1 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/4/2 | vlan-808 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/4/3 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/3/1 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/3/2 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/3/3 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/3/4 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/4/1 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/4/2 | vlan-808 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/4/3 | vlan-808 | 
++---------------------+-------------+----------------+------+----------+----------+
+| k8s/k8s_ANP/SRIoV_B | static      | cl2207-eu-spdc | Intf | eth1/5/1 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/5/2 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/5/3 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/5/4 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/6/1 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/6/2 | vlan-807 | 
+|                     | static      | cl2207-eu-spdc | Intf | eth1/6/3 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/5/1 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/5/2 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/5/3 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/5/4 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/6/1 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/6/2 | vlan-807 | 
+|                     | static      | cl2208-eu-spdc | Intf | eth1/6/3 | vlan-807 | 
++---------------------+-------------+----------------+------+----------+----------+
 
 EPG Static Ports
 ----------------
@@ -143,7 +173,7 @@ Developer
 # iserver get aci epg --apic apic21 --name sriov* --view all
 
 {
-    "duration": 6471,
+    "duration": 7043,
     "apic": {
         "read": true,
         "success": 14,
@@ -151,10 +181,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 13,
-        "connect_time": 427,
+        "connect_time": 425,
         "disconnect_time": 0,
-        "mo_time": 4760,
-        "total_time": 5187
+        "mo_time": 4941,
+        "total_time": 5366
     },
     "error": {
         "read": false,
@@ -174,20 +204,20 @@ Developer
 Log: apic
 ----------
 
-True	427	-	connect apic21o.emea-sp.cisco.com:443
-True	383	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	315	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	363	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
-True	351	152	apic21o.emea-sp.cisco.com:443 class fvLocale
+True	425	-	connect apic21o.emea-sp.cisco.com:443
+True	388	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	306	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	367	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
+True	335	152	apic21o.emea-sp.cisco.com:443 class fvLocale
 True	417	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	368	94	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
-True	417	710	apic21o.emea-sp.cisco.com:443 class fabricPathEp
-True	316	23	apic21o.emea-sp.cisco.com:443 class fvCtx
-True	357	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	351	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	343	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	448	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	331	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	529	95	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	361	710	apic21o.emea-sp.cisco.com:443 class fabricPathEp
+True	328	23	apic21o.emea-sp.cisco.com:443 class fvCtx
+True	387	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	371	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	406	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	326	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	420	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
 ```
 
 [[Back]](./ApplicationEpg.md)

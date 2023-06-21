@@ -437,7 +437,7 @@ class EpgIfConnInfo():
                         'Unsupported dn: %s' % (info['dn'])
                     )
 
-            return None
+                return None
 
         info = self.get_epg_ifconn_type_info(
             info

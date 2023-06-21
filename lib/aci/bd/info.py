@@ -43,6 +43,7 @@ class BridgeDomainInfo():
             'mtu',
             'multiDstPktAct',
             'name',
+            'pcTag',
             'seg',
             'type',
             'unicastRoute',
@@ -270,8 +271,6 @@ class BridgeDomainInfo():
         return None
 
     def get_bridge_domains(self, bridge_domain_filter=None, endpoint_info=False, endpoint_vm_info=False, endpoint_fabric_info=False, snoop_info=False, vrf_info=False, epg_info=False):
-        start_time = int(time.time() * 1000)
-
         all_bridge_domains = self.get_bridge_domains_info()
         if all_bridge_domains is None:
             return None

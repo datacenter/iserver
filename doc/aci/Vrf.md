@@ -16,7 +16,6 @@ Filter options:
 View options:
   - [default](./VrfAllDefault.md)
   - [properties](./VrfAllProps.md)
-  - [references](./VrfAllRefs.md)
   - [verbose](./VrfVerbose.md)
   - [route](./VrfRoute.md) output to get route table of selected VRF
 
@@ -48,13 +47,14 @@ Options:
   --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -v, --view [default|route|prop|ref|verbose]
+  -v, --view [summary|route|prop|all|verbose]
+                                  [default: summary]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 131 ms and logs saved in /tmp/iserver\4587de29fc0f
+Info: finished in 48 ms and logs saved in /tmp/iserver\8d9a5eab2a1a
 ```
 
 [[Back]](./README.md)

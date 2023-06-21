@@ -164,7 +164,7 @@ class EpgLocaleInfo():
                         'Unsupported dn: %s' % (info['dn'])
                     )
 
-            return None
+                return None
 
         if info['dn'].startswith('uni/epp/fv-'):
             info = self.get_epg_locale_fv_info(
@@ -202,6 +202,7 @@ class EpgLocaleInfo():
             epg_locale_info = self.get_epg_locale_info(
                 epg_locale_mo
             )
+
             if epg_locale_info is not None:
                 self.epg_locale.append(
                     epg_locale_info

@@ -38,7 +38,7 @@ class NoResultExit(Exception):
 @click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
 @click.option("--l3out", "l3out_name", default='', callback=validations.empty_string_to_none, help="Filter by l3out name")
-@click.option("--view", "-v", type=click.Choice(['default', 'route', 'prop', 'ref', 'verbose'], case_sensitive=False), multiple=True)
+@click.option("--view", "-v", type=click.Choice(['summary', 'route', 'prop', 'all', 'verbose'], case_sensitive=False), default='summary', show_default=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -69,8 +69,6 @@ def get_aci_vrf_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -150,32 +148,21 @@ def get_aci_vrf_command(
                 'l3out:%s' % (l3out_name)
             )
 
-        if 'verbose' in view:
-            vrfs = apic_handler.get_vrfs(
-                vrf_filter=vrf_filter,
-                bridge_domain_info=True,
-                epg_info=True,
-                l3out_info=True,
-                route_info=False
-            )
+        bridge_domain_info = True
+        epg_info = True
+        l3out_info = True
+        route_info = False
 
-        if 'route' in view:
-            vrfs = apic_handler.get_vrfs(
-                vrf_filter=vrf_filter,
-                bridge_domain_info=True,
-                epg_info=True,
-                l3out_info=True,
-                route_info=True
-            )
+        if view in ['all', 'route', 'verbose']:
+            route_info = True
 
-        if 'verbose' not in view and 'route' not in view:
-            vrfs = apic_handler.get_vrfs(
-                vrf_filter=vrf_filter,
-                bridge_domain_info=True,
-                epg_info=True,
-                l3out_info=True,
-                route_info=False
-            )
+        vrfs = apic_handler.get_vrfs(
+            vrf_filter=vrf_filter,
+            bridge_domain_info=bridge_domain_info,
+            epg_info=epg_info,
+            l3out_info=l3out_info,
+            route_info=route_info
+        )
 
         ctx.busy = False
 
@@ -194,33 +181,31 @@ def get_aci_vrf_command(
 
         ctx.my_output.json_output(vrfs)
 
-        if 'default' in view:
+        if view in ['summary', 'all']:
             aci_output_handler.print_vrfs(
-                vrfs
+                vrfs,
+                title=True
             )
 
-        if 'prop' in view:
+        if view in ['prop', 'all']:
             aci_output_handler.print_vrfs_properties(
-                vrfs
+                vrfs,
+                title=True
             )
 
-        if 'ref' in view:
-            aci_output_handler.print_vrfs_references(
-                vrfs
-            )
+        if view in ['route', 'all']:
+            for vrf in vrfs:
+                aci_output_handler.print_vrf_v4_route(
+                    vrf['v4route'],
+                    title=True
+                )
 
-        if 'verbose' in view:
+        if view == 'verbose':
             aci_output_handler.print_vrfs(
                 vrfs
             )
             for vrf in vrfs:
                 aci_output_handler.print_vrf(vrf)
-
-        if 'route' in view:
-            for vrf in vrfs:
-                aci_output_handler.print_vrf_v4_route(
-                    vrf['v4route']
-                )
 
     except NoResultExit:
         ctx.busy = False

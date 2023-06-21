@@ -16,7 +16,6 @@ Filter options:
 View options:
   - [default](./VrfAllDefault.md)
   - [properties](./VrfAllProps.md)
-  - [references](./VrfAllRefs.md)
   - [verbose](./VrfVerbose.md)
   - [route](./VrfRoute.md) output to get route table of selected VRF
 
