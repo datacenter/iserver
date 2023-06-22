@@ -1,14 +1,12 @@
-from lib import log_helper
-
 from lib.aci.bd.api import BridgeDomainApi
-from lib.aci.bd.health import BridgeDomainHealth
-from lib.aci.bd.igmp import BridgeDomainIgmp
 from lib.aci.bd.info import BridgeDomainInfo
-from lib.aci.bd.l3out import BridgeDomainL3Out
-from lib.aci.bd.mld import BridgeDomainMld
-from lib.aci.bd.retention import BridgeDomainRetention
-from lib.aci.bd.subnet import BridgeDomainSubnet
-from lib.aci.bd.vrf import BridgeDomainVrf
+from lib.aci.bd.health.main import BridgeDomainHealth
+from lib.aci.bd.igmp.main import BridgeDomainIgmp
+from lib.aci.bd.l3out.main import BridgeDomainL3Out
+from lib.aci.bd.mld.main import BridgeDomainMld
+from lib.aci.bd.retention.main import BridgeDomainRetention
+from lib.aci.bd.subnet.main import BridgeDomainSubnet
+from lib.aci.bd.vrf.main import BridgeDomainVrf
 
 
 class BridgeDomain(

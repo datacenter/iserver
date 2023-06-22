@@ -1,3 +1,63 @@
+import re
+
+
+def sanitize_string(value):
+    value = value.strip()
+    value = re.sub(' +', ' ', value)
+    return value
+
+
+def get_string_chunks(value, length, separator=' ', extra_separator='-'):
+    lines = []
+
+    words = []
+    for word in value.split(separator):
+        if len(word) < length:
+            words.append(
+                '%s%s' % (word, separator)
+            )
+            continue
+
+        chunks = len(word.split(extra_separator))
+        chunk_index = 1
+        for word_chunk in word.split(extra_separator):
+            if len(word_chunk) >= length:
+                words.append(
+                    '%s...-' % (word_chunk[(length - 4):])
+                )
+                continue
+
+            if chunk_index < chunks:
+                words.append(
+                    '%s%s' % (word_chunk, extra_separator)
+                )
+            else:
+                words.append(
+                    '%s%s' % (word_chunk, separator)
+                )
+
+            chunk_index = chunk_index + 1
+
+    line = ''
+    for word in words:
+        if len(word) > length:
+            continue
+
+        if len(line) + len(word) > length:
+            lines.append(line)
+            line = word
+            continue
+
+        line = '%s%s' % (line, word)
+
+    if separator == ' ':
+        lines.append(line.strip())
+    else:
+        lines.append(line[:-1])
+
+    return lines
+
+
 def get_values_from_range(value):
     values = []
 

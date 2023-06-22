@@ -1,4 +1,3 @@
-import time
 import copy
 
 from lib import filter_helper
@@ -60,11 +59,62 @@ class BridgeDomainInfo():
         if info['vmac'] == 'not-applicable':
             info['vmac'] = ''
 
-        info['tenant'] = info['dn'].split('/')[1][3:]
-        info['nameTenant'] = '%s/%s' % (
-            info['tenant'],
-            info['name']
-        )
+        info['unkMacUcastActT'] = info['unkMacUcastAct']
+        if info['unkMacUcastAct'] == 'flood':
+            info['unkMacUcastActT'] = 'Flood'
+        if info['unkMacUcastAct'] == 'proxy':
+            info['unkMacUcastActT'] = 'Hardware Proxy'
+
+        info['multiDstPktActT'] = info['multiDstPktAct']
+        if info['multiDstPktAct'] == 'bd-flood':
+            info['multiDstPktActT'] = 'Flood in BD'
+        if info['multiDstPktAct'] == 'drop':
+            info['multiDstPktActT'] = 'Drop'
+        if info['multiDstPktAct'] == 'encap-flood':
+            info['multiDstPktActT'] = 'Flood in Encap'
+
+        if info['arpFlood'] == 'yes':
+            info['arpFloodTick'] = '\u2713'
+        else:
+            info['arpFloodTick'] = '\u2717'
+
+        if info['epClear'] == 'yes':
+            info['epClearTick'] = '\u2713'
+        else:
+            info['epClearTick'] = '\u2717'
+
+        if info['intersiteL2Stretch'] == 'yes':
+            info['intersiteL2StretchTick'] = '\u2713'
+        else:
+            info['intersiteL2StretchTick'] = '\u2717'
+
+        if info['unicastRoute'] == 'yes':
+            info['unicastRouteTick'] = '\u2713'
+        else:
+            info['unicastRouteTick'] = '\u2717'
+
+        if info['ipLearning'] == 'yes':
+            info['ipLearningTick'] = '\u2713'
+        else:
+            info['ipLearningTick'] = '\u2717'
+
+        if info['limitIpLearnToSubnets'] == 'yes':
+            info['limitIpLearnToSubnetsTick'] = '\u2713'
+        else:
+            info['limitIpLearnToSubnetsTick'] = '\u2717'
+
+        if info['hostBasedRouting'] == 'yes':
+            info['hostBasedRoutingTick'] = '\u2713'
+        else:
+            info['hostBasedRoutingTick'] = '\u2717'
+
+        info['vmacT'] = info['vmac']
+        if info['vmac'] is None or len(info['vmac']) == 0:
+            info['vmacT'] = '--'
+
+        info['epMoveDetectModeT'] = info['epMoveDetectMode']
+        if info['epMoveDetectMode'] is None or len(info['epMoveDetectMode']) == 0:
+            info['epMoveDetectModeT'] = '--'
 
         if info['mcastAllow'] == 'yes':
             info['mcastAllowTick'] = '\u2713'
@@ -73,12 +123,30 @@ class BridgeDomainInfo():
             info['mcastAllowTick'] = '\u2717'
             info['__Output']['mcastAllowTick'] = 'Red'
 
+        info['unkMcastActT'] = info['unkMcastAct']
+        if info['unkMcastAct'] == 'flood':
+            info['unkMcastActT'] = 'Flood'
+        if info['unkMcastAct'] == 'opt-flood':
+            info['unkMcastActT'] = 'Optimized Flood'
+
         if info['ipv6McastAllow'] == 'yes':
             info['ipv6McastAllowTick'] = '\u2713'
             info['__Output']['ipv6McastAllowTick'] = 'Green'
         else:
             info['ipv6McastAllowTick'] = '\u2717'
             info['__Output']['ipv6McastAllowTick'] = 'Red'
+
+        info['v6unkMcastActT'] = info['v6unkMcastAct']
+        if info['v6unkMcastAct'] == 'flood':
+            info['v6unkMcastActT'] = 'Flood'
+        if info['v6unkMcastAct'] == 'opt-flood':
+            info['v6unkMcastActT'] = 'Optimized Flood'
+
+        info['tenant'] = info['dn'].split('/')[1][3:]
+        info['nameTenant'] = '%s/%s' % (
+            info['tenant'],
+            info['name']
+        )
 
         info['health'] = self.get_bridge_domain_health_info(
             managed_object['health']
@@ -293,7 +361,7 @@ class BridgeDomainInfo():
                         endpoint_info=True
                     )
                 )
-                bridge_domain_info['epgsCount'] = len(
+                bridge_domain_info['epgCount'] = len(
                     bridge_domain_info['fvAEPg']
                 )
 
@@ -310,9 +378,9 @@ class BridgeDomainInfo():
                     )
                 )
 
-                bridge_domain_info['endpointsCount'] = 0
+                bridge_domain_info['endpointCount'] = 0
                 if bridge_domain_info['fvCEp'] is not None:
-                    bridge_domain_info['endpointsCount'] = len(
+                    bridge_domain_info['endpointCount'] = len(
                         bridge_domain_info['fvCEp']
                     )
 

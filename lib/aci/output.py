@@ -14,6 +14,7 @@ from lib.aci.pg.output import PolicyGroupOutput
 from lib.aci.policy.output import PolicyOutput
 from lib.aci.pool.output import PoolOutput
 from lib.aci.proto.output import ProtocolOutput
+from lib.aci.system.output import SystemOutput
 from lib.aci.tenant.output import TenantOutput
 from lib.aci.vrf.output import VrfOutput
 
@@ -33,6 +34,7 @@ class ApicOutput(
     PolicyOutput,
     PoolOutput,
     ProtocolOutput,
+    SystemOutput,
     TenantOutput,
     VrfOutput
     ):
@@ -58,6 +60,7 @@ class ApicOutput(
         PolicyOutput.__init__(self)
         PoolOutput.__init__(self)
         ProtocolOutput.__init__(self)
+        SystemOutput.__init__(self)
         TenantOutput.__init__(self)
         VrfOutput.__init__(self)
 

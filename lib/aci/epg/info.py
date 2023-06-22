@@ -330,6 +330,23 @@ class EpgInfo():
 
         return info
 
+    def add_epg_fault_info(self, info):
+        info['faultInst'] = self.get_system_faults(
+            system_fault_filter=['epg:%s' % (info['nameApTenant'])]
+        )
+        info['faultCount'] = len(info['faultInst'])
+        info['faultSeverity'] = self.get_system_faults_max_severity(
+            info['faultInst']
+        )
+        info['faultColor'] = self.get_system_faults_severity_color(
+            info['faultSeverity']
+        )
+
+        if info['faultColor'] is not None:
+            info['__Output']['faultCount'] = info['faultColor']
+
+        return info
+
     def get_epg_info(self, managed_object):
         keys = [
             'annotation',
@@ -714,7 +731,8 @@ class EpgInfo():
             endpoint_fabric_info=False,
             contract_info=False,
             vrf_info=False,
-            l3out_info=False
+            l3out_info=False,
+            fault_info=False
             ):
         all_epgs = self.get_epgs_info()
         if all_epgs is None:
@@ -725,6 +743,11 @@ class EpgInfo():
         for epg_info in all_epgs:
             if not self.match_epg(epg_info, epg_filter):
                 continue
+
+            if fault_info:
+                epg_info = self.add_epg_fault_info(
+                    epg_info
+                )
 
             if ifconn_info:
                 epg_info['ifconn'] = self.get_epg_ifconn(

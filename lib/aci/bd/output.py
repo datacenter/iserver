@@ -4,8 +4,8 @@ class BridgeDomainOutput():
 
     def print_bridge_domain_properties(self, info):
         order = [
-            'name',
             'tenant',
+            'name',
             'dn',
             'descr',
             'health.score',
@@ -13,22 +13,22 @@ class BridgeDomainOutput():
             'fvSubnetCount',
             'fvRsCtx.nameTenant',
             'l3OutCount',
-            'endpointsCount',
-            'epgsCount'
+            'endpointCount',
+            'epgCount'
         ]
 
         headers = [
-            'Name',
             'Tenant',
+            'Name',
             'Dn',
             'Description',
             'Health Score',
             'Type',
             'Subnet Count',
             'VRF',
-            'Associated L3 Outs',
-            'Endpoints Count',
-            'Endpoint Groups Count'
+            'L3Out',
+            'Endpoint',
+            'EPG'
         ]
 
         self.my_output.dictionary(
@@ -43,15 +43,19 @@ class BridgeDomainOutput():
 
     def print_bridge_domain_l2_properties(self, info):
         order = [
-            'unkMacUcastAct',
-            'multiDstPktAct',
-            'epClear'
+            'unkMacUcastActT',
+            'bcastP',
+            'multiDstPktActT',
+            'epClearTick',
+            'intersiteL2StretchTick'
         ]
 
         headers = [
             'L2 Unknown Unicast',
+            'Multicast Address (GIPo)',
             'Multi Destination Flooding',
-            'Clear Remote MAC Entries'
+            'Clear Remote MAC Entries',
+            'Scaled L2 Only Mode'
         ]
 
         self.my_output.dictionary(
@@ -66,12 +70,12 @@ class BridgeDomainOutput():
 
     def print_bridge_domain_mcast_properties(self, info):
         order = [
-            'fvRsIgmpsn.name',
-            'fvRsMldsn.name',
-            'mcastAllow',
-            'unkMcastAct',
-            'ipv6McastAllow',
-            'v6unkMcastAct'
+            'fvRsIgmpsn.nameTenant',
+            'fvRsMldsn.nameTenant',
+            'mcastAllowTick',
+            'unkMcastActT',
+            'ipv6McastAllowTick',
+            'v6unkMcastActT'
         ]
 
         headers = [
@@ -95,14 +99,14 @@ class BridgeDomainOutput():
 
     def print_bridge_domain_l3_properties(self, info):
         order = [
-            'unicastRoute',
+            'unicastRouteTick',
             'mac',
-            'vmac',
-            'ipLearning',
-            'hostBasedRouting',
-            'limitIpLearnToSubnets',
-            'arpFlood',
-            'epMoveDetectMode'
+            'vmacT',
+            'ipLearningTick',
+            'hostBasedRoutingTick',
+            'limitIpLearnToSubnetsTick',
+            'arpFloodTick',
+            'epMoveDetectModeT'
         ]
 
         headers = [
@@ -130,10 +134,10 @@ class BridgeDomainOutput():
         order = [
             'network',
             'gateway',
-            'preferred',
-            'virtual',
+            'preferredTick',
+            'virtualTick',
             'scope',
-            'ipDPLearning',
+            'ipDPLearningTick',
             'usage',
             'available'
         ]
@@ -168,28 +172,20 @@ class BridgeDomainOutput():
 
         order = [
             'adminUpTick',
-            'name',
-            'tenant',
-            'application_profile',
-            'endpointsCount',
-            'vzBrCP.tenant_name'
+            'nameApTenant',
+            'endpointCount',
+            'contractCount'
         ]
 
         headers = [
             'Up',
-            'EPG Name',
-            'Tenant',
-            'App Profile',
+            'EPG',
             'Endpoints',
             'Contract'
         ]
 
         self.my_output.my_table(
-            self.my_output.expand_lists(
-                info['fvAEPg'],
-                order,
-                ['vzBrCP']
-            ),
+            info['fvAEPg'],
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -275,27 +271,27 @@ class BridgeDomainOutput():
 
         if title:
             self.my_output.default(
-                'Bridge Domain L2 Properties',
+                'Bridge Domain L2 Forwarding Properties',
                 underline=True,
                 before_newline=True
             )
 
         order = [
             'nameTenant',
-            'unkMacUcastAct',
-            'arpFlood',
-            'multiDstPktAct',
-            'epClear',
-            'intersiteL2Stretch'
+            'unkMacUcastActT',
+            'bcastP',
+            'arpFloodTick',
+            'multiDstPktActT',
+            'epClearTick'
         ]
 
         headers = [
             'Bridge Domain',
             'L2 Unknown Ucast',
+            'Mcast (GIPo)',
             'ARP Flooding',
             'Multi Dest Flooding',
-            'Clear Remote MAC',
-            'Scaled L2 Only'
+            'Clear Remote MAC'
         ]
 
         self.my_output.my_table(
@@ -321,13 +317,13 @@ class BridgeDomainOutput():
 
         order = [
             'nameTenant',
-            'unicastRoute',
+            'unicastRouteTick',
             'mac',
-            'vmac',
-            'ipLearning',
-            'limitIpLearnToSubnets',
-            'hostBasedRouting',
-            'epMoveDetectMode'
+            'vmacT',
+            'ipLearningTick',
+            'limitIpLearnToSubnetsTick',
+            'hostBasedRoutingTick',
+            'epMoveDetectModeT'
         ]
 
         headers = [
@@ -366,10 +362,10 @@ class BridgeDomainOutput():
         order = [
             'nameTenant',
             'mcastAllowTick',
-            'unkMcastAct',
+            'unkMcastActT',
             'fvRsIgmpsn.nameTenant',
             'ipv6McastAllowTick',
-            'v6unkMcastAct',
+            'v6unkMcastActT',
             'fvRsMldsn.nameTenant'
         ]
 
@@ -377,10 +373,10 @@ class BridgeDomainOutput():
             'Bridge Domain',
             'PIM',
             'Unknown IPv4 Flooding',
-            'IGMP Snooping',
+            'IGMP Snooping Policy',
             'PIMv6',
             'Unknown IPv6 Flooding',
-            'MLD Snooping'
+            'MLD Snooping Policy'
         ]
 
         self.my_output.my_table(
@@ -407,10 +403,10 @@ class BridgeDomainOutput():
         order = [
             'nameTenant',
             'fvCtx.nameTenant',
-            'fvCtx.ipDataPlaneLearning',
+            'fvCtx.ipDataPlaneLearningTick',
             'fvCtx.pcEnfDir',
             'fvCtx.pcEnfPref',
-            'fvCtx.bdEnforcedEnable'
+            'fvCtx.bdEnforcedEnableTick'
         ]
 
         headers = [
@@ -438,7 +434,7 @@ class BridgeDomainOutput():
 
         if title:
             self.my_output.default(
-                'Bridge Domain Summary',
+                'Bridge Domain Summary [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )

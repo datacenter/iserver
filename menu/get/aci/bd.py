@@ -209,7 +209,8 @@ def get_aci_bd_command(
 
         if view == 'verbose':
             aci_output_handler.print_bridge_domains(
-                bridge_domains
+                bridge_domains,
+                title=True
             )
             for bridge_domain in bridge_domains:
                 aci_output_handler.print_bridge_domain(bridge_domain)

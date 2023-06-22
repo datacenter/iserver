@@ -791,7 +791,7 @@ class EpgOutput():
 
         if title:
             self.my_output.default(
-                'EPG Summary',
+                'EPG Summary [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )

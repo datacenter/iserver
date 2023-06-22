@@ -67,6 +67,21 @@ class VrfInfo():
             info['pcTagT'] = '%s (system)' % (info['pcTag'])
             info['__Output']['pcTagT'] = 'Red'
 
+        if info['ipDataPlaneLearning'] == 'enabled':
+            info['ipDataPlaneLearningTick'] = '\u2713'
+        else:
+            info['ipDataPlaneLearningTick'] = '\u2717'
+
+        if info['bdEnforcedEnable'] == 'yes':
+            info['bdEnforcedEnableTick'] = '\u2713'
+        else:
+            info['bdEnforcedEnableTick'] = '\u2717'
+
+        if info['knwMcastAct'] == 'permit':
+            info['knwMcastActTick'] = '\u2713'
+        else:
+            info['knwMcastActTick'] = '\u2717'
+
         return info
 
     def get_vrfs_info(self):
@@ -299,7 +314,7 @@ class VrfInfo():
 
         for vrf_info in all_vrfs:
             if epg_info or bridge_domain_info:
-                vrf_info['endpointsCount'] = 0
+                vrf_info['endpointCount'] = 0
 
                 vrf_info['fvBD'] = copy.deepcopy(
                     self.get_bridge_domains(
@@ -311,7 +326,7 @@ class VrfInfo():
                 vrf_info['fvSubnet'] = []
                 for bd_info in vrf_info['fvBD']:
                     vrf_info['fvSubnet'] = vrf_info['fvSubnet'] + bd_info['fvSubnet']
-                    vrf_info['endpointsCount'] = vrf_info['endpointsCount'] + bd_info['endpointsCount']
+                    vrf_info['endpointCount'] = vrf_info['endpointCount'] + bd_info['endpointCount']
 
             if epg_info:
                 vrf_info['fvAEPg'] = []

@@ -61,51 +61,39 @@ class BridgeDomainApi():
                 managed_object,
                 'fvSubnet'
             )
-
             attributes['fvRsBDToOut'] = self.get_mo_children_attributes(
                 'fvBD',
                 managed_object,
                 'fvRsBDToOut'
             )
-
             attributes['fvRsCtx'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'fvRsCtx'
             )
-
             attributes['fvRsMldsn'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'fvRsMldsn'
             )
-
             attributes['fvRsIgmpsn'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'fvRsIgmpsn'
             )
-
             attributes['fvRsBdToEpRet'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'fvRsBdToEpRet'
             )
-
             attributes['health'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'healthInst'
             )
-
             self.bridge_domain_mo.append(
                 attributes
             )
-
-        self.log.apic_mo(
-            'fvBD',
-            self.bridge_domain_mo
-        )
 
         self.set_object_cache(
             'fvBD',

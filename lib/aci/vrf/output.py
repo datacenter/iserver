@@ -6,11 +6,11 @@ class VrfOutput():
         order = [
             'name',
             'tenant',
-            'ipDataPlaneLearning',
-            'knwMcastAct',
+            'ipDataPlaneLearningTick',
+            'knwMcastActTick',
             'pcEnfDir',
             'pcEnfPref',
-            'bdEnforcedEnable',
+            'bdEnforcedEnableTick',
             'pcTag',
             'seg'
         ]
@@ -27,9 +27,9 @@ class VrfOutput():
             'VNID'
         ]
 
-        if 'endpointsCount' in info:
-            order.append('endpointsCount')
-            headers.append('Endpoints Count')
+        if 'endpointCount' in info:
+            order.append('endpointCount')
+            headers.append('Endpoints')
 
         self.my_output.dictionary(
             info,
@@ -147,11 +147,11 @@ class VrfOutput():
 
         order = [
             'nameTenant',
-            'ipDataPlaneLearning',
+            'ipDataPlaneLearningTick',
             'knwMcastAct',
             'pcEnfPref',
             'pcEnfDir',
-            'bdEnforcedEnable',
+            'bdEnforcedEnableTick',
             'pcTag',
             'seg'
         ]
@@ -183,7 +183,7 @@ class VrfOutput():
 
         if title:
             self.my_output.default(
-                'VRF Summary',
+                'VRF Summary [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )

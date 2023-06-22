@@ -4,8 +4,8 @@ class PolicySnoopOutput():
 
     def print_policy_snoop_igmp(self, info):
         order = [
-            'name',
             'tenant',
+            'name',
             'adminSt',
             'lastMbrIntvl',
             'queryIntvl',
@@ -15,8 +15,8 @@ class PolicySnoopOutput():
         ]
 
         headers = [
-            'Name',
             'Tenant',
+            'Name',
             'Admin state',
             'Last Member Query Interval',
             'Query Interval',
@@ -37,8 +37,8 @@ class PolicySnoopOutput():
 
     def print_policy_snoop_mld(self, info):
         order = [
-            'name',
             'tenant',
+            'name',
             'adminSt',
             'ver',
             'lastMbrIntvl',
@@ -49,8 +49,8 @@ class PolicySnoopOutput():
         ]
 
         headers = [
-            'Name',
             'Tenant',
+            'Name',
             'Admin state',
             'Version',
             'Last Member Query Interval',

@@ -22,6 +22,7 @@ from lib.aci.pg.main import PolicyGroup
 from lib.aci.policy.main import Policy
 from lib.aci.pool.main import Pool
 from lib.aci.proto.main import Protocol
+from lib.aci.system.main import System
 from lib.aci.tenant.main import Tenant
 from lib.aci.vrf.main import Vrf
 
@@ -44,6 +45,7 @@ class Apic(
         Pool,
         PolicyGroup,
         Protocol,
+        System,
         Tenant,
         Vrf
         ):
@@ -88,6 +90,7 @@ class Apic(
         Pool.__init__(self)
         PolicyGroup.__init__(self)
         Protocol.__init__(self)
+        System.__init__(self)
         Tenant.__init__(self)
         Vrf.__init__(self)
 

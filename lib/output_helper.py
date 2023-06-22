@@ -310,6 +310,9 @@ class OutputHelper():
         if color == 'Yellow':
             return colorama.Fore.YELLOW + value + colorama.Fore.RESET
 
+        if color == 'Magenta':
+            return colorama.Fore.MAGENTA + value + colorama.Fore.RESET
+
         if color == 'Blue':
             return colorama.Fore.BLUE + value + colorama.Fore.RESET
 
@@ -335,6 +338,9 @@ class OutputHelper():
 
         if color == 'Yellow':
             return colorama.Fore.YELLOW + str(value) + colorama.Fore.RESET
+
+        if color == 'Magenta':
+            return colorama.Fore.MAGENTA + str(value) + colorama.Fore.RESET
 
         if color == 'Blue':
             return colorama.Fore.BLUE + str(value) + colorama.Fore.RESET
@@ -557,7 +563,23 @@ class OutputHelper():
             new_values.append(value)
         return new_values
 
-    def my_table(self, values_ref, spacing=3, underline=False, order=None, filtering_rules=None, allow_order_subkeys=False, headers=None, headers_upper=False, table=False, row_separator=False, remove_empty_columns=False, cast_none=False, stream='default', merge=False):
+    def my_table(
+            self,
+            values_ref,
+            spacing=3,
+            underline=False,
+            order=None,
+            filtering_rules=None,
+            allow_order_subkeys=False,
+            headers=None,
+            headers_upper=False,
+            table=False,
+            row_separator=False,
+            remove_empty_columns=False,
+            cast_none=False,
+            stream='default',
+            merge=False
+            ):
         values = copy.deepcopy(
             values_ref
         )
