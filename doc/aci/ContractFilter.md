@@ -26,7 +26,7 @@ Developer
 # iserver get aci contract --apic apic21 --type filter --tenant k8s/*
 
 {
-    "duration": 1298,
+    "duration": 944,
     "apic": {
         "read": true,
         "success": 2,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 787,
+        "connect_time": 422,
         "disconnect_time": 0,
-        "mo_time": 358,
-        "total_time": 1145
+        "mo_time": 368,
+        "total_time": 790
     },
     "error": {
         "read": false,
@@ -57,8 +57,8 @@ Developer
 Log: apic
 ----------
 
-True	787	-	connect apic21o.emea-sp.cisco.com
-True	358	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	422	-	connect apic21o.emea-sp.cisco.com:443
+True	368	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./Contract.md)

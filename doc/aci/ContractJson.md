@@ -42,76 +42,7 @@
         "subjectNameTenant": "k8s/Any",
         "taboo": [],
         "contract": [
-            {
-                "__Output": {},
-                "descr": "",
-                "dn": "uni/tn-k8s/brc-BT-Demo",
-                "intent": "install",
-                "name": "BT-Demo",
-                "scope": "context",
-                "targetDscp": "unspecified",
-                "userdom": ":all:common:",
-                "tenant": "k8s",
-                "nameTenant": "k8s/BT-Demo",
-                "vzFilter": [
-                    {
-                        "__Output": {},
-                        "descr": "",
-                        "dn": "uni/tn-k8s/flt-alltraffic",
-                        "name": "alltraffic",
-                        "userdom": ":all:common:",
-                        "tenant": "k8s",
-                        "nameTenant": "k8s/alltraffic",
-                        "vzEntry": [
-                            {
-                                "__Output": {},
-                                "applyToFrag": "no",
-                                "arpOpc": "",
-                                "dFromPort": "unspecified",
-                                "dToPort": "unspecified",
-                                "descr": "",
-                                "etherT": "",
-                                "icmpv4T": "unspecified",
-                                "icmpv6T": "unspecified",
-                                "matchDscp": "unspecified",
-                                "name": "alltraffic",
-                                "prot": "",
-                                "sFromPort": "unspecified",
-                                "sToPort": "unspecified",
-                                "stateful": "no",
-                                "status": "",
-                                "tcpRules": "",
-                                "source": "",
-                                "destination": ""
-                            }
-                        ],
-                        "subjectName": "Any",
-                        "subjectTenant": "k8s",
-                        "subjectNameTenant": "k8s/Any",
-                        "taboo": []
-                    }
-                ],
-                "consumerEpg": [
-                    {
-                        "class": "fvAEPg",
-                        "tenant": "k8s",
-                        "application_profile": "k8s_ANP",
-                        "name": "SRIoV_A",
-                        "nameTenant": "k8s/SRIoV_A",
-                        "nameLong": "k8s/k8s_ANP/SRIoV_A"
-                    }
-                ],
-                "providerEpg": [
-                    {
-                        "class": "fvAEPg",
-                        "tenant": "k8s",
-                        "application_profile": "k8s_ANP",
-                        "name": "SRIoV_A",
-                        "nameTenant": "k8s/SRIoV_A",
-                        "nameLong": "k8s/k8s_ANP/SRIoV_A"
-                    }
-                ]
-            }
+            "k8s/BT-Demo"
         ]
     },
     {
@@ -217,65 +148,7 @@
         "subjectTenant": "k8s",
         "subjectNameTenant": "k8s/MyTabooSubject",
         "taboo": [
-            {
-                "__Output": {},
-                "descr": "",
-                "dn": "uni/tn-k8s/taboo-MyTabooContract",
-                "name": "MyTabooContract",
-                "reevaluateAll": "no",
-                "scope": "context",
-                "status": "",
-                "userdom": ":all:common:",
-                "tenant": "k8s",
-                "nameTenant": "k8s/MyTabooContract",
-                "vzFilter": [
-                    {
-                        "__Output": {},
-                        "descr": "",
-                        "dn": "uni/tn-k8s/flt-icmp",
-                        "name": "icmp",
-                        "userdom": ":all:common:",
-                        "tenant": "k8s",
-                        "nameTenant": "k8s/icmp",
-                        "vzEntry": [
-                            {
-                                "__Output": {},
-                                "applyToFrag": "no",
-                                "arpOpc": "",
-                                "dFromPort": "unspecified",
-                                "dToPort": "unspecified",
-                                "descr": "",
-                                "etherT": "ipv4",
-                                "icmpv4T": "unspecified",
-                                "icmpv6T": "unspecified",
-                                "matchDscp": "unspecified",
-                                "name": "icmp",
-                                "prot": "icmp",
-                                "sFromPort": "unspecified",
-                                "sToPort": "unspecified",
-                                "stateful": "no",
-                                "status": "",
-                                "tcpRules": "",
-                                "source": "",
-                                "destination": ""
-                            }
-                        ],
-                        "subjectName": "MyTabooSubject",
-                        "subjectTenant": "k8s",
-                        "subjectNameTenant": "k8s/MyTabooSubject"
-                    }
-                ],
-                "protectedEpg": [
-                    {
-                        "class": "fvAEPg",
-                        "tenant": "k8s",
-                        "application_profile": "k8s_ANP",
-                        "name": "SRIoV_A",
-                        "nameTenant": "k8s/SRIoV_A",
-                        "nameLong": "k8s/k8s_ANP/SRIoV_A"
-                    }
-                ]
-            }
+            "k8s/MyTabooContract"
         ],
         "contract": []
     },

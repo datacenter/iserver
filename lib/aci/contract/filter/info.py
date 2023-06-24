@@ -140,17 +140,27 @@ class FilterInfo():
     def get_filter_usage_info(self, filter_info):
         filter_filter = ['filter:%s' % (filter_info['nameTenant'])]
 
-        filter_info['taboo'] = copy.deepcopy(
-            self.get_taboos(
-                taboo_filter=filter_filter
-            )
-        )
+        filter_info['taboo'] = []
 
-        filter_info['contract'] = copy.deepcopy(
-            self.get_contracts(
-                contract_filter=filter_filter
-            )
+        contracts = self.get_taboos(
+            taboo_filter=filter_filter
         )
+        if contracts is not None:
+            for contract in contracts:
+                filter_info['taboo'].append(
+                    contract['nameTenant']
+                )
+
+        filter_info['contract'] = []
+
+        contracts = self.get_contracts(
+            contract_filter=filter_filter
+        )
+        if contracts is not None:
+            for contract in contracts:
+                filter_info['contract'].append(
+                    contract['nameTenant']
+                )
 
         return filter_info
 

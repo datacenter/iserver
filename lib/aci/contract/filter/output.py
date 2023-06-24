@@ -58,8 +58,8 @@ class FilterOutput():
 
         order = [
             'nameTenant',
-            'contract.nameTenant',
-            'taboo.nameTenant'
+            'contract',
+            'taboo'
         ]
 
         headers = [

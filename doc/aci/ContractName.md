@@ -17,9 +17,9 @@ Contract Filters
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 | vEPC_demo/alltraffic | alltraffic |       |          |       | no        | no       |        |             |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| k8s/alltraffic       | alltraffic |       |          |       | no        | no       |        |             |       | 
-+----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 | common/alltraffic    | alltraffic |       |          |       | no        | no       |        |             |       | 
++----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
+| k8s/alltraffic       | alltraffic |       |          |       | no        | no       |        |             |       | 
 +----------------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
 
 Contract Filters Usage
@@ -32,10 +32,10 @@ Contract Filters Usage
 |                      | vEPC_demo/vEPG_INT          |       | 
 |                      | vEPC_demo/vEPG_SX           |       | 
 +----------------------+-----------------------------+-------+
-| k8s/alltraffic       | k8s/BT-Demo                 |       | 
-+----------------------+-----------------------------+-------+
 | common/alltraffic    | common/IKSHS-alltraffic     |       | 
 |                      | common/vEPG-MGMT_alltraffic |       | 
++----------------------+-----------------------------+-------+
+| k8s/alltraffic       | k8s/BT-Demo                 |       | 
 +----------------------+-----------------------------+-------+
 ```
 
@@ -87,7 +87,7 @@ Developer
 # iserver get aci contract --apic apic21 --type filter --name alltraffic
 
 {
-    "duration": 3460,
+    "duration": 2659,
     "apic": {
         "read": true,
         "success": 6,
@@ -95,10 +95,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 455,
+        "connect_time": 452,
         "disconnect_time": 0,
-        "mo_time": 2714,
-        "total_time": 3169
+        "mo_time": 1870,
+        "total_time": 2322
     },
     "error": {
         "read": false,
@@ -118,12 +118,12 @@ Developer
 Log: apic
 ----------
 
-True	455	-	connect apic21o.emea-sp.cisco.com
-True	356	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	321	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	330	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	355	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	1352	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	452	-	connect apic21o.emea-sp.cisco.com:443
+True	354	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	437	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	352	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	360	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	367	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
 ```
 
 [[Back]](./Contract.md)

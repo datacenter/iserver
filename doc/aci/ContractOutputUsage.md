@@ -21,10 +21,10 @@ Contract Filters Usage
 |                      | vEPC_demo/vEPG_INT          |       | 
 |                      | vEPC_demo/vEPG_SX           |       | 
 +----------------------+-----------------------------+-------+
-| k8s/alltraffic       | k8s/BT-Demo                 |       | 
-+----------------------+-----------------------------+-------+
 | common/alltraffic    | common/IKSHS-alltraffic     |       | 
 |                      | common/vEPG-MGMT_alltraffic |       | 
++----------------------+-----------------------------+-------+
+| k8s/alltraffic       | k8s/BT-Demo                 |       | 
 +----------------------+-----------------------------+-------+
 ```
 
@@ -38,7 +38,7 @@ Developer
     --view usage
 
 {
-    "duration": 2451,
+    "duration": 2543,
     "apic": {
         "read": true,
         "success": 6,
@@ -46,10 +46,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 415,
+        "connect_time": 431,
         "disconnect_time": 0,
-        "mo_time": 1720,
-        "total_time": 2135
+        "mo_time": 1789,
+        "total_time": 2220
     },
     "error": {
         "read": false,
@@ -69,12 +69,12 @@ Developer
 Log: apic
 ----------
 
-True	415	-	connect apic21o.emea-sp.cisco.com
-True	352	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	330	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	326	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	355	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	357	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	431	-	connect apic21o.emea-sp.cisco.com:443
+True	365	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	354	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	336	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	371	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	363	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
 ```
 
 [[Back]](./Contract.md)

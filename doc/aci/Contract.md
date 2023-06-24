@@ -30,6 +30,7 @@ Usage: iserver.py get aci contract [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --name TEXT                     Filter by name
@@ -42,7 +43,7 @@ Options:
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 44 ms and logs saved in /tmp/iserver\32d0b3397d7d
+Info: finished in 75 ms and logs saved in /tmp/iserver\c6898e1df052
 ```
 
 [[Back]](./README.md)

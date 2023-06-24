@@ -47,7 +47,7 @@ Developer
 # iserver get aci contract --apic apic21 --type taboo --tenant k8s
 
 {
-    "duration": 1751,
+    "duration": 1834,
     "apic": {
         "read": true,
         "success": 4,
@@ -55,10 +55,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 432,
+        "connect_time": 491,
         "disconnect_time": 0,
-        "mo_time": 1117,
-        "total_time": 1549
+        "mo_time": 1084,
+        "total_time": 1575
     },
     "error": {
         "read": false,
@@ -78,10 +78,10 @@ Developer
 Log: apic
 ----------
 
-True	432	-	connect apic21o.emea-sp.cisco.com
-True	434	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	336	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	347	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	491	-	connect apic21o.emea-sp.cisco.com:443
+True	354	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	350	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	380	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./Contract.md)

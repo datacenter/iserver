@@ -15,15 +15,15 @@ Apic: apic21 (mode:online, cache:off)
 Standard Contracts
 ------------------
 
-+---------------+---------+---------+-------------+-----------------+----------------+
-| Contract      | Scope   | Intent  | Target DSCP | Subject         | Filter         |
-+---------------+---------+---------+-------------+-----------------+----------------+
-| k8s/BT-Demo   | context | install | unspecified | k8s/Any         | k8s/alltraffic | 
-+---------------+---------+---------+-------------+-----------------+----------------+
-| k8s/k8s_tn_bm | global  | install | unspecified | common/k8s_prov | common/any     | 
-+---------------+---------+---------+-------------+-----------------+----------------+
-| k8s/k8s_tn_vm | global  | install | unspecified | common/k8s_prov | common/any     | 
-+---------------+---------+---------+-------------+-----------------+----------------+
++---------------+---------+---------+-------------+---------------+----------------+
+| Contract      | Scope   | Intent  | Target DSCP | Subject       | Filter         |
++---------------+---------+---------+-------------+---------------+----------------+
+| k8s/BT-Demo   | context | install | unspecified | k8s/Any       | k8s/alltraffic | 
++---------------+---------+---------+-------------+---------------+----------------+
+| k8s/k8s_tn_bm | global  | install | unspecified | k8s/k8s_tn_vm | common/any     | 
++---------------+---------+---------+-------------+---------------+----------------+
+| k8s/k8s_tn_vm | global  | install | unspecified | k8s/k8s_tn_vm | common/any     | 
++---------------+---------+---------+-------------+---------------+----------------+
 
 Taboo Contracts
 ---------------
@@ -97,7 +97,7 @@ Developer
 # iserver get aci contract --apic apic21 --tenant k8s
 
 {
-    "duration": 2543,
+    "duration": 4695,
     "apic": {
         "read": true,
         "success": 6,
@@ -105,10 +105,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 437,
+        "connect_time": 1560,
         "disconnect_time": 0,
-        "mo_time": 1750,
-        "total_time": 2187
+        "mo_time": 2768,
+        "total_time": 4328
     },
     "error": {
         "read": false,
@@ -128,12 +128,12 @@ Developer
 Log: apic
 ----------
 
-True	437	-	connect apic21o.emea-sp.cisco.com
-True	351	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	336	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	345	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	336	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	382	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	1560	-	connect apic21o.emea-sp.cisco.com:443
+True	348	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	1367	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	358	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	352	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	343	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
 ```
 
 [[Back]](./Contract.md)

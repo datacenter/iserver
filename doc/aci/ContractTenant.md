@@ -55,7 +55,7 @@ Developer
 # iserver get aci contract --apic apic21 --view usage --tenant k8s
 
 {
-    "duration": 2613,
+    "duration": 2590,
     "apic": {
         "read": true,
         "success": 6,
@@ -63,10 +63,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 5,
-        "connect_time": 446,
+        "connect_time": 436,
         "disconnect_time": 0,
-        "mo_time": 1824,
-        "total_time": 2270
+        "mo_time": 1787,
+        "total_time": 2223
     },
     "error": {
         "read": false,
@@ -86,12 +86,12 @@ Developer
 Log: apic
 ----------
 
-True	446	-	connect apic21o.emea-sp.cisco.com
-True	379	22	apic21o.emea-sp.cisco.com class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	356	24	apic21o.emea-sp.cisco.com class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	358	30	apic21o.emea-sp.cisco.com class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-True	370	2	apic21o.emea-sp.cisco.com class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	361	2	apic21o.emea-sp.cisco.com class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
+True	436	-	connect apic21o.emea-sp.cisco.com:443
+True	388	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	362	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
+True	346	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	330	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
+True	361	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
 ```
 
 [[Back]](./Contract.md)
