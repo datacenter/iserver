@@ -17,6 +17,9 @@ class ProtocolBfdSessionInfo():
         info = {}
         info['__Output'] = {}
         for key in managed_object:
+            if key in ['healthInst']:
+                continue
+
             info[key] = managed_object[key]
 
         info['pod_node_name'] = '%s/%s' % (
@@ -25,6 +28,12 @@ class ProtocolBfdSessionInfo():
                 info['dn'].split('/')[2].split('-')[1]
             )
         )
+
+        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519058"
+        info['session_id'] = None
+        if len(info['dn'].split('/')) == 7:
+            if info['dn'].split('/')[6].startswith('session-'):
+                info['session_id'] = info['dn'].split('/')[6].split('-')[1]
 
         info['__Output']['discr'] = 'Yellow'
 
@@ -41,6 +50,14 @@ class ProtocolBfdSessionInfo():
         info['up'] = False
         if info['operSt'] == 'up' and info['remoteOperSt'] == 'up':
             info['up'] = True
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -100,7 +117,7 @@ class ProtocolBfdSessionInfo():
 
         return True
 
-    def get_protocol_bfd_sessions(self, pod_id, node_id, bfd_session_filter=None, session_info=False):
+    def get_protocol_bfd_sessions(self, pod_id, node_id, bfd_session_filter=None):
         all_bfd_sessions = self.get_protocol_bfd_sessions_info(pod_id, node_id)
         if all_bfd_sessions is None:
             return None
@@ -111,14 +128,15 @@ class ProtocolBfdSessionInfo():
             if not self.match_protocol_bfd_session(bfd_session_info, bfd_session_filter):
                 continue
 
-            if session_info:
-                bfd_session_info['peer'] = self.get_protocol_bfd_session_peer(
-                    pod_id,
-                    node_id,
-                    bfd_session_info['discr']
-                )
+            bfd_session_info['stats'] = self.get_protocol_bfd_session_stats(
+                pod_id,
+                node_id,
+                bfd_session_info['discr']
+            )
 
-                bfd_session_info['stats'] = self.get_protocol_bfd_session_stats(
+            bfd_session_info['peer'] = None
+            if bfd_session_info['up']:
+                bfd_session_info['peer'] = self.get_protocol_bfd_session_peer(
                     pod_id,
                     node_id,
                     bfd_session_info['discr']
@@ -130,7 +148,10 @@ class ProtocolBfdSessionInfo():
 
         bfd_sessions = sorted(
             bfd_sessions,
-            key=lambda i: i['srcAddr'].lower()
+            key=lambda i: (
+                i['srcAddr'].lower(),
+                i['destAddr'].lower()
+            )
         )
 
         return bfd_sessions

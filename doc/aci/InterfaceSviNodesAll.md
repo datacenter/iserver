@@ -3,286 +3,99 @@
 ## All nodes
 
 ```
-# iserver get aci intf svi --apic apic11 --node any
+# iserver get aci intf svi --apic apic21 --node any --type ext
 
-Apic: apic11 (mode:online, cache:off)
+Apic: apic21 (mode:online, cache:off)
 Pod: 1
-- node: bl205-eu-spdc
-- node: bl206-eu-spdc
-- node: cl201-eu-spdc
-- node: cl202-eu-spdc
-- node: cl209-eu-spdc
-- node: cl210-eu-spdc
-- node: rl301-eu-spdc
-- node: rl302-eu-spdc
-- node: s101-eu-spdc
-- node: s102-eu-spdc
+- node: bl2205-eu-spdc
+- node: bl2206-eu-spdc
+- node: cl2201-eu-spdc
+- node: cl2202-eu-spdc
+- node: cl2207-eu-spdc
+- node: cl2208-eu-spdc
+- node: cl2209-eu-spdc
+- node: cl2210-eu-spdc
+- node: rl2701-eu-spdc
+- node: rl2702-eu-spdc
+- node: s2101-eu-spdc
+- node: s2102-eu-spdc
 
-+---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
-| Node                | Interface | Admin State | Oper State | Type        | Medium | Multicast | MTU  | Fabric Encap   |
-+---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
-| pod-1/bl205-eu-spdc | vlan1     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811132 | 
-| pod-1/bl205-eu-spdc | vlan11    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16121819 | 
-| pod-1/bl205-eu-spdc | vlan13    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023531 | 
-| pod-1/bl205-eu-spdc | vlan15    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990757 | 
-| pod-1/bl205-eu-spdc | vlan17    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957988 | 
-| pod-1/bl205-eu-spdc | vlan18    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942188 | 
-| pod-1/bl205-eu-spdc | vlan19    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15531940 | 
-| pod-1/bl205-eu-spdc | vlan2     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/bl205-eu-spdc | vlan20    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942189 | 
-| pod-1/bl205-eu-spdc | vlan21    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/bl205-eu-spdc | vlan22    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/bl205-eu-spdc | vlan23    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613266 | 
-| pod-1/bl205-eu-spdc | vlan25    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/bl205-eu-spdc | vlan27    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15826914 | 
-| pod-1/bl205-eu-spdc | vlan29    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/bl205-eu-spdc | vlan3     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15925228 | 
-| pod-1/bl205-eu-spdc | vlan30    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/bl205-eu-spdc | vlan32    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990761 | 
-| pod-1/bl205-eu-spdc | vlan33    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/bl205-eu-spdc | vlan35    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/bl205-eu-spdc | vlan37    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580520 | 
-| pod-1/bl205-eu-spdc | vlan39    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14778362 | 
-| pod-1/bl205-eu-spdc | vlan40    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/bl205-eu-spdc | vlan43    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335346 | 
-| pod-1/bl205-eu-spdc | vlan44    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15499182 | 
-| pod-1/bl205-eu-spdc | vlan45    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15597468 | 
-| pod-1/bl205-eu-spdc | vlan49    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15040482 | 
-| pod-1/bl205-eu-spdc | vlan5     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106014 | 
-| pod-1/bl205-eu-spdc | vlan56    | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-15597457 | 
-| pod-1/bl205-eu-spdc | vlan57    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909413 | 
-| pod-1/bl205-eu-spdc | vlan59    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/bl205-eu-spdc | vlan6     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/bl205-eu-spdc | vlan61    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023498 | 
-| pod-1/bl205-eu-spdc | vlan65    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15761410 | 
-| pod-1/bl205-eu-spdc | vlan67    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400881 | 
-| pod-1/bl205-eu-spdc | vlan68    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089048 | 
-| pod-1/bl205-eu-spdc | vlan70    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15695752 | 
-| pod-1/bl205-eu-spdc | vlan72    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106012 | 
-| pod-1/bl206-eu-spdc | vlan11    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023531 | 
-| pod-1/bl206-eu-spdc | vlan13    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16121819 | 
-| pod-1/bl206-eu-spdc | vlan15    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990757 | 
-| pod-1/bl206-eu-spdc | vlan17    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990761 | 
-| pod-1/bl206-eu-spdc | vlan18    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15826914 | 
-| pod-1/bl206-eu-spdc | vlan2     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811132 | 
-| pod-1/bl206-eu-spdc | vlan20    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/bl206-eu-spdc | vlan22    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/bl206-eu-spdc | vlan24    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/bl206-eu-spdc | vlan26    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580520 | 
-| pod-1/bl206-eu-spdc | vlan28    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/bl206-eu-spdc | vlan3     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106014 | 
-| pod-1/bl206-eu-spdc | vlan30    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15499182 | 
-| pod-1/bl206-eu-spdc | vlan31    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14778362 | 
-| pod-1/bl206-eu-spdc | vlan32    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15597468 | 
-| pod-1/bl206-eu-spdc | vlan33    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335346 | 
-| pod-1/bl206-eu-spdc | vlan34    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942189 | 
-| pod-1/bl206-eu-spdc | vlan35    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15531940 | 
-| pod-1/bl206-eu-spdc | vlan36    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/bl206-eu-spdc | vlan37    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/bl206-eu-spdc | vlan38    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/bl206-eu-spdc | vlan39    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957988 | 
-| pod-1/bl206-eu-spdc | vlan4     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942188 | 
-| pod-1/bl206-eu-spdc | vlan40    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/bl206-eu-spdc | vlan41    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023498 | 
-| pod-1/bl206-eu-spdc | vlan43    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15761410 | 
-| pod-1/bl206-eu-spdc | vlan45    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613266 | 
-| pod-1/bl206-eu-spdc | vlan47    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/bl206-eu-spdc | vlan5     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15925228 | 
-| pod-1/bl206-eu-spdc | vlan50    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106012 | 
-| pod-1/bl206-eu-spdc | vlan51    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089048 | 
-| pod-1/bl206-eu-spdc | vlan53    | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-15597457 | 
-| pod-1/bl206-eu-spdc | vlan57    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15040482 | 
-| pod-1/bl206-eu-spdc | vlan58    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400881 | 
-| pod-1/bl206-eu-spdc | vlan7     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/bl206-eu-spdc | vlan8     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/cl201-eu-spdc | vlan2     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16121819 | 
-| pod-1/cl201-eu-spdc | vlan20    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023531 | 
-| pod-1/cl201-eu-spdc | vlan230   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14974941 | 
-| pod-1/cl201-eu-spdc | vlan244   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/cl201-eu-spdc | vlan252   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/cl201-eu-spdc | vlan268   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15171555 | 
-| pod-1/cl201-eu-spdc | vlan270   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580520 | 
-| pod-1/cl201-eu-spdc | vlan274   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14876654 | 
-| pod-1/cl201-eu-spdc | vlan276   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15564707 | 
-| pod-1/cl201-eu-spdc | vlan278   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16220083 | 
-| pod-1/cl201-eu-spdc | vlan280   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/cl201-eu-spdc | vlan282   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613266 | 
-| pod-1/cl201-eu-spdc | vlan286   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15237079 | 
-| pod-1/cl201-eu-spdc | vlan288   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/cl201-eu-spdc | vlan290   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/cl201-eu-spdc | vlan293   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/cl201-eu-spdc | vlan295   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/cl201-eu-spdc | vlan310   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/cl201-eu-spdc | vlan312   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/cl201-eu-spdc | vlan316   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368109 | 
-| pod-1/cl201-eu-spdc | vlan32    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15138766 | 
-| pod-1/cl201-eu-spdc | vlan330   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335355 | 
-| pod-1/cl201-eu-spdc | vlan334   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335344 | 
-| pod-1/cl201-eu-spdc | vlan344   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14680100 | 
-| pod-1/cl201-eu-spdc | vlan36    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15007732 | 
-| pod-1/cl201-eu-spdc | vlan440   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15695752 | 
-| pod-1/cl201-eu-spdc | vlan442   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106004 | 
-| pod-1/cl201-eu-spdc | vlan444   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/cl201-eu-spdc | vlan460   | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-14974945 | 
-| pod-1/cl201-eu-spdc | vlan461   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15564695 | 
-| pod-1/cl201-eu-spdc | vlan468   | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-15663008 | 
-| pod-1/cl201-eu-spdc | vlan469   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14974946 | 
-| pod-1/cl201-eu-spdc | vlan470   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14843889 | 
-| pod-1/cl201-eu-spdc | vlan471   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15237064 | 
-| pod-1/cl201-eu-spdc | vlan472   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15695753 | 
-| pod-1/cl201-eu-spdc | vlan473   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15630240 | 
-| pod-1/cl201-eu-spdc | vlan474   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15007727 | 
-| pod-1/cl201-eu-spdc | vlan479   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15237063 | 
-| pod-1/cl201-eu-spdc | vlan480   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14974957 | 
-| pod-1/cl201-eu-spdc | vlan481   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089048 | 
-| pod-1/cl201-eu-spdc | vlan487   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15761410 | 
-| pod-1/cl201-eu-spdc | vlan489   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023498 | 
-| pod-1/cl201-eu-spdc | vlan492   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15073248 | 
-| pod-1/cl201-eu-spdc | vlan493   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400908 | 
-| pod-1/cl201-eu-spdc | vlan494   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14778380 | 
-| pod-1/cl201-eu-spdc | vlan495   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15302600 | 
-| pod-1/cl201-eu-spdc | vlan496   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15433637 | 
-| pod-1/cl201-eu-spdc | vlan497   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15007742 | 
-| pod-1/cl201-eu-spdc | vlan498   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15368123 | 
-| pod-1/cl201-eu-spdc | vlan499   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15040493 | 
-| pod-1/cl201-eu-spdc | vlan58    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/cl201-eu-spdc | vlan60    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15826914 | 
-| pod-1/cl201-eu-spdc | vlan74    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14876676 | 
-| pod-1/cl201-eu-spdc | vlan80    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990757 | 
-| pod-1/cl201-eu-spdc | vlan88    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15925228 | 
-| pod-1/cl201-eu-spdc | vlan9     | up          | up         | bd-control  | bcast  | no        | 9216 | vxlan-16777209 | 
-| pod-1/cl202-eu-spdc | vlan12    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023531 | 
-| pod-1/cl202-eu-spdc | vlan14    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16121819 | 
-| pod-1/cl202-eu-spdc | vlan146   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/cl202-eu-spdc | vlan148   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14876654 | 
-| pod-1/cl202-eu-spdc | vlan150   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15826914 | 
-| pod-1/cl202-eu-spdc | vlan152   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613266 | 
-| pod-1/cl202-eu-spdc | vlan164   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15925228 | 
-| pod-1/cl202-eu-spdc | vlan182   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/cl202-eu-spdc | vlan186   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15138766 | 
-| pod-1/cl202-eu-spdc | vlan192   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15007732 | 
-| pod-1/cl202-eu-spdc | vlan282   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580520 | 
-| pod-1/cl202-eu-spdc | vlan284   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14680100 | 
-| pod-1/cl202-eu-spdc | vlan316   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15171555 | 
-| pod-1/cl202-eu-spdc | vlan34    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990757 | 
-| pod-1/cl202-eu-spdc | vlan362   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/cl202-eu-spdc | vlan388   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14974941 | 
-| pod-1/cl202-eu-spdc | vlan390   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16220083 | 
-| pod-1/cl202-eu-spdc | vlan410   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/cl202-eu-spdc | vlan412   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/cl202-eu-spdc | vlan414   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15564707 | 
-| pod-1/cl202-eu-spdc | vlan416   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16023498 | 
-| pod-1/cl202-eu-spdc | vlan420   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/cl202-eu-spdc | vlan422   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15237079 | 
-| pod-1/cl202-eu-spdc | vlan424   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/cl202-eu-spdc | vlan426   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335344 | 
-| pod-1/cl202-eu-spdc | vlan428   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15761410 | 
-| pod-1/cl202-eu-spdc | vlan430   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368109 | 
-| pod-1/cl202-eu-spdc | vlan432   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/cl202-eu-spdc | vlan434   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106004 | 
-| pod-1/cl202-eu-spdc | vlan437   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335355 | 
-| pod-1/cl202-eu-spdc | vlan439   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/cl202-eu-spdc | vlan441   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/cl202-eu-spdc | vlan465   | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-14974945 | 
-| pod-1/cl202-eu-spdc | vlan466   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14974946 | 
-| pod-1/cl202-eu-spdc | vlan467   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15630240 | 
-| pod-1/cl202-eu-spdc | vlan468   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15007727 | 
-| pod-1/cl202-eu-spdc | vlan469   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15695753 | 
-| pod-1/cl202-eu-spdc | vlan470   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15237063 | 
-| pod-1/cl202-eu-spdc | vlan471   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15237064 | 
-| pod-1/cl202-eu-spdc | vlan472   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400908 | 
-| pod-1/cl202-eu-spdc | vlan473   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15073248 | 
-| pod-1/cl202-eu-spdc | vlan482   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15564695 | 
-| pod-1/cl202-eu-spdc | vlan483   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15040493 | 
-| pod-1/cl202-eu-spdc | vlan484   | up          | up         | bd-external | bcast  | no        | 1500 | vxlan-15663008 | 
-| pod-1/cl202-eu-spdc | vlan485   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14843889 | 
-| pod-1/cl202-eu-spdc | vlan486   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15368123 | 
-| pod-1/cl202-eu-spdc | vlan487   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15433637 | 
-| pod-1/cl202-eu-spdc | vlan488   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15007742 | 
-| pod-1/cl202-eu-spdc | vlan489   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14778380 | 
-| pod-1/cl202-eu-spdc | vlan490   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15302600 | 
-| pod-1/cl202-eu-spdc | vlan491   | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-14974957 | 
-| pod-1/cl202-eu-spdc | vlan492   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089048 | 
-| pod-1/cl202-eu-spdc | vlan494   | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/cl202-eu-spdc | vlan6     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14876676 | 
-| pod-1/cl202-eu-spdc | vlan9     | up          | up         | bd-control  | bcast  | no        | 9216 | vxlan-16777209 | 
-| pod-1/rl301-eu-spdc | vlan10    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957988 | 
-| pod-1/rl301-eu-spdc | vlan12    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942188 | 
-| pod-1/rl301-eu-spdc | vlan13    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106014 | 
-| pod-1/rl301-eu-spdc | vlan14    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942189 | 
-| pod-1/rl301-eu-spdc | vlan15    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/rl301-eu-spdc | vlan16    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106012 | 
-| pod-1/rl301-eu-spdc | vlan17    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15597468 | 
-| pod-1/rl301-eu-spdc | vlan18    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811132 | 
-| pod-1/rl301-eu-spdc | vlan19    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/rl301-eu-spdc | vlan20    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335346 | 
-| pod-1/rl301-eu-spdc | vlan21    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15499182 | 
-| pod-1/rl301-eu-spdc | vlan22    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15466426 | 
-| pod-1/rl301-eu-spdc | vlan23    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15531941 | 
-| pod-1/rl301-eu-spdc | vlan24    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15368121 | 
-| pod-1/rl301-eu-spdc | vlan25    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400882 | 
-| pod-1/rl301-eu-spdc | vlan26    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/rl301-eu-spdc | vlan28    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/rl301-eu-spdc | vlan29    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14778362 | 
-| pod-1/rl301-eu-spdc | vlan30    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/rl301-eu-spdc | vlan31    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/rl301-eu-spdc | vlan33    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/rl301-eu-spdc | vlan34    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580517 | 
-| pod-1/rl301-eu-spdc | vlan36    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/rl301-eu-spdc | vlan37    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/rl301-eu-spdc | vlan38    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/rl301-eu-spdc | vlan39    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990761 | 
-| pod-1/rl301-eu-spdc | vlan41    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/rl301-eu-spdc | vlan9     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15531940 | 
-| pod-1/rl302-eu-spdc | vlan10    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957988 | 
-| pod-1/rl302-eu-spdc | vlan12    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942188 | 
-| pod-1/rl302-eu-spdc | vlan13    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106014 | 
-| pod-1/rl302-eu-spdc | vlan14    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14942189 | 
-| pod-1/rl302-eu-spdc | vlan15    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15302605 | 
-| pod-1/rl302-eu-spdc | vlan16    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811132 | 
-| pod-1/rl302-eu-spdc | vlan17    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15957992 | 
-| pod-1/rl302-eu-spdc | vlan18    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15106012 | 
-| pod-1/rl302-eu-spdc | vlan19    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15499182 | 
-| pod-1/rl302-eu-spdc | vlan20    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15597468 | 
-| pod-1/rl302-eu-spdc | vlan21    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15335346 | 
-| pod-1/rl302-eu-spdc | vlan22    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15466426 | 
-| pod-1/rl302-eu-spdc | vlan23    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15368121 | 
-| pod-1/rl302-eu-spdc | vlan24    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15400882 | 
-| pod-1/rl302-eu-spdc | vlan25    | up          | up         | bd-external | bcast  | no        | 9000 | vxlan-15531941 | 
-| pod-1/rl302-eu-spdc | vlan26    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14811140 | 
-| pod-1/rl302-eu-spdc | vlan28    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909416 | 
-| pod-1/rl302-eu-spdc | vlan29    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14778362 | 
-| pod-1/rl302-eu-spdc | vlan30    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16613250 | 
-| pod-1/rl302-eu-spdc | vlan32    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-14909414 | 
-| pod-1/rl302-eu-spdc | vlan33    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16580517 | 
-| pod-1/rl302-eu-spdc | vlan35    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15368120 | 
-| pod-1/rl302-eu-spdc | vlan36    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15040489 | 
-| pod-1/rl302-eu-spdc | vlan37    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285628 | 
-| pod-1/rl302-eu-spdc | vlan38    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16089039 | 
-| pod-1/rl302-eu-spdc | vlan39    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15990761 | 
-| pod-1/rl302-eu-spdc | vlan41    | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-16285610 | 
-| pod-1/rl302-eu-spdc | vlan9     | up          | up         | bd-regular  | bcast  | no        | 9000 | vxlan-15531940 | 
-+---------------------+-----------+-------------+------------+-------------+--------+-----------+------+----------------+
+Interface SVI State [#22]
+-------------------------
+
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| Node                 | Health | Faults  | Interface | Admin | Oper | Type | Medium | Mcast | MTU  | VLAN | Access Encap | Fabric Encap   | MAC               | IPv4                  |
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/bl2205-eu-spdc | 100    | 0 0 0 0 | vlan1     | up    | up   | Ext  | bcast  | no    | 9000 | 1    | vlan-2501    | vxlan-15269817 | 00:22:BD:F8:25:01 | 192.168.23.205/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/bl2205-eu-spdc | 100    | 0 0 0 0 | vlan20    | up    | up   | Ext  | bcast  | no    | 9000 | 20   | vlan-2502    | vxlan-15105996 | 00:22:BD:F8:25:02 | 192.168.24.205/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/bl2206-eu-spdc | 100    | 0 0 0 0 | vlan1     | up    | up   | Ext  | bcast  | no    | 9000 | 1    | vlan-2501    | vxlan-15269817 | 00:22:BD:F8:25:01 | 192.168.23.206/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/bl2206-eu-spdc | 100    | 0 0 0 0 | vlan2     | up    | up   | Ext  | bcast  | no    | 9000 | 2    | vlan-2502    | vxlan-15105996 | 00:22:BD:F8:25:02 | 192.168.24.206/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2201-eu-spdc | 100    | 0 0 0 0 | vlan1     | up    | up   | Ext  | bcast  | no    | 9000 | 1    | vlan-601     | vxlan-15040469 | 00:22:BD:F8:19:FF | 15.16.131.253/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2201-eu-spdc | 100    | 0 0 0 0 | vlan2     | up    | up   | Ext  | bcast  | no    | 9000 | 2    | vlan-2503    | vxlan-15662985 | 00:22:BD:F8:25:03 | 192.168.20.201/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2201-eu-spdc | 100    | 0 0 0 0 | vlan20    | up    | up   | Ext  | bcast  | no    | 9000 | 20   | vlan-804     | vxlan-15269820 | 00:22:BD:B8:99:AA | 10.58.24.125/28 (pri) | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 10.58.24.126/28       | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2202-eu-spdc | 100    | 0 0 0 0 | vlan1     | up    | up   | Ext  | bcast  | no    | 9000 | 1    | vlan-601     | vxlan-15040469 | 00:22:BD:F8:19:FF | 15.16.131.252/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2202-eu-spdc | 100    | 0 0 0 0 | vlan2     | up    | up   | Ext  | bcast  | no    | 9000 | 2    | vlan-2503    | vxlan-15662985 | 00:22:BD:F8:25:03 | 192.168.20.202/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2202-eu-spdc | 100    | 0 0 0 0 | vlan20    | up    | up   | Ext  | bcast  | no    | 9000 | 20   | vlan-804     | vxlan-15269820 | 00:22:BD:B8:99:AA | 10.58.24.124/28 (pri) | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 10.58.24.126/28       | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 99     | 0 0 0 1 | vlan26    | up    | up   | Ext  | bcast  | no    | 1500 | 26   | vlan-810     | vxlan-15040476 | 00:22:BD:F8:19:FF | 169.254.0.1/24 (pri)  | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 169.254.0.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 100    | 0 0 0 0 | vlan27    | up    | up   | Ext  | bcast  | no    | 1500 | 27   | vlan-812     | vxlan-15237056 | 00:22:BD:F8:19:FF | 169.254.2.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 99     | 0 0 0 1 | vlan28    | up    | up   | Ext  | bcast  | no    | 1500 | 28   | vlan-811     | vxlan-14942183 | 00:22:BD:F8:19:FF | 169.254.1.1/24 (pri)  | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 169.254.1.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 100    | 0 0 0 0 | vlan29    | up    | up   | Ext  | bcast  | no    | 1500 | 29   | vlan-813     | vxlan-15269821 | 00:22:BD:F8:19:FF | 169.254.3.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 100    | 0 0 0 0 | vlan30    | up    | up   | Ext  | bcast  | no    | 9000 | 30   | vlan-2501    | vxlan-15269817 | 00:22:BD:F8:25:01 | 192.168.23.207/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2207-eu-spdc | 100    | 0 0 0 0 | vlan31    | up    | up   | Ext  | bcast  | no    | 9000 | 31   | vlan-2502    | vxlan-15105996 | 00:22:BD:F8:25:02 | 192.168.24.207/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 100    | 0 0 0 0 | vlan25    | up    | up   | Ext  | bcast  | no    | 9000 | 25   | vlan-2502    | vxlan-15105996 | 00:22:BD:F8:25:02 | 192.168.24.208/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 100    | 0 0 0 0 | vlan26    | up    | up   | Ext  | bcast  | no    | 9000 | 26   | vlan-2501    | vxlan-15269817 | 00:22:BD:F8:25:01 | 192.168.23.208/24     | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 99     | 0 0 0 1 | vlan27    | up    | up   | Ext  | bcast  | no    | 1500 | 27   | vlan-813     | vxlan-15269821 | 00:22:BD:F8:19:FF | 169.254.3.1/24 (pri)  | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 169.254.3.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 100    | 0 0 0 0 | vlan28    | up    | up   | Ext  | bcast  | no    | 1500 | 28   | vlan-811     | vxlan-14942183 | 00:22:BD:F8:19:FF | 169.254.1.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 100    | 0 0 0 0 | vlan29    | up    | up   | Ext  | bcast  | no    | 1500 | 29   | vlan-810     | vxlan-15040476 | 00:22:BD:F8:19:FF | 169.254.0.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
+| pod-1/cl2208-eu-spdc | 99     | 0 0 0 1 | vlan30    | up    | up   | Ext  | bcast  | no    | 1500 | 30   | vlan-812     | vxlan-15237056 | 00:22:BD:F8:19:FF | 169.254.2.1/24 (pri)  | 
+|                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 169.254.2.254/24      | 
++----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------------+
 ```
 
 Developer
 
 ```
-# iserver get aci intf svi --apic apic11 --node any
+# iserver get aci intf svi --apic apic21 --node any --type ext
 
 {
-    "duration": 8092,
+    "duration": 9835,
     "apic": {
         "read": true,
-        "success": 22,
+        "success": 26,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 21,
-        "connect_time": 382,
+        "mo": 25,
+        "connect_time": 404,
         "disconnect_time": 0,
-        "mo_time": 6952,
-        "total_time": 7334
+        "mo_time": 8211,
+        "total_time": 8615
     },
     "error": {
         "read": false,
@@ -302,28 +115,32 @@ Developer
 Log: apic
 ----------
 
-True	382	-	connect apic11o.emea-sp.cisco.com
-True	296	13	apic11o.emea-sp.cisco.com class fabricNode
-True	386	38	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	285	61	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ipv4Addr
-True	381	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	292	63	apic11o.emea-sp.cisco.com class topology/pod-1/node-206/ipv4Addr
-True	481	56	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	304	91	apic11o.emea-sp.cisco.com class topology/pod-1/node-201/ipv4Addr
-True	439	55	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	297	90	apic11o.emea-sp.cisco.com class topology/pod-1/node-202/ipv4Addr
-True	316	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	342	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-209/ipv4Addr
-True	303	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	334	2	apic11o.emea-sp.cisco.com class topology/pod-1/node-210/ipv4Addr
-True	370	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	294	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-301/ipv4Addr
-True	362	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	291	46	apic11o.emea-sp.cisco.com class topology/pod-1/node-302/ipv4Addr
-True	300	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	286	23	apic11o.emea-sp.cisco.com class topology/pod-1/node-101/ipv4Addr
-True	301	0	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required
-True	292	22	apic11o.emea-sp.cisco.com class topology/pod-1/node-102/ipv4Addr
+True	404	-	connect apic21o.emea-sp.cisco.com:443
+True	306	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	407	10	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	291	24	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/ipv4Addr
+True	343	10	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2206/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	275	24	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2206/ipv4Addr
+True	537	19	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2201/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	305	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2201/ipv4Addr
+True	411	19	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2202/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	312	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2202/ipv4Addr
+True	371	21	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2207/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	293	30	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2207/ipv4Addr
+True	418	20	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	264	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
+True	274	0	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2209/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	258	3	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2209/ipv4Addr
+True	279	0	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2210/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	300	3	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2210/ipv4Addr
+True	341	5	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2701/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	306	13	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2701/ipv4Addr
+True	359	6	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2702/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	308	14	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2702/ipv4Addr
+True	281	1	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2101/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	334	21	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2101/ipv4Addr
+True	306	1	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2102/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	332	21	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2102/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

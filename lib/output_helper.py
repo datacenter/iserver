@@ -319,6 +319,9 @@ class OutputHelper():
         return value
 
     def add_key_color(self, key, value, value_definition):
+        if value_definition is None:
+            return value
+
         if '__Output' not in value_definition:
             return value
 
@@ -355,6 +358,10 @@ class OutputHelper():
 
                 if letters[index] == 'R':
                     colored_output = colored_output + colorama.Fore.RED + letter + colorama.Fore.RESET
+                    continue
+
+                if letters[index] == 'M':
+                    colored_output = colored_output + colorama.Fore.MAGENTA + letter + colorama.Fore.RESET
                     continue
 
                 if letters[index] == 'G':
@@ -413,7 +420,20 @@ class OutputHelper():
         return headers, order
 
     def expand_lists(self, values_ref, order, keys, filtering_rules=None):
-        values = copy.deepcopy(values_ref)
+        # this optimizes the expand_lists by using only relevant keys
+        values = []
+        for value_ref in values_ref:
+            item = {}
+            for order_key in order:
+                key = order_key.split('.')[0]
+                if key not in item:
+                    item[key] = value_ref[key]
+
+            if '__Output' in value_ref:
+                item['__Output'] = value_ref['__Output']
+
+            values.append(item)
+
         new_values = []
         for value in values:
             max_key_length = 0

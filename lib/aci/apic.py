@@ -6,6 +6,7 @@ from lib.aci import settings
 
 from lib.aci.api import Api
 from lib.aci.cache import Cache
+from lib.aci.common import Common
 
 from lib.aci.ap.main import ApplicationProfile
 from lib.aci.bd.main import BridgeDomain
@@ -32,6 +33,7 @@ class Apic(
         ApplicationProfile,
         BridgeDomain,
         Cache,
+        Common,
         Contract,
         Domain,
         Endpoint,
@@ -74,6 +76,7 @@ class Apic(
             password
         )
         Cache.__init__(self, self.apic_name, no_cache=no_cache)
+        Common.__init__(self)
 
         ApplicationProfile.__init__(self)
         BridgeDomain.__init__(self)

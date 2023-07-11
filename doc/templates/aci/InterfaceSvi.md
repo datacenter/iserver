@@ -2,6 +2,10 @@
 
 ## SVI
 
+Example:
+
+![InterfaceSvi](images/interface_svi.png)
+
 Node selection options:
   - [single node](./InterfaceSviNode.md)
   - [selected nodes](./InterfaceSviNodes.md)
@@ -9,21 +13,29 @@ Node selection options:
   - [multi APIC](./InterfaceSviNodesApics.md)
 
 Filter options:
-  - [Interface ID](./InterfaceSviId.md)
-  - [Interface Type](./InterfaceSviType.md)
-  - [Oper State](./InterfaceSviState.md)
-  - [MAC Address](./InterfaceSviMac.md)
-  - [IP address](./InterfaceSviIp.md)
-  - [IP subnet](./InterfaceSviSubnet.md)
+  - [Interface Name](./InterfaceSviFilterName.md)
+  - [Interface Type](./InterfaceSviFilterType.md)
+  - [Oper State](./InterfaceSviFilterState.md)
+  - [VLAN](./InterfaceSviFilterVlan.md)
+  - [Access Encapsulation](./InterfaceSviFilterAccess.md)
+  - [Fabric Encapsulation](./InterfaceSviFilterFabric.md)
+  - [MAC Address](./InterfaceSviFilterMac.md)
+  - [IP address](./InterfaceSviFilterIp.md)
+  - [IP subnet](./InterfaceSviFilterSubnet.md)
+  - [Fault or Event Severity](./InterfaceSviFilterSeverity.md)
+  - [Fault or Event Time Window](./InterfaceSviFilterWhen.md)
 
 View options:
-  - [default](./InterfaceSviOutputState.md)
-  - [address](./InterfaceSviOutputAddress.md)
-  - [counter](./InterfaceSviOutputCounter.md)
-  - [verbose](./InterfaceSviOutputVerbose.md)
+  - [state](./InterfaceSviViewState.md)
+  - [stats](./InterfaceSviViewStats.md)
+  - [event](./InterfaceSviViewEvent.md)
+  - [fault](./InterfaceSviViewFault.md)
+  - [diag](./InterfaceSviViewDiag.md)
+  - [all](./InterfaceSviViewAll.md)
+  - [verbose](./InterfaceSviViewVerbose.md)
 
 Output options:
-  - [state](./InterfaceSviOutputState.md)
+  - [default](./InterfaceSviOutputDefault.md)
   - [json](./InterfaceSviOutputJson.md)
 
 Command options

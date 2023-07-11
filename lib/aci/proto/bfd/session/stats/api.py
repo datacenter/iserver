@@ -2,6 +2,28 @@ class ProtocolBfdSessionStatsApi():
     def __init__(self):
         self.bfd_session_stats_mo = {}
 
+    def set_protocol_bfd_session_stats_mo(self, managed_object):
+        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519041/stats"
+
+        stats_dn = managed_object['bfdSessStats']['attributes']['dn']
+        pod_id = stats_dn.split('/')[1][4:]
+        node_id = stats_dn.split('/')[2][5:]
+        session_id = stats_dn.split('/')[6][8:]
+        key = '%s.%s.%s' % (pod_id, node_id, session_id)
+
+        self.bfd_session_stats_mo[key] = managed_object['bfdSessStats']['attributes']
+
+        self.log.apic_mo(
+            'bfdSessStats.%s' % (key),
+            self.bfd_session_stats_mo[key]
+        )
+
+        self.set_object_cache(
+            'bfdSessStats',
+            self.bfd_session_stats_mo[key],
+            object_selector=key
+        )
+
     def get_protocol_bfd_session_stats_mo(self, pod_id, node_id, session_id):
         key = '%s.%s.%s' % (pod_id, node_id, session_id)
         if key in self.bfd_session_stats_mo:

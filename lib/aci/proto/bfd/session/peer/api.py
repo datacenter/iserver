@@ -2,6 +2,28 @@ class ProtocolBfdSessionPeerApi():
     def __init__(self):
         self.bfd_session_peer_mo = {}
 
+    def set_protocol_bfd_session_peer_mo(self, managed_object):
+        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519051/peerv"
+
+        stats_dn = managed_object['bfdPeerV']['attributes']['dn']
+        pod_id = stats_dn.split('/')[1][4:]
+        node_id = stats_dn.split('/')[2][5:]
+        session_id = stats_dn.split('/')[6][8:]
+        key = '%s.%s.%s' % (pod_id, node_id, session_id)
+
+        self.bfd_session_peer_mo[key] = managed_object['bfdPeerV']['attributes']
+
+        self.log.apic_mo(
+            'bfdPeerV.%s' % (key),
+            self.bfd_session_peer_mo[key]
+        )
+
+        self.set_object_cache(
+            'bfdPeerV',
+            self.bfd_session_peer_mo[key],
+            object_selector=key
+        )
+
     def get_protocol_bfd_session_peer_mo(self, pod_id, node_id, session_id):
         key = '%s.%s.%s' % (pod_id, node_id, session_id)
         if key in self.bfd_session_peer_mo:

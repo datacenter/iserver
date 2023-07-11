@@ -1,3 +1,6 @@
+import time
+from datetime import datetime
+
 from lib import filter_helper
 
 
@@ -28,6 +31,7 @@ class SystemFaultInfo():
         self.system_fault_severity_name['major'] = 'Maj'
         self.system_fault_severity_name['minor'] = 'Min'
         self.system_fault_severity_name['warning'] = 'Warn'
+        self.system_fault_severity_name['info'] = 'Info'
         self.system_fault_severity_name['cleared'] = '--'
 
         self.system_fault_severity_color = {}
@@ -36,6 +40,7 @@ class SystemFaultInfo():
         self.system_fault_severity_color['minor'] = 'Yellow'
         self.system_fault_severity_color['warning'] = 'Green'
         self.system_fault_severity_color['cleared'] = 'Blue'
+        self.system_fault_severity_color['info'] = 'Blue'
 
     def get_system_faults_max_severity(self, faults):
         if faults is None or len(faults) == 0:
@@ -211,7 +216,7 @@ class SystemFaultInfo():
         info['count'] = int(info['occur'])
 
         info['severityT'] = self.system_fault_severity_name[info['severity']]
-        info['__Output']['severity'] = self.system_fault_severity_color[info['severity']]
+        info['__Output']['severityT'] = self.system_fault_severity_color[info['severity']]
 
         info['descrT'] = filter_helper.get_string_chunks(
             filter_helper.sanitize_string(
@@ -229,6 +234,16 @@ class SystemFaultInfo():
         # info['scope'] = self.get_system_fault_scope(
         #     managed_object
         # )
+
+        # "2022-04-29T13:32:45.167+02:00"
+        info['timestamp'] = int(
+            time.mktime(
+                datetime.strptime(
+                    info['created'],
+                    '%Y-%m-%dT%H:%M:%S.%f%z'
+                ).timetuple()
+            )
+        )
 
         return info
 
@@ -255,9 +270,10 @@ class SystemFaultInfo():
 
         return self.system_fault
 
-    def match_system_fault(self, system_fault_info, system_fault_filter):
-        if system_fault_info['severity'] == 'cleared':
-            return False
+    def match_system_fault(self, system_fault_info, system_fault_filter, exclude_cleared=True):
+        if exclude_cleared:
+            if system_fault_info['severity'] == 'cleared':
+                return False
 
         if system_fault_filter is None or len(system_fault_filter) == 0:
             return True
@@ -330,6 +346,11 @@ class SystemFaultInfo():
                 if not matched:
                     if not filter_helper.match_string(value, system_fault_info['code']):
                         return False
+
+            if key == 'timestamp':
+                found = True
+                if not filter_helper.match_timestamp(value, system_fault_info['timestamp']):
+                    return False
 
             if key == 'dn':
                 found = True

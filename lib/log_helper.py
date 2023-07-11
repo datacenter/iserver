@@ -867,7 +867,7 @@ class Log():
 
         return content
 
-    def apic_mo(self, name, managed_object):
+    def apic_mo(self, name, managed_object, overwrite=False):
         try:
             name = name.replace('/', '_')
             filename = os.path.join(
@@ -875,7 +875,7 @@ class Log():
                 'apic.mo.%s' % (name)
             )
 
-            if not os.path.isfile(filename):
+            if overwrite or not os.path.isfile(filename):
                 self.safe_write(
                     filename,
                     json.dumps(

@@ -2,6 +2,38 @@ class ProtocolBfdInterfaceApi():
     def __init__(self):
         self.bfd_interfaces_mo = {}
 
+    def set_protocol_bfd_interface_mo(self, managed_object):
+        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/if-[vlan27]"
+
+        interface_dn = managed_object['bfdIf']['attributes']['dn']
+        pod_id = interface_dn.split('/')[1][4:]
+        node_id = interface_dn.split('/')[2][5:]
+        key = '%s.%s' % (pod_id, node_id)
+
+        if key not in self.bfd_interfaces_mo:
+            self.bfd_interfaces_mo[key] = []
+
+        self.bfd_interfaces_mo[key].append(
+            managed_object['bfdIf']['attributes']
+        )
+
+    def set_protocol_bfd_interface_log(self, key):
+        if key not in self.bfd_interfaces_mo:
+            return False
+
+        self.log.apic_mo(
+            'bfdIf.%s' % (key),
+            self.bfd_interfaces_mo[key]
+        )
+
+        self.set_object_cache(
+            'bfdIf',
+            self.bfd_interfaces_mo[key],
+            object_selector=key
+        )
+
+        return True
+
     def get_protocol_bfd_interfaces_mo(self, pod_id, node_id):
         key = '%s.%s' % (pod_id, node_id)
         if key in self.bfd_interfaces_mo:

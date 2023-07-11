@@ -1,4 +1,5 @@
 import re
+import time
 
 
 def sanitize_string(value):
@@ -399,5 +400,46 @@ def match_id(key, values):
 
             if ikey == ivalue:
                 return True
+
+    return False
+
+
+def match_timestamp(key, value):
+    if key is None and value is None:
+        return True
+
+    if key is None and value is not None:
+        return False
+
+    if key is not None and value is None:
+        return False
+
+    if not isinstance(key, str):
+        return False
+
+    if not isinstance(value, int):
+        return False
+
+    now = int(time.time())
+    if key.endswith('m'):
+        try:
+            reference = now - int(key[:-1]) * 60
+        except BaseException:
+            return False
+
+    if key.endswith('h'):
+        try:
+            reference = now - int(key[:-1]) * 60 * 60
+        except BaseException:
+            return False
+
+    if key.endswith('d'):
+        try:
+            reference = now - int(key[:-1]) * 60 * 60 * 24
+        except BaseException:
+            return False
+
+    if reference < value:
+        return True
 
     return False

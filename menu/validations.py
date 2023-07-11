@@ -1504,3 +1504,31 @@ def validate_fabric(ctx, param, value):
         )
 
     return fabrics
+
+
+def validate_timestamp_filter(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    if value.endswith('m'):
+        try:
+            reference = int(value[:-1])
+        except BaseException:
+            click.BadParameter('Unsupported time filter. Use <n>[m|h|d] syntax.')
+        return value
+
+    if value.endswith('h'):
+        try:
+            reference = int(value[:-1])
+        except BaseException:
+            click.BadParameter('Unsupported time filter. Use <n>[m|h|d] syntax.')
+        return value
+
+    if value.endswith('d'):
+        try:
+            reference = int(value[:-1])
+        except BaseException:
+            click.BadParameter('Unsupported time filter. Use <n>[m|h|d] syntax.')
+        return value
+
+    click.BadParameter('Unsupported time filter. Use <n>[m|h|d] syntax.')

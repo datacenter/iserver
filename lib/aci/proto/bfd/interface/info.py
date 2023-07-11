@@ -115,4 +115,9 @@ class ProtocolBfdInterfaceInfo():
                 bfd_interface_info
             )
 
+        bfd_interfaces = sorted(
+            bfd_interfaces,
+            key=lambda i: i['id']
+        )
+
         return bfd_interfaces

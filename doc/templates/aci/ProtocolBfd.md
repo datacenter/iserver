@@ -2,26 +2,37 @@
 
 ## BFD
 
+Example:
+
+![ProtocolBfd](images/protocol_bfd.png)
+
 Node selection options:
-  - [single node](./ProtocolBfdSessionNode.md)
-  - [selected nodes](./ProtocolBfdSessionNodes.md)
-  - [all nodes](./ProtocolBfdSessions.md)
+  - [single node](./ProtocolBfdNode.md)
+  - [selected nodes](./ProtocolBfdNodes.md)
+  - [all nodes](./ProtocolBfdNodesAll.md)
 
 Filter options:
-  - [state](./ProtocolBfdSessionState.md)
-  - [interface](./ProtocolBfdSessionInterface.md)
-  - [session id](./ProtocolBfdSessionId.md)
-  - [vrf](./ProtocolBfdSessionVrf.md)
-  - [ip](./ProtocolBfdSessionIp.md)
-  - [subnet](./ProtocolBfdSessionSubnet.md)
+  - [Session ID](./ProtocolBfdFilterSession.md)
+  - [Session state](./ProtocolBfdFilterState.md)
+  - [Source Interface](./ProtocolBfdFilterInterface.md)
+  - [VRF](./ProtocolBfdFilterVrf.md)
+  - [IP Address](./ProtocolBfdFilterIp.md)
+  - [IP Subnet](./ProtocolBfdFilterSubnet.md)
+  - [Fault or Event Severity](./ProtocolBfdFilterSeverity.md)
+  - [Fault or Event Time Window](./ProtocolBfdFilterTime.md)
 
 View options:
-  - [default](./ProtocolBfdSessionNode.md)
-  - [instance](./ProtocolBfdInstanceNodes.md)
-  - [verbose](./ProtocolBfdSessionVerbose.md)
+  - [session](./ProtocolBfdViewSession.md)
+  - [stats](./ProtocolBfdViewStats.md)
+  - [summary](./ProtocolBfdViewSummary.md)
+  - [event](./ProtocolBfdViewEvent.md)
+  - [fault](./ProtocolBfdViewFault.md)
+  - [diag](./ProtocolBfdViewDiag.md)
+  - [all](./ProtocolBfdViewAll.md)
+  - [verbose](./ProtocolBfdViewVerbose.md)
 
 Output options:
-  - [default](./ProtocolBfdSessionNode.md)
+  - [default](./ProtocolBfdOutputDefault.md)
   - [json](./ProtocolBfdOutputJson.md)
 
 Command options

@@ -1,16 +1,25 @@
+from lib.aci.proto.bfd.event.main import ProtocolBfdEvent
+from lib.aci.proto.bfd.fault.main import ProtocolBfdFault
 from lib.aci.proto.bfd.instance.main import ProtocolBfdInstance
 from lib.aci.proto.bfd.interface.main import ProtocolBfdInterface
 from lib.aci.proto.bfd.session.main import ProtocolBfdSession
 
 
-class ProtocolBfd(ProtocolBfdInstance, ProtocolBfdInterface, ProtocolBfdSession):
+class ProtocolBfd(ProtocolBfdEvent, ProtocolBfdFault, ProtocolBfdInstance, ProtocolBfdInterface, ProtocolBfdSession):
     def __init__(self):
+        ProtocolBfdEvent.__init__(self)
+        ProtocolBfdFault.__init__(self)
         ProtocolBfdInstance.__init__(self)
         ProtocolBfdInterface.__init__(self)
         ProtocolBfdSession.__init__(self)
 
-    def get_protocol_bfd(self, pod_id, node_id, bfd_filter=None, session_info=False):
+    def get_protocol_bfd(self, pod_id, node_id, bfd_filter=None, fault_info=False, event_info=False, fault_filter=None, event_filter=None):
         info = {}
+
+        info['node'] = self.get_node(
+            pod_id=pod_id,
+            node_id=node_id
+        )
 
         info['instance'] = self.get_protocol_bfd_instance(
             pod_id=pod_id,
@@ -20,8 +29,7 @@ class ProtocolBfd(ProtocolBfdInstance, ProtocolBfdInterface, ProtocolBfdSession)
         info['sessions'] = self.get_protocol_bfd_sessions(
             pod_id,
             node_id,
-            bfd_session_filter=bfd_filter,
-            session_info=session_info
+            bfd_session_filter=bfd_filter
         )
 
         info['interfaces'] = self.get_protocol_bfd_interfaces(
@@ -46,5 +54,40 @@ class ProtocolBfd(ProtocolBfdInstance, ProtocolBfdInterface, ProtocolBfdSession)
             info['instance']['__Output']['sessionSummary'] = 'Green'
         else:
             info['instance']['__Output']['sessionSummary'] = 'Red'
+
+        if fault_info:
+            info['faultRecord'] = self.get_protocol_bfd_fault(
+                pod_id,
+                node_id
+            )
+            for session in info['sessions']:
+                session['faultInst'] = self.get_protocol_bfd_session_fault(
+                    pod_id,
+                    node_id,
+                    session['session_id'],
+                    'faultInst',
+                    fault_filter=fault_filter
+                )
+
+                session['faultRecord'] = self.get_protocol_bfd_session_fault(
+                    pod_id,
+                    node_id,
+                    session['session_id'],
+                    'faultRecord',
+                    fault_filter=fault_filter
+                )
+
+        if event_info:
+            info['eventLog'] = self.get_protocol_bfd_event(
+                pod_id,
+                node_id
+            )
+            for session in info['sessions']:
+                session['eventLog'] = self.get_protocol_bfd_session_event(
+                    pod_id,
+                    node_id,
+                    session['session_id'],
+                    event_filter=event_filter
+                )
 
         return info

@@ -129,6 +129,10 @@ def prefix_to_netmask(prefix):
     return netmask
 
 
+def ipv4_to_int(address):
+    return struct.unpack('>L', socket.inet_aton(address))[0]
+
+
 def is_ipv4_in_cidr(address, cidr):
     if not is_valid_ipv4_address(address):
         return False

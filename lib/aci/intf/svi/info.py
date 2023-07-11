@@ -43,6 +43,9 @@ class InterfaceSviInfo():
         return len(interfaces)
 
     def get_interface_svi_info(self, managed_object):
+        if 'sviIf' not in managed_object:
+            return None
+
         keys = [
             'accEncap',
             'addr',
@@ -122,7 +125,8 @@ class InterfaceSviInfo():
             'vlanId',
             'vlanT',
             'vmac',
-            'vmacChgQual'
+            'vmacChgQual',
+            'faultCounts'
         ]
 
         info['sviIf'] = {}
@@ -162,6 +166,28 @@ class InterfaceSviInfo():
         info['counters']['outDiscards'] = managed_object['rmonIfOut']['discards']
         info['counters']['outErrors'] = managed_object['rmonIfOut']['errors']
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
+        info['accEncapT'] = info['accEncap']
+        if info['accEncap'] == 'unknown':
+            info['accEncapT'] = '--'
+
+        info['sviIf']['type'] = '--'
+        if info['sviIf']['vlanT'] == 'bd-regular':
+            info['sviIf']['type'] = 'Reg'
+        if info['sviIf']['vlanT'] == 'bd-external':
+            info['sviIf']['type'] = 'Ext'
+
         return info
 
     def get_interfaces_svi_info(self, pod_id, node_id):
@@ -175,11 +201,13 @@ class InterfaceSviInfo():
 
         self.interface_svi[key] = []
         for interface_mo in interfaces_mo:
-            self.interface_svi[key].append(
-                self.get_interface_svi_info(
-                    interface_mo
-                )
+            interface_info = self.get_interface_svi_info(
+                interface_mo
             )
+            if interface_info is not None:
+                self.interface_svi[key].append(
+                    interface_info
+                )
 
         self.log.apic_mo(
             'sviIf.info.%s' % (key),
@@ -195,30 +223,75 @@ class InterfaceSviInfo():
         for ap_rule in interface_filter:
             key = ap_rule.split(':')[0]
             value = ':'.join(ap_rule.split(':')[1:])
+            found = False
 
             if key == 'id':
+                found = True
                 if not filter_helper.match_string(value, interface_info['sviIf']['id']):
                     return False
 
             if key == 'mac':
+                found = True
                 if not ip_helper.is_mac_match(value, interface_info['sviIf']['mac']):
                     return False
 
             if key == 'vlan':
-                if not filter_helper.match_string(value, interface_info['sviIf']['vlanId']):
+                found = True
+                matched = False
+
+                if value.startswith('gt'):
+                    if not filter_helper.match_integer(value, int(interface_info['sviIf']['vlanId'])):
+                        return False
+                    matched = True
+
+                if value.startswith('ge'):
+                    if not filter_helper.match_integer(value, int(interface_info['sviIf']['vlanId'])):
+                        return False
+                    matched = True
+
+                if value.startswith('lt'):
+                    if not filter_helper.match_integer(value, int(interface_info['sviIf']['vlanId'])):
+                        return False
+                    matched = True
+
+                if value.startswith('le'):
+                    if not filter_helper.match_integer(value, int(interface_info['sviIf']['vlanId'])):
+                        return False
+                    matched = True
+
+                if '-' in value:
+                    if not filter_helper.match_integer(value, int(interface_info['sviIf']['vlanId'])):
+                        return False
+                    matched = True
+
+                if not matched:
+                    if not filter_helper.match_string(value, interface_info['sviIf']['vlanId']):
+                        return False
+
+            if key == 'fabric':
+                found = True
+                if not filter_helper.match_string(value, interface_info['fabEncap']):
+                    return False
+
+            if key == 'access':
+                found = True
+                if not filter_helper.match_string(value, interface_info['accEncap']):
                     return False
 
             if key == 'admin':
+                found = True
                 if value != 'any':
                     if not filter_helper.match_string(value, interface_info['adminSt']):
                         return False
 
             if key == 'oper':
+                found = True
                 if value != 'any':
                     if not filter_helper.match_string(value, interface_info['operSt']):
                         return False
 
             if key == 'type':
+                found = True
                 if value != 'any':
                     if value == 'int':
                         if not filter_helper.match_string('bd-regular', interface_info['sviIf']['vlanT']):
@@ -229,6 +302,7 @@ class InterfaceSviInfo():
                             return False
 
             if key == 'ip':
+                found = True
                 if 'ipv4_address' in interface_info:
                     found = False
                     for ip_address in interface_info['ipv4_address']:
@@ -240,6 +314,7 @@ class InterfaceSviInfo():
                         return False
 
             if key == 'subnet':
+                found = True
                 if 'ipv4_address' in interface_info:
                     found = False
                     for ip_address in interface_info['ipv4_address']:
@@ -250,9 +325,27 @@ class InterfaceSviInfo():
                     if not found:
                         return False
 
+            if key == 'fault':
+                found = True
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_svi',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not found:
+                self.log.error(
+                    'match_interface_svi',
+                    'Unsupported filtering key: %s' % (key)
+                )
+
         return True
 
-    def get_interfaces_svi(self, pod_id, node_id, interface_filter=None):
+    def get_interfaces_svi(self, pod_id, node_id, interface_filter=None, fault_info=False, event_info=False, fault_filter=None, event_filter=None):
         all_interfaces = self.get_interfaces_svi_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -278,8 +371,8 @@ class InterfaceSviInfo():
                     address_info = {}
                     address_info['__Output'] = {}
                     address_info['addr'] = ipv4_address_info['addr']
-                    interface_info['ipv4_address'].append(
-                        ipv4_address_info['addr']
+                    address_info['iaddr'] = ip_helper.ipv4_to_int(
+                        ipv4_address_info['addr'].split('/')[0]
                     )
                     address_info['operSt'] = ipv4_address_info['operSt']
                     address_info['operStQual'] = ipv4_address_info['operStQual']
@@ -296,8 +389,56 @@ class InterfaceSviInfo():
                         address_info
                     )
 
+                    interface_info['ipv4_address'].append(
+                        ipv4_address_info['addr']
+                    )
+
+            interface_info['ipv4_info'] = sorted(
+                interface_info['ipv4_info'],
+                key=lambda i: i['iaddr']
+            )
+
+            interface_info['ipv4_addressT'] = []
+            for ipv4_info in interface_info['ipv4_info']:
+                if ipv4_info['type'] == 'primary' and len(interface_info['ipv4_info']) > 1:
+                    interface_info['ipv4_addressT'].append(
+                        '%s (pri)' % (
+                            ipv4_info['addr']
+                        )
+                    )
+                    continue
+
+                interface_info['ipv4_addressT'].append(
+                    ipv4_info['addr']
+                )
+
             if not self.match_interface_svi(interface_info, interface_filter):
                 continue
+
+            if fault_info:
+                interface_info['faultRecord'] = self.get_interface_svi_vlan_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['sviIf']['id'],
+                    'faultRecord',
+                    fault_filter=fault_filter
+                )
+
+                interface_info['faultInst'] = self.get_interface_svi_vlan_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['sviIf']['id'],
+                    'faultInst',
+                    fault_filter=fault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_svi_vlan_event(
+                    pod_id,
+                    node_id,
+                    interface_info['sviIf']['id'],
+                    event_filter=event_filter
+                )
 
             interfaces.append(
                 interface_info
@@ -305,16 +446,16 @@ class InterfaceSviInfo():
 
         interfaces = sorted(
             interfaces,
-            key=lambda i: i['id']
+            key=lambda i: int(i['id'])
         )
 
         return interfaces
 
-    def get_interface_svi(self, pod_id, node_id, port_id):
+    def get_interface_svi(self, pod_id, node_id, interface_id):
         interfaces = self.get_interfaces_svi(
             pod_id,
             node_id,
-            interface_filter=['id:%s' % (port_id)]
+            interface_filter=['id:%s' % (interface_id)]
         )
 
         if interfaces is None or len(interfaces) != 1:

@@ -32,15 +32,20 @@ class NoResultExit(Exception):
 @click.option("--pod", "pod_id", default='', callback=validations.empty_string_to_none, help="Pod ID")
 @click.option("--node", "node_names", multiple=True, help="Node name patterns")
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
-@click.option("--id", "port_name", default='', callback=validations.empty_string_to_none, help="Port name")
+@click.option("--name", "interface_name", default='', callback=validations.empty_string_to_none, help="Interface name")
 @click.option("--admin", "admin_state", type=click.Choice(['any', 'up', 'down'], case_sensitive=False), default='any', show_default=True)
 @click.option("--oper", "oper_state", type=click.Choice(['any', 'up', 'down'], case_sensitive=False), default='any', show_default=True)
 @click.option("--type", "vlan_type", type=click.Choice(['any', 'int', 'ext'], case_sensitive=False), default='any', show_default=True)
 @click.option("--mac", "mac_address", default='', callback=validations.empty_string_to_none, help="MAC Address filter")
 @click.option("--vlan", default='', callback=validations.empty_string_to_none, help="VLAN filter")
+@click.option("--fabric", default='', callback=validations.empty_string_to_none, help="Fabric encap filter")
+@click.option("--access", default='', callback=validations.empty_string_to_none, help="Access encap filter")
 @click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="IP Address filter")
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="IP Subnet filter")
-@click.option("--view", "-v", type=click.Choice(['default', 'addr', 'counter', 'verbose'], case_sensitive=False), multiple=True)
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", type=click.Choice(['state', 'stats', 'event', 'fault', 'diag', 'all', 'verbose'], case_sensitive=False), default='state', multiple=False)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -54,14 +59,19 @@ def get_aci_node_intf_svi_command(
         pod_id,
         node_names,
         node_role,
-        port_name,
+        interface_name,
         admin_state,
         oper_state,
         vlan_type,
         mac_address,
         vlan,
+        fabric,
+        access,
         ip_address,
         ip_subnet,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -73,8 +83,6 @@ def get_aci_node_intf_svi_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -97,9 +105,12 @@ def get_aci_node_intf_svi_command(
             aci_output_handler.set_apic_off()
 
         interface_filter = []
-        if port_name is not None:
+        fault_filter = []
+        event_filter = []
+
+        if interface_name is not None:
             interface_filter.append(
-                'id:%s' % (port_name)
+                'id:%s' % (interface_name)
             )
 
         interface_filter.append(
@@ -124,6 +135,16 @@ def get_aci_node_intf_svi_command(
                 'vlan:%s' % (vlan)
             )
 
+        if fabric is not None:
+            interface_filter.append(
+                'fabric:%s' % (fabric)
+            )
+
+        if access is not None:
+            interface_filter.append(
+                'access:%s' % (access)
+            )
+
         if len(ip_subnet) > 0:
             interface_filter.append(
                 'subnet:%s' % (ip_subnet)
@@ -134,23 +155,85 @@ def get_aci_node_intf_svi_command(
                 'ip:%s' % (ip_address)
             )
 
+        if fault:
+            interface_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            fault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            fault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         interfaces = []
+        fault_record = []
+        fault_inst = []
+        event = []
+
+        fault_info = False
+        event_info = False
+        if view in ['fault', 'diag', 'all', 'verbose']:
+            fault_info = True
+
+        if view in ['event', 'diag', 'all', 'verbose']:
+            event_info = True
+
         for apic_handler in apic_handlers:
             for node_info in apic_handler['nodes']:
                 node_interfaces = apic_handler['handler'].get_interfaces_svi(
                     node_info['podId'],
                     node_info['id'],
-                    interface_filter=interface_filter
+                    interface_filter=interface_filter,
+                    fault_info=fault_info,
+                    event_info=event_info,
+                    fault_filter=fault_filter,
+                    event_filter=event_filter
                 )
 
                 if node_interfaces is None:
                     continue
 
                 interfaces = interfaces + node_interfaces
+
+                for interface in interfaces:
+                    if 'eventLog' in interface:
+                        if interface['eventLog'] is not None:
+                            event = event + interface['eventLog']
+
+                    if 'faultRecord' in interface:
+                        if interface['faultRecord'] is not None:
+                            fault_record = fault_record + interface['faultRecord']
+
+                    if 'faultInst' in interface:
+                        if interface['faultInst'] is not None:
+                            fault_inst = fault_inst + interface['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
 
         ctx.busy = False
 
@@ -168,25 +251,88 @@ def get_aci_node_intf_svi_command(
 
         ctx.my_output.json_output(interfaces)
 
-        if 'default' in view:
+        if view == 'state':
             aci_output_handler.print_interfaces_svi_state(
-                interfaces
+                interfaces,
+                title=True
             )
 
-        if 'addr' in view:
-            aci_output_handler.print_interfaces_svi_address(
-                interfaces
-            )
-
-        if 'counter' in view:
+        if view == 'stats':
             aci_output_handler.print_interfaces_svi_counter(
-                interfaces
+                interfaces,
+                title=True
+            )
+
+        if view == 'event':
+            aci_output_handler.print_interface_svi_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if view == 'fault':
+            aci_output_handler.print_interface_svi_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if view == 'diag':
+            aci_output_handler.print_interface_svi_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if view == 'all':
+            aci_output_handler.print_interfaces_svi_state(
+                interfaces,
+                title=True
+            )
+
+            aci_output_handler.print_interfaces_svi_counter(
+                interfaces,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+            aci_output_handler.print_interface_svi_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
             )
 
         if 'verbose' in view:
             for interface in interfaces:
                 aci_output_handler.print_interface_svi(
-                    interface
+                    interface,
+                    when=fault_when
                 )
 
     except NoResultExit:

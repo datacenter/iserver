@@ -2,49 +2,24 @@ class ProtocolBfdOutput():
     def __init__(self):
         pass
 
-    def print_proto_bfd(self, info):
-        self.print_proto_bfd_instance(
-            info['instance']
-        )
-
-        self.print_proto_bfd_sessions(
-            info['sessions']
-        )
-
-        self.print_proto_bfd_interfaces(
-            info['interfaces']
-        )
-
-    def print_proto_bfd_instance(self, info):
-        order = [
-            'adminSt',
-            'echoIf',
-            'sessionSummary'
-        ]
-
-        headers = [
-            'Admin State',
-            'Echo Interface',
-            'Sessions'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='BFD Instance',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_proto_bfd_instances(self, info):
+    def print_proto_bfd_instances(self, info, title=False):
         if len(info) == 0:
             return
 
+        if title:
+            self.my_output.default(
+                'BFD Instance Summary [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         order = [
             'instance.pod_node_name',
+            'node.roleUi',
+            'node.model',
             'instance.adminSt',
+            'instance.health',
+            'instance.faults',
             'instance.echoIf',
             'instance.sessionSummary',
             'interfaces.id',
@@ -54,12 +29,16 @@ class ProtocolBfdOutput():
 
         headers = [
             'Node',
+            'Role',
+            'HW',
             'Admin',
+            'Health',
+            'Faults',
             'Echo Intf',
-            'Session Summary',
-            'Interface',
-            'Interface State',
-            'Interface Sessions'
+            'Sessions',
+            'Intf',
+            'State',
+            'Sessions'
         ]
 
         self.my_output.my_table(
@@ -77,60 +56,49 @@ class ProtocolBfdOutput():
             table=True
         )
 
-    def print_proto_bfd_interfaces(self, info):
+    def print_proto_bfd_sessions(self, info, title=False):
         if len(info) == 0:
             return
 
-        order = [
-            'id',
-            'adminSt',
-            'sessionSummary'
-        ]
-
-        headers = [
-            'Interface ID',
-            'Admin State',
-            'BFD Sessions'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
-    def print_proto_bfd_sessions(self, info):
-        if len(info) == 0:
-            return
+        if title:
+            self.my_output.default(
+                'BFD Sessions [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
         order = [
             'pod_node_name',
+            'health',
+            'faults',
+            'vrfName',
+            'ifId',
+            'sessionType',
             'srcAddr',
+            'localMac',
             'operSt',
             'discr',
             'destAddr',
+            'remoteMac',
             'remoteOperSt',
             'remoteDiscr',
-            'sessionType',
-            'vrfName',
-            'ifId'
         ]
 
         headers = [
             'Node',
+            'Health',
+            'Faults',
+            'VRF',
+            'Interface',
+            'Type',
             'Local Address',
+            'Local MAC',
             'State',
             'Session Id',
             'Remote Address',
+            'Remote MAC',
             'State',
-            'Session Id',
-            'Type',
-            'VRF',
-            'Interface'
+            'Session Id'
         ]
 
         self.my_output.my_table(
@@ -143,9 +111,226 @@ class ProtocolBfdOutput():
             table=True
         )
 
-    def print_proto_bfd_session(self, info):
+    def print_proto_bfd_sessions_stats(self, info, title=False):
+        if len(info) == 0:
+            return
+
+        if title:
+            self.my_output.default(
+                'BFD Session Stats [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         order = [
             'pod_node_name',
+            'vrfName',
+            'srcAddr',
+            'destAddr',
+            'stats.upCnt',
+            'stats.downCnt',
+            'stats.rxCnt',
+            'rxIntvl',
+            'stats.rxMin',
+            'stats.rxAvg',
+            'stats.rxMax',
+            'stats.txCnt',
+            'txIntvl',
+            'stats.txMin',
+            'stats.txAvg',
+            'stats.txMax'
+        ]
+
+        headers = [
+            'Node',
+            'VRF',
+            'Local Address',
+            'Remote Address',
+            'Up',
+            'Down',
+            'Rx Cnt',
+            'Rx Interval [msec]',
+            'Min',
+            'Avg',
+            'Max',
+            'Tx Cnt',
+            'Tx Interval [msec]',
+            'Min',
+            'Avg',
+            'Max'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bfd_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'BFD Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'BFD Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'session_id',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Session Id',
+            'Severity',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bfd_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'BFD Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'session_id',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Session Id',
+            'Severity',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bfd_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'BFD Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'BFD Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'session_id',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Session Id',
+            'Severity',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bfd_session(self, info, when=None):
+        order = [
+            'pod_node_name',
+            'health',
+            'faults',
             'srcAddr',
             'operSt',
             'discr',
@@ -177,6 +362,8 @@ class ProtocolBfdOutput():
 
         headers = [
             'Node',
+            'Health',
+            'Faults',
             'Local Address',
             'Local State',
             'Local Session Id',
@@ -218,6 +405,20 @@ class ProtocolBfdOutput():
 
         self.print_proto_bfd_session_peer(info['peer'])
         self.print_proto_bfd_session_stats(info['stats'])
+        self.print_proto_bfd_event_logs(
+            info['eventLog'],
+            when=when,
+            title=True
+        )
+        self.print_proto_bfd_fault_inst(
+            info['faultInst'],
+            title=True
+        )
+        self.print_proto_bfd_fault_record(
+            info['faultRecord'],
+            when=when,
+            title=True
+        )
 
     def print_proto_bfd_session_peer(self, info):
         order = [

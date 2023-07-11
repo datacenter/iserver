@@ -23,7 +23,7 @@ class InterfaceSviApi():
             return self.interface_svi_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/l2BD' % (pod_id, node_id)
-        query = 'rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=required'
+        query = 'rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
             class_name,
             query=query
@@ -41,15 +41,16 @@ class InterfaceSviApi():
             attributes = managed_object['l2BD']['attributes']
             for section in managed_object['l2BD']['children']:
                 for section_key in section:
-                    attributes[section_key] = {}
-                    for attribute in section[section_key]['attributes']:
-                        attributes[section_key][attribute] = section[section_key]['attributes'][attribute]
+                    if section_key == 'sviIf':
+                        attributes[section_key] = {}
+                        for attribute in section[section_key]['attributes']:
+                            attributes[section_key][attribute] = section[section_key]['attributes'][attribute]
 
-                    for sub_section in section[section_key]['children']:
-                        for sub_section_key in sub_section:
-                            attributes[sub_section_key] = {}
-                            for attribute in sub_section[sub_section_key]['attributes']:
-                                attributes[sub_section_key][attribute] = sub_section[sub_section_key]['attributes'][attribute]
+                        for sub_section in section[section_key]['children']:
+                            for sub_section_key in sub_section:
+                                attributes[sub_section_key] = {}
+                                for attribute in sub_section[sub_section_key]['attributes']:
+                                    attributes[sub_section_key][attribute] = sub_section[sub_section_key]['attributes'][attribute]
 
             self.interface_svi_mo[key].append(
                 attributes

@@ -1,5 +1,5 @@
 class ProtocolBfdSessionPeerInfo():
-    def __init__(self, log_id=None):
+    def __init__(self):
         pass
 
     def get_protocol_bfd_session_peer_info(self, managed_object):
