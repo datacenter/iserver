@@ -200,6 +200,7 @@ class ComputeBlade(IntersightCommon):
             return None
 
         info = {}
+        info['__Output'] = {}
         info['Moid'] = blade['Moid']
         info['Dn'] = blade['Dn']
         info['Name'] = blade['Name']
@@ -214,12 +215,18 @@ class ComputeBlade(IntersightCommon):
         if blade['AlarmSummary']['Warning'] == 0 and blade['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Healthy'
             info['HealthSummary'] = 'Healthy'
+            info['__Output']['Health'] = 'Green'
+            info['__Output']['HealthSummary'] = 'Green'
         if blade['AlarmSummary']['Warning'] > 0 and blade['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Warnings'
             info['HealthSummary'] = 'Warnings (%s)' % (blade['AlarmSummary']['Warning'])
+            info['__Output']['Health'] = 'Yellow'
+            info['__Output']['HealthSummary'] = 'Yellow'
         if blade['AlarmSummary']['Critical'] > 0:
             info['Health'] = 'Critical'
             info['HealthSummary'] = 'Critical (%s)' % (blade['AlarmSummary']['Critical'])
+            info['__Output']['Health'] = 'Red'
+            info['__Output']['HealthSummary'] = 'Red'
 
         info['OperPowerState'] = blade['OperPowerState']
         info['PowerOn'] = False

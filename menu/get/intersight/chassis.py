@@ -120,6 +120,8 @@ def get_intersight_chassis_command(
 
         ctx.busy = False
         time.sleep(.5)
+
+        ctx.my_output.json_output(chassis)
         chassis_info_handler.print()
 
     except ErrorExit:

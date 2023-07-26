@@ -26,6 +26,9 @@ class ErrorExit(Exception):
 @click.option("--name", "name_filter", default='', help="Name filter")
 @click.option("--serial", "serial_filter", default='', help="Serial filter")
 @click.option("--model", "model_filter", default='', help="Model filter")
+@click.option("--bname", "bname_filter", default='', help="Blade name filter")
+@click.option("--bserial", "bserial_filter", default='', help="Blade serial filter")
+@click.option("--bmodel", "bmodel_filter", default='', help="Blade model filter")
 @click.option("--output", "-o", type=click.Choice(['default', 'json', 'yaml'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_intersight_chassiz_command(
@@ -34,6 +37,9 @@ def get_intersight_chassiz_command(
         name_filter,
         serial_filter,
         model_filter,
+        bname_filter,
+        bserial_filter,
+        bmodel_filter,
         output,
         devel
         ):
@@ -54,6 +60,10 @@ def get_intersight_chassiz_command(
         match_rules['name'] = name_filter
         match_rules['serial'] = serial_filter
         match_rules['model'] = model_filter
+        match_rules['bname'] = bname_filter
+        match_rules['bserial'] = bserial_filter
+        match_rules['bmodel'] = bmodel_filter
+
         chassis_list = chassiz_info_handler.get(match_rules)
         if chassis_list is None:
             ctx.busy = False
@@ -74,7 +84,12 @@ def get_intersight_chassiz_command(
             return
 
         ctx.busy = False
-        chassiz_info_handler.print(chassis_list)
+
+        ctx.my_output.json_output(chassis_list)
+        chassiz_info_handler.print(
+            chassis_list,
+            title=True
+        )
 
     except ErrorExit:
         ctx.busy = False

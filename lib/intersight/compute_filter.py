@@ -120,6 +120,24 @@ class ComputeFilter():
 
         return False
 
+    def ancestor_filter_match(self, server, ancestors):
+        if len(ancestors) == 0:
+            return True
+
+        if 'Ancestors' not in server:
+            return False
+
+        if len(server['Ancestors']) == 0:
+            return False
+
+        for ancestor in server['Ancestors']:
+            if ancestor['ObjectType'] == 'equipment.Chassis':
+                for ancestor_moid in ancestors:
+                    if ancestor_moid == ancestor['Moid']:
+                        return True
+
+        return False
+
     def fan_filter_match(self, server, fan):
         if not fan:
             return True
@@ -327,6 +345,18 @@ class ComputeFilter():
                     )
                 )
             return False
+
+        if 'ancestor' in rules:
+            if not self.ancestor_filter_match(server, rules['ancestor']):
+                if debug_logs:
+                    self.log.debug(
+                        'compute_filter.match_server',
+                        'Server %s match fails on ancestor %s' % (
+                            server['Moid'],
+                            rules['ancestor']
+                        )
+                    )
+                return False
 
         # If match is based on the base server attributes, exit early
         if base_match:

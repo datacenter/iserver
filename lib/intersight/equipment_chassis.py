@@ -229,8 +229,14 @@ class EquipmentChassis(IntersightCommon):
             if len(name_filter) > 0 and name_filter.lower() not in item['Name'].lower():
                 continue
 
-            if len(serial_filter) > 0 and serial_filter.lower() not in item['Serial'].lower():
-                continue
+            if len(serial_filter) > 0:
+                found = False
+                for item_filter in serial_filter.split(','):
+                    if item_filter.lower() in item['Serial'].lower():
+                        found = True
+
+                if not found:
+                    continue
 
             if len(model_filter) > 0 and model_filter.lower() not in item['Model'].lower():
                 continue
@@ -238,33 +244,3 @@ class EquipmentChassis(IntersightCommon):
             filtered.append(item)
 
         return filtered
-
-    def get_summary(self, chassis):
-        info = {}
-        info['__Output'] = {}
-
-        info['Moid'] = chassis['Moid']
-        info['Dn'] = chassis['Dn']
-        info['Blades'] = len(chassis['Blades'])
-        info['Name'] = chassis['Name']
-        info['Model'] = chassis['Model']
-        info['Serial'] = chassis['Serial']
-
-        if chassis['AlarmSummary']['Warning'] == 0 and chassis['AlarmSummary']['Critical'] == 0:
-            info['Health'] = 'Healthy'
-            info['HealthSummary'] = 'Healthy'
-            info['__Output']['Health'] = 'Green'
-        if chassis['AlarmSummary']['Warning'] > 0 and chassis['AlarmSummary']['Critical'] == 0:
-            info['Health'] = 'Warnings'
-            info['HealthSummary'] = 'Warnings (%s)' % (chassis['AlarmSummary']['Warning'])
-            info['__Output']['Health'] = 'Yellow'
-        if chassis['AlarmSummary']['Critical'] > 0:
-            info['Health'] = 'Critical'
-            info['HealthSummary'] = 'Critical (%s)' % (chassis['AlarmSummary']['Critical'])
-            info['__Output']['Health'] = 'Red'
-
-        info['UcsDomain'] = ''
-        if 'DeviceHostname' in chassis['RegisteredDevice']:
-            info['UcsDomain'] = chassis['RegisteredDevice']['DeviceHostname'][0]
-
-        return info

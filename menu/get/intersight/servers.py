@@ -7,6 +7,7 @@ import yaml
 import click
 
 from lib.intersight import computes_info
+from lib.intersight import chassiz_info
 from lib import my_servers_helper
 
 from menu import common
@@ -41,9 +42,12 @@ class ErrorExit(Exception):
 @click.option("--ip", "ip_filter", default='', callback=validations.validate_filter_ip, help="Management IP address or subnet filter")
 @click.option("--name", "name_filter", default='', help="Name loose match filter")
 @click.option("--model", "model_filter", default='', help="Model loose match filter")
+@click.option("--serial", "serial_filter", default='', callback=validations.validate_filter_serials, help="Serial strict match filter")
+@click.option("--cname", "cname_filter", default='', help="Chassis name loose match filter")
+@click.option("--cmodel", "cmodel_filter", default='', help="Chassis model loose match filter")
+@click.option("--cserial", "cserial_filter", default='', callback=validations.validate_filter_serials, help="Chassis serial strict match filter")
 @click.option("--pci", "pci_filter", default='', help="Pci model loose match filter")
 @click.option("--mac", "mac_filter", default='', help="MAC address loose match filter")
-@click.option("--serial", "serial_filter", default='', callback=validations.validate_filter_serials, help="Serial strict match filter")
 @click.option("--cpu", "cpu_filter", default='', callback=validations.validate_int_oper, help="CPU cores filter")
 @click.option("--memory", "memory_filter", default='', callback=validations.validate_int_oper, help="Memory [GiB] filter")
 @click.option("--set", "set_group", default='', callback=validations.validate_group_oper, help="Set as group")
@@ -72,9 +76,12 @@ def get_intersight_servers_command(
         ip_filter,
         name_filter,
         model_filter,
+        serial_filter,
+        cname_filter,
+        cmodel_filter,
+        cserial_filter,
         pci_filter,
         mac_filter,
-        serial_filter,
         cpu_filter,
         memory_filter,
         set_group,
@@ -212,6 +219,25 @@ def get_intersight_servers_command(
         match_rules['fan'] = fan
         match_rules['psu'] = psu
 
+        match_rules['ancestor'] = []
+        if len(cname_filter) > 0 or len(cserial_filter) > 0 or len(cmodel_filter) > 0:
+            cmatch_rules = {}
+            cmatch_rules['name'] = cname_filter
+            cmatch_rules['serial'] = ','.join(cserial_filter)
+            cmatch_rules['model'] = cmodel_filter
+
+            chassiz_info_handler = chassiz_info.ChassizInfo(iaccount, log_id=ctx.run_id)
+            chassis_list = chassiz_info_handler.get(cmatch_rules)
+            if chassis_list is None or len(chassis_list) == 0:
+                ctx.busy = False
+                ctx.my_output.error('No chassis found')
+                return
+
+            for chassis in chassis_list:
+                match_rules['ancestor'].append(
+                    chassis['Moid']
+                )
+
         computes_handler = computes_info.ComputesInfo(
             iaccount,
             settings,
@@ -263,6 +289,7 @@ def get_intersight_servers_command(
         ctx.busy = False
         time.sleep(.1)
 
+        ctx.my_output.json_output(servers)
         computes_handler.print(
             servers,
             state_enabled=not state_disabled,

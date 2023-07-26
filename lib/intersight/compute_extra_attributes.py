@@ -1917,6 +1917,7 @@ class ComputeExtraAttributes():
 
         keys = [
             'Moid',
+            'Ancestors',
             'DeviceMoId',
             'Name',
             'Model',
