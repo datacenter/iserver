@@ -13,15 +13,26 @@ class PolicyGroupAccessInterfacePortInfo():
             'annotation',
             'descr',
             'dn',
-            'name',
-            'aaep_name',
-            'policy'
+            'name'
         ]
 
         for key in keys:
             info[key] = None
             if key in managed_object:
                 info[key] = managed_object[key]
+
+        for policy_name in self.policy_group_access_interface_port_policies:
+            info[policy_name] = self.get_policy_interface_reference_attributes(
+                managed_object[policy_name]
+            )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -68,24 +79,35 @@ class PolicyGroupAccessInterfacePortInfo():
                     return False
 
             if key == 'aaep':
-                if not filter_helper.match_string(value, policy_group_info['aaep_name']):
+                if not filter_helper.match_string(value, policy_group_info['infraRsAttEntP']['name']):
                     return False
 
             if key == 'policy':
                 found = False
-                for policy_name in policy_group_info['policy']:
-                    if filter_helper.match_string(value, policy_group_info['policy'][policy_name]):
+                for policy_name in self.policy_group_access_interface_port_policies:
+                    if filter_helper.match_string(value, policy_group_info[policy_name]['name']):
                         found = True
                         break
 
                 if not found:
                     return False
 
-            if key not in ['name', 'aaep', 'policy']:
+            if key == 'fault':
+                if value == 'any':
+                    if not policy_group_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_policy_group_access_interface_port',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if key not in ['name', 'aaep', 'fault', 'policy']:
                 found = False
-                for policy_name in policy_group_info['policy']:
+                for policy_name in self.policy_group_access_interface_port_policies:
                     if key == policy_name:
-                        if filter_helper.match_string(value, policy_group_info['policy'][policy_name]):
+                        if filter_helper.match_string(value, policy_group_info[policy_name]['name']):
                             found = True
                             break
 
@@ -94,7 +116,20 @@ class PolicyGroupAccessInterfacePortInfo():
 
         return True
 
-    def get_policy_groups_access_interface_port(self, policy_group_filter=None, aaep_info=False):
+    def get_policy_groups_access_interface_port(
+            self,
+            policy_group_filter=None,
+            aaep_info=False,
+            node_info=False,
+            vlan_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_policy_groups = self.get_policy_groups_access_interface_port_info()
         if all_policy_groups is None:
             return None
@@ -108,11 +143,78 @@ class PolicyGroupAccessInterfacePortInfo():
             if aaep_info:
                 policy_group_info['aaep'] = None
                 aaep = self.get_policy_global_aae(
-                    policy_global_aae_filter=['name:%s' % (policy_group_info['aaep_name'])]
+                    policy_global_aae_filter=['name:%s' % (policy_group_info['infraRsAttEntP']['name'])],
+                    domain_info=True
                 )
                 if aaep is not None:
                     if len(aaep) == 1:
                         policy_group_info['aaep'] = aaep[0]
+
+            if node_info:
+                policy_group_node_info = self.get_policy_group_access_interface_port_node(
+                    policy_group_info['name']
+                )
+                policy_group_info['node'] = None
+                policy_group_info['interface'] = None
+                if policy_group_node_info is not None:
+                    policy_group_info['node'] = policy_group_node_info['node']
+                    policy_group_info['interface'] = policy_group_node_info['interface']
+
+            if vlan_info:
+                if policy_group_info['interface'] is not None:
+                    for interface in policy_group_info['interface']:
+                        interface['vlan'] = []
+                        interface['operSt'] = '--'
+                        interface['operMode'] = '--'
+
+                        if interface['intf_type'] == 'l1PhysIf':
+                            interface_info = self.get_interface_phy(
+                                interface['pod_id'],
+                                interface['node_id'],
+                                interface['intf_name'],
+                                epg_stats_info=True
+                            )
+                            if interface_info is not None:
+                                interface['operSt'] = interface_info['stats']['operSt']
+                                interface['operMode'] = interface_info['stats']['operMode']
+                                for intf_epg_stats in interface_info['epg_stats']:
+                                    if intf_epg_stats['vlan'] is not None:
+                                        if intf_epg_stats['vlan']['evlan'] not in interface['vlan']:
+                                            interface['vlan'].append(
+                                                intf_epg_stats['vlan']['evlan']
+                                            )
+
+                                interface['vlan'] = sorted(
+                                    interface['vlan']
+                                )
+                                interface['vlans'] = ','.join(
+                                    interface['vlan']
+                                )
+
+            if fault_info:
+                policy_group_info['faultInst'] = self.get_policy_group_access_interface_port_id_fault(
+                    policy_group_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                policy_group_info['faultRecord'] = self.get_policy_group_access_interface_port_id_fault(
+                    policy_group_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                policy_group_info['eventLog'] = self.get_policy_group_access_interface_port_id_event(
+                    policy_group_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                policy_group_info['auditLog'] = self.get_policy_group_access_interface_port_id_audit(
+                    policy_group_info['name'],
+                    audit_filter=audit_filter
+                )
 
             policy_groups.append(
                 policy_group_info

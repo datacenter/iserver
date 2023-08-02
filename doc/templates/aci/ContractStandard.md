@@ -1,22 +1,29 @@
-# Contract
+# Standard Contract
 
-## Standard Contract
+## Command options
 
-Use '--type standard' to get standard contracts details
-- contract name and tenant
-- properties (scope, intent and target DSCP)
-- subject and filters
-- details of all filters used by selected contracts
-- standard contracts usage (consumer and provider EPG)
+Filter options:
+  - [name](./ContractStandardFilterName.md)
+  - [tenant](./ContractStandardFilterTenant.md)
+
+View options:
+  - [state](./ContractStandardViewState.md)
+  - [usage](./ContractStandardViewUsage.md)
+  - [fault](./ContractStandardViewFault.md)
+  - [hfault](./ContractStandardViewFaultHistory.md)
+  - [event](./ContractStandardViewEvent.md)
+  - [audit](./ContractStandardViewAudit.md)
+  - [diag](./ContractStandardViewDiag.md)
+  - [all](./ContractStandardViewAll.md)
+
+Output options:
+  - [default](./ContractStandardOutputDefault.md)
+  - [json](./ContractStandardOutputJson.md)
+
+Command options
 
 ```
-DOC_TEMPLATE:get_aci_contract.standard:iserver.output.default
+DOC_TEMPLATE:get_aci_contract_standard.help:output
 ```
 
-Developer
-
-```
-DOC_TEMPLATE:get_aci_contract.standard:devel.debug
-```
-
-[[Back]](./Contract.md)
+[[Back]](./README.md)

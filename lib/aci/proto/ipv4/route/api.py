@@ -3,7 +3,7 @@ class ProtocolIpv4RouteApi():
         self.ipv4_routes_mo = {}
 
     def get_protocol_ipv4_routes_mo(self, pod_id, node_id, ipv4_domain_name):
-        key = '%s.%s.%s' % (pod_id, node_id, ipv4_domain_name)
+        key = '%s.%s.%s' % (pod_id, node_id, '.'.join(ipv4_domain_name.split(':')))
         if key in self.ipv4_routes_mo:
             return self.ipv4_routes_mo[key]
 
@@ -25,10 +25,15 @@ class ProtocolIpv4RouteApi():
             node_id,
             ipv4_domain_name
         )
-        query = 'query-target=subtree&target-subtree-class=uribv4Route&target-subtree-class=uribv4Nexthop'
+        query = 'query-target=subtree&rsp-subtree-include=health,fault-count&target-subtree-class=uribv4Route&target-subtree-class=uribv4Nexthop'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
+        )
+
+        self.log.apic_mo(
+            'uribv4Route.raw.%s' % (key),
+            managed_objects
         )
 
         if managed_objects is None:
@@ -41,8 +46,19 @@ class ProtocolIpv4RouteApi():
         self.ipv4_routes_mo[key] = []
         for managed_object in managed_objects['imdata']:
             if 'uribv4Route' in managed_object:
+                attributes = managed_object['uribv4Route']['attributes']
+                attributes['healthInst'] = self.get_mo_child_attributes(
+                    'uribv4Route',
+                    managed_object,
+                    'healthInst'
+                )
+                attributes['faultCounts'] = self.get_mo_child_attributes(
+                    'uribv4Route',
+                    managed_object,
+                    'faultCounts'
+                )
                 self.ipv4_routes_mo[key].append(
-                    managed_object['uribv4Route']['attributes']
+                    attributes
                 )
 
         for managed_object in managed_objects['imdata']:

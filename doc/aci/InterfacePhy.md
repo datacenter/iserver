@@ -1,51 +1,51 @@
-# Node Interface
+# Node Interface - Physical
 
-## Physical
-
-Node selection options:
-  - [single node](./InterfacePhyNode.md)
-  - [selected nodes](./InterfacePhyNodes.md)
-  - [all nodes](./InterfacePhyNodesAll.md)
-  - [multi APIC](./InterfacePhyNodesApics.md)
+## Command options
 
 Filter options:
-  - [Interface ID](./InterfacePhyId.md)
-  - [Switching State](./InterfacePhySwitching.md)
-  - [Operational State](./InterfacePhyOper.md)
-  - [Type](./InterfacePhyType.md)
-  - [Layer](./InterfacePhyLayer.md)
-  - [MAC Address](./InterfacePhyMac.md)
-  - [Speed](./InterfacePhySpeed.md)
-  - [FEC](./InterfacePhyFec.md)
-  - [Transceiver Optics](./InterfacePhyOptics.md)
-  - [Transceiver Type](./InterfacePhyTrans.md)
-  - [Internal VLAN](./InterfacePhyVlan.md)
-  - [Encapsulation VLAN](./InterfacePhyEncapVlan.md)
-  - [Fabric VxLAN](./InterfacePhyFabVxlan.md)
-  - [EPG](./InterfacePhyEpg.md)
-  - [CDP/LLDP Neighbor](./InterfacePhyNei.md)
-  - [QoS Stats](./InterfacePhyQos.md)
+  - [Interface ID](./InterfacePhyFilterId.md)
+  - [Switching State](./InterfacePhyFilterSwitching.md)
+  - [Operational State](./InterfacePhyFilterOper.md)
+  - [Type](./InterfacePhyFilterType.md)
+  - [Layer](./InterfacePhyFilterLayer.md)
+  - [MAC Address](./InterfacePhyFilterMac.md)
+  - [Speed](./InterfacePhyFilterSpeed.md)
+  - [FEC](./InterfacePhyFilterFec.md)
+  - [Transceiver Optics](./InterfacePhyFilterOptics.md)
+  - [Transceiver Type](./InterfacePhyFilterTrans.md)
+  - [Internal VLAN](./InterfacePhyFilterVlan.md)
+  - [Encapsulation VLAN](./InterfacePhyFilterEncapVlan.md)
+  - [Fabric VxLAN](./InterfacePhyFilterFabVxlan.md)
+  - [EPG](./InterfacePhyFilterEpg.md)
+  - [CDP/LLDP Neighbor](./InterfacePhyFilterNei.md)
+  - [QoS Stats](./InterfacePhyFilterQos.md)
 
 View options:
-  - [default](./InterfacePhyOutputState.md)
-  - [ether](./InterfacePhyOutputEther.md)
-  - [err](./InterfacePhyOutputErr.md)
-  - [qos](./InterfacePhyOutputQos.md)
-  - [trans](./InterfacePhyOutputTrans.md)
-  - [eee](./InterfacePhyOutputEee.md)
-  - [load](./InterfacePhyOutputLoad.md)
-  - [nei](./InterfacePhyOutputNei.md)
-  - [cdp](./InterfacePhyOutputCdp.md)
-  - [lldp](./InterfacePhyOutputLldp.md)
-  - [vlan](./InterfacePhyOutputVlan.md)
-  - [epg](./InterfacePhyOutputEpg.md)
-  - [pg](./InterfacePhyOutputPg.md)
-  - [aaep](./InterfacePhyOutputAaep.md)
-  - [pol](./InterfacePhyOutputPol.md)
-  - [verbose](./InterfacePhyOutputVerbose.md)
+  - [state](./InterfacePhyViewState.md)
+  - [ether](./InterfacePhyViewEther.md)
+  - [err](./InterfacePhyViewErr.md)
+  - [qos](./InterfacePhyViewQos.md)
+  - [trans](./InterfacePhyViewTrans.md)
+  - [eee](./InterfacePhyViewEee.md)
+  - [load](./InterfacePhyViewLoad.md)
+  - [nei](./InterfacePhyViewNei.md)
+  - [cdp](./InterfacePhyViewCdp.md)
+  - [lldp](./InterfacePhyViewLldp.md)
+  - [vlan](./InterfacePhyViewVlan.md)
+  - [epg](./InterfacePhyViewEpg.md)
+  - [pg](./InterfacePhyViewPg.md)
+  - [aaep](./InterfacePhyViewAaep.md)
+  - [pol](./InterfacePhyViewPol.md)
+  - [fault](./InterfacePhyViewFault.md)
+  - [hfault](./InterfacePhyViewFaultHistory.md)
+  - [event](./InterfacePhyViewEvent.md)
+  - [audit](./InterfacePhyViewAudit.md)
+  - [diag](./InterfacePhyViewDiag.md)
+  - [all](./InterfacePhyViewAll.md)
+  - [verbose](./InterfacePhyViewVerbose.md)
 
 Output options:
-  - [default](./InterfacePhyOutputState.md)
+  - [default](./InterfacePhyOutputDefault.md)
   - [json](./InterfacePhyOutputJson.md)
 
 Command options
@@ -60,6 +60,7 @@ Usage: iserver.py get aci intf phy [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -85,14 +86,20 @@ Options:
   --fvxlan TEXT                   Filter by fabric vxlan value
   --nei TEXT                      Filter by cdp/lldp neight system name
   --ctx TEXT                      Filter by context
-  -v, --view [default|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|live|verbose]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|trans|vlan|epg|load|eee|nei|cdp|lldp|
+                                  pg|pol|aaep|ether|err|qos|fault|hfault|event
+                                  |audit|diag|all|verbose]  [default: state]
+  --pivot                         Pivot view
   --no-cache                      Disable cache
   -o, --output [default|json]     [default: default]
-  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 42 ms and logs saved in /tmp/iserver\00ced21d905e
+Info: finished in 55 ms and logs saved in /tmp/iserver\37ff88fa4a4a
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

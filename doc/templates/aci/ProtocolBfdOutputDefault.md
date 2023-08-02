@@ -1,9 +1,9 @@
 # Node Protocol - BFD
 
-## JSON
+## Default output
 
 ```
-DOC_TEMPLATE:get_aci_proto_bfd.session:iserver.output.default
+DOC_TEMPLATE:get_aci_proto_bfd.session_view:iserver.output.default
 ```
 
 [[Back]](./ProtocolBfd.md)

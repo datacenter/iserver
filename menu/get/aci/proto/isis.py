@@ -33,7 +33,8 @@ class NoResultExit(Exception):
 @click.option("--node", "node_names", multiple=True, help="Node name patterns")
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
 @click.option("--domain", "domain_name", default='', callback=validations.empty_string_to_none, help="Filter by domain name")
-@click.option("--view", "-v", type=click.Choice(['default', 'intf', 'lsp', 'neighbor', 'route', 'tree', 'tunnel', 'verbose'], case_sensitive=False), multiple=True, show_default=False)
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['inst'], help="[inst|intf|lsp|nei|route|tree|tun|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -48,6 +49,7 @@ def get_aci_node_proto_isis_command(
         node_names,
         node_role,
         domain_name,
+        fault_when,
         view,
         output,
         no_cache,
@@ -59,8 +61,15 @@ def get_aci_node_proto_isis_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|intf|lsp|nei|route|tree|tun|fault|hfault|event|diag|all',
+        'inst',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -88,69 +97,111 @@ def get_aci_node_proto_isis_command(
             raise ErrorExit
 
         isis_domain_filter = []
+        hfault_filter = []
+        event_filter = []
+
         if domain_name is not None:
             isis_domain_filter.append(
                 'name:%s' % (domain_name)
             )
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
 
-        instances = []
-        domains = []
-
-        intf = []
-        lsp = []
-        neighbor = []
-        route = []
-        tree = []
-        tunnels = []
-
+        instance_info = False
+        domain_info = False
         intf_info = False
         lsp_info = False
         neighbor_info = False
         route_info = False
         tree_info = False
         tunnel_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
 
-        if 'verbose' in view:
-            intf_info = True
-            lsp_info = True
-            neighbor_info = True
-            route_info = True
-            tree_info = True
-            tunnel_info = True
+        if 'inst' in view:
+            instance_info = True
+            domain_info = True
 
         if 'intf' in view:
+            instance_info = True
+            domain_info = True
             intf_info = True
 
         if 'lsp' in view:
+            instance_info = True
+            domain_info = True
             lsp_info = True
 
-        if 'neighbor' in view:
+        if 'nei' in view:
+            instance_info = True
+            domain_info = True
             neighbor_info = True
 
         if 'route' in view:
+            instance_info = True
+            domain_info = True
             route_info = True
 
         if 'tree' in view:
+            instance_info = True
+            domain_info = True
             tree_info = True
 
         if 'tunnel' in view:
+            instance_info = True
+            domain_info = True
             tunnel_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        instances = []
+        domains = []
+        intf = []
+        lsp = []
+        neighbor = []
+        route = []
+        tree = []
+        tunnels = []
+        fault_record = []
+        fault_inst = []
+        event = []
+
+        if output not in ['json']:
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         for node_info in nodes_info:
             node_instance_info = apic_handler.get_protocol_isis(
                 node_info['podId'],
                 node_info['id'],
                 isis_domain_filter=isis_domain_filter,
+                instance_info=instance_info,
+                domain_info=domain_info,
                 interface_info=intf_info,
                 lsp_info=lsp_info,
                 neighbor_info=neighbor_info,
                 route_info=route_info,
                 tree_info=tree_info,
-                tunnel_info=tunnel_info
+                tunnel_info=tunnel_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
             if node_instance_info is None:
@@ -159,7 +210,9 @@ def get_aci_node_proto_isis_command(
             instances.append(
                 node_instance_info
             )
-            domains = domains + node_instance_info['domain']
+
+            if domain_info:
+                domains = domains + node_instance_info['domain']
 
             if intf_info:
                 for domain_info in node_instance_info['domain']:
@@ -185,10 +238,34 @@ def get_aci_node_proto_isis_command(
                 for domain_info in node_instance_info['domain']:
                     tunnels = tunnels + domain_info['tunnel']
 
-        ctx.busy = False
+            if 'eventLog' in node_instance_info:
+                if node_instance_info['eventLog'] is not None:
+                    event = event + node_instance_info['eventLog']
 
-        if len(instances) == 0:
-            raise NoResultExit
+            if 'faultRecord' in node_instance_info:
+                if node_instance_info['faultRecord'] is not None:
+                    fault_record = fault_record + node_instance_info['faultRecord']
+
+            if 'faultInst' in node_instance_info:
+                if node_instance_info['faultInst'] is not None:
+                    fault_inst = fault_inst + node_instance_info['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
@@ -200,55 +277,70 @@ def get_aci_node_proto_isis_command(
             )
             return
 
-        if 'default' in view:
-            ctx.my_output.json_output(instances)
+        ctx.my_output.json_output(instances)
+
+        if 'inst' in view:
             aci_output_handler.print_proto_isis_instances(
-                instances
+                instances,
+                title=True
             )
 
         if 'intf' in view:
-            ctx.my_output.json_output(intf)
             aci_output_handler.print_proto_isis_interfaces(
-                intf
+                intf,
+                title=True
             )
 
         if 'lsp' in view:
-            ctx.my_output.json_output(lsp)
             aci_output_handler.print_proto_isis_lsps(
-                lsp
+                lsp,
+                title=True
             )
 
         if 'neighbor' in view:
-            ctx.my_output.json_output(neighbor)
             aci_output_handler.print_proto_isis_neighbors(
-                neighbor
+                neighbor,
+                title=True
             )
 
         if 'route' in view:
-            ctx.my_output.json_output(route)
             aci_output_handler.print_proto_isis_routes(
-                route
+                route,
+                title=True
             )
 
         if 'tree' in view:
-            ctx.my_output.json_output(tree)
             aci_output_handler.print_proto_isis_trees(
-                tree
+                tree,
+                title=True
             )
 
         if 'tunnel' in view:
-            ctx.my_output.json_output(tunnels)
             aci_output_handler.print_proto_isis_tunnels(
                 tunnels,
                 title=True
             )
 
-        if 'verbose' in view:
-            ctx.my_output.json_output(instances)
-            for instance in instances:
-                aci_output_handler.print_proto_isis(
-                    instance
-                )
+        if 'fault' in view:
+            aci_output_handler.print_proto_isis_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_isis_fault_record(
+                fault_record,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_isis_event_logs(
+                event,
+                title=True
+            )
+
+        if len(instances) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

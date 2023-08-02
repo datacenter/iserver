@@ -1,29 +1,31 @@
 class PolicyGroupAccessInterfaceVpcNodeApi():
     def __init__(self):
-        self.policy_group_access_interface_vpc_node_mo = None
+        self.policy_group_access_interface_vpc_node_mo = {}
 
-    def get_policy_group_access_interface_vpc_node_mo(self):
-        if self.policy_group_access_interface_vpc_node_mo is not None:
-            return self.policy_group_access_interface_vpc_node_mo
+    def get_policy_group_access_interface_vpc_node_mo(self, policy_name):
+        if policy_name in self.policy_group_access_interface_vpc_node_mo:
+            return self.policy_group_access_interface_vpc_node_mo[policy_name]
 
+        key = policy_name
         cache = self.get_object_cache(
-            'AccBaseGrpToEthIf'
+            'infraAccBndlGrp.%s' % (key)
         )
         if cache is not None:
-            self.policy_group_access_interface_vpc_node_mo = cache
+            self.policy_group_access_interface_vpc_node_mo[key] = cache
             self.log.apic_mo(
-                'AccBaseGrpToEthIf',
-                self.policy_group_access_interface_vpc_node_mo
+                'infraAccBndlGrp.%s' % (key),
+                self.policy_group_access_interface_vpc_node_mo[key]
             )
-            return self.policy_group_access_interface_vpc_node_mo
+            return self.policy_group_access_interface_vpc_node_mo[key]
 
-        distinguished_name = 'uni/infra/funcprof'
-        query = 'query-target=subtree&target-subtree-class=infraAccBndlGrp&rsp-subtree-include=full-deployment&target-path=AccBaseGrpToEthIf'
-
+        distinguished_name = 'uni/infra/funcprof/accbundle-%s' % (policy_name)
+        query = 'rsp-subtree-include=full-deployment&target-node=all&target-path=AccBaseGrpToEthIf'
         managed_objects = self.get_managed_object(
             distinguished_name,
-            query=query
+            query=query,
+            node_mo=True
         )
+
         if managed_objects is None:
             self.log.error(
                 'get_policy_group_access_interface_vpc_node_mo',
@@ -31,32 +33,29 @@ class PolicyGroupAccessInterfaceVpcNodeApi():
             )
             return None
 
-        self.policy_group_access_interface_vpc_node_mo = []
+        if managed_objects['totalCount'] != '1':
+            self.log.error(
+                'get_policy_group_access_interface_vpc_node_mo',
+                'Unexpected object count'
+            )
+            return None
 
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['infraAccBndlGrp']['attributes']
-
-            attributes['pconsNodeDeployCtx'] = []
-            if 'children' in managed_object['infraAccBndlGrp']:
-                for child in managed_object['infraAccBndlGrp']['children']:
-                    if 'pconsNodeDeployCtx' in child:
-                        node_attributes = child['pconsNodeDeployCtx']['attributes']
-                        attributes['pconsNodeDeployCtx'].append(
-                            node_attributes
-                        )
-
-            self.policy_group_access_interface_vpc_node_mo.append(
-                attributes
+            attributes['pconsResourceCtx'] = self.get_mo_node_resource_ctx(
+                'infraAccBndlGrp',
+                managed_object
             )
+            self.policy_group_access_interface_vpc_node_mo[key] = attributes
 
         self.log.apic_mo(
-            'AccBaseGrpToEthIf',
-            self.policy_group_access_interface_vpc_node_mo
+            'infraAccBndlGrp.%s' % (key),
+            self.policy_group_access_interface_vpc_node_mo[key]
         )
 
         self.set_object_cache(
-            'AccBaseGrpToEthIf',
-            self.policy_group_access_interface_vpc_node_mo
+            'infraAccBndlGrp.%s' % (key),
+            self.policy_group_access_interface_vpc_node_mo[key]
         )
 
-        return self.policy_group_access_interface_vpc_node_mo
+        return self.policy_group_access_interface_vpc_node_mo[key]

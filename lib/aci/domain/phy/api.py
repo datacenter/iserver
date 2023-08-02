@@ -17,7 +17,7 @@ class DomainPhyApi():
             )
             return self.domain_phy_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=infraRsVlanNs,infraRtDomP,infraRtDomAtt,aaaDomainRef'
         managed_objects = self.get_class(
             'physDomP',
             query=query,
@@ -40,17 +40,25 @@ class DomainPhyApi():
                 managed_object,
                 'infraRsVlanNs'
             )
-
             attributes['infraRtDomP'] = self.get_mo_children_attributes(
                 'physDomP',
                 managed_object,
                 'infraRtDomP'
             )
-
-            attributes['aaaDomain'] = self.get_mo_children_attributes(
+            attributes['infraRtDomAtt'] = self.get_mo_children_attributes(
                 'physDomP',
                 managed_object,
-                'aaaDomain'
+                'infraRtDomAtt'
+            )
+            attributes['aaaDomainRef'] = self.get_mo_children_attributes(
+                'physDomP',
+                managed_object,
+                'aaaDomainRef'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'physDomP',
+                managed_object,
+                'faultCounts'
             )
 
             self.domain_phy_mo.append(

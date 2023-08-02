@@ -6,9 +6,9 @@ class ProtocolBgpInstanceInfo():
         summary = {}
         summary['__Output'] = {}
 
-        summary['domainsCount'] = len(instance_info['domains'])
+        summary['domainsCount'] = len(instance_info['domain'])
         summary['domainsUp'] = 0
-        for domain_info in instance_info['domains']:
+        for domain_info in instance_info['domain']:
             if domain_info['operSt'] == 'up':
                 summary['domainsUp'] = summary['domainsUp'] + 1
 
@@ -21,9 +21,9 @@ class ProtocolBgpInstanceInfo():
         else:
             summary['__Output']['domains'] = 'Red'
 
-        summary['neighborsCount'] = len(instance_info['neighbors'])
+        summary['neighborsCount'] = len(instance_info['neighbor'])
         summary['neighborsUp'] = 0
-        for neighbor_info in instance_info['neighbors']:
+        for neighbor_info in instance_info['neighbor']:
             if neighbor_info['state']['operSt'] == 'established':
                 summary['neighborsUp'] = summary['neighborsUp'] + 1
 
@@ -55,6 +55,18 @@ class ProtocolBgpInstanceInfo():
             info['__Output']['adminSt'] = 'Green'
         else:
             info['__Output']['adminSt'] = 'Red'
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 

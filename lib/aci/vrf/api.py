@@ -127,8 +127,10 @@ class VrfApi():
             )
             return self.vrf_mo
 
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_class(
-            'fvCtx'
+            'fvCtx',
+            query=query
         )
 
         if managed_objects is None:
@@ -141,6 +143,16 @@ class VrfApi():
         self.vrf_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvCtx']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'fvCtx',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvCtx',
+                managed_object,
+                'faultCounts'
+            )
             self.vrf_mo.append(
                 attributes
             )

@@ -38,32 +38,32 @@ Usage: iserver.py get aci ep [OPTIONS]
   Get aci endpoints
 
 Options:
-  --apic TEXT                     APIC name
-  --ip TEXT                       APIC IP
-  --port INTEGER                  APIC Port  [default: 443]
-  --username TEXT                 APIC Username
-  --password TEXT                 APIC Password
-  --mac TEXT                      MAC filter
-  --address TEXT                  IP address filter
-  --subnet TEXT                   IP subnet filter
-  --tenant TEXT                   Tenant filter
-  --bd TEXT                       Bridge Domain filter
-  --epg TEXT                      EPG filter
-  --vlan TEXT                     VLAN filter
-  --ap TEXT                       App filter
-  --vrf TEXT                      VRF filter
-  --node TEXT                     Node filter
-  --vmm TEXT                      VMM filter
-  --hv TEXT                       Hypevisor filter
-  --vm TEXT                       VM filter
-  --xd TEXT                       Cross domain filter
-  -v, --view [default|vm|fabric]
-  -o, --output [default|json]     [default: default]
-  --no-cache                      Disable cache
-  --devel                         Developer output
-  --help                          Show this message and exit.
+  --apic TEXT                  APIC name
+  --ip TEXT                    APIC IP
+  --port INTEGER               APIC Port  [default: 443]
+  --username TEXT              APIC Username
+  --password TEXT              APIC Password
+  --mac TEXT                   MAC filter
+  --address TEXT               IP address filter
+  --subnet TEXT                IP subnet filter
+  --tenant TEXT                Tenant filter
+  --bd TEXT                    Bridge Domain filter
+  --epg TEXT                   EPG filter
+  --vlan TEXT                  VLAN filter
+  --ap TEXT                    App filter
+  --vrf TEXT                   VRF filter
+  --node TEXT                  Node filter
+  --vmm TEXT                   VMM filter
+  --hv TEXT                    Hypevisor filter
+  --vm TEXT                    VM filter
+  --xd TEXT                    Cross domain filter
+  -v, --view TEXT              [state|vm|fabric|all]  [default: state]
+  -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
+  --devel                      Developer output
+  --help                       Show this message and exit.
 
-Info: finished in 48 ms and logs saved in /tmp/iserver\889c7878b94e
+Info: finished in 32 ms and logs saved in /tmp/iserver\f20542499aed
 ```
 
 [[Back]](./README.md)

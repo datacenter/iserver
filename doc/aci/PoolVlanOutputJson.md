@@ -7,7 +7,9 @@
 
 [
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[ESX-CDC-22_VlanPool]-dynamic",
@@ -57,6 +59,31 @@
             }
         ],
         "vlanCount": 309,
+        "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "physDomP",
+                "tDn": "uni/phys-ESX-CDC-22_PhysDom",
+                "domainName": "ESX-CDC-22_PhysDom"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22",
+                "domainName": "EU-SPDC-CDC-22"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "l3extDomP",
+                "tDn": "uni/l3dom-vEPC_ESX",
+                "domainName": "vEPC_ESX"
+            }
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "epg": [
             {
                 "__Output": {},
@@ -123,6 +150,7 @@
                 "tenant": "hefernan_ni-demo",
                 "appName": "APP",
                 "epgName": "EPG1",
+                "tenantAppEpg": "hefernan_ni-demo/APP/EPG1",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -191,6 +219,7 @@
                 "tenant": "hefernan_ni-demo",
                 "appName": "APP",
                 "epgName": "EPG2",
+                "tenantAppEpg": "hefernan_ni-demo/APP/EPG2",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -259,6 +288,7 @@
                 "tenant": "SPN_IntraLab",
                 "appName": "SPN_Connect_ANP",
                 "epgName": "TEST2",
+                "tenantAppEpg": "SPN_IntraLab/SPN_Connect_ANP/TEST2",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -327,6 +357,7 @@
                 "tenant": "mgmt",
                 "appName": "EU-SPDC_ANP",
                 "epgName": "EU-SPDC-ERSPAN",
+                "tenantAppEpg": "mgmt/EU-SPDC_ANP/EU-SPDC-ERSPAN",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -395,6 +426,7 @@
                 "tenant": "vEPC_demo",
                 "appName": "vEPG_ANP",
                 "epgName": "vEPG_MGMT",
+                "tenantAppEpg": "vEPC_demo/vEPG_ANP/vEPG_MGMT",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -463,6 +495,7 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "management",
+                "tenantAppEpg": "nidemo/streamz/management",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -531,6 +564,7 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "database",
+                "tenantAppEpg": "nidemo/streamz/database",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -599,6 +633,7 @@
                 "tenant": "common",
                 "appName": "privIP_TEST",
                 "epgName": "privIP_TEST",
+                "tenantAppEpg": "common/privIP_TEST/privIP_TEST",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -667,6 +702,7 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "frontend",
+                "tenantAppEpg": "nidemo/streamz/frontend",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -735,6 +771,7 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "appserver",
+                "tenantAppEpg": "nidemo/streamz/appserver",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             },
@@ -803,38 +840,18 @@
                 "tenant": "vEPC",
                 "appName": "vSFO_ANP",
                 "epgName": "WWW",
+                "tenantAppEpg": "vEPC/vSFO_ANP/WWW",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-CDC-22"
             }
         ],
         "epgCount": 11,
-        "epgUsage": "11/309",
-        "fvnsRtVlanNs": [
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "physDomP",
-                "tDn": "uni/phys-ESX-CDC-22_PhysDom",
-                "domainName": "ESX-CDC-22_PhysDom"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "l3extDomP",
-                "tDn": "uni/l3dom-vEPC_ESX",
-                "domainName": "vEPC_ESX"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "vmmDomP",
-                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22",
-                "domainName": "VMware"
-            }
-        ]
+        "epgUsage": "11/309"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[ESX-R7DC_VlanPool]-dynamic",
@@ -856,6 +873,24 @@
             }
         ],
         "vlanCount": 100,
+        "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "physDomP",
+                "tDn": "uni/phys-ESX-R7DC_PhysDom",
+                "domainName": "ESX-R7DC_PhysDom"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-R7DC",
+                "domainName": "EU-SPDC-R7DC"
+            }
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "epg": [
             {
                 "__Output": {},
@@ -922,6 +957,7 @@
                 "tenant": "vEPC",
                 "appName": "vSFO_ANP",
                 "epgName": "WWW",
+                "tenantAppEpg": "vEPC/vSFO_ANP/WWW",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-R7DC"
             },
@@ -990,31 +1026,18 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "management",
+                "tenantAppEpg": "nidemo/streamz/management",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-R7DC"
             }
         ],
         "epgCount": 2,
-        "epgUsage": "2/100",
-        "fvnsRtVlanNs": [
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "physDomP",
-                "tDn": "uni/phys-ESX-R7DC_PhysDom",
-                "domainName": "ESX-R7DC_PhysDom"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "vmmDomP",
-                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-R7DC",
-                "domainName": "VMware"
-            }
-        ]
+        "epgUsage": "2/100"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "static",
         "descr": "",
         "dn": "uni/infra/vlanns-[HX1_VlanPool]-static",
@@ -1050,9 +1073,6 @@
             }
         ],
         "vlanCount": 3059,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/3059",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -1061,10 +1081,17 @@
                 "tDn": "uni/phys-HX1_PhysDom",
                 "domainName": "HX1_PhysDom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/3059"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "static",
         "descr": "",
         "dn": "uni/infra/vlanns-[Infra_VlanPool]-static",
@@ -1086,10 +1113,14 @@
             }
         ],
         "vlanCount": 1000,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/1000",
         "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "l2extDomP",
+                "tDn": "uni/l2dom-Infra_L2dom",
+                "domainName": "Infra_L2dom"
+            },
             {
                 "__Output": {},
                 "dn": null,
@@ -1110,18 +1141,18 @@
                 "tCl": "l3extDomP",
                 "tDn": "uni/l3dom-L3_Domain_vsfo",
                 "domainName": "L3_Domain_vsfo"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "l2extDomP",
-                "tDn": "uni/l2dom-Infra_L2dom",
-                "domainName": "uni/l2dom-Infra_L2dom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/1000"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "Managed by Terraform",
         "dn": "uni/infra/vlanns-[k8s_esx_VlanPool]-dynamic",
@@ -1143,7 +1174,7 @@
             },
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "dynamic",
                 "descr": "Managed by Terraform",
                 "dn": null,
                 "from": "vlan-1300",
@@ -1153,10 +1184,28 @@
                 "to": "vlan-1499",
                 "fromVlan": "1300",
                 "toVlan": "1499",
-                "blockInfo": "[1300-1499] (inherit)"
+                "blockInfo": "[1300-1499] (dynamic)"
             }
         ],
         "vlanCount": 210,
+        "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-POD2B",
+                "domainName": "EU-SPDC-POD2B"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "physDomP",
+                "tDn": "uni/phys-k8s_esx_PhysDom",
+                "domainName": "k8s_esx_PhysDom"
+            }
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "epg": [
             {
                 "__Output": {},
@@ -1223,6 +1272,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "vk8s_2",
+                "tenantAppEpg": "k8s/k8s_ANP/vk8s_2",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1291,6 +1341,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "backbone1",
+                "tenantAppEpg": "k8s/k8s_ANP/backbone1",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1359,6 +1410,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "site2_pe",
+                "tenantAppEpg": "k8s/k8s_ANP/site2_pe",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1427,6 +1479,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "csr1_lan",
+                "tenantAppEpg": "k8s/k8s_ANP/csr1_lan",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1495,6 +1548,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "site1_pe",
+                "tenantAppEpg": "k8s/k8s_ANP/site1_pe",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1563,6 +1617,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "csr_b2b",
+                "tenantAppEpg": "k8s/k8s_ANP/csr_b2b",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1631,6 +1686,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "site1_lan",
+                "tenantAppEpg": "k8s/k8s_ANP/site1_lan",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1699,6 +1755,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "vk8s_1",
+                "tenantAppEpg": "k8s/k8s_ANP/vk8s_1",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1767,6 +1824,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "vk8s_4",
+                "tenantAppEpg": "k8s/k8s_ANP/vk8s_4",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1835,6 +1893,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "vk8s_3",
+                "tenantAppEpg": "k8s/k8s_ANP/vk8s_3",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1903,6 +1962,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "MGMT",
+                "tenantAppEpg": "k8s/k8s_ANP/MGMT",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -1971,6 +2031,7 @@
                 "tenant": "nidemo",
                 "appName": "streamz",
                 "epgName": "management",
+                "tenantAppEpg": "nidemo/streamz/management",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -2039,6 +2100,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "bmk8s_prov",
+                "tenantAppEpg": "k8s/k8s_ANP/bmk8s_prov",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -2107,6 +2169,7 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "csr2_lan",
+                "tenantAppEpg": "k8s/k8s_ANP/csr2_lan",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             },
@@ -2175,31 +2238,18 @@
                 "tenant": "k8s",
                 "appName": "k8s_ANP",
                 "epgName": "site2_lan",
+                "tenantAppEpg": "k8s/k8s_ANP/site2_lan",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/EU-SPDC-POD2B"
             }
         ],
         "epgCount": 15,
-        "epgUsage": "15/210",
-        "fvnsRtVlanNs": [
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "physDomP",
-                "tDn": "uni/phys-k8s_esx_PhysDom",
-                "domainName": "k8s_esx_PhysDom"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "vmmDomP",
-                "tDn": "uni/vmmp-VMware/dom-EU-SPDC-POD2B",
-                "domainName": "VMware"
-            }
-        ]
+        "epgUsage": "15/210"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "static",
         "descr": "Managed by Terraform",
         "dn": "uni/infra/vlanns-[k8s_phys_VlanPool]-static",
@@ -2207,7 +2257,7 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "static",
                 "descr": "Managed by Terraform",
                 "dn": null,
                 "from": "vlan-800",
@@ -2217,7 +2267,7 @@
                 "to": "vlan-809",
                 "fromVlan": "800",
                 "toVlan": "809",
-                "blockInfo": "[800-809] (inherit)"
+                "blockInfo": "[800-809] (static)"
             },
             {
                 "__Output": {},
@@ -2235,9 +2285,6 @@
             }
         ],
         "vlanCount": 14,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/14",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2253,10 +2300,17 @@
                 "tDn": "uni/phys-k8s_phys_PhysDom",
                 "domainName": "k8s_phys_PhysDom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/14"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[multipodL3out_VlanPool]-dynamic",
@@ -2264,7 +2318,7 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "dynamic",
                 "descr": "",
                 "dn": null,
                 "from": "vlan-4",
@@ -2274,13 +2328,10 @@
                 "to": "vlan-4",
                 "fromVlan": "4",
                 "toVlan": "4",
-                "blockInfo": "[4-4] (inherit)"
+                "blockInfo": "[4-4] (dynamic)"
             }
         ],
         "vlanCount": 1,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/1",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2289,10 +2340,17 @@
                 "tDn": "uni/l3dom-multipodL3out_L3Dom",
                 "domainName": "multipodL3out_L3Dom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/1"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "static",
         "descr": "VANNIEW temporary demo feel free to destroy",
         "dn": "uni/infra/vlanns-[nidemo-3000-3001]-static",
@@ -2300,7 +2358,7 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "static",
                 "descr": "VANNIEW temporary demo feel free to destroy",
                 "dn": null,
                 "from": "vlan-3000",
@@ -2310,13 +2368,10 @@
                 "to": "vlan-3001",
                 "fromVlan": "3000",
                 "toVlan": "3001",
-                "blockInfo": "[3000-3001] (inherit)"
+                "blockInfo": "[3000-3001] (static)"
             }
         ],
         "vlanCount": 2,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/2",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2324,11 +2379,25 @@
                 "tCl": "physDomP",
                 "tDn": "uni/phys-nidemo",
                 "domainName": "nidemo"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "l2extDomP",
+                "tDn": "uni/l2dom-test",
+                "domainName": "test"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/2"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[RL-L3Out_VlanPool]-dynamic",
@@ -2336,7 +2405,7 @@
         "fvnsEncapBlk": [
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "dynamic",
                 "descr": "",
                 "dn": null,
                 "from": "vlan-4",
@@ -2346,13 +2415,10 @@
                 "to": "vlan-4",
                 "fromVlan": "4",
                 "toVlan": "4",
-                "blockInfo": "[4-4] (inherit)"
+                "blockInfo": "[4-4] (dynamic)"
             }
         ],
         "vlanCount": 1,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/1",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2361,10 +2427,17 @@
                 "tDn": "uni/l3dom-RL-L3Out_RoutedDomain",
                 "domainName": "RL-L3Out_RoutedDomain"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/1"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "static",
         "descr": "",
         "dn": "uni/infra/vlanns-[SPN_VlanPool]-static",
@@ -2386,9 +2459,6 @@
             }
         ],
         "vlanCount": 100,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/100",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2397,10 +2467,17 @@
                 "tDn": "uni/phys-SPN_PhysDom",
                 "domainName": "SPN_PhysDom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/100"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[UCSB1-R7DC_VlanPool]-dynamic",
@@ -2422,7 +2499,7 @@
             },
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "dynamic",
                 "descr": "",
                 "dn": null,
                 "from": "vlan-1701",
@@ -2432,13 +2509,10 @@
                 "to": "vlan-1899",
                 "fromVlan": "1701",
                 "toVlan": "1899",
-                "blockInfo": "[1701-1899] (inherit)"
+                "blockInfo": "[1701-1899] (dynamic)"
             }
         ],
         "vlanCount": 298,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/298",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2447,10 +2521,17 @@
                 "tDn": "uni/phys-UCSB1-R7DC_PhysDom",
                 "domainName": "UCSB1-R7DC_PhysDom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/298"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[UCSB1_VlanPool]-dynamic",
@@ -2472,7 +2553,7 @@
             },
             {
                 "__Output": {},
-                "allocMode": "inherit",
+                "allocMode": "dynamic",
                 "descr": "",
                 "dn": null,
                 "from": "vlan-3701",
@@ -2482,13 +2563,10 @@
                 "to": "vlan-4000",
                 "fromVlan": "3701",
                 "toVlan": "4000",
-                "blockInfo": "[3701-4000] (inherit)"
+                "blockInfo": "[3701-4000] (dynamic)"
             }
         ],
         "vlanCount": 399,
-        "epg": [],
-        "epgCount": 0,
-        "epgUsage": "0/399",
         "fvnsRtVlanNs": [
             {
                 "__Output": {},
@@ -2504,10 +2582,17 @@
                 "tDn": "uni/phys-UCSB1_PhysDom",
                 "domainName": "UCSB1_PhysDom"
             }
-        ]
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "epg": [],
+        "epgCount": 0,
+        "epgUsage": "0/399"
     },
     {
-        "__Output": {},
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
         "allocMode": "dynamic",
         "descr": "",
         "dn": "uni/infra/vlanns-[vEPC-ESX21-22_VlanPool]-dynamic",
@@ -2543,6 +2628,31 @@
             }
         ],
         "vlanCount": 309,
+        "fvnsRtVlanNs": [
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "vmmDomP",
+                "tDn": "uni/vmmp-VMware/dom-vEPC-Dataplane",
+                "domainName": "vEPC-Dataplane"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "physDomP",
+                "tDn": "uni/phys-vEPC-ESX20_PhysDom",
+                "domainName": "vEPC-ESX20_PhysDom"
+            },
+            {
+                "__Output": {},
+                "dn": null,
+                "tCl": "physDomP",
+                "tDn": "uni/phys-vEPC-ESX21-22_PhysDom",
+                "domainName": "vEPC-ESX21-22_PhysDom"
+            }
+        ],
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "epg": [
             {
                 "__Output": {},
@@ -2609,6 +2719,7 @@
                 "tenant": "vEPC_demo",
                 "appName": "vEPG_ANP",
                 "epgName": "vEPG_ACC",
+                "tenantAppEpg": "vEPC_demo/vEPG_ANP/vEPG_ACC",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/vEPC-Dataplane"
             },
@@ -2677,6 +2788,7 @@
                 "tenant": "vEPC_demo",
                 "appName": "vEPG_ANP",
                 "epgName": "vEPG_CTRL",
+                "tenantAppEpg": "vEPC_demo/vEPG_ANP/vEPG_CTRL",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/vEPC-Dataplane"
             },
@@ -2745,6 +2857,7 @@
                 "tenant": "vEPC_demo",
                 "appName": "vEPG_ANP",
                 "epgName": "vEPG_INT",
+                "tenantAppEpg": "vEPC_demo/vEPG_ANP/vEPG_INT",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/vEPC-Dataplane"
             },
@@ -2813,35 +2926,13 @@
                 "tenant": "vEPC_demo",
                 "appName": "vEPG_ANP",
                 "epgName": "vEPG_MGMT",
+                "tenantAppEpg": "vEPC_demo/vEPG_ANP/vEPG_MGMT",
                 "domainType": "VMM Domain",
                 "domainName": "VMware/vEPC-Dataplane"
             }
         ],
         "epgCount": 4,
-        "epgUsage": "4/309",
-        "fvnsRtVlanNs": [
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "physDomP",
-                "tDn": "uni/phys-vEPC-ESX20_PhysDom",
-                "domainName": "vEPC-ESX20_PhysDom"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "physDomP",
-                "tDn": "uni/phys-vEPC-ESX21-22_PhysDom",
-                "domainName": "vEPC-ESX21-22_PhysDom"
-            },
-            {
-                "__Output": {},
-                "dn": null,
-                "tCl": "vmmDomP",
-                "tDn": "uni/vmmp-VMware/dom-vEPC-Dataplane",
-                "domainName": "VMware"
-            }
-        ]
+        "epgUsage": "4/309"
     }
 ]
 ```

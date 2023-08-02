@@ -9,13 +9,13 @@ Apic: apic21 (mode:online, cache:off)
 Pod: 1
 Node: cl2208-eu-spdc
 
-Interface SVI State [#1]
-------------------------
+Interface SVI - State [#1]
+--------------------------
 
 +----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+----------------------+
 | Node                 | Health | Faults  | Interface | Admin | Oper | Type | Medium | Mcast | MTU  | VLAN | Access Encap | Fabric Encap   | MAC               | IPv4                 |
 +----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+----------------------+
-| pod-1/cl2208-eu-spdc | 99     | 0 0 0 1 | vlan30    | up    | up   | Ext  | bcast  | no    | 1500 | 30   | vlan-812     | vxlan-15237056 | 00:22:BD:F8:19:FF | 169.254.2.1/24 (pri) | 
+| pod-1/cl2208-eu-spdc | 100    | 0 0 0 0 | vlan30    | up    | up   | Ext  | bcast  | no    | 1500 | 30   | vlan-812     | vxlan-15237056 | 00:22:BD:F8:19:FF | 169.254.2.1/24 (pri) | 
 |                      |        |         |           |       |      |      |        |       |      |      |              |                |                   | 169.254.2.254/24     | 
 +----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+----------------------+
 ```
@@ -26,7 +26,7 @@ Developer
 # iserver get aci intf svi --apic apic21 --node cl2208-eu-spdc --name vlan30
 
 {
-    "duration": 1870,
+    "duration": 1379,
     "apic": {
         "read": true,
         "success": 4,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 431,
+        "connect_time": 358,
         "disconnect_time": 0,
-        "mo_time": 1068,
-        "total_time": 1499
+        "mo_time": 895,
+        "total_time": 1253
     },
     "error": {
         "read": false,
@@ -57,10 +57,10 @@ Developer
 Log: apic
 ----------
 
-True	431	-	connect apic21o.emea-sp.cisco.com:443
-True	323	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	451	20	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
-True	294	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
+True	358	-	connect apic21o.emea-sp.cisco.com:443
+True	268	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	366	19	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	261	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

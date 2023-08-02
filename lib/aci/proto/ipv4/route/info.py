@@ -91,7 +91,7 @@ class ProtocolIpv4RouteInfo():
 
             if rule.startswith('subnet-longer:'):
                 ip_subnet_search = rule.split(':')[1]
-                if not ip_helper.is_subnet_in_subnet(ip_subnet_search, ipv4_route_info['prefix']):
+                if not ip_helper.is_subnet_in_subnet(ipv4_route_info['prefix'], ip_subnet_search):
                     return False
 
         return True
@@ -115,10 +115,22 @@ class ProtocolIpv4RouteInfo():
                 if nh_info['if'] == 'unspecified':
                     nh_info['if'] = ''
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_ipv4_routes_info(self, pod_id, node_id, ipv4_domain_name):
-        key = '%s.%s.%s' % (pod_id, node_id, ipv4_domain_name)
+        key = '%s.%s.%s' % (pod_id, node_id, '.'.join(ipv4_domain_name.split(':')))
         if key in self.ipv4_routes:
             return self.ipv4_routes[key]
 

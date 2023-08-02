@@ -2,9 +2,17 @@ class InterfaceFcOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_fc(self, interfaces):
-        if len(interfaces) == 0:
-            self.my_output.default('No fc interfaces')
+    def print_interfaces_fc_state(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Fc - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -13,6 +21,8 @@ class InterfaceFcOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'id'
         ]
 
@@ -22,11 +32,13 @@ class InterfaceFcOutput():
 
         headers = headers + [
             'Node',
+            'Health',
+            'Faults',
             'Interface'
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -35,21 +47,217 @@ class InterfaceFcOutput():
             table=True
         )
 
-    def print_interface_fc(self, interface):
+    def print_interface_fc_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Fc - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Fc - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
-            'id'
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
         ]
 
         headers = [
-            'Interface'
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
         ]
 
-        self.my_output.dictionary(
-            interface,
-            title='Interface fc',
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
+            table=True
+        )
+
+    def print_interface_fc_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Fc - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_fc_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Fc - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Fc - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_fc_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Fc - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Fc - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
         )

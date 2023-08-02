@@ -8,20 +8,22 @@ class ProtocolIsisInstanceApi():
             return self.isis_instance_mo[key]
 
         cache = self.get_object_cache(
-            'isisEntity',
+            'isisInst',
             object_selector=key
         )
         if cache is not None:
             self.isis_instance_mo[key] = cache
             self.log.apic_mo(
-                'isisEntity.%s' % (key),
+                'isisInst.%s' % (key),
                 self.isis_instance_mo[key]
             )
             return self.isis_instance_mo[key]
 
         distinguished_name = 'topology/pod-%s/node-%s/sys/isis' % (pod_id, node_id)
+        query = 'query-target=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -41,15 +43,26 @@ class ProtocolIsisInstanceApi():
         if int(managed_objects['totalCount']) == 0:
             self.isis_instance_mo[key] = {}
         else:
-            self.isis_instance_mo[key] = managed_objects['imdata'][0]['isisEntity']['attributes']
+            attributes = managed_objects['imdata'][0]['isisInst']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'isisInst',
+                managed_objects['imdata'][0],
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'isisInst',
+                managed_objects['imdata'][0],
+                'faultCounts'
+            )
+            self.isis_instance_mo[key] = attributes
 
         self.log.apic_mo(
-            'isisEntity.%s' % (key),
+            'isisInst.%s' % (key),
             self.isis_instance_mo[key]
         )
 
         self.set_object_cache(
-            'isisEntity',
+            'isisInst',
             self.isis_instance_mo[key],
             object_selector=key
         )

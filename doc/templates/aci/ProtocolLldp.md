@@ -1,25 +1,24 @@
-# Node Protocol
+# Node Protocol - LLDP
 
-## LLDP
-
-Node selection options:
-  - [single node](./ProtocolLldpInstanceNode.md)
-  - [selected nodes](./ProtocolLldpInstanceNodes.md)
-  - [leaf nodes](./ProtocolLldpInstanceLeaf.md)
+## Command options
 
 Filter options:
-  - [device](./ProtocolLldpDevice.md)
-  - [mac](./ProtocolLldpMac.md)
-  - [server](./ProtocolLldpServer.md)
+  - [device](./ProtocolLldpFilterDevice.md)
+  - [mac](./ProtocolLldpFilterMac.md)
+  - [server](./ProtocolLldpFilterServer.md)
 
 View options:
-  - [summary](./ProtocolLldpInstanceNode.md)
-  - [nei](./ProtocolLldpNeighborNodes.md)
-  - [stats](./ProtocolLldpOutputVerbose.md)
-  - [verbose](./ProtocolLldpOutputVerbose.md)
+  - [inst](./ProtocolLldpViewInstance.md)
+  - [nei](./ProtocolLldpViewNeighbor.md)
+  - [stats](./ProtocolLldpViewStats.md)
+  - [fault](./ProtocolLldpViewFault.md)
+  - [hfault](./ProtocolLldpViewFaultHistory.md)
+  - [event](./ProtocolLldpViewEvent.md)
+  - [diag](./ProtocolLldpViewDiag.md)
+  - [all](./ProtocolLldpViewAll.md)
 
 Output options:
-  - [default](./ProtocolLldpInstanceNode.md)
+  - [default](./ProtocolLldpOutputDefault.md)
   - [json](./ProtocolLldpOutputJson.md)
 
 Command options
@@ -28,4 +27,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_lldp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

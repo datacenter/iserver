@@ -15,10 +15,15 @@ class TenantInfo():
         ]
 
         info = {}
+        info['__Output'] = {}
         for key in keys:
             info[key] = None
             if key in managed_object:
                 info[key] = managed_object[key]
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
 
         return info
 
@@ -52,7 +57,18 @@ class TenantInfo():
 
         return True
 
-    def get_tenants(self, tenant_filter=None, count_info=False):
+    def get_tenants(
+            self,
+            tenant_filter=None,
+            count_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_tenants = self.get_tenants_info()
         if all_tenants is None:
             return None
@@ -87,11 +103,42 @@ class TenantInfo():
                     tenant_name=tenant_info['name'],
                     mpls='yes'
                 )
-                tenant_info['contractCount'] = self.get_contract_count(
+                tenant_info['contractStandardCount'] = self.get_standard_contract_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['contractTabooCount'] = self.get_taboo_contract_count(
+                    tenant_name=tenant_info['name']
+                )
+                tenant_info['contractFilterCount'] = self.get_contract_filter_count(
                     tenant_name=tenant_info['name']
                 )
                 tenant_info['endpointCount'] = self.get_endpoint_count(
                     tenant_name=tenant_info['name']
+                )
+
+            if fault_info:
+                tenant_info['faultInst'] = self.get_tenant_id_fault(
+                    tenant_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                tenant_info['faultRecord'] = self.get_tenant_id_fault(
+                    tenant_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                tenant_info['eventLog'] = self.get_tenant_id_event(
+                    tenant_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                tenant_info['auditLog'] = self.get_tenant_id_audit(
+                    tenant_info['name'],
+                    audit_filter=audit_filter
                 )
 
             tenants.append(tenant_info)

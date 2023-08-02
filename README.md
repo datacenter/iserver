@@ -13,16 +13,17 @@ iserver is command line tool using REST API with various Cisco products.
 - [Workflow details](./doc/features/Workflow.md)
 - [Power and Thermal monitoring](./doc/green/README.md)
 
-## Other Features
+## Other Domains
 
 - [ACI](./doc/aci/README.md)
+- [OpenShift Container Platform](./doc/ocp/README.md)
 - [Redfish](./doc/redfish/README.md)
 - [UCSM](./doc/ucsm/README.md)
 
 ## Installation
 
 - iserver binary is compiled for Windows, Linux and MAC
-- download the latest release from the [Releases](https://github.com/datacenter/iserver/releases/latest) page.
+- download the latest release from the [Releases](https://wwwin-github.cisco.com/emear-telcocloud/iserver/releases/latest) page.
 - move binary somewhere that is on your path (e.g. /usr/local/bin)
 
 If binary is not available or you prefer using source code, clone the repository and run iserver using Python3 with [required](requirements) pip3 packages.

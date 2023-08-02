@@ -51,7 +51,10 @@ class NoResultExit(Exception):
 @click.option("--fvxlan", default='', callback=validations.empty_string_to_none, help="Filter by fabric vxlan value")
 @click.option("--nei", default='', callback=validations.empty_string_to_none, help="Filter by cdp/lldp neight system name")
 @click.option("--ctx", "user_context", default='', callback=validations.validate_context, help="Filter by context")
-@click.option("--view", "-v", type=click.Choice(['default', 'trans', 'vlan', 'epg', 'load', 'eee', 'nei', 'cdp', 'lldp', 'pg', 'pol', 'aaep', 'ether', 'err', 'qos', 'live', 'verbose'], case_sensitive=False), multiple=True)
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['state'], help="[state|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose]", show_default=True, multiple=True)
 @click.option("--pivot", is_flag=True, show_default=True, default=False, help="Pivot view")
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -83,6 +86,9 @@ def get_aci_node_intf_phy_command(
         fvxlan,
         nei,
         user_context,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         pivot,
         output,
@@ -95,8 +101,17 @@ def get_aci_node_intf_phy_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose',
+        'state',
+        [
+            'diag:fault,hfault,event,audit'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -119,6 +134,28 @@ def get_aci_node_intf_phy_command(
         if len(apic_handlers) == 1:
             aci_output_handler.set_apic_off()
 
+        fault_info = False
+        hfault_info = False
+        event_info = False
+        audit_info = False
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if 'audit' in view:
+            audit_info = True
+
+        interfaces = []
+        fault_record = []
+        fault_inst = []
+        event = []
+
         ether_stats_info = False
         fc_stats_info = False
         epg_stats_info = False
@@ -131,35 +168,35 @@ def get_aci_node_intf_phy_command(
         cap_info = False
         pc_info = False
 
-        if 'verbose' in view or 'trans' in view:
+        if 'trans' in view:
             fc_stats_info = True
 
-        if 'verbose' in view or 'load' in view:
+        if 'load' in view:
             load_info = True
 
-        if 'verbose' in view or 'qos' in view or 'live' in view:
+        if 'qos' in view or 'live' in view:
             qos_info = True
 
-        if 'verbose' in view or 'ether' in view or 'err' in view:
+        if 'ether' in view or 'err' in view:
             ether_stats_info = True
 
-        if 'verbose' in view or 'eee' in view:
+        if 'eee' in view:
             eee_info = True
 
-        if 'verbose' in view or 'epg' in view or 'vlan' in view:
+        if 'epg' in view or 'vlan' in view:
             epg_stats_info = True
 
-        if 'verbose' in view or 'nei' in view:
+        if 'nei' in view:
             cdp_info = True
             lldp_info = True
 
-        if 'verbose' in view or 'cdp' in view:
+        if 'cdp' in view:
             cdp_info = True
 
-        if 'verbose' in view or 'lldp' in view:
+        if 'lldp' in view:
             lldp_info = True
 
-        if 'verbose' in view or 'pol' in view or 'pg' in view or 'aaep' in view:
+        if 'pol' in view or 'pg' in view or 'aaep' in view:
             policy_info = True
 
         if 'verbose' in view:
@@ -167,6 +204,9 @@ def get_aci_node_intf_phy_command(
             pc_info = True
 
         interface_filter = []
+        hfault_filter = []
+        event_filter = []
+        audit_filter = []
 
         if len(interface_ids) > 0:
             ids = []
@@ -273,6 +313,27 @@ def get_aci_node_intf_phy_command(
                 'qos:%s' % (qos)
             )
 
+        if fault:
+            interface_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            audit_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         if 'live' in view:
             qos_references = {}
             for apic_handler in apic_handlers:
@@ -334,6 +395,10 @@ def get_aci_node_intf_phy_command(
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         interfaces = []
+        fault_record = []
+        fault_inst = []
+        event = []
+        audit = []
 
         phy_context = {}
         phy_context['apic'] = []
@@ -362,13 +427,37 @@ def get_aci_node_intf_phy_command(
                     qos_info=qos_info,
                     ether_stats_info=ether_stats_info,
                     cap_info=cap_info,
-                    pc_info=pc_info
+                    pc_info=pc_info,
+                    fault_info=fault_info,
+                    hfault_info=hfault_info,
+                    hfault_filter=hfault_filter,
+                    event_info=event_info,
+                    event_filter=event_filter,
+                    audit_info=audit_info,
+                    audit_filter=audit_filter
                 )
 
                 if node_interfaces is None:
                     continue
 
                 interfaces = interfaces + node_interfaces
+
+                for interface in node_interfaces:
+                    if 'eventLog' in interface:
+                        if interface['eventLog'] is not None:
+                            event = event + interface['eventLog']
+
+                    if 'faultRecord' in interface:
+                        if interface['faultRecord'] is not None:
+                            fault_record = fault_record + interface['faultRecord']
+
+                    if 'faultInst' in interface:
+                        if interface['faultInst'] is not None:
+                            fault_inst = fault_inst + interface['faultInst']
+
+                    if 'auditLog' in interface:
+                        if interface['auditLog'] is not None:
+                            audit = audit + interface['auditLog']
 
                 if len(node_interfaces) > 0:
                     if apic_handler['name'] not in phy_context['apic']:
@@ -391,10 +480,27 @@ def get_aci_node_intf_phy_command(
                         if interface_name not in phy_context['interface'][apic_handler['name']]:
                             phy_context['interface'][apic_handler['name']].append(interface_name)
 
-        ctx.busy = False
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
 
-        if len(interfaces) == 0:
-            raise NoResultExit
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        audit = sorted(
+            audit,
+            key=lambda i: i['timestamp']
+        )
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.my_output.default(
@@ -407,9 +513,10 @@ def get_aci_node_intf_phy_command(
 
         ctx.my_output.json_output(interfaces)
 
-        if 'default' in view:
+        if 'state' in view:
             aci_output_handler.print_interfaces_phy_state(
-                interfaces
+                interfaces,
+                title=True
             )
 
         if 'trans' in view:
@@ -488,6 +595,33 @@ def get_aci_node_intf_phy_command(
                 interfaces
             )
 
+        if 'fault' in view:
+            aci_output_handler.print_interface_phy_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_interface_phy_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_interface_phy_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if 'audit' in view:
+            aci_output_handler.print_interface_phy_audit_logs(
+                audit,
+                when=fault_when,
+                title=True
+            )
+
         if 'verbose' in view:
             for interface in interfaces:
                 aci_output_handler.print_interface_phy(
@@ -503,6 +637,9 @@ def get_aci_node_intf_phy_command(
             ctx.my_output.error('Failed to set interface context')
         else:
             ctx.my_output.default('Interface context: phy')
+
+        if len(interfaces) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

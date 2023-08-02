@@ -37,7 +37,9 @@ class NoResultExit(Exception):
 @click.option("--device", default='', callback=validations.empty_string_to_none, help="Filter neighbor by device name")
 @click.option("--mac", default='', callback=validations.empty_string_to_none, help="Filter neighbor by mac address")
 @click.option("--xd", "xd_filter", default='', callback=validations.validate_aci_xd, help="Cross domain filter")
-@click.option("--view", "-v", type=click.Choice(['summary', 'stats', 'nei', 'verbose'], case_sensitive=False), default='nei', show_default=True)
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['nei'], help="[inst|nei|stats|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -54,6 +56,8 @@ def get_aci_node_proto_lldp_command(
         device,
         mac,
         xd_filter,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -65,6 +69,15 @@ def get_aci_node_proto_lldp_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|nei|stats|fault|hfault|event|diag|all',
+        'nei',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -99,6 +112,8 @@ def get_aci_node_proto_lldp_command(
             )
 
         adjacency_filter = []
+        hfault_filter = []
+        event_filter = []
 
         xd_mac, xd_interface = validations.resolve_aci_xd(
             ctx,
@@ -121,101 +136,174 @@ def get_aci_node_proto_lldp_command(
                 'mac:%s' % (mac)
             )
 
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         instance_info = False
         stats_info = False
         adjacency_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
 
-        if view in ['summary', 'verbose']:
+        if 'inst' in view:
             instance_info = True
             stats_info = True
             adjacency_info = True
 
-        if view in ['stats', 'verbose']:
+        if 'stats' in view:
             stats_info = True
 
-        if view in ['nei', 'verbose']:
+        if 'nei' in view:
+            adjacency_info = True
+
+        if 'fault' in view:
+            fault_info = True
+            adjacency_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+            adjacency_info = True
+
+        if 'event' in view:
+            event_info = True
             adjacency_info = True
 
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
+        proto_infos = []
         instance = []
         stats = []
         adjacency = []
+        fault_record = []
+        fault_inst = []
+        event = []
 
         for node_info in nodes_info:
-            protocol_lldp_info = apic_handler.get_protocol_lldp(
+            proto_info = apic_handler.get_protocol_lldp(
                 node_info['podId'],
                 node_info['id'],
                 adjacency_filter=adjacency_filter,
                 instance_info=instance_info,
                 stats_info=stats_info,
-                adjacency_info=adjacency_info
+                adjacency_info=adjacency_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
-            if protocol_lldp_info is None:
+            if proto_info is None:
                 continue
 
-            if instance_info and protocol_lldp_info['instance'] is not None:
+            proto_infos.append(
+                proto_info
+            )
+
+            if instance_info and proto_info['instance'] is not None:
                 instance.append(
-                    protocol_lldp_info['instance']
+                    proto_info['instance']
                 )
 
-            if stats_info and protocol_lldp_info['stats'] is not None:
+            if stats_info and proto_info['stats'] is not None:
                 stats.append(
-                    protocol_lldp_info['stats']
+                    proto_info['stats']
                 )
 
-            if adjacency_info and protocol_lldp_info['adjacency'] is not None:
-                adjacency = adjacency + protocol_lldp_info['adjacency']
+            if adjacency_info and proto_info['adjacency'] is not None:
+                adjacency = adjacency + proto_info['adjacency']
                 lldp_context = apic_handler.add_protocol_lldp_adjacency_context(
                     lldp_context,
                     adjacency
                 )
+
+                for lldp_adjacency_info in proto_info['adjacency']:
+                    if 'eventLog' in lldp_adjacency_info:
+                        if lldp_adjacency_info['eventLog'] is not None:
+                            event = event + lldp_adjacency_info['eventLog']
+
+                    if 'faultInst' in lldp_adjacency_info:
+                        if lldp_adjacency_info['faultInst'] is not None:
+                            fault_inst = fault_inst + lldp_adjacency_info['faultInst']
+
+                    if 'faultRecord' in lldp_adjacency_info:
+                        if lldp_adjacency_info['faultRecord'] is not None:
+                            fault_record = fault_record + lldp_adjacency_info['faultRecord']
 
         ctx.busy = False
 
         if len(instance) == 0 and len(stats) == 0 and len(adjacency) == 0:
             raise NoResultExit
 
-        result = {}
-        result['instance'] = instance
-        result['stats'] = stats
-        result['adjacency'] = adjacency
-
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
                 json.dumps(
-                    result,
+                    proto_infos,
                     indent=4
                 )
             )
             return
 
-        ctx.my_output.json_output(result)
+        ctx.my_output.json_output(proto_infos)
 
-        if view in ['summary', 'verbose']:
+        if 'inst' in view:
             aci_output_handler.print_proto_lldp_instance(
-                instance
+                instance,
+                title=True
             )
 
-        if view in ['stats', 'verbose']:
+        if 'stats' in view:
             aci_output_handler.print_proto_lldp_instances_stats(
-                stats
+                stats,
+                title=True
             )
 
-        if view in ['nei', 'verbose']:
+        if 'nei' in view:
             aci_output_handler.print_lldp_adjacency_endpoints(
-                adjacency
+                adjacency,
+                title=True
             )
 
             if xd_interface is not None:
                 aci_output_handler.print_lldp_adjacency_interface_endpoints(
                     adjacency,
-                    xd_interface
+                    xd_interface,
+                    title=True
                 )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_lldp_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_lldp_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_lldp_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
 
         if context_handler.is_interface_defined(lldp_context):
             success = context_handler.set(

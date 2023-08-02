@@ -48,13 +48,14 @@ Options:
   --model TEXT                    Filter by model
   --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
-  -v, --view [default|intf|ip|power|psu|sensor|temp]
+  -v, --view TEXT                 [state|intf|ip|power|psu|sensor|temp|all]
+                                  [default: state]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 70 ms and logs saved in /tmp/iserver\7a05f1489f0c
+Info: finished in 103 ms and logs saved in /tmp/iserver\6ecdacd80e77
 ```
 
 [[Back]](./README.md)

@@ -17,7 +17,7 @@ class BridgeDomainApi():
             )
             return self.bridge_domain_mo
 
-        query = 'rsp-subtree-include=health&rsp-subtree=children'
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
 
         # fvRsCtx
         # fvRsBdToEpRet
@@ -86,10 +86,15 @@ class BridgeDomainApi():
                 managed_object,
                 'fvRsBdToEpRet'
             )
-            attributes['health'] = self.get_mo_child_attributes(
+            attributes['healthInst'] = self.get_mo_child_attributes(
                 'fvBD',
                 managed_object,
                 'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvBD',
+                managed_object,
+                'faultCounts'
             )
             self.bridge_domain_mo.append(
                 attributes

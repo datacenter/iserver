@@ -1,4 +1,6 @@
 from lib.k8s import main as k8s
+from lib.ocp.cluster.console import main as ocp_cluster_console
+from lib.ocp.cluster.kubeconfig import main as ocp_cluster_kubeconfig
 
 
 class OcpCreate():
@@ -27,13 +29,16 @@ class OcpCreate():
             if not success:
                 return False
 
-        kubeconfig_filename = self.ocp_kubeconfig_handler.download_kubeconfig(
+        ocp_kubeconfig_handler = ocp_cluster_kubeconfig.OcpClusterKubeconfig()
+        kubeconfig_filename = ocp_kubeconfig_handler.download_kubeconfig(
             ocp_parameters['installer']['vm']['ip'],
             ocp_parameters['installer']['vm']['username'],
-            ocp_parameters['installer']['vm']['password']
+            ocp_parameters['installer']['vm']['password'],
+            silent=True
         )
         if kubeconfig_filename is None:
             return False
+        self.my_output.default('Kubeconfig downloaded')
 
         success = self.ocp_settings_handler.set_ocp_cluster(
             ocp_parameters['ocp']['name'],
@@ -45,12 +50,45 @@ class OcpCreate():
 
         self.my_output.default('OCP instance configured: %s' % (ocp_parameters['ocp']['name']))
 
-        success = self.ocp_kubeconfig_handler.check_kubeconfig(
+        success = ocp_kubeconfig_handler.check_kubeconfig(
             kubeconfig_filename,
-            ocp_parameters['ocp']['cluster']['api_vip']
+            ocp_parameters['ocp']['cluster']['api_vip'],
+            silent=True
         )
         if not success:
             return False
+
+        ocp_console_handler = ocp_cluster_console.OcpClusterConsole()
+        kubeadmin_filename = ocp_console_handler.download_kubeadmin(
+            ocp_parameters['installer']['vm']['ip'],
+            ocp_parameters['installer']['vm']['username'],
+            ocp_parameters['installer']['vm']['password'],
+            silent=True
+        )
+        if kubeadmin_filename is None:
+            return False
+        self.my_output.default('Kubeadmin downloaded')
+
+        target_filename = self.ocp_settings_handler.copy_ocp_cluster_file(
+            ocp_parameters['ocp']['name'],
+            kubeadmin_filename,
+            'kubeadmin'
+        )
+        if target_filename is None:
+            self.my_output.error('Kubeadmin local copy failed')
+            return False
+        self.my_output.default('Kubeadmin copied to ocp cluster location')
+
+        success = self.ocp_settings_handler.set_ocp_cluster_parameter(
+            ocp_parameters['ocp']['name'],
+            'kubeadmin',
+            target_filename
+        )
+        if not success:
+            self.my_output.error('Cluster settings failed')
+            return False
+
+        self.my_output.default('OCP instance configured: %s' % (ocp_parameters['ocp']['name']))
 
         k8s_handler = k8s.K8s(
             kubeconfig_filename,

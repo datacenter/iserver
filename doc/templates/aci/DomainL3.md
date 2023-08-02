@@ -1,15 +1,33 @@
 # L3 Domain
 
-Get default properties of [all](./DomainL3All.md) L3 Domains in selected APIC.
+## Overview
+
+- [APIC UI and CLI](./DomainL3ApicUi.md)
+
+## Command options
 
 Filter options:
-  - [name](./DomainL3Name.md)
+  - [domain](./DomainL3FilterName.md)
+  - [aaep](./DomainL3FilterAaep.md)
+  - [pool](./DomainL3FilterPool.md)
+  - [vlan](./DomainL3FilterVlan.md)
+
+View options:
+  - [state](./DomainL3ViewState.md)
+  - [node](./DomainL3ViewNode.md)
+  - [intf](./DomainL3ViewIntf.md)
+  - [vlan](./DomainL3ViewVlan.md)
+  - [reln](./DomainL3ViewReln.md)
+  - [fault](./DomainL3ViewFault.md)
+  - [hfault](./DomainL3ViewFaultHistory.md)
+  - [event](./DomainL3ViewEvent.md)
+  - [audit](./DomainL3ViewAudit.md)
+  - [diag](./DomainL3ViewDiag.md)
+  - [all](./DomainL3ViewAll.md)
 
 Output options:
-  - [default](./DomainL3All.md)
+  - [default](./DomainL3OutputDefault.md)
   - [json](./DomainL3OutputJson.md)
-
-Command options
 
 ```
 DOC_TEMPLATE:get_aci_domain_l3.help:output

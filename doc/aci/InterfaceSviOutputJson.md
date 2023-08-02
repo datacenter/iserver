@@ -7,7 +7,7 @@
     --apic apic21
     --node cl2208-eu-spdc
     --name vlan30
-    --view verbose
+    --view all
     --when 180d -o json
 
 [
@@ -78,20 +78,20 @@
         },
         "up": true,
         "counters": {
-            "inOctets": "2961308980",
-            "inPackets": "46269724",
+            "inOctets": "5074959785",
+            "inPackets": "79290343",
             "inMcast": "0",
             "inDiscards": "0",
             "inErrors": "0",
-            "outOctets": "7270593795",
-            "outPackets": "104498566",
+            "outOctets": "12464860760",
+            "outPackets": "179119535",
             "outMcast": "0",
             "outDiscards": "0",
             "outErrors": "0"
         },
-        "health": "99",
-        "faults": "0 0 0 1",
-        "isAnyFault": true,
+        "health": "100",
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "accEncapT": "vlan-812",
         "ipv4_address": [
             "169.254.2.254/24",
@@ -125,7 +125,96 @@
             "169.254.2.1/24 (pri)",
             "169.254.2.254/24"
         ],
+        "faultInst": [],
         "faultRecord": [
+            {
+                "__Output": {
+                    "severityT": "Blue"
+                },
+                "ack": "no",
+                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
+                "cause": "threshold-crossed",
+                "changeSet": "dropRate:4",
+                "childAction": "",
+                "code": "F112128",
+                "created": "2023-07-27T09:00:43.994+02:00",
+                "delegated": false,
+                "delegatedFrom": "",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 4 fell below threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885259284",
+                "domain": "infra",
+                "highestSeverity": "warning",
+                "id": "12885259284",
+                "ind": "deletion",
+                "lc": "",
+                "modTs": "never",
+                "occur": "2",
+                "origSeverity": "warning",
+                "prevSeverity": "warning",
+                "rule": "tca-l2-ingr-pkts5min-drop-rate",
+                "severity": "cleared",
+                "status": "",
+                "subject": "counter",
+                "type": "operational",
+                "object": "faultRecord",
+                "pod_node_name": "pod-1/cl2208-eu-spdc",
+                "interfaceId": "vlan30",
+                "descrT": [
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 4 fell below ",
+                    "threshold 10"
+                ],
+                "dnT": [
+                    "subj-[topology/pod-1/node-2208/sys/",
+                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
+                    "svi-[vlan30]]/fr-12885259284"
+                ],
+                "timestamp": 1690441243,
+                "severityT": "--"
+            },
+            {
+                "__Output": {
+                    "severityT": "Blue"
+                },
+                "ack": "no",
+                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
+                "cause": "threshold-crossed",
+                "changeSet": "dropRate:4",
+                "childAction": "",
+                "code": "F112128",
+                "created": "2023-07-27T08:00:28.485+02:00",
+                "delegated": false,
+                "delegatedFrom": "",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 4 fell below threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885259243",
+                "domain": "infra",
+                "highestSeverity": "warning",
+                "id": "12885259243",
+                "ind": "modification",
+                "lc": "retaining",
+                "modTs": "never",
+                "occur": "2",
+                "origSeverity": "warning",
+                "prevSeverity": "warning",
+                "rule": "tca-l2-ingr-pkts5min-drop-rate",
+                "severity": "cleared",
+                "status": "",
+                "subject": "counter",
+                "type": "operational",
+                "object": "faultRecord",
+                "pod_node_name": "pod-1/cl2208-eu-spdc",
+                "interfaceId": "vlan30",
+                "descrT": [
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 4 fell below ",
+                    "threshold 10"
+                ],
+                "dnT": [
+                    "subj-[topology/pod-1/node-2208/sys/",
+                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
+                    "svi-[vlan30]]/fr-12885259243"
+                ],
+                "timestamp": 1690437628,
+                "severityT": "--"
+            },
             {
                 "__Output": {
                     "severityT": "Green"
@@ -133,17 +222,105 @@
                 "ack": "no",
                 "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
                 "cause": "threshold-crossed",
-                "changeSet": "dropRate:16",
+                "changeSet": "dropRate:12",
                 "childAction": "",
                 "code": "F112128",
-                "created": "2023-05-31T22:25:19.050+02:00",
-                "delegated": "no",
+                "created": "2023-07-27T07:40:22.309+02:00",
+                "delegated": false,
                 "delegatedFrom": "",
-                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 16 raised above threshold 10",
-                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248342",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 12 raised above threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885259174",
                 "domain": "infra",
                 "highestSeverity": "warning",
-                "id": "12885248342",
+                "id": "12885259174",
+                "ind": "modification",
+                "lc": "raised",
+                "modTs": "never",
+                "occur": "2",
+                "origSeverity": "warning",
+                "prevSeverity": "cleared",
+                "rule": "tca-l2-ingr-pkts5min-drop-rate",
+                "severity": "warning",
+                "status": "",
+                "subject": "counter",
+                "type": "operational",
+                "object": "faultRecord",
+                "pod_node_name": "pod-1/cl2208-eu-spdc",
+                "interfaceId": "vlan30",
+                "descrT": [
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 12 raised above ",
+                    "threshold 10"
+                ],
+                "dnT": [
+                    "subj-[topology/pod-1/node-2208/sys/",
+                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
+                    "svi-[vlan30]]/fr-12885259174"
+                ],
+                "timestamp": 1690436422,
+                "severityT": "Warn"
+            },
+            {
+                "__Output": {
+                    "severityT": "Blue"
+                },
+                "ack": "no",
+                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
+                "cause": "threshold-crossed",
+                "changeSet": "dropRate:0",
+                "childAction": "",
+                "code": "F112128",
+                "created": "2023-07-27T07:20:19.228+02:00",
+                "delegated": false,
+                "delegatedFrom": "",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885259154",
+                "domain": "infra",
+                "highestSeverity": "warning",
+                "id": "12885259154",
+                "ind": "modification",
+                "lc": "retaining",
+                "modTs": "never",
+                "occur": "1",
+                "origSeverity": "warning",
+                "prevSeverity": "warning",
+                "rule": "tca-l2-ingr-pkts5min-drop-rate",
+                "severity": "cleared",
+                "status": "",
+                "subject": "counter",
+                "type": "operational",
+                "object": "faultRecord",
+                "pod_node_name": "pod-1/cl2208-eu-spdc",
+                "interfaceId": "vlan30",
+                "descrT": [
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below ",
+                    "threshold 10"
+                ],
+                "dnT": [
+                    "subj-[topology/pod-1/node-2208/sys/",
+                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
+                    "svi-[vlan30]]/fr-12885259154"
+                ],
+                "timestamp": 1690435219,
+                "severityT": "--"
+            },
+            {
+                "__Output": {
+                    "severityT": "Green"
+                },
+                "ack": "no",
+                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
+                "cause": "threshold-crossed",
+                "changeSet": "dropRate:10",
+                "childAction": "",
+                "code": "F112128",
+                "created": "2023-06-18T09:18:08.756+02:00",
+                "delegated": false,
+                "delegatedFrom": "",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885256894",
+                "domain": "infra",
+                "highestSeverity": "warning",
+                "id": "12885256894",
                 "ind": "creation",
                 "lc": "raised",
                 "modTs": "never",
@@ -157,17 +334,17 @@
                 "type": "operational",
                 "object": "faultRecord",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
-                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 16 raised above ",
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above ",
                     "threshold 10"
                 ],
                 "dnT": [
                     "subj-[topology/pod-1/node-2208/sys/",
                     "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
-                    "svi-[vlan30]]/fr-12885248342"
+                    "svi-[vlan30]]/fr-12885256894"
                 ],
-                "timestamp": 1685564719,
+                "timestamp": 1687072688,
                 "severityT": "Warn"
             },
             {
@@ -181,7 +358,7 @@
                 "childAction": "",
                 "code": "F112128",
                 "created": "2023-06-07T14:40:55.223+02:00",
-                "delegated": "no",
+                "delegated": false,
                 "delegatedFrom": "",
                 "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below threshold 10",
                 "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248996",
@@ -201,7 +378,7 @@
                 "type": "operational",
                 "object": "faultRecord",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below ",
                     "threshold 10"
@@ -225,7 +402,7 @@
                 "childAction": "",
                 "code": "F112128",
                 "created": "2023-06-07T13:40:41.216+02:00",
-                "delegated": "no",
+                "delegated": false,
                 "delegatedFrom": "",
                 "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below threshold 10",
                 "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248979",
@@ -245,7 +422,7 @@
                 "type": "operational",
                 "object": "faultRecord",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 0 fell below ",
                     "threshold 10"
@@ -260,50 +437,6 @@
             },
             {
                 "__Output": {
-                    "severityT": "Blue"
-                },
-                "ack": "no",
-                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
-                "cause": "threshold-crossed",
-                "changeSet": "dropRate:8",
-                "childAction": "",
-                "code": "F112128",
-                "created": "2023-05-31T23:42:20.812+02:00",
-                "delegated": "no",
-                "delegatedFrom": "",
-                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 8 fell below threshold 10",
-                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248500",
-                "domain": "infra",
-                "highestSeverity": "warning",
-                "id": "12885248500",
-                "ind": "modification",
-                "lc": "retaining",
-                "modTs": "never",
-                "occur": "1",
-                "origSeverity": "warning",
-                "prevSeverity": "warning",
-                "rule": "tca-l2-ingr-pkts5min-drop-rate",
-                "severity": "cleared",
-                "status": "",
-                "subject": "counter",
-                "type": "operational",
-                "object": "faultRecord",
-                "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
-                "descrT": [
-                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 8 fell below ",
-                    "threshold 10"
-                ],
-                "dnT": [
-                    "subj-[topology/pod-1/node-2208/sys/",
-                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
-                    "svi-[vlan30]]/fr-12885248500"
-                ],
-                "timestamp": 1685569340,
-                "severityT": "--"
-            },
-            {
-                "__Output": {
                     "severityT": "Green"
                 },
                 "ack": "no",
@@ -313,7 +446,7 @@
                 "childAction": "",
                 "code": "F112128",
                 "created": "2023-05-31T23:56:23.944+02:00",
-                "delegated": "no",
+                "delegated": false,
                 "delegatedFrom": "",
                 "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above threshold 10",
                 "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248519",
@@ -333,7 +466,7 @@
                 "type": "operational",
                 "object": "faultRecord",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above ",
                     "threshold 10"
@@ -348,22 +481,66 @@
             },
             {
                 "__Output": {
+                    "severityT": "Blue"
+                },
+                "ack": "no",
+                "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
+                "cause": "threshold-crossed",
+                "changeSet": "dropRate:8",
+                "childAction": "",
+                "code": "F112128",
+                "created": "2023-05-31T23:42:20.812+02:00",
+                "delegated": false,
+                "delegatedFrom": "",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 8 fell below threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248500",
+                "domain": "infra",
+                "highestSeverity": "warning",
+                "id": "12885248500",
+                "ind": "modification",
+                "lc": "retaining",
+                "modTs": "never",
+                "occur": "1",
+                "origSeverity": "warning",
+                "prevSeverity": "warning",
+                "rule": "tca-l2-ingr-pkts5min-drop-rate",
+                "severity": "cleared",
+                "status": "",
+                "subject": "counter",
+                "type": "operational",
+                "object": "faultRecord",
+                "pod_node_name": "pod-1/cl2208-eu-spdc",
+                "interfaceId": "vlan30",
+                "descrT": [
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 8 fell below ",
+                    "threshold 10"
+                ],
+                "dnT": [
+                    "subj-[topology/pod-1/node-2208/sys/",
+                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
+                    "svi-[vlan30]]/fr-12885248500"
+                ],
+                "timestamp": 1685569340,
+                "severityT": "--"
+            },
+            {
+                "__Output": {
                     "severityT": "Green"
                 },
                 "ack": "no",
                 "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]",
                 "cause": "threshold-crossed",
-                "changeSet": "dropRate:10",
+                "changeSet": "dropRate:16",
                 "childAction": "",
                 "code": "F112128",
-                "created": "2023-06-18T09:18:08.756+02:00",
-                "delegated": "no",
+                "created": "2023-05-31T22:25:19.050+02:00",
+                "delegated": false,
                 "delegatedFrom": "",
-                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above threshold 10",
-                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885256894",
+                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 16 raised above threshold 10",
+                "dn": "subj-[topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]]/fr-12885248342",
                 "domain": "infra",
                 "highestSeverity": "warning",
-                "id": "12885256894",
+                "id": "12885248342",
                 "ind": "creation",
                 "lc": "raised",
                 "modTs": "never",
@@ -377,66 +554,17 @@
                 "type": "operational",
                 "object": "faultRecord",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
-                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above ",
+                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 16 raised above ",
                     "threshold 10"
                 ],
                 "dnT": [
                     "subj-[topology/pod-1/node-2208/sys/",
                     "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
-                    "svi-[vlan30]]/fr-12885256894"
+                    "svi-[vlan30]]/fr-12885248342"
                 ],
-                "timestamp": 1687072688,
-                "severityT": "Warn"
-            }
-        ],
-        "faultInst": [
-            {
-                "__Output": {
-                    "severityT": "Green"
-                },
-                "ack": "no",
-                "alert": "no",
-                "annotation": "",
-                "cause": "threshold-crossed",
-                "changeSet": "dropRate:10",
-                "childAction": "deleteNonPresent",
-                "code": "F112128",
-                "created": "2023-06-18T09:18:08.755+02:00",
-                "delegated": "no",
-                "descr": "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above threshold 10",
-                "dn": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]/fault-F112128",
-                "domain": "infra",
-                "extMngdBy": "",
-                "highestSeverity": "warning",
-                "lastTransition": "2023-06-18T09:18:08.755+02:00",
-                "lc": "raised",
-                "modTs": "never",
-                "occur": "1",
-                "origSeverity": "warning",
-                "prevSeverity": "warning",
-                "rule": "tca-l2-ingr-pkts5min-drop-rate",
-                "severity": "warning",
-                "status": "",
-                "subject": "counter",
-                "title": "",
-                "type": "operational",
-                "uid": "0",
-                "userdom": "",
-                "object": "faultInst",
-                "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
-                "descrT": [
-                    "TCA: ingress drop packets rate(l2IngrPkts5min:dropRate) value 10 raised above ",
-                    "threshold 10"
-                ],
-                "dnT": [
-                    "topology/pod-1/node-2208/sys/",
-                    "ctx-[vxlan-2293761]/bd-[vxlan-15237056]/",
-                    "svi-[vlan30]/fault-F112128"
-                ],
-                "timestamp": 1687072688,
+                "timestamp": 1685564719,
                 "severityT": "Warn"
             }
         ],
@@ -462,7 +590,7 @@
                 "txId": "18374686479671631426",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -498,7 +626,7 @@
                 "txId": "18374686479671631291",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -534,7 +662,7 @@
                 "txId": "18374686479671631453",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -570,7 +698,7 @@
                 "txId": "18374686479671631153",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -607,7 +735,7 @@
                 "txId": "18374686479671630415",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -644,7 +772,7 @@
                 "txId": "18374686479671630638",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -680,7 +808,7 @@
                 "txId": "18374686479671630674",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -716,7 +844,7 @@
                 "txId": "18374686479671630690",
                 "user": "internal",
                 "pod_node_name": "pod-1/cl2208-eu-spdc",
-                "vlanId": "vlan30",
+                "interfaceId": "vlan30",
                 "descrT": [
                     "Line Protocol on Interface, changed state to up connected"
                 ],
@@ -731,7 +859,8 @@
                 "timestamp": 1687072513,
                 "severityT": "Info"
             }
-        ]
+        ],
+        "auditLog": []
     }
 ]
 ```
@@ -743,22 +872,22 @@ Developer
     --apic apic21
     --node cl2208-eu-spdc
     --name vlan30
-    --view verbose
+    --view all
     --when 180d -o json
 
 {
-    "duration": 6420,
+    "duration": 5737,
     "apic": {
         "read": true,
-        "success": 6,
+        "success": 8,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 5,
-        "connect_time": 609,
+        "mo": 7,
+        "connect_time": 372,
         "disconnect_time": 0,
-        "mo_time": 4142,
-        "total_time": 4751
+        "mo_time": 4550,
+        "total_time": 4922
     },
     "error": {
         "read": false,
@@ -778,12 +907,14 @@ Developer
 Log: apic
 ----------
 
-True	609	-	connect apic21o.emea-sp.cisco.com:443
-True	315	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	453	20	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
-True	336	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
-True	1676	248	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=faults,fault-records,no-scoped,subtree
-True	1362	1586	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=event-logs,no-scoped,subtree
+True	372	-	connect apic21o.emea-sp.cisco.com:443
+True	287	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	404	19	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	272	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
+True	400	0	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree-include=faults,no-scoped,subtree
+True	1333	262	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=fault-records,no-scoped,subtree&order-by=faultRecord.created|desc&page=0&page-size=1000
+True	1258	1547	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=event-logs,no-scoped,subtree
+True	596	0	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/sviIf query rsp-subtree-include=audit-logs,no-scoped,subtree&order-by=aaaModLR.created|desc&page=0&page-size=1000
 ```
 
 [[Back]](./InterfaceSvi.md)

@@ -4,6 +4,8 @@ class VrfOutput():
 
     def print_vrf_properties(self, info):
         order = [
+            'health',
+            'faults',
             'name',
             'tenant',
             'ipDataPlaneLearningTick',
@@ -16,6 +18,8 @@ class VrfOutput():
         ]
 
         headers = [
+            'Health',
+            'Faults',
             'Name',
             'Tenant',
             'Data Plane Learning',
@@ -42,15 +46,16 @@ class VrfOutput():
         )
 
     def print_vrf_v4_route(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'VRF IPv4 Routes',
+                'VRF %s - IPv4 Routes [#%s]' % (info['nameTenant'], len(info['v4route'])),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'pod',
@@ -78,7 +83,7 @@ class VrfOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                info,
+                info['v4route'],
                 order,
                 ['types']
             ),
@@ -131,19 +136,74 @@ class VrfOutput():
                 before_newline=True
             )
             self.print_vrf_v4_route(
-                info['v4route']
+                info
             )
 
-    def print_vrfs_properties(self, info, title=False):
-        if len(info) == 0:
-            return
-
+    def print_vrfs(self, info, title=False):
         if title:
             self.my_output.default(
-                'VRF Properties',
+                'VRF [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'health',
+            'faults',
+            'nameTenant',
+            'pcTag',
+            'seg',
+            'pcEnfPref',
+            'pcEnfDir',
+            'fvAEPg.nameApTenant',
+            'fvBD.nameTenant',
+            'fvSubnet.ip',
+            'l3out.nameTenant'
+        ]
+
+        headers = [
+            'Health',
+            'Faults',
+            'VRF',
+            'Class ID',
+            'VNID',
+            'PCE Preference',
+            'PCE Direction',
+            'Associated EPG',
+            'Associated BD',
+            'BD Subnets',
+            'Associated L3Out'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['fvBD', 'fvSubnet', 'l3out', 'fvAEPg']
+            ),
+            order=order,
+            headers=headers,
+            underline=True,
+            allow_order_subkeys=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_vrfs_properties(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'VRF - Properties [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameTenant',
@@ -177,51 +237,295 @@ class VrfOutput():
             table=True
         )
 
-    def print_vrfs(self, info, title=False):
-        if len(info) == 0:
-            return
-
+    def print_vrfs_node(self, info, title=False):
         if title:
             self.my_output.default(
-                'VRF Summary [#%s]' % (len(info)),
+                'VRF - Nodes [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
 
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
         order = [
+            'health',
+            'faults',
             'nameTenant',
-            'pcTag',
-            'seg',
-            'pcEnfPref',
-            'pcEnfDir',
-            'fvAEPg.nameApTenant',
-            'fvBD.nameTenant',
-            'fvSubnet.ip',
-            'l3out.nameTenant'
+            'node.name',
+            'node.interfaces'
         ]
 
         headers = [
+            'Health',
+            'Faults',
             'VRF',
-            'Class ID',
-            'VNID',
-            'PCE Preference',
-            'PCE Direction',
-            'Associated EPG',
-            'Associated BD',
-            'BD Subnets',
-            'Associated L3Out'
+            'Node',
+            'Interfaces'
         ]
 
         self.my_output.my_table(
             self.my_output.expand_lists(
                 info,
                 order,
-                ['fvBD', 'fvSubnet', 'l3out', 'fvAEPg']
+                ['node']
             ),
             order=order,
             headers=headers,
-            underline=True,
             allow_order_subkeys=True,
+            underline=True,
             row_separator=True,
+            table=True
+        )
+
+    def print_vrfs_interface(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'VRF - Interfaces [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'health',
+            'faults',
+            'nameTenant',
+            'interface.node_name',
+            'interface.intf_name'
+        ]
+
+        headers = [
+            'Health',
+            'Faults',
+            'VRF',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['interface']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_vrfs_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'VRF - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'VRF - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'VRF',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_vrfs_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'VRF - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'VRF',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_vrfs_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'VRF - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'VRF - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'VRF',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_vrfs_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'VRF - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'VRF - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'VRF',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
             table=True
         )

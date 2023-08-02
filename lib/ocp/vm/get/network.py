@@ -47,6 +47,8 @@ class OcpVmGetNetwork():
             interface['policyName'] = ''
             interface['sriovDeviceType'] = ''
             interface['sriovNic'] = ''
+            if 'ip_address' not in interface:
+                interface['ip_address'] = None
 
             if networks is not None:
                 for network in networks:
@@ -63,12 +65,13 @@ class OcpVmGetNetwork():
                                 interface['__Output']['podTick'] = 'Green'
 
             if interface['name'] == 'default':
-                if interface['masquerade'] is not None:
-                    interface['info'] = '%s (masq)' % (interface['ip_address'])
-                    interface['masqueradeTick'] = '\u2713'
-                    interface['__Output']['masqueradeTick'] = 'Green'
-                else:
-                    interface['info'] = interface['ip_address']
+                if interface['ip_address'] is not None:
+                    if interface['masquerade'] is not None:
+                        interface['info'] = '%s (masq)' % (interface['ip_address'])
+                        interface['masqueradeTick'] = '\u2713'
+                        interface['__Output']['masqueradeTick'] = 'Green'
+                    else:
+                        interface['info'] = interface['ip_address']
                 continue
 
             if interface['ip_address'] is not None:

@@ -32,7 +32,10 @@ class NoResultExit(Exception):
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--aaep", default='', callback=validations.empty_string_to_none, help="Filter by aaep")
 @click.option("--policy", default='', callback=validations.empty_string_to_none, help="Filter by policy")
-@click.option("--view", "-v", type=click.Choice(['default', 'aaep', 'node', 'port'], case_sensitive=False), multiple=True)
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['state'], help="[state|aaep|node|intf|vlan|fault|hfault|event|audit|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -46,6 +49,9 @@ def get_aci_pg_access_interface_vpc_command(
         name,
         aaep,
         policy,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -57,8 +63,17 @@ def get_aci_pg_access_interface_vpc_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|aaep|node|intf|vlan|fault|hfault|event|audit|diag|all',
+        'state',
+        [
+            'diag:fault,hfault,event,audit'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -74,25 +89,10 @@ def get_aci_pg_access_interface_vpc_command(
         if apic_handler is None:
             raise ErrorExit
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
-        node_info = False
-        port_info = False
-        aaep_info = False
-
-        if 'node' in view:
-            node_info = True
-
-        if 'port' in view:
-            node_info = True
-            port_info = True
-
-        if 'aaep' in view:
-            aaep_info = True
-
         policy_group_filter = []
+        hfault_filter = []
+        event_filter = []
+        audit_filter = []
 
         if name is not None:
             policy_group_filter.append(
@@ -109,17 +109,109 @@ def get_aci_pg_access_interface_vpc_command(
                 'policy:%s' % (policy)
             )
 
+        if fault:
+            policy_group_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            audit_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        aaep_info = False
+        node_info = False
+        vlan_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+        audit_info = False
+
+        if 'aaep' in view:
+            aaep_info = True
+
+        if 'node' in view:
+            aaep_info = True
+            node_info = True
+
+        if 'intf' in view:
+            aaep_info = True
+            node_info = True
+
+        if 'vlan' in view:
+            aaep_info = True
+            node_info = True
+            vlan_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if 'audit' in view:
+            audit_info = True
+
+        if output not in ['json']:
+            if node_info:
+                ctx.my_output.default('[INFO] Requires per-group API call')
+            if vlan_info:
+                ctx.my_output.default('[INFO] Requires per-interface API call')
+
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
         policy_groups = apic_handler.get_policy_groups_access_interface_vpc(
             policy_group_filter=policy_group_filter,
+            aaep_info=aaep_info,
             node_info=node_info,
-            port_info=port_info,
-            aaep_info=aaep_info
+            vlan_info=vlan_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            hfault_filter=hfault_filter,
+            event_info=event_info,
+            event_filter=event_filter,
+            audit_info=audit_info,
+            audit_filter=audit_filter
         )
 
-        ctx.busy = False
+        event = []
+        fault_record = []
+        fault_inst = []
+        audit = []
 
-        if policy_groups is None or len(policy_groups) == 0:
-            raise NoResultExit
+        for policy_group in policy_groups:
+            if 'eventLog' in policy_group:
+                if policy_group['eventLog'] is not None:
+                    event = event + policy_group['eventLog']
+
+            if 'faultRecord' in policy_group:
+                if policy_group['faultRecord'] is not None:
+                    fault_record = fault_record + policy_group['faultRecord']
+
+            if 'faultInst' in policy_group:
+                if policy_group['faultInst'] is not None:
+                    fault_inst = fault_inst + policy_group['faultInst']
+
+            if 'auditLog' in policy_group:
+                if policy_group['auditLog'] is not None:
+                    audit = audit + policy_group['auditLog']
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.my_output.default(
@@ -132,25 +224,85 @@ def get_aci_pg_access_interface_vpc_command(
 
         ctx.my_output.json_output(policy_groups)
 
-        if 'default' in view:
-            aci_output_handler.print_policy_groups_access_interface_vpc_policies(
-                policy_groups
-            )
-
-        if 'node' in view:
-            aci_output_handler.print_policy_groups_access_interface_vpc_nodes(
-                policy_groups
-            )
-
-        if 'port' in view:
-            aci_output_handler.print_policy_groups_access_interface_vpc_ports(
-                policy_groups
+        if 'state' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc(
+                policy_groups,
+                title=True
             )
 
         if 'aaep' in view:
             aci_output_handler.print_policy_groups_access_interface_vpc_aaep(
-                policy_groups
+                policy_groups,
+                title=True
             )
+
+        if 'node' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_node(
+                policy_groups,
+                title=True
+            )
+
+        if 'intf' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_interface(
+                policy_groups,
+                title=True
+            )
+
+        if 'vlan' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_vlan(
+                policy_groups,
+                title=True
+            )
+
+        if 'fault' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if 'audit' in view:
+            aci_output_handler.print_policy_groups_access_interface_vpc_audit_logs(
+                audit,
+                when=fault_when,
+                title=True
+            )
+
+        # if 'default' in view:
+        #     aci_output_handler.print_policy_groups_access_interface_vpc_policies(
+        #         policy_groups
+        #     )
+
+        # if 'node' in view:
+        #     aci_output_handler.print_policy_groups_access_interface_vpc_nodes(
+        #         policy_groups
+        #     )
+
+        # if 'port' in view:
+        #     aci_output_handler.print_policy_groups_access_interface_vpc_ports(
+        #         policy_groups
+        #     )
+
+        # if 'aaep' in view:
+        #     aci_output_handler.print_policy_groups_access_interface_vpc_aaep(
+        #         policy_groups
+        #     )
+
+        if policy_groups is None or len(policy_groups) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

@@ -345,7 +345,19 @@ class InterfaceSviInfo():
 
         return True
 
-    def get_interfaces_svi(self, pod_id, node_id, interface_filter=None, fault_info=False, event_info=False, fault_filter=None, event_filter=None):
+    def get_interfaces_svi(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_svi_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -416,20 +428,20 @@ class InterfaceSviInfo():
                 continue
 
             if fault_info:
+                interface_info['faultInst'] = self.get_interface_svi_vlan_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['sviIf']['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
                 interface_info['faultRecord'] = self.get_interface_svi_vlan_fault(
                     pod_id,
                     node_id,
                     interface_info['sviIf']['id'],
                     'faultRecord',
-                    fault_filter=fault_filter
-                )
-
-                interface_info['faultInst'] = self.get_interface_svi_vlan_fault(
-                    pod_id,
-                    node_id,
-                    interface_info['sviIf']['id'],
-                    'faultInst',
-                    fault_filter=fault_filter
+                    fault_filter=hfault_filter
                 )
 
             if event_info:
@@ -438,6 +450,14 @@ class InterfaceSviInfo():
                     node_id,
                     interface_info['sviIf']['id'],
                     event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_svi_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
                 )
 
             interfaces.append(

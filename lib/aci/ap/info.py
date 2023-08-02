@@ -41,6 +41,18 @@ class ApplicationProfileInfo():
             info['name']
         )
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_application_profiles_info(self):
@@ -102,6 +114,17 @@ class ApplicationProfileInfo():
                     if not found:
                         return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not application_profile_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_application_profile',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
             if not key_found:
                 self.log.error(
                     'match_application_profile',
@@ -110,7 +133,19 @@ class ApplicationProfileInfo():
 
         return True
 
-    def get_application_profiles(self, application_profile_filter=None, epg_info=False):
+    def get_application_profiles(
+            self,
+            application_profile_filter=None,
+            epg_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_profiles = self.get_application_profiles_info()
         if all_profiles is None:
             return None
@@ -135,6 +170,46 @@ class ApplicationProfileInfo():
 
                 if not self.match_application_profile(application_profile_info, application_profile_filter):
                     continue
+
+            if node_info:
+                ap_node_info = self.get_application_profile_node(
+                    application_profile_info['tenant'],
+                    application_profile_info['name']
+                )
+                application_profile_info['node'] = None
+                application_profile_info['interface'] = None
+                if ap_node_info is not None:
+                    application_profile_info['node'] = ap_node_info['node']
+                    application_profile_info['interface'] = ap_node_info['interface']
+
+            if fault_info:
+                application_profile_info['faultInst'] = self.get_application_profile_id_fault(
+                    application_profile_info['tenant'],
+                    application_profile_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                application_profile_info['faultRecord'] = self.get_application_profile_id_fault(
+                    application_profile_info['tenant'],
+                    application_profile_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                application_profile_info['eventLog'] = self.get_application_profile_id_event(
+                    application_profile_info['tenant'],
+                    application_profile_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                application_profile_info['auditLog'] = self.get_application_profile_id_audit(
+                    application_profile_info['tenant'],
+                    application_profile_info['name'],
+                    audit_filter=audit_filter
+                )
 
             application_profiles.append(application_profile_info)
 

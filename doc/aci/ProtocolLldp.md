@@ -1,25 +1,24 @@
-# Node Protocol
+# Node Protocol - LLDP
 
-## LLDP
-
-Node selection options:
-  - [single node](./ProtocolLldpInstanceNode.md)
-  - [selected nodes](./ProtocolLldpInstanceNodes.md)
-  - [leaf nodes](./ProtocolLldpInstanceLeaf.md)
+## Command options
 
 Filter options:
-  - [device](./ProtocolLldpDevice.md)
-  - [mac](./ProtocolLldpMac.md)
-  - [server](./ProtocolLldpServer.md)
+  - [device](./ProtocolLldpFilterDevice.md)
+  - [mac](./ProtocolLldpFilterMac.md)
+  - [server](./ProtocolLldpFilterServer.md)
 
 View options:
-  - [summary](./ProtocolLldpInstanceNode.md)
-  - [nei](./ProtocolLldpNeighborNodes.md)
-  - [stats](./ProtocolLldpOutputVerbose.md)
-  - [verbose](./ProtocolLldpOutputVerbose.md)
+  - [inst](./ProtocolLldpViewInstance.md)
+  - [nei](./ProtocolLldpViewNeighbor.md)
+  - [stats](./ProtocolLldpViewStats.md)
+  - [fault](./ProtocolLldpViewFault.md)
+  - [hfault](./ProtocolLldpViewFaultHistory.md)
+  - [event](./ProtocolLldpViewEvent.md)
+  - [diag](./ProtocolLldpViewDiag.md)
+  - [all](./ProtocolLldpViewAll.md)
 
 Output options:
-  - [default](./ProtocolLldpInstanceNode.md)
+  - [default](./ProtocolLldpOutputDefault.md)
   - [json](./ProtocolLldpOutputJson.md)
 
 Command options
@@ -43,14 +42,17 @@ Options:
   --device TEXT                   Filter neighbor by device name
   --mac TEXT                      Filter neighbor by mac address
   --xd TEXT                       Cross domain filter
-  -v, --view [summary|stats|nei|verbose]
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [inst|nei|stats|fault|hfault|event|diag|all]
                                   [default: nei]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 59 ms and logs saved in /tmp/iserver\eedd67692de9
+Info: finished in 59 ms and logs saved in /tmp/iserver\9f46049f8620
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

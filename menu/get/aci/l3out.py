@@ -39,8 +39,11 @@ class NoResultExit(Exception):
 @click.option("--ospf", is_flag=True, show_default=True, default=False, help="Filter osfp protocol")
 @click.option("--pim", is_flag=True, show_default=True, default=False, help="Filter pim enabled")
 @click.option("--mpls", is_flag=True, show_default=True, default=False, help="Filter mpls enabled")
-@click.option("--view", "-v", type=click.Choice(['default', 'epg', 'node'], case_sensitive=False), multiple=True)
-@click.option("--output", "-o", type=click.Choice(['default', 'json', 'epg', 'node'], case_sensitive=False), default='default', show_default=True)
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['state'], help="[state|epg|node|fault|hfault|event|audit|diag|all]", show_default=True, multiple=True)
+@click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_l3out_command(
@@ -60,6 +63,9 @@ def get_aci_l3out_command(
         ospf,
         pim,
         mpls,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -71,8 +77,17 @@ def get_aci_l3out_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|epg|node|fault|hfault|event|audit|diag|all',
+        'state',
+        [
+            'diag:fault,hfault,event,audit'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -88,11 +103,10 @@ def get_aci_l3out_command(
         if apic_handler is None:
             raise ErrorExit
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
         l3out_filter = []
+        hfault_filter = []
+        event_filter = []
+        audit_filter = []
 
         tenant_filtered = False
         if l3out_name is not None:
@@ -128,55 +142,123 @@ def get_aci_l3out_command(
             )
 
         if bgp:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['bgp']
             l3out_filter.append(
                 'bgp:enabled'
             )
 
         if eigrp:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['eigrp']
             l3out_filter.append(
                 'eigrp:enabled'
             )
 
         if ospf:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['ospf']
             l3out_filter.append(
                 'ospf:enabled'
             )
 
         if mpls:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['mpls']
             l3out_filter.append(
                 'mpls:enabled'
             )
 
         if pim:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['pim']
             l3out_filter.append(
                 'pim:enabled'
             )
 
         if node_id is not None:
-            if len(view) == 1 and 'default' in view:
+            if len(view) == 1 and 'state' in view:
                 view = ['node']
             l3out_filter.append(
                 'node:%s' % (node_id)
             )
 
+        if fault:
+            l3out_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            audit_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        fault_info = False
+        hfault_info = False
+        event_info = False
+        audit_info = False
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if 'audit' in view:
+            audit_info = True
+
+        if output not in ['json']:
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
         l3outs = apic_handler.get_l3outs(
-            l3out_filter=l3out_filter
+            l3out_filter=l3out_filter,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            hfault_filter=hfault_filter,
+            event_info=event_info,
+            event_filter=event_filter,
+            audit_info=audit_info,
+            audit_filter=audit_filter
         )
 
-        ctx.busy = False
+        event = []
+        fault_record = []
+        fault_inst = []
+        audit = []
 
-        if l3outs is None or len(l3outs) == 0:
-            raise NoResultExit
+        for l3out in l3outs:
+            if 'eventLog' in l3out:
+                if l3out['eventLog'] is not None:
+                    event = event + l3out['eventLog']
+
+            if 'faultRecord' in l3out:
+                if l3out['faultRecord'] is not None:
+                    fault_record = fault_record + l3out['faultRecord']
+
+            if 'faultInst' in l3out:
+                if l3out['faultInst'] is not None:
+                    fault_inst = fault_inst + l3out['faultInst']
+
+            if 'auditLog' in l3out:
+                if l3out['auditLog'] is not None:
+                    audit = audit + l3out['auditLog']
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
@@ -190,45 +272,83 @@ def get_aci_l3out_command(
 
         ctx.my_output.json_output(l3outs)
 
-        if 'default' in view:
+        if 'state' in view:
             aci_output_handler.print_l3outs(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'bgp' in view:
             aci_output_handler.print_l3outs_bgp(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'eigrp' in view:
             aci_output_handler.print_l3outs_eigrp(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'ospf' in view:
             aci_output_handler.print_l3outs_ospf(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'pim' in view:
             aci_output_handler.print_l3outs_pim(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'mpls' in view:
             aci_output_handler.print_l3outs_mpls(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'epg' in view:
             aci_output_handler.print_l3outs_epg(
-                l3outs
+                l3outs,
+                title=True
             )
 
         if 'node' in view:
             aci_output_handler.print_l3outs_node(
-                l3outs
+                l3outs,
+                title=True
             )
+
+        if 'fault' in view:
+            aci_output_handler.print_l3outs_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_l3outs_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_l3outs_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if 'audit' in view:
+            aci_output_handler.print_l3outs_audit_logs(
+                audit,
+                when=fault_when,
+                title=True
+            )
+
+        if l3outs is None or len(l3outs) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

@@ -25,6 +25,18 @@ class ProtocolIpv4DomainInfo():
         else:
             info['__Output']['operSt'] = 'Red'
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_ipv4_domains_info(self, pod_id, node_id):
@@ -53,12 +65,12 @@ class ProtocolIpv4DomainInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             if key == 'vrf':
-                if not filter_helper.match_string(value, ipv4_domain_info['name']):
+                if not filter_helper.match_tenant_name(value, ipv4_domain_info['name'], delimiter=':'):
                     return False
 
         return True
 
-    def get_protocol_ipv4_domains(self, pod_id, node_id, ipv4_domain_filter=None, routes_info=False):
+    def get_protocol_ipv4_domains(self, pod_id, node_id, ipv4_domain_filter=None):
         all_ipv4_domains = self.get_protocol_ipv4_domains_info(pod_id, node_id)
         if all_ipv4_domains is None:
             return None
@@ -68,17 +80,6 @@ class ProtocolIpv4DomainInfo():
         for ipv4_domain_info in all_ipv4_domains:
             if not self.match_protocol_ipv4_domain(ipv4_domain_info, ipv4_domain_filter):
                 continue
-
-            if routes_info:
-                ipv4_domain_info['routes'] = self.get_protocol_ipv4_routes_info(
-                    pod_id,
-                    node_id,
-                    ipv4_domain_info['name']
-                )
-
-                ipv4_domain_info['routes_summary'] = self.get_protocol_ipv4_routes_summary(
-                    ipv4_domain_info['routes']
-                )
 
             ipv4_domains.append(
                 ipv4_domain_info

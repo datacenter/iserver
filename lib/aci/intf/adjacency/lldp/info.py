@@ -50,6 +50,7 @@ class InterfaceAdjacencyLldpInfo():
         ]
 
         info = {}
+        info['__Output'] = {}
         for key in keys:
             info[key] = None
             if key in managed_object:
@@ -80,6 +81,14 @@ class InterfaceAdjacencyLldpInfo():
 
         if info['portIdT'] != 'mac' and ip_helper.is_mac_address(info['chassisIdV']):
             info['mac'] = info['chassisIdV']
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
 
         return info
 

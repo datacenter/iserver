@@ -1,6 +1,5 @@
 import os
 import json
-import yaml
 
 from lib import file_helper
 from lib import ip_helper
@@ -107,7 +106,7 @@ class OcpValidate():
         return content
 
     def get_section_rules(self, section_name):
-        main_dir = self.get_main_dir()
+        main_dir = file_helper.get_main_dir()
         if main_dir is None:
             self.my_output.error('Failed to get module location')
             return None

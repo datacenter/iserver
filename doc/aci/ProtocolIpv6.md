@@ -1,10 +1,6 @@
-# Node Protocol
+# Node Protocol - IPv6
 
-## IPv6
-
-Node selection options:
-  - [single node](./ProtocolIpv6SummaryNode.md)
-  - [selected nodes](./ProtocolIpv6SummaryNodes.md)
+## Command options
 
 Filter options:
   - route type
@@ -13,12 +9,18 @@ Filter options:
   - vrf
 
 View options:
-  - default
-  - [summary](./ProtocolIpv6SummaryNode.md)
+  - [inst](./ProtocolIpv6ViewInstance.md)
+  - [dom](./ProtocolIpv6ViewDomain.md)
+  - [route](./ProtocolIpv6ViewRoute.md)
+  - [fault](./ProtocolIpv6ViewFault.md)
+  - [hfault](./ProtocolIpv6ViewFaultHistory.md)
+  - [event](./ProtocolIpv6ViewEvent.md)
+  - [diag](./ProtocolIpv6ViewDiag.md)
+  - [all](./ProtocolIpv6ViewAll.md)
 
 Output options:
-  - [default](./ProtocolIpv6SummaryNode.md)
-  - [json](./ProtocolIpv6Json.md)
+  - [default](./ProtocolIpv6OutputDefault.md)
+  - [json](./ProtocolIpv6OutputJson.md)
 
 Command options
 
@@ -32,6 +34,7 @@ Usage: iserver.py get aci proto ipv6 [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -42,13 +45,15 @@ Options:
   --address TEXT                  IP Address filter
   --subnet TEXT                   IP Subnet filter
   --longer                        Match longer prefixes
-  -v, --view [default|summary]    [default: default]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [inst|dom|route|fault|hfault|event|diag|all]
+                                  [default: route]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 62 ms and logs saved in /tmp/iserver\26185e796382
+Info: finished in 66 ms and logs saved in /tmp/iserver\708b3cc6751e
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

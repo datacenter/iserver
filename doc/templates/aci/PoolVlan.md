@@ -1,14 +1,25 @@
-# VLAN Domain
+# Pool - VLAN
 
-Get default properties of [all](./PoolVlanAll.md) VLAN Pools in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./PoolVlanName.md)
-  - [vlan](./PoolVlanVlan.md)
-  - [domain](./PoolVlanDomain.md)
+  - [name](./PoolVlanFilterName.md)
+  - [vlan](./PoolVlanFilterVlan.md)
+  - [domain](./PoolVlanFilterDomain.md)
+
+View options:
+  - [state](./PoolVlanViewState.md)
+  - [epg](./PoolVlanViewEpg.md)
+  - [fault](./PoolVlanViewFault.md)
+  - [hfault](./PoolVlanViewFaultHistory.md)
+  - [event](./PoolVlanViewEvent.md)
+  - [audit](./PoolVlanViewAudit.md)
+  - [diag](./PoolVlanViewDiag.md)
+  - [all](./PoolVlanViewAll.md)
+  - [verbose](./PoolVlanViewVerbose.md)
 
 Output options:
-  - [default](./PoolVlanAll.md)
+  - [default](./PoolVlanOutputDefault.md)
   - [json](./PoolVlanOutputJson.md)
 
 Command options

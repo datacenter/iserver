@@ -1,27 +1,33 @@
 # L3 Out
 
-Get default properties of [all](./L3OutAllDefault.md) L3Outs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./L3OutName.md)
-  - [tenant](./L3OutTenant.md)
-  - [vrf](./L3OutVrf.md)
-  - [domain](./L3OutDomain.md)
-  - [node](./L3OutNode.md)
-  - [bgp](./L3OutBgp.md)
-  - [eigrp](./L3OutEigrp.md)
-  - [ospf](./L3OutOspf.md)
-  - [pim](./L3OutPim.md)
-  - [mpls](./L3OutMpls.md)
+  - [name](./L3OutFilterName.md)
+  - [tenant](./L3OutFilterTenant.md)
+  - [vrf](./L3OutFilterVrf.md)
+  - [domain](./L3OutFilterDomain.md)
+  - [node](./L3OutFilterNode.md)
+  - [bgp](./L3OutFilterBgp.md)
+  - [eigrp](./L3OutFilterEigrp.md)
+  - [ospf](./L3OutFilterOspf.md)
+  - [pim](./L3OutFilterPim.md)
+  - [mpls](./L3OutFilterMpls.md)
 
 View options:
-  - [default](./L3OutAllDefault.md)
-  - [epg](./L3OutAllEpg.md)
-  - [node](./L3OutAllNode.md])
+  - [state](./L3OutViewState.md)
+  - [epg](./L3OutViewEpg.md)
+  - [node](./L3OutViewNode.md])
+  - [fault](./L3OutViewFault.md)
+  - [hfault](./L3OutViewFaultHistory.md)
+  - [event](./L3OutViewEvent.md)
+  - [audit](./L3OutViewAudit.md)
+  - [diag](./L3OutViewDiag.md)
+  - [all](./L3OutViewAll.md)
 
 Output options:
-  - [default](./L3OutAllDefault.md)
-  - [json](./L3OutJson.md)
+  - [default](./L3OutOutputDefault.md)
+  - [json](./L3OutOutputJson.md)
 
 Command options
 
@@ -35,6 +41,7 @@ Usage: iserver.py get aci l3out [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --name TEXT                     Filter by l3out name
@@ -47,14 +54,18 @@ Options:
   --ospf                          Filter osfp protocol
   --pim                           Filter pim enabled
   --mpls                          Filter mpls enabled
-  -v, --view [default|epg|node]
-  -o, --output [default|json|epg|node]
-                                  [default: default]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|epg|node|fault|hfault|event|audit|dia
+                                  g|all]  [default: state]
+  -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 110 ms and logs saved in /tmp/iserver\0106a86db754
+Info: finished in 45 ms and logs saved in /tmp/iserver\6060d8d1e074
 ```
 
 [[Back]](./README.md)

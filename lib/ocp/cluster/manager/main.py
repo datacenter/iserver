@@ -5,6 +5,14 @@ class OcpClusterManager():
     def __init__(self):
         pass
 
+    def get_ocp_cluster_manager_file(self, filename):
+        ssh_handler = ssh.Ssh(
+            self.ocp_cluster_settings['parameters']['installer']['vm']['ip'],
+            self.ocp_cluster_settings['parameters']['installer']['vm']['username'],
+            password=self.ocp_cluster_settings['parameters']['installer']['vm']['password']
+        )
+        return ssh_handler.get_file(filename)
+
     def get_ocp_cluster_manager_info(self, validate=False):
         info = {}
         info['__Output'] = {}

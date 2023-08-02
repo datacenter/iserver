@@ -9,6 +9,9 @@ Example: controller
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - State [#3]
+-----------------
+
 +-------------+---------+----------+-------------+--------------+------------+----------------+-------------+---------+
 | Node Name   | Node ID | VTEP IP  | Admin State | Fabric State | Role       | Model          | Serial      | Version |
 +-------------+---------+----------+-------------+--------------+------------+----------------+-------------+---------+
@@ -25,6 +28,9 @@ Example: spine
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - State [#2]
+-----------------
+
 +--------------------+---------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
 | Node Name          | Node ID | VTEP IP     | Admin State | Fabric State | Role  | Model         | Serial      | Version        |
 +--------------------+---------+-------------+-------------+--------------+-------+---------------+-------------+----------------+
@@ -39,6 +45,9 @@ Example: leaf
 # iserver get aci node --apic apic11 --role leaf
 
 Apic: apic11 (mode:online, cache:off)
+
+Node - State [#8]
+-----------------
 
 +---------------------+---------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
 | Node Name           | Node ID | VTEP IP       | Admin State | Fabric State | Role        | Model            | Serial      | Version        |
@@ -60,7 +69,7 @@ Developer
 # iserver get aci node --apic apic11 --role leaf
 
 {
-    "duration": 1036,
+    "duration": 864,
     "apic": {
         "read": true,
         "success": 2,
@@ -68,10 +77,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 465,
+        "connect_time": 407,
         "disconnect_time": 0,
-        "mo_time": 395,
-        "total_time": 860
+        "mo_time": 293,
+        "total_time": 700
     },
     "error": {
         "read": false,
@@ -91,8 +100,8 @@ Developer
 Log: apic
 ----------
 
-True	465	-	connect apic11o.emea-sp.cisco.com:443
-True	395	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	407	-	connect apic11o.emea-sp.cisco.com:443
+True	293	13	apic11o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./Node.md)

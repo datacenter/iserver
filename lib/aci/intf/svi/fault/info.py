@@ -7,6 +7,7 @@ from lib import filter_helper
 class InterfaceSviFaultInfo():
     def __init__(self):
         self.interface_svi_fault = {}
+        self.interface_svi_fault_record = {}
 
     def get_interface_svi_fault_info(self, managed_object):
         info = {}
@@ -22,17 +23,16 @@ class InterfaceSviFaultInfo():
         )
 
         # "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2228224]/bd-[vxlan-15597460]/svi-[vlan33]"
-        info['vlanId'] = None
-
-        if 'affected' in info:
-            if len(info['affected'].split('/')) == 7:
-                if info['affected'].split('/')[6].startswith('svi-'):
-                    info['vlanId'] = info['affected'].split('/')[6].split('-')[1].split('[')[1].split(']')[0]
+        info['interfaceId'] = None
+        if not managed_object['delegated']:
+            if 'affected' in info:
+                if '/svi-[' in info['affected']:
+                    info['interfaceId'] = info['affected'].split('/svi-[')[1].split(']')[0]
 
         # "dn": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]/fault-F112128"
-        if 'affected' not in info and 'dn' in info:
-            if info['dn'].split('/')[6].startswith('svi-'):
-                info['vlanId'] = info['dn'].split('/')[6].split('-')[1].split('[')[1].split(']')[0]
+        if info['interfaceId'] is None:
+            if '/svi-[' in info['dn']:
+                info['interfaceId'] = info['dn'].split('/svi-[')[1].split(']')[0]
 
         info['descrT'] = filter_helper.get_string_chunks(
             filter_helper.sanitize_string(
@@ -62,7 +62,7 @@ class InterfaceSviFaultInfo():
 
         return info
 
-    def get_interface_svi_fault(self, pod_id, node_id, deduplicate=True):
+    def get_interface_svi_fault(self, pod_id, node_id):
         key = '%s.%s' % (pod_id, node_id)
         if key in self.interface_svi_fault:
             return self.interface_svi_fault[key]
@@ -72,52 +72,77 @@ class InterfaceSviFaultInfo():
             return None
 
         self.interface_svi_fault[key] = []
+        for managed_object in managed_objects:
+            fault_info = self.get_interface_svi_fault_info(
+                managed_object
+            )
+            self.interface_svi_fault[key].append(
+                fault_info
+            )
+
+        self.log.apic_mo(
+            'svi.fault.info.%s' % (key),
+            self.interface_svi_fault[key]
+        )
+
+        return self.interface_svi_fault[key]
+
+    def get_interface_svi_fault_record(self, pod_id, node_id, deduplicate=True):
+        key = '%s.%s' % (pod_id, node_id)
+        if key in self.interface_svi_fault_record:
+            return self.interface_svi_fault_record[key]
+
+        managed_objects = self.get_interface_svi_fault_record_mo(pod_id, node_id)
+        if managed_objects is None:
+            return None
+
+        self.interface_svi_fault_record[key] = []
         fault_ids = []
 
         for managed_object in managed_objects:
             fault_info = self.get_interface_svi_fault_info(
                 managed_object
             )
-            if fault_info['object'] == 'faultRecord':
-                if not deduplicate or fault_info['id'] not in fault_ids:
-                    self.interface_svi_fault[key].append(
-                        fault_info
-                    )
-                    fault_ids.append(
-                        fault_info['id']
-                    )
-
-            if fault_info['object'] == 'faultInst':
-                self.interface_svi_fault[key].append(
+            if not deduplicate or fault_info['id'] not in fault_ids:
+                self.interface_svi_fault_record[key].append(
                     fault_info
+                )
+                fault_ids.append(
+                    fault_info['id']
                 )
 
         self.log.apic_mo(
             'svi.faultRecord.info.%s' % (key),
-            self.interface_svi_fault[key]
+            self.interface_svi_fault_record[key]
         )
 
-        return self.interface_svi_fault[key]
+        return self.interface_svi_fault_record[key]
 
-    def get_interface_svi_vlan_fault(self, pod_id, node_id, vlan_id, fault_object, fault_filter=None):
+    def get_interface_svi_vlan_fault(self, pod_id, node_id, interface_id, fault_object, fault_filter=None):
         faults = []
 
-        all_faults = self.get_interface_svi_fault(
-            pod_id,
-            node_id
-        )
-        if all_faults is None:
-            return faults
+        if fault_object == 'faultInst':
+            all_faults = self.get_interface_svi_fault(pod_id, node_id)
+            if all_faults is None:
+                return faults
+
+            fault_filter = self.remove_system_fault_timestamp_filter(
+                fault_filter
+            )
+
+        if fault_object == 'faultRecord':
+            all_faults = self.get_interface_svi_fault_record(pod_id, node_id)
+            if all_faults is None:
+                return faults
 
         for fault_info in all_faults:
-            if fault_info['vlanId'] is not None:
-                if fault_info['vlanId'] == vlan_id:
-                    if fault_info['object'] == fault_object:
-                        if not self.match_system_fault(fault_info, fault_filter, exclude_cleared=False):
-                            continue
+            if fault_info['interfaceId'] is not None:
+                if fault_info['interfaceId'] == interface_id:
+                    if not self.match_system_fault(fault_info, fault_filter, exclude_cleared=False):
+                        continue
 
-                        faults.append(
-                            fault_info
-                        )
+                    faults.append(
+                        fault_info
+                    )
 
         return faults

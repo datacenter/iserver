@@ -1,23 +1,23 @@
-class TabooApi():
+class ContractTabooApi():
     def __init__(self):
-        self.taboos_mo = None
+        self.taboo_contract_mo = None
 
-    def get_taboos_mo(self):
-        if self.taboos_mo is not None:
-            return self.taboos_mo
+    def get_taboo_contract_mo(self):
+        if self.taboo_contract_mo is not None:
+            return self.taboo_contract_mo
 
         cache = self.get_object_cache(
             'vzTaboo'
         )
         if cache is not None:
-            self.taboos_mo = cache
+            self.taboo_contract_mo = cache
             self.log.apic_mo(
                 'vzTaboo',
-                self.taboos_mo
+                self.taboo_contract_mo
             )
-            return self.taboos_mo
+            return self.taboo_contract_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=vzTSubj,vzRtProtBy'
         managed_objects = self.get_class(
             'vzTaboo',
             query=query
@@ -25,12 +25,12 @@ class TabooApi():
 
         if managed_objects is None:
             self.log.error(
-                'get_taboos_mo',
+                'get_taboo_contract_mo',
                 'API failed'
             )
             return None
 
-        self.taboos_mo = []
+        self.taboo_contract_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['vzTaboo']['attributes']
             attributes['vzTSubj'] = self.get_mo_children_attributes(
@@ -43,18 +43,23 @@ class TabooApi():
                 managed_object,
                 'vzRtProtBy'
             )
-            self.taboos_mo.append(
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'vzTaboo',
+                managed_object,
+                'faultCounts'
+            )
+            self.taboo_contract_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'vzTaboo',
-            self.taboos_mo
+            self.taboo_contract_mo
         )
 
         self.set_object_cache(
             'vzTaboo',
-            self.taboos_mo
+            self.taboo_contract_mo
         )
 
-        return self.taboos_mo
+        return self.taboo_contract_mo

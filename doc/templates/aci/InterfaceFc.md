@@ -1,14 +1,8 @@
-# Node Interface
+# Node Interface - Fc
 
-## FC
+## Command options
 
-Note: Feature *should* work. No environment available to test it (yet).
-
-Node selection options:
-  - single node
-  - selected nodes
-  - all nodes
-  - [multi APIC](./InterfaceFcNodesApics.md)
+Note: Feature *should* work. No environment available to test it.
 
 Filter options:
   - Interface ID
@@ -16,12 +10,17 @@ Filter options:
   - Oper State
 
 View options:
-  - state
-  - verbose
+  - [state](./InterfaceFcViewState.md)
+  - [fault](./InterfaceFcViewFault.md)
+  - [hfault](./InterfaceFcViewFaultHistory.md)
+  - [event](./InterfaceFcViewEvent.md)
+  - [audit](./InterfaceFcViewAudit.md)
+  - [diag](./InterfaceFcViewDiag.md)
+  - [all](./InterfaceFcViewAll.md)
 
 Output options:
-  - default
-  - json
+  - [default](./InterfaceFcOutputDefault.md)
+  - [json](./InterfaceFcOutputJson.md)
 
 Command options
 
@@ -29,4 +28,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_fc.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

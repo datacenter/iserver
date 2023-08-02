@@ -36,7 +36,10 @@ class NoResultExit(Exception):
 @click.option("--mac", "mac_address", default='', callback=validations.empty_string_to_none, help="Filter by MAC address")
 @click.option("--ip", "ip_address", default='', callback=validations.validate_ip, help="Filter by IP")
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet")
-@click.option("--view", "-v", type=click.Choice(['default', 'verbose'], case_sensitive=False), multiple=False, default='default')
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['adj'], help="[inst|dom|adj|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -54,6 +57,9 @@ def get_aci_node_proto_arp_command(
         mac_address,
         ip_address,
         ip_subnet,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -65,6 +71,17 @@ def get_aci_node_proto_arp_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|dom|adj|fault|hfault|event|diag|all',
+        'adj',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -91,11 +108,10 @@ def get_aci_node_proto_arp_command(
         if nodes_info is None:
             raise ErrorExit
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
         arp_domain_filter = []
+        hfault_filter = []
+        event_filter = []
+
         if vrf_name is not None:
             arp_domain_filter.append(
                 'name:%s' % (vrf_name)
@@ -116,55 +132,193 @@ def get_aci_node_proto_arp_command(
                 'subnet:%s' % (ip_subnet)
             )
 
-        instances = []
+        if fault:
+            arp_domain_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        instance_info = False
+        domain_info = False
+        adjacency_info = False
+        interface_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+
+        if 'dom' in view:
+            domain_info = True
+            adjacency_info = True
+
+        if 'adj' in view:
+            domain_info = True
+            adjacency_info = True
+            interface_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if output not in ['json']:
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
+        proto_infos = []
+        instance = []
+        domain = []
         adjacency = []
+        interface = []
+        fault_record = []
+        fault_inst = []
+        event = []
 
         for node_info in nodes_info:
             proto_info = apic_handler.get_protocol_arp(
                 node_info['podId'],
                 node_info['id'],
                 arp_domain_filter=arp_domain_filter,
-                adjacency_info=True,
-                interface_info=True
+                instance_info=instance_info,
+                domain_info=domain_info,
+                adjacency_info=adjacency_info,
+                interface_info=interface_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
             if proto_info is None:
                 continue
 
-            adjacency = adjacency + proto_info['adjacency']
-            instances.append(
+            if 'instance' in proto_info:
+                if proto_info['instance'] is not None:
+                    instance.append(
+                        proto_info['instance']
+                    )
+
+            if 'domain' in proto_info:
+                if proto_info['domain'] is not None:
+                    domain = domain + proto_info['domain']
+
+            if 'interface' in proto_info:
+                if proto_info['interface'] is not None:
+                    interface = interface + proto_info['interface']
+
+            if 'adjacency' in proto_info:
+                if proto_info['adjacency'] is not None:
+                    adjacency = adjacency + proto_info['adjacency']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+            if 'faultRecord' in proto_info:
+                if proto_info['faultRecord'] is not None:
+                    fault_record = fault_record + proto_info['faultRecord']
+
+            if 'faultInst' in proto_info:
+                if proto_info['faultInst'] is not None:
+                    fault_inst = fault_inst + proto_info['faultInst']
+
+            proto_infos.append(
                 proto_info
             )
 
-        ctx.busy = False
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
 
-        if len(instances) == 0:
-            raise NoResultExit
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
                 json.dumps(
-                    instances,
+                    proto_infos,
                     indent=4
                 )
             )
             return
 
-        ctx.my_output.json_output(proto_info)
+        ctx.my_output.json_output(proto_infos)
 
-        if view == 'default':
-            aci_output_handler.print_protocol_arp_adjacencies(
-                adjacency
+        if 'inst' in view:
+            aci_output_handler.print_proto_arp_instances(
+                instance,
+                title=True
             )
 
-        if view == 'verbose':
-            for instance in instances:
-                aci_output_handler.print_protocol_arp(
-                    instance
-                )
+        if 'dom' in view:
+            aci_output_handler.print_proto_arp_domains(
+                domain,
+                title=True
+            )
 
-        ctx.busy = False
+        if 'adj' in view:
+            aci_output_handler.print_proto_arp_adjacencies(
+                adjacency,
+                title=True
+            )
+
+            aci_output_handler.print_proto_arp_interface_summary(
+                interface,
+                title=True
+            )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_arp_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_arp_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_arp_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if len(proto_infos) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

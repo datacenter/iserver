@@ -17,7 +17,7 @@ class DomainL3Api():
             )
             return self.domain_l3_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=infraRsVlanNs,infraRtDomP,aaaDomain'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=infraRsVlanNs,infraRtDomP,extnwRtL3DomAtt,aaaDomainRef'
         managed_objects = self.get_class(
             'l3extDomP',
             query=query,
@@ -40,17 +40,25 @@ class DomainL3Api():
                 managed_object,
                 'infraRsVlanNs'
             )
-
             attributes['infraRtDomP'] = self.get_mo_children_attributes(
                 'l3extDomP',
                 managed_object,
                 'infraRtDomP'
             )
-
-            attributes['aaaDomain'] = self.get_mo_children_attributes(
+            attributes['extnwRtL3DomAtt'] = self.get_mo_children_attributes(
                 'l3extDomP',
                 managed_object,
-                'aaaDomain'
+                'extnwRtL3DomAtt'
+            )
+            attributes['aaaDomainRef'] = self.get_mo_children_attributes(
+                'l3extDomP',
+                managed_object,
+                'aaaDomainRef'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'l3extDomP',
+                managed_object,
+                'faultCounts'
             )
 
             self.domain_l3_mo.append(

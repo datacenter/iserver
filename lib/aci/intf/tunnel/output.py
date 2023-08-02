@@ -2,9 +2,17 @@ class InterfaceTunnelOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_tunnel(self, info):
+    def print_interfaces_tunnel_state(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Tunnel - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
-            self.my_output.default('No tunnel interfaces')
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -13,6 +21,8 @@ class InterfaceTunnelOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'id',
             'adminSt',
             'operSt',
@@ -25,7 +35,9 @@ class InterfaceTunnelOutput():
             'dest_ip',
             'dest_node',
             'vrfName',
-            'cfgdMtu'
+            'cfgdMtu',
+            'keepAlvIntvl',
+            'keepAlvRetries'
         ]
 
         headers = []
@@ -34,6 +46,8 @@ class InterfaceTunnelOutput():
 
         headers = headers + [
             'Node',
+            'Health',
+            'Faults',
             'Interface',
             'Admin',
             'Oper',
@@ -42,11 +56,13 @@ class InterfaceTunnelOutput():
             'Encap',
             'Type',
             'Req',
-            'Source IP',
-            'Destination IP',
-            'Destination Node',
+            'Src IP',
+            'Dest IP',
+            'Dest Node',
             'VRF',
-            'MTU'
+            'MTU',
+            'Keepalive Int',
+            'Keepalive Retr'
         ]
 
         self.my_output.my_table(
@@ -64,47 +80,217 @@ class InterfaceTunnelOutput():
             table=True
         )
 
-    def print_interface_tunnel(self, info):
+    def print_interface_tunnel_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Loopback - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Loopback - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
-            'id',
-            'adminSt',
-            'operSt',
-            'operStQual',
-            'tLayer',
-            'tType',
-            'type',
-            'src_ip',
-            'dest_ip',
-            'dest_node',
-            'vrfName',
-            'cfgdMtu',
-            'keepAlvIntvl',
-            'keepAlvRetries'
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
         ]
 
         headers = [
+            'Node',
             'Interface',
-            'Admin State',
-            'Oper State',
-            'Reason',
-            'Tunnel Layer',
-            'Tunnel Type',
-            'Type',
-            'Source IP',
-            'Destination IP',
-            'Destiation Node',
-            'VRF',
-            'MTU',
-            'Keepalive Interval',
-            'Keepalive Retries'
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
         ]
 
-        self.my_output.dictionary(
-            info,
-            title='Interface Tunnel',
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
+            table=True
+        )
+
+    def print_interface_tunnel_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Loopback - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_tunnel_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Loopback - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Loopback - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_tunnel_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Tunnel - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Tunnel - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
         )

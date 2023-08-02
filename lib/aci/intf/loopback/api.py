@@ -23,7 +23,7 @@ class InterfaceLoopbackApi():
             return self.interface_lb_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/l3LbRtdIf' % (pod_id, node_id)
-        query = 'rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf'
+        query = 'rsp-subtree=children&rsp-subtree-class=ethpmLbRtdIf&rsp-subtree-include=health,fault-count,required'
 
         managed_objects = self.get_class(
             class_name,
@@ -44,6 +44,16 @@ class InterfaceLoopbackApi():
                 'l3LbRtdIf',
                 managed_object,
                 'ethpmLbRtdIf'
+            )
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'l3LbRtdIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'l3LbRtdIf',
+                managed_object,
+                'faultCounts'
             )
             self.interface_lb_mo[key].append(
                 attributes

@@ -8,8 +8,7 @@ class InterfaceVirtualPortChannelInfo():
     def get_interface_virtual_port_channel_summary(self, pod_id, node_id):
         ports = self.get_interface_virtual_port_channel(
             pod_id,
-            node_id,
-            members_info=True
+            node_id
         )
 
         if ports is None:
@@ -100,6 +99,34 @@ class InterfaceVirtualPortChannelInfo():
         else:
             info['__Output']['compatSt'] = 'Red'
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
+        info['member'] = []
+        for vpc_interface_mo in managed_object['vpcIf']:
+            member_info = self.get_interface_virtual_port_channel_member_info(
+                vpc_interface_mo
+            )
+            member_info['pod_node_name'] = info['pod_node_name']
+            member_info['domainId'] = info['id']
+
+            info['member'].append(
+                member_info
+            )
+
+        info = self.add_interface_virtual_port_channel_members_summary(
+            info
+        )
+
         return info
 
     def get_interfaces_virtual_port_channel_info(self, pod_id, node_id):
@@ -118,6 +145,11 @@ class InterfaceVirtualPortChannelInfo():
                     interface_vpc_mo
                 )
             )
+
+        self.log.apic_mo(
+            'vpcDom.info.%s' % (key),
+            self.interfaces_vpc[key]
+        )
 
         return self.interfaces_vpc[key]
 
@@ -146,7 +178,19 @@ class InterfaceVirtualPortChannelInfo():
 
         return True
 
-    def get_interface_virtual_port_channel(self, pod_id, node_id, interface_filter=None, members_info=False):
+    def get_interface_virtual_port_channel(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_virtual_port_channel_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -157,18 +201,53 @@ class InterfaceVirtualPortChannelInfo():
             if not self.match_interface_virtual_port_channel(interface_info, interface_filter):
                 continue
 
-            if members_info:
-                interface_info['members'] = self.get_interface_virtual_port_channel_members(
+            for member_info in interface_info['member']:
+                member_info['pc'] = self.get_interface_port_channel(
                     pod_id,
                     node_id,
-                    interface_info['id']
-                )
-                interface_info = self.add_interface_virtual_port_channel_members_summary(
-                    interface_info
+                    interface_port_channel_filter=['name:%s' % (member_info['name'])]
                 )
 
-                if not self.match_interface_virtual_port_channel(interface_info, interface_filter):
-                    continue
+                member_info['vlan'] = []
+                if len(member_info['cfgdTrunkVlans']) > 0:
+                    member_info['vlan'] = self.get_vlan_stats(
+                        pod_id,
+                        node_id,
+                        vlan_filter=['evlans:%s' % (member_info['cfgdTrunkVlans'])]
+                    )
+
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_virtual_port_channel_domain_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_virtual_port_channel_domain_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_virtual_port_channel_domain_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_virtual_port_channel_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
+                )
 
             interfaces.append(
                 interface_info

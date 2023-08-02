@@ -7,6 +7,9 @@
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - Sensor [#1]
+------------------
+
 +---------------------+---------------+--------+-------+-----+-----+------------+
 | Node                | Sensor        | Type   | Value | Min | Max | Oper State |
 +---------------------+---------------+--------+-------+-----+-----+------------+
@@ -24,7 +27,7 @@ Developer
 # iserver get aci node --apic apic11 --view sensor --name bl205*
 
 {
-    "duration": 1483,
+    "duration": 1107,
     "apic": {
         "read": true,
         "success": 3,
@@ -32,10 +35,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 460,
+        "connect_time": 394,
         "disconnect_time": 0,
-        "mo_time": 828,
-        "total_time": 1288
+        "mo_time": 596,
+        "total_time": 990
     },
     "error": {
         "read": false,
@@ -55,9 +58,9 @@ Developer
 Log: apic
 ----------
 
-True	460	-	connect apic11o.emea-sp.cisco.com:443
-True	367	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	461	131	apic11o.emea-sp.cisco.com:443 class eqptSensor
+True	394	-	connect apic11o.emea-sp.cisco.com:443
+True	292	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	304	131	apic11o.emea-sp.cisco.com:443 class eqptSensor
 ```
 
 [[Back]](./Node.md)

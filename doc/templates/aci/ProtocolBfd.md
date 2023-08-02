@@ -1,15 +1,10 @@
-# Node Protocol
+# Node Protocol - BFD
 
-## BFD
-
-Example:
+## Example
 
 ![ProtocolBfd](images/protocol_bfd.png)
 
-Node selection options:
-  - [single node](./ProtocolBfdNode.md)
-  - [selected nodes](./ProtocolBfdNodes.md)
-  - [all nodes](./ProtocolBfdNodesAll.md)
+## Command options
 
 Filter options:
   - [Session ID](./ProtocolBfdFilterSession.md)
@@ -22,11 +17,11 @@ Filter options:
   - [Fault or Event Time Window](./ProtocolBfdFilterTime.md)
 
 View options:
+  - [inst](./ProtocolBfdViewInstance.md)
   - [session](./ProtocolBfdViewSession.md)
-  - [stats](./ProtocolBfdViewStats.md)
-  - [summary](./ProtocolBfdViewSummary.md)
-  - [event](./ProtocolBfdViewEvent.md)
   - [fault](./ProtocolBfdViewFault.md)
+  - [hfault](./ProtocolBfdViewFaultHistory.md)
+  - [event](./ProtocolBfdViewEvent.md)
   - [diag](./ProtocolBfdViewDiag.md)
   - [all](./ProtocolBfdViewAll.md)
   - [verbose](./ProtocolBfdViewVerbose.md)
@@ -41,4 +36,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_bfd.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

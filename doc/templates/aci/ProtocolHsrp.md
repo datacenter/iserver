@@ -1,22 +1,23 @@
-# Node Protocol
+# Node Protocol - HSRP
 
-## HSRP
-
-Node selection options:
-  - [single node](./ProtocolHsrpNode.md)
-  - [selected nodes](./ProtocolHsrpInstanceNodes.md)
-  - [all nodes](./ProtocolHsrpNodesAll.md)
+## Command options
 
 Filter options:
-  - [vrf](./ProtocolHsrpInstanceVrf.md)
+  - [vrf](./ProtocolHsrpFilterVrf.md)
 
 View options:
-  - [default](./ProtocolHsrpNode.md)
-  - [vrf](./ProtocolHsrpInstanceVrf.md)
+  - [inst](./ProtocolHsrpViewInstance.md)
+  - [dom](./ProtocolHsrpViewDomain.md)
+  - [intf](./ProtocolHsrpViewInterface.md)
+  - [fault](./ProtocolHsrpViewFault.md)
+  - [hfault](./ProtocolHsrpViewFaultHistory.md)
+  - [event](./ProtocolHsrpViewEvent.md)
+  - [diag](./ProtocolHsrpViewDiag.md)
+  - [all](./ProtocolHsrpViewAll.md)
 
 Output options:
-  - [default](./ProtocolHsrpNode.md)
-  - [json](./ProtocolHsrpJson.md)
+  - [default](./ProtocolHsrpOutputDefault.md)
+  - [json](./ProtocolHsrpOutputJson.md)
 
 Command options
 
@@ -24,4 +25,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_hsrp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

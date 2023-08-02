@@ -5,7 +5,7 @@
 State 'up'
 
 ```
-# iserver get aci proto bfd --apic apic11 --node any --state up
+# iserver get aci proto bfd --apic apic11 --node any --state up --view session
 
 Apic: apic11 (mode:online, cache:off)
 Pod: 1
@@ -20,8 +20,8 @@ Pod: 1
 - node: s101-eu-spdc
 - node: s102-eu-spdc
 
-BFD Sessions [#14]
-------------------
+Protocol BFD - Session [#14]
+----------------------------
 
 +---------------------+--------+---------+-------------------------------+-----------+-----------+----------------+-------------------+-------+------------+----------------+-------------------+-------+------------+
 | Node                | Health | Faults  | VRF                           | Interface | Type      | Local Address  | Local MAC         | State | Session Id | Remote Address | Remote MAC        | State | Session Id |
@@ -41,12 +41,34 @@ BFD Sessions [#14]
 | pod-1/cl202-eu-spdc | 100    | 0 0 0 0 | common:smi5Gc-cvim4-N3-N4_VRF | vlan468   | singlehop | 15.254.134.253 | 00:22:BD:F8:19:FF | up    | 1090519047 | 15.254.134.193 | FA:16:3E:15:47:1D | up    | 2          | 
 | pod-1/cl202-eu-spdc | 100    | 0 0 0 0 | common:smi5Gc-cvim4-N3-N4_VRF | vlan468   | singlehop | 15.254.134.253 | 00:22:BD:F8:19:FF | up    | 1090519045 | 15.254.134.55  | FA:16:3E:F3:E3:8C | up    | 2          | 
 +---------------------+--------+---------+-------------------------------+-----------+-----------+----------------+-------------------+-------+------------+----------------+-------------------+-------+------------+
+
+Protocol BFD - Session Stats [#14]
+----------------------------------
+
++---------------------+-------------------------------+----------------+----------------+----+------+---------+--------------------+-----+-----+------+---------+--------------------+-----+-----+-----+
+| Node                | VRF                           | Local Address  | Remote Address | Up | Down | Rx Cnt  | Rx Interval [msec] | Min | Avg | Max  | Tx Cnt  | Tx Interval [msec] | Min | Avg | Max |
++---------------------+-------------------------------+----------------+----------------+----+------+---------+--------------------+-----+-----+------+---------+--------------------+-----+-----+-----+
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.252 | 15.254.103.191 | 1  | 0    | 5155986 | 500                | 1   | 465 | 1526 | 4998832 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.103.252 | 15.254.103.192 | 1  | 0    | 5152475 | 500                | 0   | 466 | 1139 | 4998840 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.252 | 15.254.106.191 | 1  | 0    | 5156050 | 500                | 0   | 465 | 2167 | 4998836 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.106.252 | 15.254.106.192 | 1  | 0    | 5152425 | 500                | 0   | 466 | 764  | 4998840 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.252 | 15.254.133.191 | 1  | 0    | 4809387 | 500                | 1   | 466 | 1971 | 4671888 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.252 | 15.254.133.193 | 1  | 0    | 4817134 | 500                | 1   | 466 | 1991 | 4671852 | 500                | 480 | 480 | 480 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.133.252 | 15.254.133.55  | 1  | 0    | 4805356 | 500                | 4   | 467 | 1881 | 4672042 | 500                | 480 | 480 | 480 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.253 | 15.254.104.191 | 1  | 0    | 5156023 | 500                | 1   | 465 | 1967 | 5308258 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.104.253 | 15.254.104.192 | 1  | 0    | 5152223 | 500                | 0   | 466 | 1446 | 5308262 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.253 | 15.254.107.191 | 1  | 0    | 5156043 | 500                | 1   | 465 | 1839 | 5308262 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim1-N6_VRF    | 15.254.107.253 | 15.254.107.192 | 1  | 0    | 5152441 | 500                | 0   | 466 | 2344 | 5308262 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.253 | 15.254.134.191 | 1  | 0    | 4809639 | 500                | 1   | 466 | 1694 | 4961072 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.253 | 15.254.134.193 | 1  | 0    | 4817119 | 500                | 1   | 466 | 2100 | 4961040 | 500                | 452 | 452 | 452 | 
+| pod-1/cl202-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.134.253 | 15.254.134.55  | 1  | 0    | 4805454 | 500                | 2   | 467 | 1242 | 4961248 | 500                | 452 | 452 | 452 | 
++---------------------+-------------------------------+----------------+----------------+----+------+---------+--------------------+-----+-----+------+---------+--------------------+-----+-----+-----+
 ```
 
 State 'down'
 
 ```
-# iserver get aci proto bfd --apic apic11 --node any --state down
+# iserver get aci proto bfd --apic apic11 --node any --state down --view session
 
 Apic: apic11 (mode:online, cache:off)
 Pod: 1
@@ -61,8 +83,8 @@ Pod: 1
 - node: s101-eu-spdc
 - node: s102-eu-spdc
 
-BFD Sessions [#6]
------------------
+Protocol BFD - Session [#6]
+---------------------------
 
 +---------------------+--------+---------+-------------------------------+-----------+-----------+---------------+-------------------+-------+------------+----------------+-------------------+-------+------------+
 | Node                | Health | Faults  | VRF                           | Interface | Type      | Local Address | Local MAC         | State | Session Id | Remote Address | Remote MAC        | State | Session Id |
@@ -74,26 +96,40 @@ BFD Sessions [#6]
 | pod-1/rl301-eu-spdc | 90     | 0 1 0 0 | overlay-1                     | lo3       | multihop  | 172.31.3.31   | 00:00:00:00:00:00 | down  | 1090519041 | 172.31.3.35    | 00:00:00:00:00:00 | down  | 0          | 
 | pod-1/rl302-eu-spdc | 90     | 0 1 0 0 | overlay-1                     | lo3       | multihop  | 172.31.3.32   | 00:00:00:00:00:00 | down  | 1090519041 | 172.31.3.35    | 00:00:00:00:00:00 | down  | 0          | 
 +---------------------+--------+---------+-------------------------------+-----------+-----------+---------------+-------------------+-------+------------+----------------+-------------------+-------+------------+
+
+Protocol BFD - Session Stats [#6]
+---------------------------------
+
++---------------------+-------------------------------+---------------+----------------+----+------+--------+--------------------+-----+-----+-----+---------+--------------------+------+------+------+
+| Node                | VRF                           | Local Address | Remote Address | Up | Down | Rx Cnt | Rx Interval [msec] | Min | Avg | Max | Tx Cnt  | Tx Interval [msec] | Min  | Avg  | Max  |
++---------------------+-------------------------------+---------------+----------------+----+------+--------+--------------------+-----+-----+-----+---------+--------------------+------+------+------+
+| pod-1/bl205-eu-spdc | overlay-1                     | 172.31.2.25   | 172.31.2.54    | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 2525753 | 2000               | 1750 | 1750 | 1750 | 
+| pod-1/bl206-eu-spdc | overlay-1                     | 172.31.2.26   | 172.31.2.54    | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 2415318 | 2000               | 1830 | 1830 | 1830 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim4-N3-N4_VRF | 15.254.101.0  | 15.100.103.41  | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 1161120 | 2000               | 1933 | 1933 | 1933 | 
+| pod-1/cl201-eu-spdc | common:smi5Gc-cvim1-N3-N4_VRF | 15.254.101.4  | 15.100.7.41    | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 1242294 | 2000               | 1933 | 1933 | 1933 | 
+| pod-1/rl301-eu-spdc | overlay-1                     | 172.31.3.31   | 172.31.3.35    | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 2343592 | 2000               | 1886 | 1886 | 1886 | 
+| pod-1/rl302-eu-spdc | overlay-1                     | 172.31.3.32   | 172.31.3.35    | 0  | 0    | 0      | 2000               | 0   | 0   | 0   | 2509941 | 2000               | 1761 | 1761 | 1761 | 
++---------------------+-------------------------------+---------------+----------------+----+------+--------+--------------------+-----+-----+-----+---------+--------------------+------+------+------+
 ```
 
 Developer
 
 ```
-# iserver get aci proto bfd --apic apic11 --node any --state up
+# iserver get aci proto bfd --apic apic11 --node any --state up --view session
 
 {
-    "duration": 9123,
+    "duration": 4385,
     "apic": {
         "read": true,
-        "success": 24,
+        "success": 12,
         "failed": 0,
         "connect": 1,
         "disconnect": 0,
-        "mo": 23,
-        "connect_time": 427,
+        "mo": 11,
+        "connect_time": 441,
         "disconnect_time": 0,
-        "mo_time": 7552,
-        "total_time": 7979
+        "mo_time": 3463,
+        "total_time": 3904
     },
     "error": {
         "read": false,
@@ -113,30 +149,18 @@ Developer
 Log: apic
 ----------
 
-True	427	-	connect apic11o.emea-sp.cisco.com:443
-True	321	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	311	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	337	11	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	320	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	334	15	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	311	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	342	42	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	316	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	360	36	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	327	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/bfd/inst query rsp-subtree-include=health,fault-count
+True	441	-	connect apic11o.emea-sp.cisco.com:443
+True	324	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	311	11	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-205/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	314	15	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-206/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	315	42	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-201/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	348	36	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-202/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
 True	308	0	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	313	0	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-209/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
-True	380	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	331	0	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	349	0	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/bfd/inst query query-target=children&target-subtree-class=bfdIf
-True	329	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	336	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	325	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	311	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	299	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-101/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	339	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-101/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
-True	335	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-102/sys/bfd/inst query rsp-subtree-include=health,fault-count
-True	318	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-102/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	281	0	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-210/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	292	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-301/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	336	10	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-302/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	334	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-101/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
+True	300	1	apic11o.emea-sp.cisco.com:443 mo topology/pod-1/node-102/sys/bfd/inst query query-target=subtree&target-subtree-class=bfdSess,bfdSessStats,bfdPeerV,bfdIf&rsp-subtree-include=health,fault-count
 ```
 
 

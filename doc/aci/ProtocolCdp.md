@@ -1,27 +1,23 @@
-# Node Protocol
+# Node Protocol - CDP
 
-## CDP
-
-Node selection options:
-  - [single node](./ProtocolCdpNode.md)
-  - [selected nodes](./ProtocolCdpNeighborNodes.md)
-  - [all nodes](./ProtocolCdpNodesAll.md)
+## Command options
 
 Filter options:
-  - [node local interface](./ProtocolCdpInterfaceName.md)
-  - [neighbor system name](./ProtocolCdpNeighborSystem.md)
-  - [neighbor platform](./ProtocolCdpNeighborPlatform.md)
-  - [neighbor capabilities](./ProtocolCdpNeighborCapabilities.md)
-  - [neighbor node local interface](./ProtocolCdpNeighborInterface.md)
+  - [interface](./ProtocolCdpFilterInterface.md)
+  - [system](./ProtocolCdpFilterSystem.md)
+  - [platform](./ProtocolCdpFilterPlatform.md)
+  - [capabilities](./ProtocolCdpFilterCapabilities.md)
 
 View options:
-  - [default](./ProtocolCdpNeighborNode.md)
-  - [intf](./ProtocolCdpInterfaceNode.md)
-  - [instance](./ProtocolCdpNodesAll.md)
+  - [inst](./ProtocolCdpViewInstance.md)
+  - [intf](./ProtocolCdpViewInterface.md)
+  - [nei](./ProtocolCdpViewNeighbor.md)
+  - [event](./ProtocolCdpViewEvent.md)
+  - [all](./ProtocolCdpViewAll.md)
 
 Output options:
-  - [default](./ProtocolCdpNeighborNode.md)
-  - [instance](./ProtocolCdpNodesAll.md)
+  - [default](./ProtocolCdpOutputDefault.md)
+  - [json](./ProtocolCdpOutputJson.md)
 
 Command options
 
@@ -33,24 +29,26 @@ Usage: iserver.py get aci proto cdp [OPTIONS]
   Get aci node protocol cdp
 
 Options:
-  --apic TEXT                     APIC name
-  --ip TEXT                       APIC IP
-  --username TEXT                 APIC Username
-  --password TEXT                 APIC Password
-  --pod TEXT                      Pod ID
-  --node TEXT                     Node name patterns
-  --role [any|leaf|spine]         [default: any]
-  --sys TEXT                      Filter by system name
-  --platform TEXT                 Filter by platform name
-  --cap TEXT                      Filter by capabilities
-  --intf TEXT                     Filter by interface name
-  -v, --view [default|intf|instance]
-  -o, --output [default|json]     [default: default]
-  --no-cache                      Disable cache
-  --devel                         Developer output
-  --help                          Show this message and exit.
+  --apic TEXT                  APIC name
+  --ip TEXT                    APIC IP
+  --port INTEGER               APIC Port  [default: 443]
+  --username TEXT              APIC Username
+  --password TEXT              APIC Password
+  --pod TEXT                   Pod ID
+  --node TEXT                  Node name patterns
+  --role [any|leaf|spine]      [default: any]
+  --sys TEXT                   Filter by system name
+  --platform TEXT              Filter by platform name
+  --cap TEXT                   Filter by capabilities
+  --intf TEXT                  Filter by interface name
+  --when TEXT                  Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT              [inst|intf|nei|event|all]  [default: nei]
+  -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
+  --devel                      Developer output
+  --help                       Show this message and exit.
 
-Info: finished in 82 ms and logs saved in /tmp/iserver\bf920fde3e59
+Info: finished in 36 ms and logs saved in /tmp/iserver\0b4be1601ee9
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

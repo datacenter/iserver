@@ -22,6 +22,7 @@ class InterfaceAdjacencyCdpInfo():
         ]
 
         info = {}
+        info['__Output'] = {}
         for key in keys:
             info[key] = None
             if key in managed_object:
@@ -31,6 +32,10 @@ class InterfaceAdjacencyCdpInfo():
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = info['dn'].split('if-[')[1].split(']')[0]
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
 
         return info
 

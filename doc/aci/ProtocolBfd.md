@@ -1,15 +1,10 @@
-# Node Protocol
+# Node Protocol - BFD
 
-## BFD
-
-Example:
+## Example
 
 ![ProtocolBfd](images/protocol_bfd.png)
 
-Node selection options:
-  - [single node](./ProtocolBfdNode.md)
-  - [selected nodes](./ProtocolBfdNodes.md)
-  - [all nodes](./ProtocolBfdNodesAll.md)
+## Command options
 
 Filter options:
   - [Session ID](./ProtocolBfdFilterSession.md)
@@ -22,11 +17,11 @@ Filter options:
   - [Fault or Event Time Window](./ProtocolBfdFilterTime.md)
 
 View options:
+  - [inst](./ProtocolBfdViewInstance.md)
   - [session](./ProtocolBfdViewSession.md)
-  - [stats](./ProtocolBfdViewStats.md)
-  - [summary](./ProtocolBfdViewSummary.md)
-  - [event](./ProtocolBfdViewEvent.md)
   - [fault](./ProtocolBfdViewFault.md)
+  - [hfault](./ProtocolBfdViewFaultHistory.md)
+  - [event](./ProtocolBfdViewEvent.md)
   - [diag](./ProtocolBfdViewDiag.md)
   - [all](./ProtocolBfdViewAll.md)
   - [verbose](./ProtocolBfdViewVerbose.md)
@@ -62,14 +57,14 @@ Options:
   --severity [any|critical|major|minor|warning]
                                   Filter faults by severity  [default: any]
   --when TEXT                     Filter faults by timestamp  [default: 7d]
-  -v, --view [session|stats|summary|event|fault|diag|all|verbose]
-                                  [default: session]
+  -v, --view TEXT                 [inst|session|fault|hfault|event|diag|all|ve
+                                  rbose]  [default: session]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 69 ms and logs saved in /tmp/iserver\6fd32c8dd2ef
+Info: finished in 96 ms and logs saved in /tmp/iserver\7f6826861f91
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

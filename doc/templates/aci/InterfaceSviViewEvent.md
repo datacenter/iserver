@@ -1,15 +1,15 @@
 # Node Interface - SVI
 
-## Event focused output
+## Event view
 
 ```
-DOC_TEMPLATE:get_aci_intf_svi.event:iserver.output.default
+DOC_TEMPLATE:get_aci_intf_svi.event_view:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_intf_svi.event:devel.debug
+DOC_TEMPLATE:get_aci_intf_svi.event_view:devel.debug
 ```
 
 [[Back]](./InterfaceSvi.md)

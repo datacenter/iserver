@@ -1,27 +1,26 @@
-# Node Interface
+# Node Interface - VFC
 
-## VFC
+## Command options
 
-Note: Feature *should* work. No environment available to test it (yet).
-
-Node selection options:
-  - single node
-  - selected nodes
-  - all nodes
-  - [multi APIC](./InterfaceVfcNodesApics.md)
+Note: Feature *should* work. No environment available to test it.
 
 Filter options:
   - Interface ID
   - Admin State
   - Oper State
 
-View options:
-  - default
-  - verbose
+  View options:
+  - [state](./InterfaceVfcViewState.md)
+  - [fault](./InterfaceVfcViewFault.md)
+  - [hfault](./InterfaceVfcViewFaultHistory.md)
+  - [event](./InterfaceVfcViewEvent.md)
+  - [audit](./InterfaceVfcViewAudit.md)
+  - [diag](./InterfaceVfcViewDiag.md)
+  - [all](./InterfaceVfcViewAll.md)
 
 Output options:
-  - default
-  - json
+  - [default](./InterfaceVfcOutputDefault.md)
+  - [json](./InterfaceVfcOutputJson.md)
 
 Command options
 
@@ -29,4 +28,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_vfc.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

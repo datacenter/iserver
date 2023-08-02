@@ -1,22 +1,22 @@
-# Node Interface
+# Node Interface - MACsec
 
-## MACsec
-
-Node selection options:
-  - [single node](./InterfaceMacSecNode.md)
-  - [selected nodes](./InterfaceMacSecNodes.md)
-  - [all nodes](./InterfaceMacSecNodesAll.md)
-  - [multi APIC](./InterfaceMacSecNodesApics.md)
+## Command options
 
 Filter options:
-  - [Interface ID](./InterfaceMacSecId.md)
+  - [Interface ID](./InterfaceMacSecFilterId.md)
 
 View options:
-  - [default](./InterfaceMacSecOutputState.md)
-  - [verbose](./InterfaceMacSecOutputVerbose.md)
+  - [state](./InterfaceMacSecViewState.md)
+  - [fault](./InterfaceMacSecViewFault.md)
+  - [hfault](./InterfaceMacSecViewFaultHistory.md)
+  - [event](./InterfaceMacSecViewEvent.md)
+  - [audit](./InterfaceMacSecViewAudit.md)
+  - [diag](./InterfaceMacSecViewDiag.md)
+  - [all](./InterfaceMacSecViewAll.md)
+  - [verbose](./InterfaceMacSecViewVerbose.md)
 
 Output options:
-  - [default](./InterfaceMacSecOutputState.md)
+  - [default](./InterfaceMacSecOutputDefault.md)
   - [json](./InterfaceMacSecOutputJson.md)
 
 Command options
@@ -29,25 +29,30 @@ Usage: iserver.py get aci intf macsec [OPTIONS]
   Get aci node macsec interface
 
 Options:
-  --apic TEXT                   APIC name
-  --ip TEXT                     APIC IP
-  --username TEXT               APIC Username
-  --password TEXT               APIC Password
-  --pod TEXT                    Pod ID
-  --node TEXT                   Node name patterns
-  --role [any|leaf|spine]       [default: any]
-  --id TEXT                     Port name
-  --admin [any|up|down]         [default: any]
-  --oper [any|up|down]          [default: any]
-  --type [any|leaf|fabric]      [default: any]
-  -v, --view [default|verbose]
-  -o, --output [default|json]   [default: default]
-  --no-cache                    Disable cache
-  --empty                       No error on empty result
-  --devel                       Developer output
-  --help                        Show this message and exit.
+  --apic TEXT                     APIC name
+  --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
+  --username TEXT                 APIC Username
+  --password TEXT                 APIC Password
+  --pod TEXT                      Pod ID
+  --node TEXT                     Node name patterns
+  --role [any|leaf|spine]         [default: any]
+  --id TEXT                       Port name
+  --admin [any|up|down]           [default: any]
+  --oper [any|up|down]            [default: any]
+  --type [any|leaf|fabric]        [default: any]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|fault|hfault|event|audit|diag|all|ver
+                                  bose]  [default: state]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
+  --devel                         Developer output
+  --help                          Show this message and exit.
 
-Info: finished in 30 ms and logs saved in /tmp/iserver\e3c3491022ac
+Info: finished in 65 ms and logs saved in /tmp/iserver\498cf2964cb2
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

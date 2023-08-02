@@ -12,8 +12,8 @@ Apic: apic21 (mode:online, cache:off)
 Pod: 1
 Node: cl2208-eu-spdc
 
-Interface SVI State [#6]
-------------------------
+Interface SVI - State [#6]
+--------------------------
 
 +----------------------+--------+---------+-----------+-------+------+------+--------+-------+------+------+--------------+----------------+-------------------+-----------------+
 | Node                 | Health | Faults  | Interface | Admin | Oper | Type | Medium | Mcast | MTU  | VLAN | Access Encap | Fabric Encap   | MAC               | IPv4            |
@@ -36,7 +36,7 @@ Developer
     --subnet 10.58.24.0/24
 
 {
-    "duration": 1728,
+    "duration": 1439,
     "apic": {
         "read": true,
         "success": 4,
@@ -44,10 +44,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 420,
+        "connect_time": 385,
         "disconnect_time": 0,
-        "mo_time": 1015,
-        "total_time": 1435
+        "mo_time": 913,
+        "total_time": 1298
     },
     "error": {
         "read": false,
@@ -67,10 +67,10 @@ Developer
 Log: apic
 ----------
 
-True	420	-	connect apic21o.emea-sp.cisco.com:443
-True	309	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	407	20	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
-True	299	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
+True	385	-	connect apic21o.emea-sp.cisco.com:443
+True	269	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	373	19	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/l2BD query rsp-subtree=full&rsp-subtree-class=sviIf&rsp-subtree-include=health,fault-count,required
+True	271	29	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2208/ipv4Addr
 ```
 
 [[Back]](./InterfaceSvi.md)

@@ -25,7 +25,7 @@ class InterfaceEncapsulatedRoutedApi():
         # https://apic11o.emea-sp.cisco.com/api/node/class/topology/pod-1/node-201/l3EncRtdIf.json?rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf&subscription=yes&order-by=l3EncRtdIf.mplsEnable|asc&page=0&page-size=15&_dc=1683801093405
 
         class_name = 'topology/pod-%s/node-%s/l3EncRtdIf' % (pod_id, node_id)
-        query = 'rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf'
+        query = 'rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
             class_name,
             query=query,
@@ -51,6 +51,16 @@ class InterfaceEncapsulatedRoutedApi():
                 'l3EncRtdIf',
                 managed_object,
                 'ethpmEncRtdIf'
+            )
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'l3EncRtdIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'l3EncRtdIf',
+                managed_object,
+                'faultCounts'
             )
             self.interface_encap_routed_mo[key].append(
                 attributes

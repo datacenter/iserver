@@ -427,7 +427,10 @@ class OutputHelper():
             for order_key in order:
                 key = order_key.split('.')[0]
                 if key not in item:
-                    item[key] = value_ref[key]
+                    if key in value_ref:
+                        item[key] = value_ref[key]
+                    else:
+                        item[key] = ''
 
             if '__Output' in value_ref:
                 item['__Output'] = value_ref['__Output']

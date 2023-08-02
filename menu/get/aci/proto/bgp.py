@@ -41,7 +41,9 @@ class NoResultExit(Exception):
 @click.option("--nbr-subnet", "nbr_ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by BPG Neighbor IP subnet")
 @click.option("--state", "nbr_state", type=click.Choice(['any', 'up', 'down'], case_sensitive=False), default='any', show_default=True, help="Filter by BGP neighbor state")
 @click.option("--intf", "source_interface", default='', callback=validations.empty_string_to_none, help="Filter by BGP Neighbor source interface")
-@click.option("--view", "-v", type=click.Choice(['default', 'node', 'vrf', 'trans', 'conn', 'af', 'verbose', 'route'], case_sensitive=False), multiple=True, show_default=False)
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['nei'], help="[inst|dom|nei|route|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -64,6 +66,8 @@ def get_aci_node_proto_bgp_command(
         nbr_ip_subnet,
         nbr_state,
         source_interface,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -75,8 +79,17 @@ def get_aci_node_proto_bgp_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|dom|nei|route|fault|hfault|event|diag|all',
+        'nei',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -104,6 +117,9 @@ def get_aci_node_proto_bgp_command(
             raise ErrorExit
 
         bgp_filter = []
+        hfault_filter = []
+        event_filter = []
+
         if bgp_asn is not None:
             bgp_filter.append(
                 'asn:%s' % (bgp_asn)
@@ -112,6 +128,12 @@ def get_aci_node_proto_bgp_command(
         if bgp_vrf is not None:
             bgp_filter.append(
                 'vrf:%s' % (bgp_vrf)
+            )
+            hfault_filter.append(
+                'domainNameT:%s' % (bgp_vrf)
+            )
+            event_filter.append(
+                'domainNameT:%s' % (bgp_vrf)
             )
 
         if len(rtr_ip_address) > 0:
@@ -149,133 +171,201 @@ def get_aci_node_proto_bgp_command(
                 'interface:%s' % (source_interface)
             )
 
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        instances = []
-        domains = []
-        neighbors = []
-        routes = []
-
+        instance_info = False
+        domain_info = False
+        neighbor_info = False
         stats_info = False
         prefix_info = False
-        if 'verbose' in view:
+        fault_info = False
+        hfault_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+
+        if 'dom' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+
+        if 'nei' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+            stats_info = True
+
+        if 'route' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
             stats_info = True
             prefix_info = True
 
-        if 'route' in view:
-            stats_info = True
-            prefix_info = True
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        proto_infos = []
+        instance = []
+        domain = []
+        neighbor = []
+        route = []
+        fault_record = []
+        fault_inst = []
+        event = []
 
         for node_info in nodes_info:
             proto_info = apic_handler.get_protocol_bgp(
                 node_info['podId'],
                 node_info['id'],
                 bgp_filter=bgp_filter,
+                instance_info=instance_info,
+                domain_info=domain_info,
+                neighbor_info=neighbor_info,
                 stats_info=stats_info,
-                prefix_info=prefix_info
+                prefix_info=prefix_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
             if proto_info is None:
                 continue
 
-            instances.append(
+            proto_infos.append(
                 proto_info
             )
-            domains = domains + proto_info['domains']
-            neighbors = neighbors + proto_info['neighbors']
-            if prefix_info:
-                for neighbor_info in proto_info['neighbors']:
-                    routes = routes + neighbor_info['routes']
+
+            if 'instance' in proto_info:
+                if proto_info['instance'] is not None:
+                    instance.append(
+                        proto_info['instance']
+                    )
+
+            if 'domain' in proto_info:
+                if proto_info['domain'] is not None:
+                    domain = domain + proto_info['domain']
+
+            if 'neighbor' in proto_info:
+                if proto_info['neighbor'] is not None:
+                    neighbor = neighbor + proto_info['neighbor']
+
+                    if prefix_info:
+                        for neighbor_info in proto_info['neighbor']:
+                            if 'route' in neighbor_info:
+                                if neighbor_info['route'] is not None:
+                                    route = route + neighbor_info['route']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+            if 'faultRecord' in proto_info:
+                if proto_info['faultRecord'] is not None:
+                    fault_record = fault_record + proto_info['faultRecord']
+
+            if 'faultInst' in proto_info:
+                if proto_info['faultInst'] is not None:
+                    fault_inst = fault_inst + proto_info['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
 
         ctx.busy = False
-
-        if len(instances) == 0:
-            raise NoResultExit
 
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
                 json.dumps(
-                    instances,
+                    proto_infos,
                     indent=4
                 )
             )
             return
 
-        if 'node' in view:
-            ctx.my_output.json_output(
-                instances
-            )
+        ctx.my_output.json_output(proto_infos)
 
+        if 'inst' in view:
             aci_output_handler.print_proto_bgp_instances(
-                instances
+                instance,
+                title=True
             )
 
-        if 'vrf' in view:
-            ctx.my_output.json_output(
-                domains
-            )
-
+        if 'dom' in view:
             aci_output_handler.print_proto_bgp_domains(
-                domains
+                domain,
+                title=True
             )
 
-        if 'default' in view:
-            ctx.my_output.json_output(
-                neighbors
+        if 'nei' in view:
+            aci_output_handler.print_proto_bgp_neighbors(
+                neighbor,
+                title=True
             )
-
-            aci_output_handler.print_proto_bgp_neighbors_summary(
-                neighbors
-            )
-
-        if 'trans' in view:
-            ctx.my_output.json_output(
-                neighbors
-            )
-
-            aci_output_handler.print_proto_bgp_neighbors_transport(
-                neighbors
-            )
-
-        if 'conn' in view:
-            ctx.my_output.json_output(
-                neighbors
-            )
-
-            aci_output_handler.print_proto_bgp_neighbors_connections(
-                neighbors
-            )
-
-        if 'af' in view:
-            ctx.my_output.json_output(
-                neighbors
-            )
-
-            aci_output_handler.print_proto_bgp_neighbors_af(
-                neighbors
-            )
-
-        if 'verbose' in view:
-            ctx.my_output.json_output(
-                neighbors
-            )
-
-            for neighbor in neighbors:
-                aci_output_handler.print_proto_bgp_neighbors_summary(
-                    [neighbor]
-                )
-
-                aci_output_handler.print_proto_bgp_neighbor(
-                    neighbor
-                )
 
         if 'route' in view:
-            aci_output_handler.print_protocol_ipv4_routes(
-                routes
+            aci_output_handler.print_proto_ipv4_routes(
+                route
             )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_bgp_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_bgp_fault_record(
+                fault_record,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_bgp_event_logs(
+                event,
+                title=True
+            )
+
+        if len(proto_infos) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

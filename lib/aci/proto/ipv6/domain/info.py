@@ -25,6 +25,14 @@ class ProtocolIpv6DomainInfo():
         else:
             info['__Output']['operSt'] = 'Red'
 
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_ipv6_domains_info(self, pod_id, node_id):
@@ -53,12 +61,12 @@ class ProtocolIpv6DomainInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             if key == 'vrf':
-                if not filter_helper.match_string(value, ipv6_domain_info['name']):
+                if not filter_helper.match_tenant_name(value, ipv6_domain_info['name'], delimiter=':'):
                     return False
 
         return True
 
-    def get_protocol_ipv6_domains(self, pod_id, node_id, ipv6_domain_filter=None, routes_info=False):
+    def get_protocol_ipv6_domains(self, pod_id, node_id, ipv6_domain_filter=None):
         all_ipv6_domains = self.get_protocol_ipv6_domains_info(pod_id, node_id)
         if all_ipv6_domains is None:
             return None
@@ -68,17 +76,6 @@ class ProtocolIpv6DomainInfo():
         for ipv6_domain_info in all_ipv6_domains:
             if not self.match_protocol_ipv6_domain(ipv6_domain_info, ipv6_domain_filter):
                 continue
-
-            if routes_info:
-                ipv6_domain_info['routes'] = self.get_protocol_ipv6_routes_info(
-                    pod_id,
-                    node_id,
-                    ipv6_domain_info['name']
-                )
-
-                ipv6_domain_info['routes_summary'] = self.get_protocol_ipv6_routes_summary(
-                    ipv6_domain_info['routes']
-                )
 
             ipv6_domains.append(
                 ipv6_domain_info

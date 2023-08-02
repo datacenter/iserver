@@ -1,15 +1,30 @@
 # Application Profile (AP)
 
-Get default properties of [all](./ApplicationProfileAll.md) Application Profiles in selected APIC.
+## Overview
+
+- [APIC UI and CLI](./ApplicationProfileApicUi.md)
+
+## Command options
 
 Filter options:
-  - [name](./ApplicationProfileName.md)
-  - [tenant](./ApplicationProfileTenant.md)
-  - [epg](./ApplicationProfileEpg.md)
+  - [name](./ApplicationProfileFilterName.md)
+  - [tenant](./ApplicationProfileFilterTenant.md)
+  - [epg](./ApplicationProfileFilterEpg.md)
+
+View options:
+  - [state](./ApplicationProfileViewState.md)
+  - [node](./ApplicationProfileViewNode.md)
+  - [intf](./ApplicationProfileViewIntf.md)
+  - [fault](./ApplicationProfileViewFault.md)
+  - [hfault](./ApplicationProfileViewHistoryFault.md)
+  - [event](./ApplicationProfileViewEvent.md)
+  - [audit](./ApplicationProfileViewAudit.md)
+  - [diag](./ApplicationProfileViewDiag.md)
+  - [all](./ApplicationProfileViewAll.md)
 
 Output options:
-  - [default](./ApplicationProfileAll.md)
-  - [json](./ApplicationProfileJson.md)
+  - [default](./ApplicationProfileOutputAll.md)
+  - [json](./ApplicationProfileOutputJson.md)
 
 Command options
 

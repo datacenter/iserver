@@ -2,17 +2,19 @@
 
 ## ND
 
-Node selection options:
-  - [single node](./ProtocolNdNode.md)
-  - [selected nodes](./ProtocolNdNodes.md)
-  - [leaf nodes](./ProtocolNdLeaf.md)
-
 View options:
-  - [default](./ProtocolNdNode.md)
-  - [verbose](./ProtocolNdOutputVerbose.md)
+- [inst](./ProtocolNdViewInstance.md)
+- [dom](./ProtocolNdViewDomain.md)
+- [intf](./ProtocolNdViewInterface.md)
+- [nei](./ProtocolNdViewNeighbor.md)
+- [fault](./ProtocolNdViewFault.md)
+- [hfault](./ProtocolNdViewFaultHistory.md)
+- [event](./ProtocolNdViewEvent.md)
+- [diag](./ProtocolNdViewDiag.md)
+- [all](./ProtocolNdViewAll.md)
 
 Output options:
-  - [default](./ProtocolNdNode.md)
+  - [default](./ProtocolNdOutputDefault.md)
   - [json](./ProtocolNdOutputJson.md)
 
 Command options
@@ -21,4 +23,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_nd.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

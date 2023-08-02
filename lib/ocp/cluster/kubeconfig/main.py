@@ -9,7 +9,7 @@ class OcpClusterKubeconfig():
     def __init__(self):
         pass
 
-    def download_kubeconfig(self, installer_ip, installer_username, installer_password):
+    def download_kubeconfig(self, installer_ip, installer_username, installer_password, silent=False):
         ssh_handler = ssh.Ssh(
             installer_ip,
             installer_username,
@@ -24,10 +24,12 @@ class OcpClusterKubeconfig():
         )
 
         if not success:
-            self.my_output.error('Kubeconfig download failed')
+            if not silent:
+                self.my_output.error('Kubeconfig download failed')
             return None
 
-        self.my_output.default('Kubeconfig downloaded: %s => %s' % (source, destination))
+        if not silent:
+            self.my_output.default('Kubeconfig downloaded: %s => %s' % (source, destination))
         return destination
 
     def is_kubeconfig_file(self, kubeconfig_filename):
@@ -47,9 +49,10 @@ class OcpClusterKubeconfig():
 
         return api_server_name
 
-    def check_kubeconfig(self, kubeconfig_filename, api_vip):
+    def check_kubeconfig(self, kubeconfig_filename, api_vip, silent=False):
         if not self.is_kubeconfig_file(kubeconfig_filename):
-            self.my_output.error('Kubeconfig file not found: %s' % (kubeconfig_filename))
+            if not silent:
+                self.my_output.error('Kubeconfig file not found: %s' % (kubeconfig_filename))
             return False
 
         content = file_helper.get_file_yaml(
@@ -66,26 +69,29 @@ class OcpClusterKubeconfig():
             api_server_ip = socket.gethostbyname(api_server_name)
 
         except BaseException:
-            self.my_output.error('DNS resolution failed: %s' % (api_server_name))
-            self.my_output.default(
-                'Expected DNS resolution (%s, %s)' % (
-                    api_server_name,
-                    api_vip
+            if not silent:
+                self.my_output.error('DNS resolution failed: %s' % (api_server_name))
+                self.my_output.default(
+                    'Expected DNS resolution (%s, %s)' % (
+                        api_server_name,
+                        api_vip
+                    )
                 )
-            )
             return False
 
         if api_server_ip != api_vip:
-            self.my_output.error(
-                'DNS resolution does not match OCP cluster API VIP: (%s, %s) vs. API VIP %s' % (
-                    api_server_name,
-                    api_server_ip,
-                    api_vip
+            if not silent:
+                self.my_output.error(
+                    'DNS resolution does not match OCP cluster API VIP: (%s, %s) vs. API VIP %s' % (
+                        api_server_name,
+                        api_server_ip,
+                        api_vip
+                    )
                 )
-            )
             return False
 
-        self.my_output.default('Kubeconfig validated: %s => %s' % (api_server_name, api_vip))
+        if not silent:
+            self.my_output.default('Kubeconfig validated: %s => %s' % (api_server_name, api_vip))
         return True
 
     def get_ocp_cluster_kubeconfig_info(self, validate=False):

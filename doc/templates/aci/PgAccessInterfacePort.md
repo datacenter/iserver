@@ -1,17 +1,25 @@
-# Policy Group
+# Policy Group - Access Interface - Leaf Access Port
 
-## Access Interface - Leaf Access Port
+## Command options
 
 Filter options:
-  - [name](./PgAccessInterfacePortName.md)
-  - [aaep](./PgAccessInterfacePortAaep.md)
+  - [name](./PgAccessInterfacePortFilterName.md)
+  - [aaep](./PgAccessInterfacePortFilterAaep.md)
 
 View options:
-  - [default](./PgAccessInterfacePortOutputPolicy.md)
-  - [aaep](./PgAccessInterfacePortOutputAaep.md)
+  - [state](./PgAccessInterfacePortViewState.md)
+  - [aaep](./PgAccessInterfacePortViewAaep.md)
+  - [node](./PgAccessInterfacePortViewNode.md)
+  - [intf](./PgAccessInterfacePortViewIntf.md)
+  - [fault](./PgAccessInterfacePortViewFault.md)
+  - [hfault](./PgAccessInterfacePortViewFaultHistory.md)
+  - [event](./PgAccessInterfacePortViewEvent.md)
+  - [audit](./PgAccessInterfacePortViewAudit.md)
+  - [diag](./PgAccessInterfacePortViewDiag.md)
+  - [all](./PgAccessInterfacePortViewAll.md)
 
 Output options:
-  - [default](./PgAccessInterfacePortOutputPolicy.md)
+  - [default](./PgAccessInterfacePortOutputDefault.md)
   - [json](./PgAccessInterfacePortOutputJson.md)
 
 Command options

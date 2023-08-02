@@ -1,40 +1,30 @@
-# Node Protocol
+# Node Protocol - BGP
 
-## BGP
-
-Node selection options:
-  - Instance (VRF)
-    - [single node](./ProtocolBgpNode.md)
-    - [selected nodes](./ProtocolBgpNodes.md)
-    - [all nodes](./ProtocolBgpNodesAll.md)
-  - Neighbors
-    - [node](./ProtocolBgpNeighborNode.md)
-    - [nodes](./ProtocolBgpNeighborNodes.md)
-    - [all nodes](./ProtocolBgpNeighbors.md)
+## Command options
 
 Filter options:
-  - Instance
-    - [vrf](./ProtocolBgpInstanceVrf.md)
-  - Neighbors
-    - [vrf](./ProtocolBgpNeighborVrf.md)
-    - [asn](./ProtocolBgpNeighborAsn.md)
-    - [router id](./ProtocolBgpNeighborRouterId.md)
-    - [neighbor address](./ProtocolBgpNeighborIp.md)
-    - [ibgp|ebgp](./ProtocolBgpNeighborType.md)
-    - [source interface](./ProtocolBgpNeighborInterface.md)
-    - [state](./ProtocolBgpNeighborState.md)
+  - [asn](./ProtocolBgpFilterAsn.md)
+  - [vrf](./ProtocolBgpFilterVrf.md)
+  - [router id](./ProtocolBgpFilterRouterId.md)
+  - [neighbor address](./ProtocolBgpFilterIp.md)
+  - [ibgp|ebgp](./ProtocolBgpFilterType.md)
+  - [source interface](./ProtocolBgpFilterInterface.md)
+  - [state](./ProtocolBgpFilterState.md)
 
 View options:
-  - [default](./ProtocolBgpNeighborSummary.md)
-  - [transport](./ProtocolBgpNeighborTransport.md)
-  - [connection](./ProtocolBgpNeighborConnection.md)
-  - [af](./ProtocolBgpNeighborAf.md)
-  - [bgp routes](./ProtocolBgpRoute.md)
-  - [verbose](./ProtocolBgpNeighborVerbose.md)
+  - [inst](./ProtocolBgpViewInstance.md)
+  - [dom](./ProtocolBgpViewDomain.md)
+  - [nei](./ProtocolBgpViewNeighbor.md)
+  - [route](./ProtocolBgpViewRoute.md)
+  - [fault](./ProtocolBgpViewFault.md)
+  - [hfault](./ProtocolBgpViewFaultHistory.md)
+  - [event](./ProtocolBgpViewEvent.md)
+  - [diag](./ProtocolBgpViewDiag.md)
+  - [all](./ProtocolBgpViewAll.md)
 
 Output options:
-  - [default](./ProtocolBgpNeighborSummary.md)
-  - [json](./ProtocolBgpJson.md)
+  - [default](./ProtocolBgpOutputDefault.md)
+  - [json](./ProtocolBgpOutputJson.md)
 
 Command options
 
@@ -48,6 +38,7 @@ Usage: iserver.py get aci proto bgp [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -62,13 +53,17 @@ Options:
   --nbr-subnet TEXT               Filter by BPG Neighbor IP subnet
   --state [any|up|down]           Filter by BGP neighbor state  [default: any]
   --intf TEXT                     Filter by BGP Neighbor source interface
-  -v, --view [default|node|vrf|trans|conn|af|verbose|route]
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [inst|dom|nei|route|fault|hfault|event|diag|
+                                  all]  [default: nei]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 69 ms and logs saved in /tmp/iserver\1ba946f39b32
+Info: finished in 33 ms and logs saved in /tmp/iserver\659835208b3a
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

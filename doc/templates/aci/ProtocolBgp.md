@@ -1,40 +1,30 @@
-# Node Protocol
+# Node Protocol - BGP
 
-## BGP
-
-Node selection options:
-  - Instance (VRF)
-    - [single node](./ProtocolBgpNode.md)
-    - [selected nodes](./ProtocolBgpNodes.md)
-    - [all nodes](./ProtocolBgpNodesAll.md)
-  - Neighbors
-    - [node](./ProtocolBgpNeighborNode.md)
-    - [nodes](./ProtocolBgpNeighborNodes.md)
-    - [all nodes](./ProtocolBgpNeighbors.md)
+## Command options
 
 Filter options:
-  - Instance
-    - [vrf](./ProtocolBgpInstanceVrf.md)
-  - Neighbors
-    - [vrf](./ProtocolBgpNeighborVrf.md)
-    - [asn](./ProtocolBgpNeighborAsn.md)
-    - [router id](./ProtocolBgpNeighborRouterId.md)
-    - [neighbor address](./ProtocolBgpNeighborIp.md)
-    - [ibgp|ebgp](./ProtocolBgpNeighborType.md)
-    - [source interface](./ProtocolBgpNeighborInterface.md)
-    - [state](./ProtocolBgpNeighborState.md)
+  - [asn](./ProtocolBgpFilterAsn.md)
+  - [vrf](./ProtocolBgpFilterVrf.md)
+  - [router id](./ProtocolBgpFilterRouterId.md)
+  - [neighbor address](./ProtocolBgpFilterIp.md)
+  - [ibgp|ebgp](./ProtocolBgpFilterType.md)
+  - [source interface](./ProtocolBgpFilterInterface.md)
+  - [state](./ProtocolBgpFilterState.md)
 
 View options:
-  - [default](./ProtocolBgpNeighborSummary.md)
-  - [transport](./ProtocolBgpNeighborTransport.md)
-  - [connection](./ProtocolBgpNeighborConnection.md)
-  - [af](./ProtocolBgpNeighborAf.md)
-  - [bgp routes](./ProtocolBgpRoute.md)
-  - [verbose](./ProtocolBgpNeighborVerbose.md)
+  - [inst](./ProtocolBgpViewInstance.md)
+  - [dom](./ProtocolBgpViewDomain.md)
+  - [nei](./ProtocolBgpViewNeighbor.md)
+  - [route](./ProtocolBgpViewRoute.md)
+  - [fault](./ProtocolBgpViewFault.md)
+  - [hfault](./ProtocolBgpViewFaultHistory.md)
+  - [event](./ProtocolBgpViewEvent.md)
+  - [diag](./ProtocolBgpViewDiag.md)
+  - [all](./ProtocolBgpViewAll.md)
 
 Output options:
-  - [default](./ProtocolBgpNeighborSummary.md)
-  - [json](./ProtocolBgpJson.md)
+  - [default](./ProtocolBgpOutputDefault.md)
+  - [json](./ProtocolBgpOutputJson.md)
 
 Command options
 
@@ -42,4 +32,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_bgp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

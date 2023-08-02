@@ -1,6 +1,6 @@
 # Node Interface - SVI
 
-## Statistics (counters) focused output
+## Statistics (counters) view
 
 ```
 DOC_TEMPLATE:get_aci_intf_svi.counter_node:iserver.output.default

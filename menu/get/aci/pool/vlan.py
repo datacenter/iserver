@@ -32,7 +32,10 @@ class NoResultExit(Exception):
 @click.option("--name", "pool_name", default='', callback=validations.empty_string_to_none, help="Filter by pool name")
 @click.option("--vlan", "vlan_id", default='', callback=validations.empty_string_to_none, help="Filter by vlan")
 @click.option("--domain", "domain_name", default='', callback=validations.empty_string_to_none, help="Filter by domain name")
-@click.option("--view", "-v", type=click.Choice(['default', 'verbose'], case_sensitive=False), multiple=False, default='default')
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['state'], help="[state|epg|fault|hfault|event|audit|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -46,6 +49,9 @@ def get_aci_pool_vlan_command(
         pool_name,
         vlan_id,
         domain_name,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -57,6 +63,17 @@ def get_aci_pool_vlan_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|epg|fault|hfault|event|audit|diag|all',
+        'state',
+        [
+            'diag:event,fault,audit'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -72,11 +89,11 @@ def get_aci_pool_vlan_command(
         if apic_handler is None:
             raise ErrorExit
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
         pool_vlan_filter = []
+        hfault_filter = []
+        event_filter = []
+        audit_filter = []
+
         if pool_name is not None:
             pool_vlan_filter.append(
                 'name:%s' % (pool_name)
@@ -92,15 +109,90 @@ def get_aci_pool_vlan_command(
                 'domain:%s' % (domain_name)
             )
 
+        if fault:
+            pool_vlan_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            audit_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        vlan_usage_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+        audit_info = False
+
+        if 'state' in view:
+            vlan_usage_info = True
+
+        if 'epg' in view:
+            vlan_usage_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if 'audit' in view:
+            audit_info = True
+
+        if output not in ['json']:
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
         vlans = apic_handler.get_pool_vlans(
             pool_vlan_filter=pool_vlan_filter,
-            vlan_usage_info=True
+            vlan_usage_info=vlan_usage_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            hfault_filter=hfault_filter,
+            event_info=event_info,
+            event_filter=event_filter,
+            audit_info=audit_info,
+            audit_filter=audit_filter
         )
 
-        ctx.busy = False
+        event = []
+        fault_record = []
+        fault_inst = []
+        audit = []
 
-        if vlans is None or len(vlans) == 0:
-            raise NoResultExit
+        for vlan in vlans:
+            if 'eventLog' in vlan:
+                if vlan['eventLog'] is not None:
+                    event = event + vlan['eventLog']
+
+            if 'faultRecord' in vlan:
+                if vlan['faultRecord'] is not None:
+                    fault_record = fault_record + vlan['faultRecord']
+
+            if 'faultInst' in vlan:
+                if vlan['faultInst'] is not None:
+                    fault_inst = fault_inst + vlan['faultInst']
+
+            if 'auditLog' in vlan:
+                if vlan['auditLog'] is not None:
+                    audit = audit + vlan['auditLog']
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
@@ -114,16 +206,47 @@ def get_aci_pool_vlan_command(
 
         ctx.my_output.json_output(vlans)
 
-        if view == 'default':
+        if 'state' in view:
             aci_output_handler.print_pool_vlans(
-                vlans
+                vlans,
+                title=True
             )
 
-        if view == 'verbose':
-            for vlan in vlans:
-                aci_output_handler.print_pool_vlan(
-                    vlan
-                )
+        if 'epg' in view:
+            aci_output_handler.print_pool_vlans_epg(
+                vlans,
+                title=True
+            )
+
+        if 'fault' in view:
+            aci_output_handler.print_pool_vlans_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_pool_vlans_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_pool_vlans_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if 'audit' in view:
+            aci_output_handler.print_pool_vlans_audit_logs(
+                audit,
+                when=fault_when,
+                title=True
+            )
+
+        if vlans is None or len(vlans) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

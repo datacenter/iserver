@@ -2,11 +2,17 @@ class InterfaceMgmtOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_management_state(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_management_state(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Management - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -15,6 +21,8 @@ class InterfaceMgmtOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'id',
             'adminSt',
             'switchingSt',
@@ -32,10 +40,12 @@ class InterfaceMgmtOutput():
 
         headers = headers + [
             'Node',
-            'Name',
-            'Admin State',
-            'Switching State',
-            'OperState',
+            'Health',
+            'Faults',
+            'Interface',
+            'Admin',
+            'Switching',
+            'Oper',
             'Auto Negotiation',
             'Duplex',
             'MTU',
@@ -44,7 +54,7 @@ class InterfaceMgmtOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             merge=True,
             order=order,
             headers=headers,
@@ -54,11 +64,17 @@ class InterfaceMgmtOutput():
             table=True
         )
 
-    def print_interfaces_management_address(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_management_address(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Management - Address [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -81,16 +97,16 @@ class InterfaceMgmtOutput():
 
         headers = headers + [
             'Node',
-            'Name',
-            'Admin State',
-            'OperState',
+            'Interface',
+            'Admin',
+            'Oper',
             'MAC Address',
             'IP Address',
             'Router MAC'
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             merge=True,
             order=order,
             headers=headers,
@@ -100,11 +116,17 @@ class InterfaceMgmtOutput():
             table=True
         )
 
-    def print_interfaces_management_neighbor(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_management_neighbor(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Management - CDP/LLDP Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -129,9 +151,9 @@ class InterfaceMgmtOutput():
 
         headers = headers + [
             'Node',
-            'Name',
-            'Admin State',
-            'OperState',
+            'Interface',
+            'Admin',
+            'Oper',
             'CDP - Platform',
             'CDP - System Name',
             'CDP - Port',
@@ -140,7 +162,7 @@ class InterfaceMgmtOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             merge=True,
             order=order,
             headers=headers,
@@ -149,53 +171,217 @@ class InterfaceMgmtOutput():
             table=True
         )
 
-    def print_interface_management(self, interface):
+    def print_interface_management_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Management - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Management - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
-            'id',
-            'adminSt',
-            'switchingSt',
-            'state.operSt',
-            'autoNeg',
-            'state.operDuplex',
-            'state.operMtu',
-            'state.operSpeed',
-            'state.backplaneMac',
-            'stats.addr',
-            'state.operRouterMac',
-            'cdp.platId',
-            'cdp.sysName',
-            'cdp.portId',
-            'lldp.sysName',
-            'lldp.portIdV',
-            'state.lastLinkStChg'
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
         ]
 
         headers = [
-            'Management Interface Name',
-            'Admin State',
-            'Switching State',
-            'OperState',
-            'Auto Negotiation',
-            'Duplex',
-            'MTU',
-            'Speed',
-            'MAC Address',
-            'IP Address',
-            'Router MAC',
-            'CDP Neighbor - Platform',
-            'CDP Neighbor - System Name',
-            'CDP Neighbor - Port',
-            'LLDP Neighbor - System Name',
-            'LLDP Neighbor - Port',
-            'Last Link State Change'
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
         ]
 
-        self.my_output.dictionary(
-            interface,
-            title='Node Interface Management: %s' % (interface['id']),
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
+            table=True
+        )
+
+    def print_interface_management_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Management - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_management_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Management - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Management - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_management_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Management - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Management - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
         )

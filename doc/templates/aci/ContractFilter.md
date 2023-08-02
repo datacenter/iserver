@@ -1,27 +1,29 @@
-# Contract
+# Contract Filter
 
-## Contract Filter
+## Command options
 
-Use '--type filter' to get contract filters details
-- filter name and tenant
-- properties
-    - Ethernet Type
-    - IP Protocol
-    - match only fragments
-    - stateful
-    - source range
-    - destination range
-    - TCP rules
-- filter usage (standard and taboo contracts)
+Filter options:
+  - [name](./ContractFilterFilterName.md)
+  - [tenant](./ContractFilterFilterTenant.md)
+
+View options:
+  - [state](./ContractFilterViewState.md)
+  - [usage](./ContractFilterViewUsage.md)
+  - [fault](./ContractFilterViewFault.md)
+  - [hfault](./ContractFilterViewFaultHistory.md)
+  - [event](./ContractFilterViewEvent.md)
+  - [audit](./ContractFilterViewAudit.md)
+  - [diag](./ContractFilterViewDiag.md)
+  - [all](./ContractFilterViewAll.md)
+
+Output options:
+  - [default](./ContractFilterOutputDefault.md)
+  - [json](./ContractFilterOutputJson.md)
+
+Command options
 
 ```
-DOC_TEMPLATE:get_aci_contract.filter:iserver.output.default
+DOC_TEMPLATE:get_aci_contract_filter.help:output
 ```
 
-Developer
-
-```
-DOC_TEMPLATE:get_aci_contract.filter:devel.debug
-```
-
-[[Back]](./Contract.md)
+[[Back]](./README.md)

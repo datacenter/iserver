@@ -4,7 +4,7 @@ from menu.get.aci.aaep import get_aci_aaep_command
 from menu.get.aci.ap import get_aci_ap_command
 from menu.get.aci.bd import get_aci_bd_command
 from menu.get.aci.cache import get_aci_cache_command
-from menu.get.aci.contract import get_aci_contract_command
+from menu.get.aci.contract.main import get_aci_contract_menu
 from menu.get.aci.controller import get_aci_controller_command
 from menu.get.aci.domain.main import get_aci_domain_menu
 from menu.get.aci.ep import get_aci_ep_command
@@ -37,7 +37,7 @@ get_aci_menu.add_command(get_aci_epg_command)
 get_aci_menu.add_command(get_aci_ap_command)
 get_aci_menu.add_command(get_aci_bd_command)
 get_aci_menu.add_command(get_aci_cache_command)
-get_aci_menu.add_command(get_aci_contract_command)
+get_aci_menu.add_command(get_aci_contract_menu)
 get_aci_menu.add_command(get_aci_controller_command)
 get_aci_menu.add_command(get_aci_domain_menu)
 get_aci_menu.add_command(get_aci_ep_command)

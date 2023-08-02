@@ -1,25 +1,26 @@
-# Node Interface
+# Node Interface - Virtual Port Channel (VPC)
 
-## Virtual Port Channel (VPC)
-
-Node selection options:
-  - [single node](./InterfaceVpcNode.md)
-  - [selected nodes](./InterfaceVpcNodes.md)
-  - [all nodes](./InterfaceVpcNodesAll.md)
-  - [multi APIC](./InterfaceVpcNodesApics.md)
+## Command options
 
 Filter options:
-  - [Domain ID](./InterfaceVpcId.md)
-  - [Peer state](./InterfaceVpcState.md)
-  - [Members state](./InterfaceVpcMember.md)
+  - [Domain ID](./InterfaceVpcFilterId.md)
+  - [Peer state](./InterfaceVpcFilterState.md)
+  - [Members state](./InterfaceVpcFilterMember.md)
 
 View options:
-  - [default](./InterfaceVpcOutputState.md)
-  - [address](./InterfaceVpcOutputAddress.md)
-  - [verbose](./InterfaceVpcOutputVerbose.md)
+  - [state](./InterfaceVpcViewState.md)
+  - [addr](./InterfaceVpcViewAddr.md)
+  - [member](./InterfaceVpcViewMember.md)
+  - [vlan](./InterfaceVpcViewVlan.md)
+  - [fault](./InterfaceVpcViewFault.md)
+  - [hfault](./InterfaceVpcViewFaultHistory.md)
+  - [event](./InterfaceVpcViewEvent.md)
+  - [audit](./InterfaceVpcViewAudit.md)
+  - [diag](./InterfaceVpcViewDiag.md)
+  - [all](./InterfaceVpcViewAll.md)
 
 Output options:
-  - [default](./InterfaceVpcOutputState.md)
+  - [default](./InterfaceVpcOutputDefault.md)
   - [json](./InterfaceVpcOutputJson.md)
 
 Command options
@@ -34,6 +35,7 @@ Usage: iserver.py get aci intf vpc [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -42,14 +44,18 @@ Options:
   --id TEXT                       Filter by vpc domain id
   --state [any|up|down]           [default: any]
   --member [any|up|down]          [default: any]
-  -v, --view [default|address|verbose]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|addr|member|vlan|fault|hfault|event|a
+                                  udit|diag|all]  [default: state]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
-  --empty                         No error on empty result
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 62 ms and logs saved in /tmp/iserver\d5caa1c52045
+Info: finished in 42 ms and logs saved in /tmp/iserver\9e700b0c7565
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

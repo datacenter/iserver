@@ -24,7 +24,7 @@ class TenantApi():
             return self.tenant_mo
 
         cache = self.get_object_cache(
-            'fvAEPg'
+            'fvTenant'
         )
         if cache is not None:
             self.tenant_mo = cache
@@ -34,16 +34,29 @@ class TenantApi():
             )
             return self.tenant_mo
 
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_class(
-            'fvTenant'
+            'fvTenant',
+            query=query
         )
         if managed_objects is None:
             return None
 
         self.tenant_mo = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['fvTenant']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'fvTenant',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvTenant',
+                managed_object,
+                'faultCounts'
+            )
             self.tenant_mo.append(
-                managed_object['fvTenant']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

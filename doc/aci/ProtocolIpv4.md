@@ -1,24 +1,26 @@
-# Node Protocol
+# Node Protocol - IPv4
 
-## IPv4
-
-Node selection options:
-  - [single node](./ProtocolIpv4Node.md)
-  - [selected nodes](./ProtocolIpv4Nodes.md)
+## Command options
 
 Filter options:
-  - [route type](./ProtocolIpv4Type.md)
-  - [IP address](./ProtocolIpv4IP.md)
-  - [IP subnet](./ProtocolIpv4Subnet.md)
-  - [vrf](./ProtocolIpv4Vrf.md)
+  - [route type](./ProtocolIpv4FilterType.md)
+  - [IP address](./ProtocolIpv4FilterIP.md)
+  - [IP subnet](./ProtocolIpv4FilterSubnet.md)
+  - [vrf](./ProtocolIpv4FilterVrf.md)
 
 View options:
-  - [default](./ProtocolIpv4Node.md)
-  - [summary](./ProtocolIpv4SummaryNode.md)
+  - [inst](./ProtocolIpv4ViewInstance.md)
+  - [dom](./ProtocolIpv4ViewDomain.md)
+  - [route](./ProtocolIpv4ViewRoute.md)
+  - [fault](./ProtocolIpv4ViewFault.md)
+  - [hfault](./ProtocolIpv4ViewFaultHistory.md)
+  - [event](./ProtocolIpv4ViewEvent.md)
+  - [diag](./ProtocolIpv4ViewDiag.md)
+  - [all](./ProtocolIpv4ViewAll.md)
 
 Output options:
-  - [default](./ProtocolIpv4Node.md)
-  - [json](./ProtocolIpv4Json.md)
+  - [default](./ProtocolIpv4OutputDefault.md)
+  - [json](./ProtocolIpv4OutputJson.md)
 
 Command options
 
@@ -32,6 +34,7 @@ Usage: iserver.py get aci proto ipv4 [OPTIONS]
 Options:
   --apic TEXT                     APIC name
   --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
   --username TEXT                 APIC Username
   --password TEXT                 APIC Password
   --pod TEXT                      Pod ID
@@ -42,13 +45,15 @@ Options:
   --address TEXT                  IP Address filter
   --subnet TEXT                   IP Subnet filter
   --longer                        Match longer prefixes
-  -v, --view [default|summary]    [default: default]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [inst|dom|route|fault|hfault|event|diag|all]
+                                  [default: route]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 111 ms and logs saved in /tmp/iserver\6960aac78678
+Info: finished in 66 ms and logs saved in /tmp/iserver\3aeba073f130
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

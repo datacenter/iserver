@@ -27,7 +27,7 @@ class InterfaceAdjacencyLldpApi():
             node_id
         )
 
-        query = 'query-target=subtree&target-subtree-class=lldpAdjEp'
+        query = 'query-target=subtree&target-subtree-class=lldpAdjEp&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
@@ -43,8 +43,19 @@ class InterfaceAdjacencyLldpApi():
 
         self.adjacency_lldp_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['lldpAdjEp']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'lldpAdjEp',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'lldpAdjEp',
+                managed_object,
+                'faultCounts'
+            )
             self.adjacency_lldp_mo[key].append(
-                managed_object['lldpAdjEp']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

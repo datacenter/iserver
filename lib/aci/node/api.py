@@ -29,8 +29,9 @@ class NodeApi():
 
         self.node_mo = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['fabricNode']['attributes']
             self.node_mo.append(
-                managed_object['fabricNode']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

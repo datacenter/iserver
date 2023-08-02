@@ -54,6 +54,19 @@ class L2OutInfo():
 
         return info
 
+    def get_l2out_name_from_dn(self, l2out_dn):
+        # [0]: uni/tn-{name}/l2out-{name}
+        tenant = l2out_dn.split('/')[1][3:]
+        if '/l2out-' in l2out_dn:
+            name = l2out_dn.split('/')[2][6:]
+        if '/out-' in l2out_dn:
+            name = l2out_dn.split('/')[2][4:]
+        l2out_name = '%s/%s' % (
+            tenant,
+            name
+        )
+        return l2out_name
+
     def get_l2out_info(self, managed_object):
         keys = [
             'descr',
@@ -109,6 +122,14 @@ class L2OutInfo():
                     epg_mo
                 )
             )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -176,7 +197,19 @@ class L2OutInfo():
 
         return True
 
-    def get_l2outs(self, l2out_filter=None, path_info=False):
+    def get_l2outs(
+            self,
+            l2out_filter=None,
+            path_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_l2outs = self.get_l2outs_info(
             path_info=path_info
         )
@@ -188,6 +221,46 @@ class L2OutInfo():
         for l2out_info in all_l2outs:
             if not self.match_l2out(l2out_info, l2out_filter):
                 continue
+
+            if node_info:
+                ap_node_info = self.get_l2out_node(
+                    l2out_info['tenant'],
+                    l2out_info['name']
+                )
+                l2out_info['node'] = None
+                l2out_info['interface'] = None
+                if ap_node_info is not None:
+                    l2out_info['node'] = ap_node_info['node']
+                    l2out_info['interface'] = ap_node_info['interface']
+
+            if fault_info:
+                l2out_info['faultInst'] = self.get_l2out_id_fault(
+                    l2out_info['tenant'],
+                    l2out_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                l2out_info['faultRecord'] = self.get_l2out_id_fault(
+                    l2out_info['tenant'],
+                    l2out_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                l2out_info['eventLog'] = self.get_l2out_id_event(
+                    l2out_info['tenant'],
+                    l2out_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                l2out_info['auditLog'] = self.get_l2out_id_audit(
+                    l2out_info['tenant'],
+                    l2out_info['name'],
+                    audit_filter=audit_filter
+                )
 
             l2outs.append(l2out_info)
 

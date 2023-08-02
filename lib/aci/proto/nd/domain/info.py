@@ -26,6 +26,18 @@ class ProtocolNdDomainInfo():
 
         info['__Output']['name'] = 'Yellow'
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_nd_domain_info(self, pod_id, node_id, nd_domain_name=None):

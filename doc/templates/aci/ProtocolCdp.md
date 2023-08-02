@@ -1,27 +1,23 @@
-# Node Protocol
+# Node Protocol - CDP
 
-## CDP
-
-Node selection options:
-  - [single node](./ProtocolCdpNode.md)
-  - [selected nodes](./ProtocolCdpNeighborNodes.md)
-  - [all nodes](./ProtocolCdpNodesAll.md)
+## Command options
 
 Filter options:
-  - [node local interface](./ProtocolCdpInterfaceName.md)
-  - [neighbor system name](./ProtocolCdpNeighborSystem.md)
-  - [neighbor platform](./ProtocolCdpNeighborPlatform.md)
-  - [neighbor capabilities](./ProtocolCdpNeighborCapabilities.md)
-  - [neighbor node local interface](./ProtocolCdpNeighborInterface.md)
+  - [interface](./ProtocolCdpFilterInterface.md)
+  - [system](./ProtocolCdpFilterSystem.md)
+  - [platform](./ProtocolCdpFilterPlatform.md)
+  - [capabilities](./ProtocolCdpFilterCapabilities.md)
 
 View options:
-  - [default](./ProtocolCdpNeighborNode.md)
-  - [intf](./ProtocolCdpInterfaceNode.md)
-  - [instance](./ProtocolCdpNodesAll.md)
+  - [inst](./ProtocolCdpViewInstance.md)
+  - [intf](./ProtocolCdpViewInterface.md)
+  - [nei](./ProtocolCdpViewNeighbor.md)
+  - [event](./ProtocolCdpViewEvent.md)
+  - [all](./ProtocolCdpViewAll.md)
 
 Output options:
-  - [default](./ProtocolCdpNeighborNode.md)
-  - [instance](./ProtocolCdpNodesAll.md)
+  - [default](./ProtocolCdpOutputDefault.md)
+  - [json](./ProtocolCdpOutputJson.md)
 
 Command options
 
@@ -29,4 +25,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_cdp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

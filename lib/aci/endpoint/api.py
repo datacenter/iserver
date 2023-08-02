@@ -17,7 +17,7 @@ class EndpointApi():
             )
             return self.endpoints_mo
 
-        query = 'rsp-subtree-include=health&rsp-subtree=children'
+        query = 'rsp-subtree-include=health,fault-count&rsp-subtree=children'
         children = [
             'fvIp',
             'fvRsCEpToPathEp',

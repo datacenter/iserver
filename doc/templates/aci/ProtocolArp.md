@@ -1,25 +1,25 @@
-# Node Protocol
+# Node Protocol - ARP
 
-## ARP
-
-Node selection options:
-  - [single node](./ProtocolArpNode.md)
-  - [selected nodes](./ProtocolArpNodes.md)
-  - [leaf nodes](./ProtocolArpLeaf.md)
-  - [spine nodes](./ProtocolArpSpine.md)
+## Command options
 
 Filter options:
-  - [VRF name](./ProtocolArpVrf.md)
-  - [MAC Address](./ProtocolArpMac.md)
-  - [IP Address](./ProtocolArpIp.md)
-  - [IP Subnet](./ProtocolArpSubnet.md)
+  - [VRF name](./ProtocolArpFilterVrf.md)
+  - [MAC Address](./ProtocolArpFilterMac.md)
+  - [IP Address](./ProtocolArpFilterIp.md)
+  - [IP Subnet](./ProtocolArpFilterSubnet.md)
 
 View options:
-  - [default](./ProtocolArpNode.md)
-  - [verbose](./ProtocolArpOutputVerbose.md)
+  - [inst](./ProtocolArpViewInstance.md)
+  - [dom](./ProtocolArpViewDomain.md)
+  - [adj](./ProtocolArpViewAdjacency.md)
+  - [fault](./ProtocolArpViewFault.md)
+  - [hfault](./ProtocolArpViewFaultHistory.md)
+  - [event](./ProtocolArpViewEvent.md)
+  - [diag](./ProtocolArpViewDiag.md)
+  - [all](./ProtocolArpViewAll.md)
 
 Output options:
-  - [default](./ProtocolArpNode.md)
+  - [default](./ProtocolArpOutputDefault.md)
   - [json](./ProtocolArpOutputJson.md)
 
 Command options
@@ -28,4 +28,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_arp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

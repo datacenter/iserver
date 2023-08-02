@@ -1,24 +1,24 @@
-# Node Interface
+# Node Interface - Loopback
 
-## Loopback
-
-Node selection options:
-  - [single node](./InterfaceLoopbackNode.md)
-  - [selected nodes](./InterfaceLoopbackNodes.md)
-  - [all nodes](./InterfaceLoopbackNodesAll.md)
-  - [multi APIC](./InterfaceLoopbackNodesApics.md)
+## Command options
 
 Filter options:
-  - [Interface ID](./InterfaceLoopbackId.md)
-  - [IP](./InterfaceLoopbackIp.md)
-  - [Subnet](./InterfaceLoopbackSubnet.md)
+  - [Interface ID](./InterfaceLoopbackFilterId.md)
+  - [IP](./InterfaceLoopbackFilterIp.md)
+  - [Subnet](./InterfaceLoopbackFilterSubnet.md)
 
 View options:
-  - [default](./InterfaceLoopbackOutputState.md)
-  - [verbose](./InterfaceLoopbackOutputVerbose.md)
+  - [state](./InterfaceLoopbackViewState.md)
+  - [fault](./InterfaceLoopbackViewFault.md)
+  - [hfault](./InterfaceLoopbackViewFaultHistory.md)
+  - [event](./InterfaceLoopbackViewEvent.md)
+  - [audit](./InterfaceLoopbackViewAudit.md)
+  - [diag](./InterfaceLoopbackViewDiag.md)
+  - [all](./InterfaceLoopbackViewAll.md)
+
 
 Output options:
-  - [default](./InterfaceLoopbackOutputState.md)
+  - [default](./InterfaceLoopbackOutputDefault.md)
   - [json](./InterfaceLoopbackOutputJson.md)
 
 Command options
@@ -27,4 +27,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_lb.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

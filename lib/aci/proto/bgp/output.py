@@ -2,39 +2,39 @@ class ProtocolBgpOutput():
     def __init__(self):
         pass
 
-    def print_proto_bgp(self, info):
-        self.print_proto_bgp_instance(
-            info['instance']
-        )
+    def print_proto_bgp_instances(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol BGP - Instance [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
-        self.print_proto_bgp_domains(
-            info['domains']
-        )
-
-        self.print_proto_bgp_neighbors(
-            info['neighbors']
-        )
-
-    def print_proto_bgp_instances(self, info):
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
-            'instance.pod_node_name',
-            'instance.adminSt',
-            'instance.asn',
-            'instance.summary.domains',
-            'instance.summary.neighbors',
-            'instance.numAsPath',
-            'instance.numRtAttrib',
-            'instance.memAlert',
-            'instance.snmpTrapSt',
-            'instance.syslogLvl'
+            'pod_node_name',
+            'health',
+            'faults',
+            'adminSt',
+            'asn',
+            'summary.domains',
+            'summary.neighbors',
+            'numAsPath',
+            'numRtAttrib',
+            'memAlert',
+            'snmpTrapSt',
+            'syslogLvl'
         ]
 
         headers = [
             'Node',
-            'Admin State',
+            'Health',
+            'Faults',
+            'Admin',
             'ASN',
             'VRF (Up/Count)',
             'Neighbors (Up/Count)',
@@ -56,55 +56,24 @@ class ProtocolBgpOutput():
             table=True
         )
 
-    def print_proto_bgp_instance(self, info):
-        order = [
-            'pod_node_name',
-            'adminSt',
-            'asn',
-            'numAsPath',
-            'asPathDbSz',
-            'numRtAttrib',
-            'attribDbSz',
-            'memAlert',
-            'snmpTrapSt',
-            'syslogLvl',
-            'createTs',
-            'activateTs',
-            'waitDoneTs'
-        ]
+    def print_proto_bgp_domains(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol BGP - Domain (VRF) [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
-        headers = [
-            'Admin State',
-            'ASN',
-            'AS Path Entries',
-            'Bytes in AS Path Entries',
-            'Attribute Entries',
-            'Bytes in Attribute Entries',
-            'Memory Status',
-            'SNMP Trap',
-            'Syslog Level',
-            'Created',
-            'Activated',
-            'Out of Wait'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='BGP Properties',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_proto_bgp_domains(self, info):
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
             'pod_node_name',
             'name',
+            'health',
+            'faults',
             'operSt',
             'mode',
             'operRtrId',
@@ -115,7 +84,9 @@ class ProtocolBgpOutput():
 
         headers = [
             'Node',
-            'VRF',
+            'Domain (VRF)',
+            'Health',
+            'Faults',
             'BGP State',
             'Mode',
             'Router ID',
@@ -134,47 +105,22 @@ class ProtocolBgpOutput():
             table=True
         )
 
-    def print_proto_bgp_domain(self, info):
-        order = [
-            'name',
-            'operSt',
-            'mode',
-            'operRtrId',
-            'rd',
-            'numPeers',
-            'numEstPeers'
-        ]
-
-        headers = [
-            'VRF',
-            'BGP State',
-            'Mode',
-            'Router ID',
-            'RD',
-            'Neighbors',
-            'Established'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='BGP VRF',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-        if 'neighbors' in info:
-            self.print_proto_bgp_domain_neighbors(
-                info['neighbors']
+    def print_proto_bgp_neighbors(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol BGP - Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
 
-    def print_proto_bgp_domain_neighbors(self, info):
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
+            'pod_node_name',
+            'bgpDomainName',
             'state.addr',
             'state.rtrId',
             'adminSt',
@@ -185,25 +131,31 @@ class ProtocolBgpOutput():
             'srcIf',
             'state.localIp',
             'state.connSummary',
-            'state.af-ipv4-ucast.acceptedPaths'
+            'paths'
         ]
 
         headers = [
-            'Neighbor Address',
+            'Node',
+            'VRF',
+            'Nbr Address',
             'Router Id',
-            'Admin State',
-            'BGP State',
+            'Admin',
+            'BGP',
             'ASN',
             'Type',
             'TTL',
-            'Source Intf',
+            'Src Intf',
             'Local IP',
-            'Connections (A/D/E)',
-            'Accepted Paths'
+            'Conns (A/D/E)',
+            'Paths'
         ]
 
         self.my_output.my_table(
-            info,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['paths']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -212,308 +164,167 @@ class ProtocolBgpOutput():
             table=True
         )
 
-    def print_proto_bgp_neighbors_transport(self, info):
-        if len(info) == 0:
-            return
-
-        order = [
-            'pod_node_name',
-            'bgpDomainName',
-            'state.addr',
-            'state.rtrId',
-            'adminSt',
-            'state.operSt',
-            'asn',
-            'state.type',
-            'ttl',
-            'srcIf',
-            'state.localIp'
-        ]
-
-        headers = [
-            'Node',
-            'VRF',
-            'Neighbor Address',
-            'Router Id',
-            'Admin State',
-            'BGP State',
-            'ASN',
-            'Type',
-            'TTL',
-            'Source Intf',
-            'Local IP'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
-    def print_proto_bgp_neighbors_summary(self, info):
-        if len(info) == 0:
-            return
-
-        order = [
-            'pod_node_name',
-            'bgpDomainName',
-            'state.addr',
-            'state.operSt',
-            'asn',
-            'state.type',
-            'ttl',
-            'state.af-ipv4-ucast.acceptedPaths'
-        ]
-
-        headers = [
-            'Node',
-            'VRF',
-            'Neighbor Address',
-            'BGP State',
-            'ASN',
-            'Type',
-            'TTL',
-            'Paths (AF IPv4)'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
-    def print_proto_bgp_neighbors_connections(self, info):
-        if len(info) == 0:
-            return
-
-        order = [
-            'pod_node_name',
-            'bgpDomainName',
-            'state.addr',
-            'state.operSt',
-            'asn',
-            'state.type',
-            'ttl',
-            'state.connAttempts',
-            'state.connDrop',
-            'state.connEst'
-        ]
-
-        headers = [
-            'Node',
-            'VRF',
-            'Neighbor Address',
-            'BGP State',
-            'ASN',
-            'Type',
-            'TTL',
-            'Attempts',
-            'Drops',
-            'Established'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
-    def print_proto_bgp_neighbors_af(self, info):
-        if len(info) == 0:
-            return
-
-        order = [
-            'pod_node_name',
-            'bgpDomainName',
-            'state.addr',
-            'state.operSt',
-            'asn',
-            'state.type',
-            'ttl',
-            'state.af-ipv4-ucast.acceptedPaths',
-            'state.af-vpnv4-ucast.acceptedPaths',
-            'state.af-vpnv6-ucast.acceptedPaths'
-        ]
-
-        headers = [
-            'Node',
-            'VRF',
-            'Neighbor Address',
-            'BGP State',
-            'ASN',
-            'Type',
-            'TTL',
-            'AF IPv4',
-            'AF VPNv4',
-            'AF VPNv6'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
-    def print_proto_bgp_neighbor(self, info):
-        order = [
-            'bgpDomainName',
-            'adminSt',
-            'state.operSt',
-            'state.addr',
-            'state.rtrId',
-            'state.remotePort',
-            'asn',
-            'state.rcvCap',
-            'state.type',
-            'ttl',
-            'state.peerIdx',
-            'srcIf',
-            'state.localIp',
-            'state.localPort',
-            'state.advCap',
-            'state.holdIntvl',
-            'state.kaIntvl',
-            'state.connAttempts',
-            'state.connEst',
-            'state.connDrop',
-            'state.af-ipv4-ucast.acceptedPaths'
-        ]
-
-        headers = [
-            'VRF',
-            'Admin State',
-            'BGP State',
-            'Neighbor Address',
-            'Remote Router Id',
-            'Remote Port',
-            'Remote ASN',
-            'Received Capabilities',
-            'Session Type',
-            'TTL',
-            'Peer Index',
-            'Update Source Intf',
-            'Local IP',
-            'Local Port',
-            'Advertised Capabilities',
-            'Hold Timer',
-            'Keepalive Timer',
-            'Connection Attempts',
-            'Connection Established',
-            'Connection Dropped',
-            'Accepted IPv4 Unicast Paths'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='BGP Neighbor',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-        if 'stats' in info and info['stats'] is not None:
-            self.print_proto_bgp_neighbor_stats(
-                info['stats']
+    def print_proto_bgp_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol BGP - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
 
-        if 'routes' in info and info['routes'] is not None and len(info['routes']) > 0:
-            self.print_protocol_ipv4_routes(
-                info['routes']
-            )
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
-    def print_proto_bgp_neighbor_stats(self, info):
         order = [
-            'type',
-            'sent',
-            'rcvd'
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'domainNameT',
+            'neiT',
+            'descrT'
         ]
 
         headers = [
-            'Message Type',
-            'Sent',
-            'Received'
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Domain',
+            'Nbr',
+            'Description'
         ]
 
-        stats = []
-
-        stat_entry = {}
-        stat_entry['type'] = 'Opens'
-        stat_entry['sent'] = info['openSent']
-        stat_entry['rcvd'] = info['openRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Notifications'
-        stat_entry['sent'] = info['notifSent']
-        stat_entry['rcvd'] = info['notifRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Updates'
-        stat_entry['sent'] = info['updateSent']
-        stat_entry['rcvd'] = info['updateRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Keepalives'
-        stat_entry['sent'] = info['kaSent']
-        stat_entry['rcvd'] = info['kaRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Route Refresh'
-        stat_entry['sent'] = info['routeRefreshSent']
-        stat_entry['rcvd'] = info['routeRefreshRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Capability'
-        stat_entry['sent'] = info['capSent']
-        stat_entry['rcvd'] = info['capRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Total'
-        stat_entry['sent'] = info['msgSent']
-        stat_entry['rcvd'] = info['msgRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Total Bytes'
-        stat_entry['sent'] = info['byteSent']
-        stat_entry['rcvd'] = info['byteRcvd']
-        stats.append(stat_entry)
-
-        stat_entry = {}
-        stat_entry['type'] = 'Bytes in Queue'
-        stat_entry['sent'] = info['byteInSendQ']
-        stat_entry['rcvd'] = info['byteInRecvQ']
-        stats.append(stat_entry)
-
         self.my_output.my_table(
-            stats,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
             remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bgp_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Protocol BGP - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Protocol BGP - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'domainNameT',
+            'neiT',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Domain',
+            'Nbr',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_bgp_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Protocol BGP - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Protocol BGP - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT',
+            'domainNameT',
+            'neiT'
+        ]
+
+        headers = [
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set',
+            'Domain',
+            'Nbr',
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )

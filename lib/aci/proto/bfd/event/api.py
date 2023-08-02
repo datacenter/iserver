@@ -20,7 +20,7 @@ class ProtocolBfdEventApi():
             return self.bfd_event_mo[key]
 
         distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst' % (pod_id, node_id)
-        query = 'rsp-subtree-include=event-logs,no-scoped,subtree'
+        query = 'rsp-subtree-include=event-logs,no-scoped,subtree&order-by=eventRecord.created|desc&page=0&page-size=%s' % (self.api_event_limit)
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query,

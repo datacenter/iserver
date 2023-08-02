@@ -36,7 +36,7 @@ class NoResultExit(Exception):
 @click.option("--model", default='', callback=validations.empty_string_to_none, help="Filter by model")
 @click.option("--address", "ip_address", default='', callback=validations.validate_ip, help="Filter by subnet with IP")
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
-@click.option("--view", "-v", type=click.Choice(['default', 'intf', 'ip', 'power', 'psu', 'sensor', 'temp'], case_sensitive=False), multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|intf|ip|power|psu|sensor|temp|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -65,8 +65,13 @@ def get_aci_node_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|intf|ip|power|psu|sensor|temp|all',
+        'state',
+        []
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -168,12 +173,12 @@ def get_aci_node_command(
                 system_info=system_info,
                 temp_info=temp_info
             )
+            if apic_nodes is None:
+                continue
+
             nodes = nodes + apic_nodes
 
         ctx.busy = False
-
-        if len(nodes) == 0:
-            raise NoResultExit
 
         if output == 'json':
             ctx.log_prompt = False
@@ -187,40 +192,50 @@ def get_aci_node_command(
 
         ctx.my_output.json_output(nodes)
 
-        if 'default' in view:
+        if 'state' in view:
             aci_output_handler.print_nodes(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'intf' in view:
             aci_output_handler.print_nodes_intf(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'ip' in view:
             aci_output_handler.print_nodes_system(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'power' in view:
             aci_output_handler.print_nodes_power(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'psu' in view:
             aci_output_handler.print_nodes_psu(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'sensor' in view:
             aci_output_handler.print_nodes_sensor(
-                nodes
+                nodes,
+                title=True
             )
 
         if 'temp' in view:
             aci_output_handler.print_nodes_temp(
-                nodes
+                nodes,
+                title=True
             )
+
+        if len(nodes) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

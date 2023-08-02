@@ -77,17 +77,60 @@ def get_values_from_range(value):
     return values
 
 
-def get_tenant_name(value):
-    if len(value.split('/')) == 1:
+def get_range_from_values(values):
+    range_items = []
+
+    values = sorted(values)
+    start = None
+    stop = None
+    for value in values:
+        value = int(value)
+
+        if start is None:
+            start = value
+            stop = value
+            continue
+
+        if value == stop + 1:
+            stop = value
+            continue
+
+        if start == stop:
+            range_items.append(
+                str(start)
+            )
+        else:
+            range_items.append(
+                '%s-%s' % (str(start), str(stop))
+            )
+
+        start = value
+        stop = value
+
+    if start is not None:
+        if start == stop:
+            range_items.append(
+                str(start)
+            )
+        else:
+            range_items.append(
+                '%s-%s' % (str(start), str(stop))
+            )
+
+    return ','.join(range_items)
+
+
+def get_tenant_name(value, delimiter='/'):
+    if len(value.split(delimiter)) == 1:
         return (None, value)
 
-    if len(value.split('/')) == 2:
-        return value.split('/')
+    if len(value.split(delimiter)) == 2:
+        return value.split(delimiter)
 
     return None, None
 
 
-def match_tenant_name(key, value, strict=False):
+def match_tenant_name(key, value, strict=False, delimiter='/'):
     if key is None and value is None:
         return True
 
@@ -109,14 +152,14 @@ def match_tenant_name(key, value, strict=False):
     if len(value) == 0:
         return False
 
-    if len(value.split('/')) != 2:
+    if len(value.split(delimiter)) != 2:
         return False
 
-    if len(key.split('/')) > 2:
+    if len(key.split(delimiter)) > 2:
         return False
 
-    (key_tenant, key_name) = get_tenant_name(key)
-    (value_tenant, value_name) = get_tenant_name(value)
+    (key_tenant, key_name) = get_tenant_name(key, delimiter=delimiter)
+    (value_tenant, value_name) = get_tenant_name(value, delimiter=delimiter)
 
     if key_tenant is not None:
         if not match_string(key_tenant, value_tenant):
@@ -436,6 +479,12 @@ def match_timestamp(key, value):
     if key.endswith('d'):
         try:
             reference = now - int(key[:-1]) * 60 * 60 * 24
+        except BaseException:
+            return False
+
+    if key.endswith('y'):
+        try:
+            reference = now - int(key[:-1]) * 60 * 60 * 24 * 365
         except BaseException:
             return False
 

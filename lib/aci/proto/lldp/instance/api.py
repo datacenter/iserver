@@ -20,8 +20,10 @@ class ProtocolLldpInstanceApi():
             return self.protocol_lldp_instance_mo[key]
 
         distinguished_name = 'topology/pod-%s/node-%s/sys/lldp/inst' % (pod_id, node_id)
+        query = 'rsp-subtree-include=health,fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -41,7 +43,18 @@ class ProtocolLldpInstanceApi():
         if int(managed_objects['totalCount']) == 0:
             self.protocol_lldp_instance_mo[key] = {}
         else:
-            self.protocol_lldp_instance_mo[key] = managed_objects['imdata'][0]['lldpInst']['attributes']
+            attributes = managed_objects['imdata'][0]['lldpInst']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'lldpInst',
+                managed_objects['imdata'][0],
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'lldpInst',
+                managed_objects['imdata'][0],
+                'faultCounts'
+            )
+            self.protocol_lldp_instance_mo[key] = attributes
 
         self.log.apic_mo(
             'lldpInst.%s' % (key),

@@ -2,69 +2,44 @@ class ProtocolLacpOutput():
     def __init__(self):
         pass
 
-    def print_proto_lacp(self, info):
-        self.print_proto_lacp_instance(
-            info['instance']
-        )
+    def print_proto_lacp_instances(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol LACP - Instance [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
-        self.print_proto_lacp_interfaces(
-            info['interfaces']
-        )
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
-        self.print_proto_lacp_interfaces_stats(
-            info['interfaces']
-        )
-
-    def print_proto_lacp_instance(self, info):
-        order = [
-            'pod_node_name',
-            'adminSt',
-            'sysMac',
-            'adminPrio',
-            'operPrio',
-            'summary.portSummary'
-        ]
-
-        headers = [
-            'Node',
-            'Admin State',
-            'System MAC',
-            'Admin Priority',
-            'Oper Priority',
-            'Port Channel Interfaces'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='LACP Instance',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_proto_lacp_instances(self, info):
         order = [
             'instance.pod_node_name',
             'instance.adminSt',
             'instance.sysMac',
             'instance.adminPrio',
             'instance.operPrio',
-            'instance.summary.portSummary'
+            'instance.summary.portUp',
+            'instance.summary.portDown',
+            'instance.summary.portCount'
         ]
 
         headers = [
             'Node',
-            'Admin State',
+            'Admin',
             'System MAC',
-            'Admin Priority',
-            'Oper Priority',
-            'Port Channel Interfaces'
+            'Admin Prio',
+            'Oper Prio',
+            'Intf Up',
+            'Intf Down',
+            'Intf Count'
         ]
 
         self.my_output.my_table(
             info,
+            merge=True,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -72,8 +47,21 @@ class ProtocolLacpOutput():
             table=True
         )
 
-    def print_proto_lacp_interfaces(self, interfaces):
+    def print_proto_lacp_interfaces(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol LACP - Port Channels [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
         order = [
+            'pod_node_name',
             'id',
             'name',
             'adminSt',
@@ -89,11 +77,12 @@ class ProtocolLacpOutput():
         ]
 
         headers = [
-            'Id',
+            'Node',
+            'Intf Id',
             'Name',
-            'Admin State',
-            'Oper State',
-            'Interface',
+            'Admin',
+            'Oper',
+            'Member',
             'Oper Key',
             'Nbr System MAC',
             'Nbr System Prio',
@@ -105,10 +94,11 @@ class ProtocolLacpOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['lacp']
             ),
+            merge=True,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -116,8 +106,21 @@ class ProtocolLacpOutput():
             table=True
         )
 
-    def print_proto_lacp_interfaces_stats(self, interfaces):
+    def print_proto_lacp_interfaces_stats(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol LACP - Interface Stats [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
         order = [
+            'pod_node_name',
             'id',
             'name',
             'adminSt',
@@ -133,11 +136,12 @@ class ProtocolLacpOutput():
         ]
 
         headers = [
-            'Id',
+            'Node',
+            'Intf Id',
             'Name',
-            'Admin State',
-            'Oper State',
-            'Interface',
+            'Admin',
+            'Oper',
+            'Member',
             'PDU Sent',
             'PDU Recv',
             'PDU Recv Err',
@@ -149,13 +153,72 @@ class ProtocolLacpOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['lacp']
+            ),
+            merge=True,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_lacp_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Protocol LACP - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Protocol LACP - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceT',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT',
+            'affectedT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set',
+            'Affected'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT', 'affectedT']
             ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )

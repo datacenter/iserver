@@ -27,9 +27,12 @@ class K8sPvcInfo():
         info['name'] = pvc_mo['metadata']['name']
         info['namespace'] = pvc_mo['metadata']['namespace']
         info['access_modes'] = pvc_mo['status']['access_modes']
-        info['access_modes_string'] = ','.join(
-            info['access_modes']
-        )
+        info['access_modes_string'] = ''
+        if isinstance(info['access_modes'], list):
+            info['access_modes_string'] = ','.join(
+                info['access_modes']
+            )
+
         info['requested_capacity'] = pvc_mo['spec']['resources']['requests']['storage']
         info['capacity'] = pvc_mo['status']['capacity']
         info['phase'] = pvc_mo['status']['phase']

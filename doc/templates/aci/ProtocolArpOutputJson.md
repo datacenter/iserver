@@ -1,6 +1,6 @@
 # Node Protocol - ARP
 
-## JSON
+## JSON output
 
 ```
 DOC_TEMPLATE:get_aci_proto_arp.json:iserver.output.default

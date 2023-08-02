@@ -26,7 +26,7 @@ Developer
 # iserver get aci ep --apic apic11 --hv esx3* --view vm
 
 {
-    "duration": 4801,
+    "duration": 4571,
     "apic": {
         "read": true,
         "success": 5,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 381,
+        "connect_time": 392,
         "disconnect_time": 0,
-        "mo_time": 3585,
-        "total_time": 3966
+        "mo_time": 3265,
+        "total_time": 3657
     },
     "error": {
         "read": false,
@@ -57,11 +57,11 @@ Developer
 Log: apic
 ----------
 
-True	381	-	connect apic11o.emea-sp.cisco.com:443
-True	600	209	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
-True	1855	654	apic11o.emea-sp.cisco.com:443 class compVm
-True	818	1870	apic11o.emea-sp.cisco.com:443 class compVNic
-True	312	68	apic11o.emea-sp.cisco.com:443 class compHv
+True	392	-	connect apic11o.emea-sp.cisco.com:443
+True	710	361	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health,fault-count&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	541	666	apic11o.emea-sp.cisco.com:443 class compVm
+True	1716	1888	apic11o.emea-sp.cisco.com:443 class compVNic
+True	298	68	apic11o.emea-sp.cisco.com:443 class compHv
 ```
 
 [[Back]](./Endpoint.md)

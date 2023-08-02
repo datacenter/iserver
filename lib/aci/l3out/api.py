@@ -25,7 +25,7 @@ class L3OutApi():
             'l3extRsEctx',
             'l3extRsL3DomAtt'
         ]
-        query = 'rsp-subtree=children&rsp-subtree-class=l3extLNodeP,l3extInstP,%s' % (','.join(children))
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=l3extLNodeP,l3extInstP,%s' % (','.join(children))
         managed_objects = self.get_class(
             'l3extOut',
             query=query
@@ -52,6 +52,12 @@ class L3OutApi():
                     managed_object,
                     child_name
                 )
+
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'l3extOut',
+                managed_object,
+                'faultCounts'
+            )
 
             self.l3out_mo.append(
                 attributes

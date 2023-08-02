@@ -1,35 +1,40 @@
 # Application Endpoint Group (EPG)
 
-Get default properties of selected EPGs.
+## Command options
 
 Filter options:
-  - [name](./ApplicationEpgName.md)
-  - [tenant](./ApplicationEpgTenant.md)
-  - [application profile](./ApplicationEpgProfile.md)
-  - [pcTag](./ApplicationEpgPcTag.md)
-  - [bridge domain](./ApplicationEpgBridgeDomain.md)
-  - [subnet](./ApplicationEpgSubnet.md)
-  - [IP address](./ApplicationEpgIp.md)
-  - [contract](./ApplicationEpgContract.md)
-  - [deployed node](./ApplicationEpgNode.md)
-  - [domain](./ApplicationEpgDomain.md)
-  - [leaf policy group](./ApplicationEpgPg.md)
+  - [name](./ApplicationEpgFilterName.md)
+  - [tenant](./ApplicationEpgFilterTenant.md)
+  - [application profile](./ApplicationEpgFilterProfile.md)
+  - [pcTag](./ApplicationEpgFilterPcTag.md)
+  - [bridge domain](./ApplicationEpgFilterBridgeDomain.md)
+  - [subnet](./ApplicationEpgFilterSubnet.md)
+  - [IP address](./ApplicationEpgFilterIp.md)
+  - [contract](./ApplicationEpgFilterContract.md)
+  - [deployed node](./ApplicationEpgFilterNode.md)
+  - [domain](./ApplicationEpgFilterDomain.md)
+  - [leaf policy group](./ApplicationEpgFilterPg.md)
 
 View options:
-  - [summary](./ApplicationEpgAllDefault.md)
-  - [properties](./ApplicationEpgAllProperties.md)
-  - [bridge domain details](./ApplicationEpgAllBridgeDomain.md)
-  - [contract details](./ApplicationEpgAllContract.md)
-  - [deployed node details](./ApplicationEpgAllNode.md)
-  - [static port details](./ApplicationEpgAllPort.md)
-  - [domain details](./ApplicationEpgAllDomain.md)
-  - [member details](./ApplicationEpgAllMember.md)
-  - [all details](./ApplicationEpgAllDetails.md)
-  - [verbose](./ApplicationEpgVerbose.md)
+  - [state](./ApplicationEpgViewState.md)
+  - [properties](./ApplicationEpgViewProperties.md)
+  - [bd](./ApplicationEpgViewBridgeDomain.md)
+  - [contract](./ApplicationEpgViewContract.md)
+  - [node](./ApplicationEpgViewNode.md)
+  - [stport](./ApplicationEpgViewPort.md)
+  - [domain](./ApplicationEpgViewDomain.md)
+  - [member](./ApplicationEpgViewMember.md)
+  - [fault](./ApplicationEpgViewFault.md)
+  - [hfault](./ApplicationEpgViewHistoryFault.md)
+  - [event](./ApplicationEpgViewEvent.md)
+  - [audit](./ApplicationEpgViewAudit.md)
+  - [diag](./ApplicationEpgViewDiag.md)
+  - [all](./ApplicationEpgViewAll.md)
+  - [verbose](./ApplicationEpgViewVerbose.md)
 
 Output options:
-  - [default](./ApplicationEpgAllDefault.md)
-  - [json](./ApplicationEpgJson.md)
+  - [default](./ApplicationEpgOutputDefault.md)
+  - [json](./ApplicationEpgOutputJson.md)
 
 Command options
 
@@ -58,15 +63,20 @@ Options:
   --domain TEXT                   Filter by domain name
   --member [any|dyn|st]           [default: any]
   --pg TEXT                       Filter by policy group name
-  -v, --view [summary|prop|bd|contract|ep|node|stport|domain|member|all|verbose]
-                                  [default: summary]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|prop|bd|contract|ep|node|stport|domai
+                                  n|member|fault|hfault|event|audit|diag|all|v
+                                  erbose]  [default: state]
   --pivot                         Pivot view
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 67 ms and logs saved in /tmp/iserver\93ce1d066017
+Info: finished in 65 ms and logs saved in /tmp/iserver\999de8dc0bd8
 ```
 
 [[Back]](./README.md)

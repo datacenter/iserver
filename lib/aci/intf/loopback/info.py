@@ -115,9 +115,16 @@ class InterfaceLoopbackInfo():
         if info['adminSt'] == 'up' and info['state']['operSt'] == 'up':
             info['up'] = True
 
-        self.log.apic_mo(
-            'l3LbRtdIf.info',
-            info
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
         )
 
         return info
@@ -174,9 +181,32 @@ class InterfaceLoopbackInfo():
                     if not ip_helper.is_ipv4_in_cidr(interface_info['ipv4']['addr'].split('/')[0], value):
                         return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_loopback',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
         return True
 
-    def get_interfaces_loopback(self, pod_id, node_id, interface_filter=None):
+    def get_interfaces_loopback(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_loopback_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -200,6 +230,39 @@ class InterfaceLoopbackInfo():
 
             if not self.match_interface_loopback(interface_info, interface_filter):
                 continue
+
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_loopback_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_loopback_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_loopback_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_loopback_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
+                )
 
             interfaces.append(
                 interface_info

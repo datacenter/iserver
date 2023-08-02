@@ -22,9 +22,11 @@ class ProtocolNdInstanceApi():
             )
             return self.nd_instance_mo[key]
 
-        distinguished_name = 'topology/pod-%s/node-%s/sys/nd/inst' % (pod_id, node_id)
+        distinguished_name = 'topology/pod-%s/node-%s/sys/nd' % (pod_id, node_id)
+        query = 'query-target=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -44,7 +46,18 @@ class ProtocolNdInstanceApi():
         if int(managed_objects['totalCount']) == 0:
             self.nd_instance_mo[key] = {}
         else:
-            self.nd_instance_mo[key] = managed_objects['imdata'][0]['ndInst']['attributes']
+            attributes = managed_objects['imdata'][0]['ndInst']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'ndInst',
+                managed_objects['imdata'][0],
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'ndInst',
+                managed_objects['imdata'][0],
+                'faultCounts'
+            )
+            self.nd_instance_mo[key] = attributes
 
         self.log.apic_mo(
             'ndInst.%s' % (key),

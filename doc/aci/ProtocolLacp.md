@@ -1,20 +1,16 @@
-# Node Protocol
+# Node Protocol - CDP
 
-## LACP
-
-Node selection options:
-  - [single node](./ProtocolLacpInstanceNode.md)
-  - [selected nodes](./ProtocolLacpInstanceNodes.md)
-  - [leaf nodes](./ProtocolLacpInstanceLeaf.md)
+## Command options
 
 View options:
-  - [default](./ProtocolLacpInstanceNode.md)
-  - [intf](./ProtocolLacpInterfaceNode.md)
-  - [stats](./ProtocolLacpOutputVerbose.md)
-  - [verbose](./ProtocolLacpOutputVerbose.md)
+  - [inst](./ProtocolLacpViewInstance.md)
+  - [intf](./ProtocolLacpViewInterface.md)
+  - [stats](./ProtocolLacpViewStats.md)
+  - [event](./ProtocolLacpViewEvent.md)
+  - [all](./ProtocolLacpViewAll.md)
 
 Output options:
-  - [default](./ProtocolLacpInstanceNode.md)
+  - [default](./ProtocolLacpOutputDefault.md)
   - [json](./ProtocolLacpOutputJson.md)
 
 Command options
@@ -27,20 +23,22 @@ Usage: iserver.py get aci proto lacp [OPTIONS]
   Get aci node protocol lacp
 
 Options:
-  --apic TEXT                     APIC name
-  --ip TEXT                       APIC IP
-  --username TEXT                 APIC Username
-  --password TEXT                 APIC Password
-  --pod TEXT                      Pod ID
-  --node TEXT                     Node name patterns
-  --role [any|leaf|spine]         [default: any]
-  -v, --view [default|intf|stats|verbose]
-  -o, --output [default|json]     [default: default]
-  --no-cache                      Disable cache
-  --devel                         Developer output
-  --help                          Show this message and exit.
+  --apic TEXT                  APIC name
+  --ip TEXT                    APIC IP
+  --port INTEGER               APIC Port  [default: 443]
+  --username TEXT              APIC Username
+  --password TEXT              APIC Password
+  --pod TEXT                   Pod ID
+  --node TEXT                  Node name patterns
+  --role [any|leaf|spine]      [default: any]
+  --when TEXT                  Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT              [inst|intf|stats|event|all]  [default: intf]
+  -o, --output [default|json]  [default: default]
+  --no-cache                   Disable cache
+  --devel                      Developer output
+  --help                       Show this message and exit.
 
-Info: finished in 231 ms and logs saved in /tmp/iserver\704b95e76e1e
+Info: finished in 80 ms and logs saved in /tmp/iserver\53d1c020bea3
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

@@ -1,87 +1,54 @@
-# Contract
+# Taboo Contract
 
-## Taboo Contract
+## Command options
 
-Use '--type taboo' to get taboo contracts details
-- contract name and tenant
-- subject and filters
-- details of all filters used by selected taboo contracts
-- taboo contracts usage (protected EPG)
+Filter options:
+  - [name](./ContractTabooFilterName.md)
+  - [tenant](./ContractTabooFilterTenant.md)
 
-```
-# iserver get aci contract --apic apic21 --type taboo --tenant k8s
+View options:
+  - [state](./ContractTabooViewState.md)
+  - [usage](./ContractTabooViewUsage.md)
+  - [fault](./ContractTabooViewFault.md)
+  - [hfault](./ContractTabooViewFaultHistory.md)
+  - [event](./ContractTabooViewEvent.md)
+  - [audit](./ContractTabooViewAudit.md)
+  - [diag](./ContractTabooViewDiag.md)
+  - [all](./ContractTabooViewAll.md)
 
-Apic: apic21 (mode:online, cache:off)
+Output options:
+  - [default](./ContractTabooOutputDefault.md)
+  - [json](./ContractTabooOutputJson.md)
 
-Taboo Contracts
----------------
-
-+---------------------+--------------------+----------+
-| Taboo               | Subject            | Filter   |
-+---------------------+--------------------+----------+
-| k8s/MyTabooContract | k8s/MyTabooSubject | k8s/icmp | 
-+---------------------+--------------------+----------+
-
-Contract Filters
-----------------
-
-+----------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| Filter   | Entry | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
-+----------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| k8s/icmp | icmp  | ipv4  |          | icmp  | no        | no       |        |             |       | 
-+----------+-------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-
-Taboo Contracts Usage
----------------------
-
-+---------------------+---------------------+
-| Taboo               | Protected EPG       |
-+---------------------+---------------------+
-| k8s/MyTabooContract | k8s/k8s_ANP/SRIoV_A | 
-+---------------------+---------------------+
-```
-
-Developer
+Command options
 
 ```
-# iserver get aci contract --apic apic21 --type taboo --tenant k8s
+# iserver get aci contract taboo --help
 
-{
-    "duration": 1834,
-    "apic": {
-        "read": true,
-        "success": 4,
-        "failed": 0,
-        "connect": 1,
-        "disconnect": 0,
-        "mo": 3,
-        "connect_time": 491,
-        "disconnect_time": 0,
-        "mo_time": 1084,
-        "total_time": 1575
-    },
-    "error": {
-        "read": false,
-        "lines": 0
-    },
-    "info": {
-        "read": false,
-        "lines": 0
-    },
-    "debug": {
-        "read": false,
-        "lines": 0
-    },
-    "cache_hits": 0
-}
+Usage: iserver.py get aci contract taboo [OPTIONS]
 
-Log: apic
-----------
+  Get aci contract
 
-True	491	-	connect apic21o.emea-sp.cisco.com:443
-True	354	2	apic21o.emea-sp.cisco.com:443 class vzTaboo query rsp-subtree=children&rsp-subtree-class=vzTSubj,vzRtProtBy
-True	350	2	apic21o.emea-sp.cisco.com:443 class vzTSubj query rsp-subtree=children&rsp-subtree-class=vzRsDenyRule
-True	380	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+Options:
+  --apic TEXT                     APIC name
+  --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
+  --username TEXT                 APIC Username
+  --password TEXT                 APIC Password
+  --name TEXT                     Filter by name
+  --tenant TEXT                   Filter by tenant
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|usage|fault|hfault|event|audit|diag|a
+                                  ll]  [default: state]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
+  --devel                         Developer output
+  --help                          Show this message and exit.
+
+Info: finished in 33 ms and logs saved in /tmp/iserver\645611a08f5a
 ```
 
-[[Back]](./Contract.md)
+[[Back]](./README.md)

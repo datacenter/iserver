@@ -2,12 +2,25 @@ class EndpointOutput():
     def __init__(self):
         pass
 
+    def print_endpoints_apic(self, endpoints):
+        if not self.is_apic:
+            return False
+
+        if len(endpoints) == 0:
+            return False
+
+        if 'apic' not in endpoints[0]:
+            return False
+
+        return True
+
     def print_endpoints(self, endpoints, bridge_domain_name=True, stream='default'):
         if len(endpoints) == 0:
             return
 
+        is_apic = self.print_endpoints_apic(endpoints)
         order = []
-        if self.is_apic:
+        if is_apic:
             order = ['apic']
 
         order = order + [
@@ -21,7 +34,7 @@ class EndpointOutput():
         ]
 
         headers = []
-        if self.is_apic:
+        if is_apic:
             headers = ['Apic']
 
         headers = headers + [
@@ -56,7 +69,9 @@ class EndpointOutput():
 
     def print_endpoints_fabric(self, endpoints, stream='default'):
         order = []
-        if self.is_apic:
+
+        is_apic = self.print_endpoints_apic(endpoints)
+        if is_apic:
             order = ['apic']
 
         order = order + [
@@ -69,7 +84,7 @@ class EndpointOutput():
         ]
 
         headers = []
-        if self.is_apic:
+        if is_apic:
             headers = ['Apic']
 
         headers = headers + [
@@ -99,7 +114,9 @@ class EndpointOutput():
 
     def print_endpoints_vmm(self, endpoints):
         order = []
-        if self.is_apic:
+
+        is_apic = self.print_endpoints_apic(endpoints)
+        if is_apic:
             order = ['apic']
 
         order = order + [
@@ -115,7 +132,7 @@ class EndpointOutput():
         ]
 
         headers = []
-        if self.is_apic:
+        if is_apic:
             headers = ['Apic']
 
         headers = headers + [

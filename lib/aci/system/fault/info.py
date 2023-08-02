@@ -270,6 +270,21 @@ class SystemFaultInfo():
 
         return self.system_fault
 
+    def remove_system_fault_timestamp_filter(self, system_fault_filter):
+        if system_fault_filter is None:
+            return None
+
+        new_filter = []
+        for rule in system_fault_filter:
+            (key, value) = rule.split(':')
+            if key == 'timestamp':
+                continue
+            new_filter.append(
+                rule
+            )
+
+        return new_filter
+
     def match_system_fault(self, system_fault_info, system_fault_filter, exclude_cleared=True):
         if exclude_cleared:
             if system_fault_info['severity'] == 'cleared':
@@ -366,6 +381,12 @@ class SystemFaultInfo():
                 found = True
                 if not filter_helper.match_string(value, system_fault_info['descr']):
                     return False
+
+            if not found:
+                if key in system_fault_info:
+                    found = True
+                    if not filter_helper.match_string(value, system_fault_info[key]):
+                        return False
 
             if not found:
                 self.log.error(

@@ -1,20 +1,16 @@
-# Node Protocol
+# Node Protocol - CDP
 
-## LACP
-
-Node selection options:
-  - [single node](./ProtocolLacpInstanceNode.md)
-  - [selected nodes](./ProtocolLacpInstanceNodes.md)
-  - [leaf nodes](./ProtocolLacpInstanceLeaf.md)
+## Command options
 
 View options:
-  - [default](./ProtocolLacpInstanceNode.md)
-  - [intf](./ProtocolLacpInterfaceNode.md)
-  - [stats](./ProtocolLacpOutputVerbose.md)
-  - [verbose](./ProtocolLacpOutputVerbose.md)
+  - [inst](./ProtocolLacpViewInstance.md)
+  - [intf](./ProtocolLacpViewInterface.md)
+  - [stats](./ProtocolLacpViewStats.md)
+  - [event](./ProtocolLacpViewEvent.md)
+  - [all](./ProtocolLacpViewAll.md)
 
 Output options:
-  - [default](./ProtocolLacpInstanceNode.md)
+  - [default](./ProtocolLacpOutputDefault.md)
   - [json](./ProtocolLacpOutputJson.md)
 
 Command options
@@ -23,4 +19,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_lacp.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

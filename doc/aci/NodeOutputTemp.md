@@ -7,14 +7,17 @@
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - Temperature [#1]
+-----------------------
+
 +---------------------+--------------------+-----+------+-----+
 | Node                | Sensor             | Avg | Last | Max |
 +---------------------+--------------------+-----+------+-----+
-| pod-1/bl205-eu-spdc | supslot-1.sensor-1 | 21  | 21   | 21  | 
+| pod-1/bl205-eu-spdc | supslot-1.sensor-1 | 20  | 20   | 20  | 
 | pod-1/bl205-eu-spdc | supslot-1.sensor-2 | 27  | 27   | 27  | 
 | pod-1/bl205-eu-spdc | supslot-1.sensor-3 | 32  | 32   | 32  | 
-| pod-1/bl205-eu-spdc | supslot-1.sensor-4 | 48  | 48   | 48  | 
-| pod-1/bl205-eu-spdc | supslot-1.sensor-5 | 37  | 37   | 37  | 
+| pod-1/bl205-eu-spdc | supslot-1.sensor-4 | 47  | 47   | 47  | 
+| pod-1/bl205-eu-spdc | supslot-1.sensor-5 | 36  | 36   | 36  | 
 +---------------------+--------------------+-----+------+-----+
 ```
 
@@ -24,7 +27,7 @@ Developer
 # iserver get aci node --apic apic11 --view temp --name bl205*
 
 {
-    "duration": 2026,
+    "duration": 1561,
     "apic": {
         "read": true,
         "success": 3,
@@ -32,10 +35,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 527,
+        "connect_time": 409,
         "disconnect_time": 0,
-        "mo_time": 1288,
-        "total_time": 1815
+        "mo_time": 983,
+        "total_time": 1392
     },
     "error": {
         "read": false,
@@ -55,9 +58,9 @@ Developer
 Log: apic
 ----------
 
-True	527	-	connect apic11o.emea-sp.cisco.com:443
-True	403	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	885	1996	apic11o.emea-sp.cisco.com:443 class eqptTemp
+True	409	-	connect apic11o.emea-sp.cisco.com:443
+True	296	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	687	1996	apic11o.emea-sp.cisco.com:443 class eqptTemp
 ```
 
 [[Back]](./Node.md)

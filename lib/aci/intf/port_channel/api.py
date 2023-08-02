@@ -20,7 +20,7 @@ class InterfacePortChannelApi():
             return self.interfaces_pc_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/pcAggrIf' % (pod_id, node_id)
-        query = 'rsp-subtree=children&rsp-subtree-class=ethpmAggrIf'
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
             class_name,
             query=query
@@ -39,7 +39,39 @@ class InterfacePortChannelApi():
             attributes['ethpmAggrIf'] = self.get_mo_child_attributes(
                 'pcAggrIf',
                 managed_object,
-                'ethpmAggrIf'
+                'ethpmAggrIf',
+                include_grandchildren=True
+            )
+            attributes['rmonIfOut'] = self.get_mo_child_attributes(
+                'pcAggrIf',
+                managed_object,
+                'rmonIfOut'
+            )
+            attributes['rmonIfIn'] = self.get_mo_child_attributes(
+                'pcAggrIf',
+                managed_object,
+                'rmonIfIn'
+            )
+            attributes['rmonEtherStats'] = self.get_mo_child_attributes(
+                'pcAggrIf',
+                managed_object,
+                'rmonEtherStats'
+            )
+            attributes['pcRsMbrIfs'] = self.get_mo_children_attributes(
+                'pcAggrIf',
+                managed_object,
+                'pcRsMbrIfs',
+                include_grandchildren=True
+            )
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'pcAggrIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'pcAggrIf',
+                managed_object,
+                'faultCounts'
             )
 
             self.interfaces_pc_mo[key].append(

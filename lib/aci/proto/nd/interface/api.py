@@ -43,7 +43,7 @@ class ProtocolNdInterfaceApi():
                 nd_interface = managed_object['ndIf']['attributes']
                 for child in managed_object['ndIf']['children']:
                     if 'ndIfStats' in child:
-                        nd_interface['stats'] = child['ndIfStats']['attributes']
+                        nd_interface['ndIfStats'] = child['ndIfStats']['attributes']
 
                 self.nd_interface_mo[key].append(
                     nd_interface

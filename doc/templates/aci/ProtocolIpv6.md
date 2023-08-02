@@ -1,10 +1,6 @@
-# Node Protocol
+# Node Protocol - IPv6
 
-## IPv6
-
-Node selection options:
-  - [single node](./ProtocolIpv6SummaryNode.md)
-  - [selected nodes](./ProtocolIpv6SummaryNodes.md)
+## Command options
 
 Filter options:
   - route type
@@ -13,12 +9,18 @@ Filter options:
   - vrf
 
 View options:
-  - default
-  - [summary](./ProtocolIpv6SummaryNode.md)
+  - [inst](./ProtocolIpv6ViewInstance.md)
+  - [dom](./ProtocolIpv6ViewDomain.md)
+  - [route](./ProtocolIpv6ViewRoute.md)
+  - [fault](./ProtocolIpv6ViewFault.md)
+  - [hfault](./ProtocolIpv6ViewFaultHistory.md)
+  - [event](./ProtocolIpv6ViewEvent.md)
+  - [diag](./ProtocolIpv6ViewDiag.md)
+  - [all](./ProtocolIpv6ViewAll.md)
 
 Output options:
-  - [default](./ProtocolIpv6SummaryNode.md)
-  - [json](./ProtocolIpv6Json.md)
+  - [default](./ProtocolIpv6OutputDefault.md)
+  - [json](./ProtocolIpv6OutputJson.md)
 
 Command options
 
@@ -26,4 +28,4 @@ Command options
 DOC_TEMPLATE:get_aci_proto_ipv6.help:output
 ```
 
-[[Back]](./Protocol.md)
+[[Back]](./README.md)

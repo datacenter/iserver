@@ -7,8 +7,8 @@
 
 Apic: apic21 (mode:online, cache:off)
 
-EPG Members
------------
+EPG - Member [#12]
+------------------
 
 +-----------------------+-------------+----------------+--------------+------------------+-----------+
 | EPG                   | Member Type | Node           | Type         | ID               | VLAN      |
@@ -57,7 +57,7 @@ Developer
 # iserver get aci epg --apic apic21 --pg k8s_esx71_PolGrp --view member
 
 {
-    "duration": 2058,
+    "duration": 2469,
     "apic": {
         "read": true,
         "success": 4,
@@ -65,10 +65,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 3,
-        "connect_time": 428,
+        "connect_time": 488,
         "disconnect_time": 0,
-        "mo_time": 1044,
-        "total_time": 1472
+        "mo_time": 1309,
+        "total_time": 1797
     },
     "error": {
         "read": false,
@@ -88,10 +88,10 @@ Developer
 Log: apic
 ----------
 
-True	428	-	connect apic21o.emea-sp.cisco.com:443
-True	403	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	299	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	342	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
+True	488	-	connect apic21o.emea-sp.cisco.com:443
+True	498	36	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-include=health,fault-count&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	391	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	420	282	apic21o.emea-sp.cisco.com:443 class fvIfConn
 ```
 
 [[Back]](./ApplicationEpg.md)

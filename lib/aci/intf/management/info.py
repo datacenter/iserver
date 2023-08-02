@@ -1,3 +1,6 @@
+from lib import filter_helper
+
+
 class InterfaceMgmtInfo():
     def __init__(self):
         self.interface_mgmt = {}
@@ -87,6 +90,18 @@ class InterfaceMgmtInfo():
         if info['adminSt'] == 'up':
             info['up'] = True
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_interfaces_management_info(self, pod_id, node_id):
@@ -113,12 +128,73 @@ class InterfaceMgmtInfo():
 
         return self.interface_mgmt[key]
 
-    def get_interface_management(self, pod_id, node_id, cdp_info=False, lldp_info=False, faults_info=False, state_info=False, stats_info=False):
+    def match_interface_management(self, interface_info, interface_filter):
+        if interface_filter is None or len(interface_filter) == 0:
+            return True
+
+        for ap_rule in interface_filter:
+            key = ap_rule.split(':')[0]
+            value = ':'.join(ap_rule.split(':')[1:])
+
+            if key == 'id':
+                if not filter_helper.match_string(value, interface_info['id']):
+                    return False
+
+            # if key == 'admin':
+            #     if value != 'any':
+            #         if not filter_helper.match_string(value, interface_info['adminSt']):
+            #             return False
+
+            # if key == 'oper':
+            #     if value != 'any':
+            #         if not filter_helper.match_string(value, interface_info['state']['operSt']):
+            #             return False
+
+            if key == 'fault':
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_management',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+        return True
+
+    def get_interface_management(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            state_info=False,
+            stats_info=False,
+            cdp_info=False,
+            lldp_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         interfaces = self.get_interfaces_management_info(pod_id, node_id)
         if interfaces is None:
             return None
 
         for interface_info in interfaces:
+            if not self.match_interface_management(interface_info, interface_filter):
+                continue
+
+            if state_info:
+                interface_info['state'] = self.get_interface_management_state(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
+
             if cdp_info:
                 interface_info['cdp'] = self.get_cdp_adjacency_endpoint(
                     interface_info['podId'],
@@ -135,25 +211,52 @@ class InterfaceMgmtInfo():
                     allow_multiple=False
                 )
 
-            if faults_info:
-                interface_info['faults'] = self.get_interface_fault_counts(
+            if stats_info:
+                interface_info['counters'] = self.get_interface_fault_counts(
                     interface_info['podId'],
                     interface_info['nodeId'],
                     'mgmt',
                     interface_info['id']
                 )
 
-            interface_info['state'] = self.get_interface_management_state(
-                interface_info['podId'],
-                interface_info['nodeId'],
-                interface_info['id']
-            )
+                interface_info['stats'] = self.get_interface_management_stats(
+                    interface_info['podId'],
+                    interface_info['nodeId'],
+                    interface_info['id']
+                )
 
-            interface_info['stats'] = self.get_interface_management_stats(
-                interface_info['podId'],
-                interface_info['nodeId'],
-                interface_info['id']
-            )
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_management_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_management_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_management_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_management_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
+                )
 
             interface_info = self.my_output.merge_output(
                 interface_info

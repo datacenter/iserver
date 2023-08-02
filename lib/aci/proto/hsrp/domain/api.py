@@ -20,8 +20,10 @@ class ProtocolHsrpDomainApi():
             return self.hsrp_domains_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/hsrpDom' % (pod_id, node_id)
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_class(
-            class_name
+            class_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -33,8 +35,19 @@ class ProtocolHsrpDomainApi():
 
         self.hsrp_domains_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['hsrpDom']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'hsrpDom',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'hsrpDom',
+                managed_object,
+                'faultCounts'
+            )
             self.hsrp_domains_mo[key].append(
-                managed_object['hsrpDom']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

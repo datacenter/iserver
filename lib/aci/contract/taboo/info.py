@@ -1,14 +1,21 @@
-import copy
-import time
-
 from lib import filter_helper
 
 
-class TabooInfo():
+class ContractTabooInfo():
     def __init__(self):
-        self.taboos = None
+        self.taboo_contract = None
 
-    def get_taboo(self, tenant, name):
+    def get_taboo_contract_count(self, tenant_name=None):
+        taboo_filter = None
+        if tenant_name is not None:
+            taboo_filter = ['tenant:%s' % (tenant_name)]
+
+        contracts = self.get_taboo_contracts(
+            taboo_filter=taboo_filter
+        )
+        return len(contracts)
+
+    def get_taboo_contract(self, tenant, name):
         taboo_filter = []
         taboo_filter.append(
             'tenant:%s' % (tenant)
@@ -17,7 +24,7 @@ class TabooInfo():
             'name:%s' % (name)
         )
 
-        taboos = self.get_taboos(
+        taboos = self.get_taboo_contracts(
             taboo_filter=taboo_filter
         )
 
@@ -26,12 +33,12 @@ class TabooInfo():
 
         return None
 
-    def get_taboo_filters_info(self, managed_object):
+    def get_taboo_contract_filters_info(self, managed_object):
         info = []
         for item in managed_object['vzTSubj']:
             taboo_subject_name = item['name']
             taboo_subject_tenant = managed_object['dn'].split('/')[1][3:]
-            taboo_subject_info = self.get_taboo_subject(
+            taboo_subject_info = self.get_taboo_contract_subject(
                 taboo_subject_tenant,
                 taboo_subject_name
             )
@@ -39,13 +46,13 @@ class TabooInfo():
                 continue
 
             for taboo_filter_name in taboo_subject_info['vzFilterName']:
-                filter_info = self.get_filter(
+                filter_info = self.get_contract_filter(
                     taboo_subject_tenant,
                     taboo_filter_name
                 )
                 if filter_info is None:
                     self.log.error(
-                        'get_taboo_info',
+                        'get_taboo_contract_filters_info',
                         'Filter not found: %s/%s' % (
                             taboo_subject_tenant,
                             taboo_filter_name
@@ -65,7 +72,7 @@ class TabooInfo():
 
         return info
 
-    def get_taboo_info(self, managed_object):
+    def get_taboo_taboo_info(self, managed_object):
         keys = [
             'descr',
             'dn',
@@ -90,13 +97,13 @@ class TabooInfo():
             info['name']
         )
 
-        info['vzFilter'] = self.get_taboo_filters_info(
+        info['vzFilter'] = self.get_taboo_contract_filters_info(
             managed_object
         )
 
         info['protectedEpg'] = []
         for item in managed_object['vzRtProtBy']:
-            contract_epg_info = self.get_contract_epg_info(
+            contract_epg_info = self.get_standard_contract_epg_info(
                 item
             )
             if contract_epg_info is not None:
@@ -104,24 +111,32 @@ class TabooInfo():
                     contract_epg_info
                 )
 
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
-    def get_taboos_info(self):
-        if self.taboos is None:
-            self.taboos = []
+    def get_taboo_contracts_info(self):
+        if self.taboo_contract is None:
+            self.taboo_contract = []
 
-            taboos = self.get_taboos_mo()
+            taboos = self.get_taboo_contract_mo()
             if taboos is not None:
                 for managed_object in taboos:
-                    self.taboos.append(
-                        self.get_taboo_info(
+                    self.taboo_contract.append(
+                        self.get_taboo_taboo_info(
                             managed_object
                         )
                     )
 
-        return self.taboos
+        return self.taboo_contract
 
-    def match_taboo(self, taboo_info, taboo_filter):
+    def match_taboo_contract(self, taboo_info, taboo_filter):
         if taboo_filter is None or len(taboo_filter) == 0:
             return True
 
@@ -129,13 +144,13 @@ class TabooInfo():
             (key, value) = taboo_rule.split(':')
 
             if key == 'name':
-                if not filter_helper.match_string(name, taboo_info['nameTenant']):
+                if not filter_helper.match_tenant_name(value, taboo_info['nameTenant']):
                     return False
 
             if key == 'names':
                 found = False
                 for name in value.split(','):
-                    if filter_helper.match_string(name, taboo_info['nameTenant']):
+                    if filter_helper.match_tenant_name(name, taboo_info['nameTenant']):
                         found = True
                         break
 
@@ -149,7 +164,7 @@ class TabooInfo():
             if key == 'filter':
                 found = False
                 for filter_info in taboo_info['vzFilter']:
-                    if filter_helper.match_string(value, filter_info['nameTenant']):
+                    if filter_helper.match_tenant_name(value, filter_info['nameTenant']):
                         found = True
                         break
 
@@ -158,18 +173,55 @@ class TabooInfo():
 
         return True
 
-    def get_taboos(self, taboo_filter=None):
-        start_time = int(time.time() * 1000)
-
-        all_taboos = self.get_taboos_info()
+    def get_taboo_contracts(
+            self,
+            taboo_filter=None,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
+        all_taboos = self.get_taboo_contracts_info()
         if all_taboos is None:
             return None
 
         taboos = []
 
         for taboo_info in all_taboos:
-            if not self.match_taboo(taboo_info, taboo_filter):
+            if not self.match_taboo_contract(taboo_info, taboo_filter):
                 continue
+
+            if fault_info:
+                taboo_info['faultInst'] = self.get_taboo_contract_id_fault(
+                    taboo_info['tenant'],
+                    taboo_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                taboo_info['faultRecord'] = self.get_taboo_contract_id_fault(
+                    taboo_info['tenant'],
+                    taboo_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                taboo_info['eventLog'] = self.get_taboo_contract_id_event(
+                    taboo_info['tenant'],
+                    taboo_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                taboo_info['auditLog'] = self.get_taboo_contract_id_audit(
+                    taboo_info['tenant'],
+                    taboo_info['name'],
+                    audit_filter=audit_filter
+                )
 
             taboos.append(taboo_info)
 

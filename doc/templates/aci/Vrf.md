@@ -1,27 +1,35 @@
 # Virtual Routing and Forwarding (VRF)
 
-Get default properties of [all](./VrfAllDefault.md) VRFs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./VrfName.md)
-  - [tenant](./VrfTenant.md)
-  - [pcTag](./VrfPcTag.md)
-  - [vnid](./VrfVnid.md)
-  - [bridge domain](./VrfBridgeDomain.md)
-  - [epg](./VrfEpg.md)
-  - [subnet](./VrfSubnet.md)
-  - [IP address](./VrfIp.md)
-  - [l3out](./VrfL3Out.md)
+  - [name](./VrfFilterName.md)
+  - [tenant](./VrfFilterTenant.md)
+  - [pcTag](./VrfFilterPcTag.md)
+  - [vnid](./VrfFilterVnid.md)
+  - [bridge domain](./VrfFilterBridgeDomain.md)
+  - [epg](./VrfFilterEpg.md)
+  - [subnet](./VrfFilterSubnet.md)
+  - [IP address](./VrfFilterIp.md)
+  - [l3out](./VrfFilterL3Out.md)
 
 View options:
-  - [default](./VrfAllDefault.md)
-  - [properties](./VrfAllProps.md)
-  - [verbose](./VrfVerbose.md)
-  - [route](./VrfRoute.md) output to get route table of selected VRF
+  - [state](./VrfViewState.md)
+  - [properties](./VrfViewProps.md)
+  - [route](./VrfViewRoute.md)
+  - [node](./VrfViewNode.md)
+  - [intf](./VrfViewIntf.md)
+  - [fault](./VrfViewFault.md)
+  - [hfault](./VrfViewFaultHistory.md)
+  - [event](./VrfViewEvent.md)
+  - [audit](./VrfViewAudit.md)
+  - [diag](./VrfViewDiag.md)
+  - [all](./VrfViewAll.md)
+  - [verbose](./VrfViewVerbose.md)
 
 Output options:
-  - [default](./VrfAllDefault.md)
-  - [json](./VrfJson.md)
+  - [default](./VrfOutputDefault.md)
+  - [json](./VrfOutputJson.md)
 
 Command options
 

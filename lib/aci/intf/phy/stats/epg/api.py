@@ -6,7 +6,7 @@ class InterfacePhyEpgStatsApi():
         key = '%s.%s.%s' % (
             pod_id,
             node_id,
-            interface_id.split('/')[1]
+            '.'.join(interface_id.split('/'))
         )
         if key in self.interface_phy_epg_stats_mo:
             return self.interface_phy_epg_stats_mo[key]

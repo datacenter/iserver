@@ -148,10 +148,6 @@ class BridgeDomainInfo():
             info['name']
         )
 
-        info['health'] = self.get_bridge_domain_health_info(
-            managed_object['health']
-        )
-
         subnets = []
         info['fvSubnet'] = []
         for subnet_managed_object in managed_object['fvSubnet']:
@@ -190,6 +186,18 @@ class BridgeDomainInfo():
 
         info['fvRsMldsn'] = self.get_bridge_domain_mld_info(
             managed_object['fvRsMldsn']
+        )
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
         )
 
         return info
@@ -307,7 +315,16 @@ class BridgeDomainInfo():
 
         return True
 
-    def get_bridge_domain(self, tenant_name, bridge_domain_name, endpoint_info=False, endpoint_vm_info=False, snoop_info=False, vrf_info=False, epg_info=False):
+    def get_bridge_domain(
+            self,
+            tenant_name,
+            bridge_domain_name,
+            endpoint_info=False,
+            endpoint_vm_info=False,
+            snoop_info=False,
+            vrf_info=False,
+            epg_info=False
+            ):
         bridge_domain_filter = []
         bridge_domain_filter.append(
             'tenant:%s' % (tenant_name)
@@ -338,7 +355,24 @@ class BridgeDomainInfo():
 
         return None
 
-    def get_bridge_domains(self, bridge_domain_filter=None, endpoint_info=False, endpoint_vm_info=False, endpoint_fabric_info=False, snoop_info=False, vrf_info=False, epg_info=False):
+    def get_bridge_domains(
+            self,
+            bridge_domain_filter=None,
+            endpoint_info=False,
+            endpoint_vm_info=False,
+            endpoint_fabric_info=False,
+            snoop_info=False,
+            vrf_info=False,
+            epg_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_bridge_domains = self.get_bridge_domains_info()
         if all_bridge_domains is None:
             return None
@@ -404,6 +438,46 @@ class BridgeDomainInfo():
                         bridge_domain_info['fvRsMldsn']['tenant'],
                         bridge_domain_info['fvRsMldsn']['actualPolicyName']
                     )
+                )
+
+            if node_info:
+                ap_node_info = self.get_bridge_domain_node(
+                    bridge_domain_info['tenant'],
+                    bridge_domain_info['name']
+                )
+                bridge_domain_info['node'] = None
+                bridge_domain_info['interface'] = None
+                if ap_node_info is not None:
+                    bridge_domain_info['node'] = ap_node_info['node']
+                    bridge_domain_info['interface'] = ap_node_info['interface']
+
+            if fault_info:
+                bridge_domain_info['faultInst'] = self.get_bridge_domain_id_fault(
+                    bridge_domain_info['tenant'],
+                    bridge_domain_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                bridge_domain_info['faultRecord'] = self.get_bridge_domain_id_fault(
+                    bridge_domain_info['tenant'],
+                    bridge_domain_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                bridge_domain_info['eventLog'] = self.get_bridge_domain_id_event(
+                    bridge_domain_info['tenant'],
+                    bridge_domain_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                bridge_domain_info['auditLog'] = self.get_bridge_domain_id_audit(
+                    bridge_domain_info['tenant'],
+                    bridge_domain_info['name'],
+                    audit_filter=audit_filter
                 )
 
             bridge_domains.append(bridge_domain_info)

@@ -17,8 +17,10 @@ class DomainAaaApi():
             )
             return self.domain_aaa_mo
 
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count'
         managed_objects = self.get_class(
             'aaaDomain',
+            query=query,
             node_class=True
         )
 
@@ -28,6 +30,11 @@ class DomainAaaApi():
         self.domain_aaa_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['aaaDomain']['attributes']
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'aaaDomain',
+                managed_object,
+                'faultCounts'
+            )
             self.domain_aaa_mo.append(
                 attributes
             )

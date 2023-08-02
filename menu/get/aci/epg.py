@@ -41,7 +41,10 @@ class NoResultExit(Exception):
 @click.option("--domain", "domain_name", default='', callback=validations.empty_string_to_none, help="Filter by domain name")
 @click.option("--member", "member_type", type=click.Choice(['any', 'dyn', 'st'], case_sensitive=False), default='any', show_default=True)
 @click.option("--pg", "pg_name", default='', callback=validations.empty_string_to_none, help="Filter by policy group name")
-@click.option("--view", "-v", type=click.Choice(['summary', 'prop', 'bd', 'contract', 'ep', 'node', 'stport', 'domain', 'member', 'all', 'verbose'], case_sensitive=False), default='summary', show_default=True)
+@click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['state'], help="[state|prop|bd|contract|ep|node|stport|domain|member|fault|hfault|event|audit|diag|all|verbose]", show_default=True, multiple=True)
 @click.option("--pivot", is_flag=True, show_default=True, default=False, help="Pivot view")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
@@ -65,6 +68,9 @@ def get_aci_epg_command(
         domain_name,
         member_type,
         pg_name,
+        fault,
+        fault_severity,
+        fault_when,
         view,
         pivot,
         output,
@@ -77,6 +83,17 @@ def get_aci_epg_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|prop|bd|contract|ep|node|stport|domain|member|fault|hfault|event|audit|diag|all|verbose',
+        'state',
+        [
+            'diag:fault,hfault,event,audit'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -92,10 +109,6 @@ def get_aci_epg_command(
         if apic_handler is None:
             raise ErrorExit
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
         bd_info = False
         locale_info = False
         ifconn_info = False
@@ -105,8 +118,16 @@ def get_aci_epg_command(
         contract_info = False
         vrf_info = False
         l3out_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+        audit_info = False
 
         epg_filter = []
+        hfault_filter = []
+        event_filter = []
+        audit_filter = []
+
         tenant_filtered = False
         ap_filtered = False
 
@@ -201,38 +222,59 @@ def get_aci_epg_command(
                 'pg:%s' % (pg_name)
             )
 
-        if view == 'summary':
+        if fault:
+            epg_filter.append(
+                'fault:any'
+            )
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            audit_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        if 'state' in view:
             bd_info = True
             locale_info = True
             ifconn_info = True
             endpoint_info = True
             contract_info = True
 
-        if view == 'ep':
+        if 'ep' in view:
             bd_info = True
             endpoint_info = True
 
-        if view == 'bd':
+        if 'bd' in view:
             bd_info = True
             endpoint_info = True
             vrf_info = True
 
-        if view == 'contract':
+        if 'contract' in view:
             contract_info = True
 
-        if view == 'node':
+        if 'node' in view:
             locale_info = True
 
-        if view == 'stport':
+        if 'stport' in view:
             ifconn_info = True
 
-        if view == 'domain':
+        if 'domain' in view:
             ifconn_info = True
 
-        if view == 'member':
+        if 'member' in view:
             ifconn_info = True
 
-        if view in ['verbose', 'all']:
+        if 'verbose' in view:
             pivot = False
             bd_info = True
             locale_info = True
@@ -244,6 +286,22 @@ def get_aci_epg_command(
             vrf_info = True
             l3out_info = True
 
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
+        if 'audit' in view:
+            audit_info = True
+
+        if output not in ['json']:
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
         epgs = apic_handler.get_epgs(
             epg_filter=epg_filter,
             bd_info=bd_info,
@@ -254,13 +312,39 @@ def get_aci_epg_command(
             endpoint_fabric_info=endpoint_fabric_info,
             contract_info=contract_info,
             vrf_info=vrf_info,
-            l3out_info=l3out_info
+            l3out_info=l3out_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            hfault_filter=hfault_filter,
+            event_info=event_info,
+            event_filter=event_filter,
+            audit_info=audit_info,
+            audit_filter=audit_filter
         )
 
-        ctx.busy = False
+        event = []
+        fault_record = []
+        fault_inst = []
+        audit = []
 
-        if epgs is None or len(epgs) == 0:
-            raise NoResultExit
+        for epg in epgs:
+            if 'eventLog' in epg:
+                if epg['eventLog'] is not None:
+                    event = event + epg['eventLog']
+
+            if 'faultRecord' in epg:
+                if epg['faultRecord'] is not None:
+                    fault_record = fault_record + epg['faultRecord']
+
+            if 'faultInst' in epg:
+                if epg['faultInst'] is not None:
+                    fault_inst = fault_inst + epg['faultInst']
+
+            if 'auditLog' in epg:
+                if epg['auditLog'] is not None:
+                    audit = audit + epg['auditLog']
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
@@ -274,25 +358,25 @@ def get_aci_epg_command(
 
         ctx.my_output.json_output(epgs)
 
-        if view in ['summary', 'all']:
+        if 'state' in view:
             aci_output_handler.print_epgs(
                 epgs,
                 title=True
             )
 
-        if view in ['prop', 'all']:
+        if 'prop' in view:
             aci_output_handler.print_epgs_properties(
                 epgs,
                 title=True
             )
 
-        if view in ['bd', 'all']:
+        if 'bd' in view:
             aci_output_handler.print_epgs_bridge_domain(
                 epgs,
                 title=True
             )
 
-        if view in ['ep', 'all']:
+        if 'ep' in view:
             endpoints = []
             for epg in epgs:
                 endpoints = endpoints + epg['fvCEp']
@@ -302,7 +386,7 @@ def get_aci_epg_command(
                 title=True
             )
 
-        if view in ['contract', 'all']:
+        if 'contract' in view:
             if not pivot:
                 aci_output_handler.print_epgs_contract(
                     epgs,
@@ -315,7 +399,7 @@ def get_aci_epg_command(
                     title=True
                 )
 
-        if view in ['domain', 'all']:
+        if 'domain' in view:
             if not pivot:
                 aci_output_handler.print_epgs_domain(
                     epgs,
@@ -328,7 +412,7 @@ def get_aci_epg_command(
                     title=True
                 )
 
-        if view in ['node', 'all']:
+        if 'node' in view:
             if not pivot:
                 aci_output_handler.print_epgs_node(
                     epgs,
@@ -341,19 +425,46 @@ def get_aci_epg_command(
                     title=True
                 )
 
-        if view in ['member', 'all']:
+        if 'member' in view:
             aci_output_handler.print_epgs_member(
                 epgs,
                 title=True
             )
 
-        if view in ['stport', 'all']:
+        if 'stport' in view:
             aci_output_handler.print_epgs_static_port(
                 epgs,
                 title=True
             )
 
-        if view == 'verbose':
+        if 'fault' in view:
+            aci_output_handler.print_epgs_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_epgs_fault_record(
+                fault_record,
+                when=fault_when,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_epgs_event_logs(
+                event,
+                when=fault_when,
+                title=True
+            )
+
+        if 'audit' in view:
+            aci_output_handler.print_epgs_audit_logs(
+                audit,
+                when=fault_when,
+                title=True
+            )
+
+        if 'verbose' in view:
             aci_output_handler.print_epgs(
                 epgs,
                 title=True
@@ -363,6 +474,9 @@ def get_aci_epg_command(
                 aci_output_handler.print_epg(
                     epg
                 )
+
+        if epgs is None or len(epgs) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

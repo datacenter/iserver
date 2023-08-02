@@ -1,21 +1,29 @@
-# Contract
+# Taboo Contract
 
-## Taboo Contract
+## Command options
 
-Use '--type taboo' to get taboo contracts details
-- contract name and tenant
-- subject and filters
-- details of all filters used by selected taboo contracts
-- taboo contracts usage (protected EPG)
+Filter options:
+  - [name](./ContractTabooFilterName.md)
+  - [tenant](./ContractTabooFilterTenant.md)
+
+View options:
+  - [state](./ContractTabooViewState.md)
+  - [usage](./ContractTabooViewUsage.md)
+  - [fault](./ContractTabooViewFault.md)
+  - [hfault](./ContractTabooViewFaultHistory.md)
+  - [event](./ContractTabooViewEvent.md)
+  - [audit](./ContractTabooViewAudit.md)
+  - [diag](./ContractTabooViewDiag.md)
+  - [all](./ContractTabooViewAll.md)
+
+Output options:
+  - [default](./ContractTabooOutputDefault.md)
+  - [json](./ContractTabooOutputJson.md)
+
+Command options
 
 ```
-DOC_TEMPLATE:get_aci_contract.taboo:iserver.output.default
+DOC_TEMPLATE:get_aci_contract_taboo.help:output
 ```
 
-Developer
-
-```
-DOC_TEMPLATE:get_aci_contract.taboo:devel.debug
-```
-
-[[Back]](./Contract.md)
+[[Back]](./README.md)

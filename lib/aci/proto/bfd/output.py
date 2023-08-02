@@ -3,15 +3,17 @@ class ProtocolBfdOutput():
         pass
 
     def print_proto_bfd_instances(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'BFD Instance Summary [#%s]' % (len(info)),
+                'Protocol BFD - Instance [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
         order = [
             'instance.pod_node_name',
@@ -57,15 +59,17 @@ class ProtocolBfdOutput():
         )
 
     def print_proto_bfd_sessions(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'BFD Sessions [#%s]' % (len(info)),
+                'Protocol BFD - Session [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
         order = [
             'pod_node_name',
@@ -112,15 +116,17 @@ class ProtocolBfdOutput():
         )
 
     def print_proto_bfd_sessions_stats(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'BFD Session Stats [#%s]' % (len(info)),
+                'Protocol BFD - Session Stats [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
         order = [
             'pod_node_name',
@@ -174,19 +180,20 @@ class ProtocolBfdOutput():
         if title:
             if when is None:
                 self.my_output.default(
-                    'BFD Event Logs [#%s]' % (len(info)),
+                    'Protocol BFD - Event Logs [#%s]' % (len(info)),
                     underline=True,
                     before_newline=True
                 )
             else:
                 self.my_output.default(
-                    'BFD Event Logs last %s [#%s]' % (when, len(info)),
+                    'Protocol BFD - Event Logs last %s [#%s]' % (when, len(info)),
                     underline=True,
                     before_newline=True
                 )
 
         if len(info) == 0:
-            self.my_output.default('None')
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -196,7 +203,8 @@ class ProtocolBfdOutput():
             'code',
             'cause',
             'created',
-            'descrT'
+            'descrT',
+            'affectedT'
         ]
 
         headers = [
@@ -206,14 +214,15 @@ class ProtocolBfdOutput():
             'Code',
             'Cause',
             'Created Time',
-            'Description'
+            'Description',
+            'Affected'
         ]
 
         self.my_output.my_table(
             self.my_output.expand_lists(
                 info,
                 order,
-                ['descrT']
+                ['descrT', 'affectedT']
             ),
             order=order,
             headers=headers,
@@ -226,13 +235,14 @@ class ProtocolBfdOutput():
     def print_proto_bfd_fault_inst(self, info, title=False):
         if title:
             self.my_output.default(
-                'BFD Faults [#%s]' % (len(info)),
+                'Protocol BFD - Faults [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
 
         if len(info) == 0:
-            self.my_output.default('None')
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -275,19 +285,20 @@ class ProtocolBfdOutput():
         if title:
             if when is None:
                 self.my_output.default(
-                    'BFD Fault Records [#%s]' % (len(info)),
+                    'Protocol BFD - Fault Records [#%s]' % (len(info)),
                     underline=True,
                     before_newline=True
                 )
             else:
                 self.my_output.default(
-                    'BFD Fault Records last %s [#%s]' % (when, len(info)),
+                    'Protocol BFD - Fault Records last %s [#%s]' % (when, len(info)),
                     underline=True,
                     before_newline=True
                 )
 
         if len(info) == 0:
-            self.my_output.default('None')
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -395,7 +406,7 @@ class ProtocolBfdOutput():
 
         self.my_output.dictionary(
             info,
-            title='BFD Session',
+            title='Protocol BFD - Session',
             underline=True,
             prefix="- ",
             justify=True,
@@ -449,7 +460,7 @@ class ProtocolBfdOutput():
 
         self.my_output.dictionary(
             info,
-            title='BFD Peer',
+            title='Protocol BFD - Peer',
             underline=True,
             prefix="- ",
             justify=True,
@@ -490,7 +501,7 @@ class ProtocolBfdOutput():
 
         self.my_output.dictionary(
             info,
-            title='BFD Session Stats',
+            title='Protocol BFD - Session Stats',
             underline=True,
             prefix="- ",
             justify=True,

@@ -36,7 +36,8 @@ class NoResultExit(Exception):
 @click.option("--platform", "cdp_platform", default='', callback=validations.empty_string_to_none, help="Filter by platform name")
 @click.option("--cap", "cdp_cap", default='', callback=validations.empty_string_to_none, help="Filter by capabilities")
 @click.option("--intf", "cdp_interface", default='', callback=validations.empty_string_to_none, help="Filter by interface name")
-@click.option("--view", "-v", type=click.Choice(['default', 'intf', 'instance'], case_sensitive=False), multiple=True, show_default=False)
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['nei'], help="[inst|intf|nei|event|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -54,6 +55,7 @@ def get_aci_node_proto_cdp_command(
         cdp_platform,
         cdp_cap,
         cdp_interface,
+        fault_when,
         view,
         output,
         no_cache,
@@ -65,8 +67,15 @@ def get_aci_node_proto_cdp_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|intf|nei|event|all',
+        'nei',
+        []
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -94,6 +103,8 @@ def get_aci_node_proto_cdp_command(
             raise ErrorExit
 
         cdp_filter = []
+        event_filter = []
+
         if cdp_system is not None:
             cdp_filter.append(
                 'system:%s' % (cdp_system)
@@ -114,19 +125,49 @@ def get_aci_node_proto_cdp_command(
                 'interface:%s' % (cdp_interface)
             )
 
+        if fault_when is not None:
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
+        instance_info = False
+        nei_info = False
+        interface_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+            interface_info = True
+            nei_info = True
+
+        if 'intf' in view:
+            interface_info = True
+
+        if 'nei' in view:
+            nei_info = True
+
+        if 'event' in view:
+            event_info = True
+
         instances = []
         interfaces = []
         neighbors = []
+        event = []
 
         for node_info in nodes_info:
             proto_info = apic_handler.get_protocol_cdp(
                 node_info['podId'],
                 node_info['id'],
-                cdp_filter=cdp_filter
+                cdp_filter=cdp_filter,
+                instance_info=instance_info,
+                nei_info=nei_info,
+                interface_info=interface_info,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
             if proto_info is None:
@@ -135,13 +176,25 @@ def get_aci_node_proto_cdp_command(
             instances.append(
                 proto_info
             )
-            interfaces = interfaces + proto_info['interfaces']
-            neighbors = neighbors + proto_info['neighbors']
+
+            if 'interfaces' in proto_info:
+                if proto_info['interfaces'] is not None:
+                    interfaces = interfaces + proto_info['interfaces']
+
+            if 'neighbors' in proto_info:
+                if proto_info['neighbors'] is not None:
+                    neighbors = neighbors + proto_info['neighbors']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
 
         ctx.busy = False
-
-        if len(instances) == 0:
-            raise NoResultExit
 
         if output == 'json':
             ctx.log_prompt = False
@@ -153,23 +206,34 @@ def get_aci_node_proto_cdp_command(
             )
             return
 
-        if 'default' in view:
-            ctx.my_output.json_output(neighbors)
+        ctx.my_output.json_output(instances)
+
+        if 'inst' in view:
+            aci_output_handler.print_proto_cdp_instances(
+                instances,
+                title=True
+            )
+
+        if 'nei' in view:
             aci_output_handler.print_proto_cdp_neighbors(
-                neighbors
+                neighbors,
+                title=True
             )
 
         if 'intf' in view:
-            ctx.my_output.json_output(interfaces)
             aci_output_handler.print_proto_cdp_interfaces(
-                interfaces
+                interfaces,
+                title=True
             )
 
-        if 'instance' in view:
-            ctx.my_output.json_output(instances)
-            aci_output_handler.print_proto_cdp_instances(
-                instances
+        if 'event' in view:
+            aci_output_handler.print_proto_cdp_event_logs(
+                event,
+                title=True
             )
+
+        if len(instances) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

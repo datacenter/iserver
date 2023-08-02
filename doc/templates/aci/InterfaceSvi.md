@@ -28,11 +28,12 @@ Filter options:
 View options:
   - [state](./InterfaceSviViewState.md)
   - [stats](./InterfaceSviViewStats.md)
-  - [event](./InterfaceSviViewEvent.md)
   - [fault](./InterfaceSviViewFault.md)
+  - [hfault](./InterfaceSviViewFaultHistory.md)
+  - [event](./InterfaceSviViewEvent.md)
+  - [audit](./InterfaceSviViewAudit.md)
   - [diag](./InterfaceSviViewDiag.md)
   - [all](./InterfaceSviViewAll.md)
-  - [verbose](./InterfaceSviViewVerbose.md)
 
 Output options:
   - [default](./InterfaceSviOutputDefault.md)
@@ -44,4 +45,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_svi.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

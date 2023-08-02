@@ -1,23 +1,31 @@
 # Bridge Domain (BD)
 
-Get default properties of [all](./BridgeDomainAllDefault.md) BDs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./BridgeDomainName.md)
-  - [tenant](./BridgeDomainTenant.md)
-  - [vrf](./BridgeDomainVrf.md)
-  - [epg](./BridgeDomainEpg.md)
-  - [subnet](./BridgeDomainSubnet.md)
-  - [IP address](./BridgeDomainIp.md)
-  - [l3out](./BridgeDomainL3Out.md)
+  - [name](./BridgeDomainFilterName.md)
+  - [tenant](./BridgeDomainFilterTenant.md)
+  - [vrf](./BridgeDomainFilterVrf.md)
+  - [epg](./BridgeDomainFilterEpg.md)
+  - [subnet](./BridgeDomainFilterSubnet.md)
+  - [IP address](./BridgeDomainFilterIp.md)
+  - [l3out](./BridgeDomainFilterL3Out.md)
 
 View options:
-  - [default](./BridgeDomainAllDefault.md)
-  - [l2 properties](./BridgeDomainAllL2.md)
-  - [l3 properties](./BridgeDomainAllL3.md)
-  - [mcast properties](./BridgeDomainAllMcast.md)
-  - [vrf properties](./BridgeDomainAllVrf.md)
-  - [verbose](./BridgeDomainVerbose.md)
+  - [state](./BridgeDomainViewState.md)
+  - [l2](./BridgeDomainViewL2.md)
+  - [l3](./BridgeDomainViewL3.md)
+  - [mcast](./BridgeDomainViewMcast.md)
+  - [vrf](./BridgeDomainViewVrf.md)
+  - [node](./BridgeDomainViewNode.md)
+  - [intf](./BridgeDomainViewIntf.md)
+  - [fault](./BridgeDomainViewFault.md)
+  - [hfault](./BridgeDomainViewHistoryFault.md)
+  - [event](./BridgeDomainViewEvent.md)
+  - [audit](./BridgeDomainViewAudit.md)
+  - [diag](./BridgeDomainViewDiag.md)
+  - [all](./BridgeDomainViewAll.md)
+  - [verbose](./BridgeDomainViewVerbose.md)
 
 Output options:
   - [default](./BridgeDomainAllDefault.md)

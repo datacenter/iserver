@@ -22,6 +22,14 @@ class DomainAaaInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def match_domain_aaa(self, domain_info, domain_filter):
@@ -47,6 +55,17 @@ class DomainAaaInfo():
                 if value == 'false':
                     if domain_info['name'] in keys:
                         return False
+
+            if key == 'fault':
+                if value == 'any':
+                    if not domain_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_domain_aaa',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
 
         return True
 

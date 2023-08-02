@@ -21,17 +21,22 @@ class PoolVlanInfo():
                 info[key] = managed_object[key]
 
         info['domainName'] = info['tDn']
+
+        if info['tCl'] == 'l2extDomP':
+            # "tDn": "uni/l2dom-Infra_L2dom"
+            info['domainName'] = info['tDn'].split('uni/l2dom-')[1]
+
         if info['tCl'] == 'l3extDomP':
             # "tDn": "uni/l3dom-UCSB1_L3Dom"
-            info['domainName'] = info['tDn'].split('/')[1][6:]
+            info['domainName'] = info['tDn'].split('uni/l3dom-')[1]
 
         if info['tCl'] == 'physDomP':
             # "tDn": "uni/phys-UCSB1_PhysDom"
-            info['domainName'] = info['tDn'].split('/')[1][5:]
+            info['domainName'] = info['tDn'].split('uni/phys-')[1]
 
         if info['tCl'] == 'vmmDomP':
             # "tDn": "uni/vmmp-VMware/dom-EU-SPDC-R7DC"
-            info['domainName'] = info['tDn'].split('/')[1][5:]
+            info['domainName'] = info['tDn'].split('uni/vmmp-VMware/dom-')[1]
 
         return info
 
@@ -124,6 +129,14 @@ class PoolVlanInfo():
             key=lambda i: i['domainName'].lower()
         )
 
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def match_pool_vlan(self, pool_vlan_info, pool_vlan_filter):
@@ -163,9 +176,25 @@ class PoolVlanInfo():
                 if not found:
                     return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not pool_vlan_info['isAnyFault']:
+                        return False
+
         return True
 
-    def get_pool_vlans(self, pool_vlan_filter=None, vlan_usage_info=False):
+    def get_pool_vlans(
+            self,
+            pool_vlan_filter=None,
+            vlan_usage_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_pools = self.get_pool_vlan_mo()
         if all_pools is None:
             return None
@@ -195,6 +224,31 @@ class PoolVlanInfo():
                     pool_vlan_info['vlanCount']
                 )
 
+            if fault_info:
+                pool_vlan_info['faultInst'] = self.get_pool_vlan_id_fault(
+                    pool_vlan_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                pool_vlan_info['faultRecord'] = self.get_pool_vlan_id_fault(
+                    pool_vlan_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                pool_vlan_info['eventLog'] = self.get_pool_vlan_id_event(
+                    pool_vlan_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                pool_vlan_info['auditLog'] = self.get_pool_vlan_id_audit(
+                    pool_vlan_info['name'],
+                    audit_filter=audit_filter
+                )
+
             pool_vlans.append(pool_vlan_info)
 
         pool_vlans = sorted(
@@ -209,9 +263,15 @@ class PoolVlanInfo():
 
         return pool_vlans
 
-    def get_pool_vlan(self, name, vlan_usage_info=False):
+    def get_pool_vlan(self, pool_vlan_name, vlan_usage_info=False, domain_name=None):
+        pool_vlan_filter = ['name:%s' % (pool_vlan_name)]
+        if domain_name is not None:
+            pool_vlan_filter.append(
+                'domain:%s' % (domain_name)
+            )
+
         vlans = self.get_pool_vlans(
-            pool_vlan_filter=['name:%s' % (name)],
+            pool_vlan_filter=pool_vlan_filter,
             vlan_usage_info=vlan_usage_info
         )
 

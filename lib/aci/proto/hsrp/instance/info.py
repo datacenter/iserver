@@ -22,12 +22,17 @@ class ProtocolHsrpInstanceInfo():
             info['enable'] = False
             info['__Output']['adminSt'] = 'Red'
 
-        if info['operSt'] == 'enabled':
-            info['enable'] = True
-            info['__Output']['operSt'] = 'Green'
-        else:
-            info['enable'] = False
-            info['__Output']['operSt'] = 'Red'
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 

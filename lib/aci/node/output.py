@@ -2,8 +2,17 @@ class NodeOutput():
     def __init__(self):
         pass
 
-    def print_nodes(self, nodes):
+    def print_nodes(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - State [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -48,8 +57,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_power(self, nodes):
+    def print_nodes_power(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - Power [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         power = []
@@ -102,8 +120,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_psu(self, nodes):
+    def print_nodes_psu(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - PSU [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         psu = []
@@ -150,8 +177,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_sensor(self, nodes):
+    def print_nodes_sensor(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - Sensor [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         sensor = []
@@ -196,8 +232,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_system(self, nodes):
+    def print_nodes_system(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - System [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -240,8 +285,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_temp(self, nodes):
+    def print_nodes_temp(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - Temperature [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         temp = []
@@ -284,8 +338,17 @@ class NodeOutput():
             table=True
         )
 
-    def print_nodes_intf(self, nodes):
+    def print_nodes_intf(self, nodes, title=False):
+        if title:
+            self.my_output.default(
+                'Node - Interface [#%s]' % (len(nodes)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(nodes) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []

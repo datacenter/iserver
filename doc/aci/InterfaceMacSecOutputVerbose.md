@@ -1,17 +1,17 @@
 # Node Interface - MACsec
 
-## Verbose output
+## Verbose view
 
 ```
 # iserver get aci intf macsec
-    --apic apic11
-    --node bl205-eu-spdc
+    --apic apic21
+    --node bl2205-eu-spdc
     --id eth1/28
     --view verbose
 
-Apic: apic11 (mode:online, cache:off)
+Apic: apic21 (mode:online, cache:off)
 Pod: 1
-Node: bl205-eu-spdc
+Node: bl2205-eu-spdc
 
 Interface Macsec
 ----------------
@@ -55,13 +55,13 @@ Developer
 
 ```
 # iserver get aci intf macsec
-    --apic apic11
-    --node bl205-eu-spdc
+    --apic apic21
+    --node bl2205-eu-spdc
     --id eth1/28
     --view verbose
 
 {
-    "duration": 2851,
+    "duration": 5164,
     "apic": {
         "read": true,
         "success": 9,
@@ -69,10 +69,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 8,
-        "connect_time": 398,
+        "connect_time": 686,
         "disconnect_time": 0,
-        "mo_time": 2315,
-        "total_time": 2713
+        "mo_time": 4137,
+        "total_time": 4823
     },
     "error": {
         "read": false,
@@ -92,15 +92,15 @@ Developer
 Log: apic
 ----------
 
-True	398	-	connect apic11o.emea-sp.cisco.com
-True	309	13	apic11o.emea-sp.cisco.com class fabricNode
-True	288	28	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/macsecIf
-True	291	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/l1PhysIf
-True	298	36	apic11o.emea-sp.cisco.com class topology/pod-1/node-205/ethpmPhysIf
-True	297	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsectx
-True	275	1	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/phys-[eth1/28]/dbgIfMacsecrx
-True	274	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecIfStats
-True	283	0	apic11o.emea-sp.cisco.com mo topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecCAStats
+True	686	-	connect apic21o.emea-sp.cisco.com:443
+True	404	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	404	28	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/macsecIf query rsp-subtree=children&rsp-subtree-include=health,fault-count,required
+True	1175	36	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/l1PhysIf query rsp-subtree=children&rsp-subtree-include=health,fault-count,required
+True	385	36	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/ethpmPhysIf
+True	451	1	apic21o.emea-sp.cisco.com:443 mo topology/pod-1/node-2205/sys/phys-[eth1/28]/dbgIfMacsectx
+True	387	1	apic21o.emea-sp.cisco.com:443 mo topology/pod-1/node-2205/sys/phys-[eth1/28]/dbgIfMacsecrx
+True	519	0	apic21o.emea-sp.cisco.com:443 mo topology/pod-1/node-2205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecIfStats
+True	412	0	apic21o.emea-sp.cisco.com:443 mo topology/pod-1/node-2205/sys/macsec/inst/if-[eth1/28] query query-target=children&target-subtree-class=macsecCAStats
 ```
 
 [[Back]](./InterfaceMacSec.md)

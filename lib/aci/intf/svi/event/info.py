@@ -22,10 +22,9 @@ class InterfaceSviEventInfo():
         )
 
         # "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2228224]/bd-[vxlan-15597460]/svi-[vlan33]"
-        info['vlanId'] = None
-        if len(info['affected'].split('/')) == 7:
-            if info['affected'].split('/')[6].startswith('svi-'):
-                info['vlanId'] = info['affected'].split('/')[6].split('-')[1].split('[')[1].split(']')[0]
+        info['interfaceId'] = None
+        if '/svi-[' in info['affected']:
+            info['interfaceId'] = info['affected'].split('/svi-[')[1].split(']')[0]
 
         info['descrT'] = filter_helper.get_string_chunks(
             filter_helper.sanitize_string(
@@ -92,7 +91,7 @@ class InterfaceSviEventInfo():
 
         return self.interface_svi_event[key]
 
-    def get_interface_svi_vlan_event(self, pod_id, node_id, vlan_id, event_filter=None):
+    def get_interface_svi_vlan_event(self, pod_id, node_id, interface_id, event_filter=None):
         events = []
 
         all_events = self.get_interface_svi_event(
@@ -103,8 +102,8 @@ class InterfaceSviEventInfo():
             return events
 
         for event_info in all_events:
-            if event_info['vlanId'] is not None:
-                if event_info['vlanId'] == vlan_id:
+            if event_info['interfaceId'] is not None:
+                if event_info['interfaceId'] == interface_id:
                     if not self.match_system_fault(event_info, event_filter):
                         continue
 

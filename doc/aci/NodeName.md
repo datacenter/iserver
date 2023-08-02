@@ -7,6 +7,9 @@
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - State [#2]
+-----------------
+
 +---------------------+---------+-------------+-------------+--------------+------+-----------------+-------------+----------------+
 | Node Name           | Node ID | VTEP IP     | Admin State | Fabric State | Role | Model           | Serial      | Version        |
 +---------------------+---------+-------------+-------------+--------------+------+-----------------+-------------+----------------+
@@ -21,7 +24,7 @@ Developer
 # iserver get aci node --apic apic11 --name bl*
 
 {
-    "duration": 1005,
+    "duration": 874,
     "apic": {
         "read": true,
         "success": 2,
@@ -29,10 +32,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 1,
-        "connect_time": 460,
+        "connect_time": 421,
         "disconnect_time": 0,
-        "mo_time": 368,
-        "total_time": 828
+        "mo_time": 302,
+        "total_time": 723
     },
     "error": {
         "read": false,
@@ -52,8 +55,8 @@ Developer
 Log: apic
 ----------
 
-True	460	-	connect apic11o.emea-sp.cisco.com:443
-True	368	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	421	-	connect apic11o.emea-sp.cisco.com:443
+True	302	13	apic11o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./Node.md)

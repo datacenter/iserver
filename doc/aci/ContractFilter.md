@@ -1,64 +1,54 @@
-# Contract
+# Contract Filter
 
-## Contract Filter
+## Command options
 
-Use '--type filter' to get contract filters details
-- filter name and tenant
-- properties
-    - Ethernet Type
-    - IP Protocol
-    - match only fragments
-    - stateful
-    - source range
-    - destination range
-    - TCP rules
-- filter usage (standard and taboo contracts)
+Filter options:
+  - [name](./ContractFilterFilterName.md)
+  - [tenant](./ContractFilterFilterTenant.md)
+
+View options:
+  - [state](./ContractFilterViewState.md)
+  - [usage](./ContractFilterViewUsage.md)
+  - [fault](./ContractFilterViewFault.md)
+  - [hfault](./ContractFilterViewFaultHistory.md)
+  - [event](./ContractFilterViewEvent.md)
+  - [audit](./ContractFilterViewAudit.md)
+  - [diag](./ContractFilterViewDiag.md)
+  - [all](./ContractFilterViewAll.md)
+
+Output options:
+  - [default](./ContractFilterOutputDefault.md)
+  - [json](./ContractFilterOutputJson.md)
+
+Command options
 
 ```
-# iserver get aci contract --apic apic21 --type filter --tenant k8s/*
+# iserver get aci contract filter --help
 
-Apic: apic21 (mode:online, cache:off)
+Usage: iserver.py get aci contract filter [OPTIONS]
+
+  Get aci contract
+
+Options:
+  --apic TEXT                     APIC name
+  --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
+  --username TEXT                 APIC Username
+  --password TEXT                 APIC Password
+  --name TEXT                     Filter by name
+  --tenant TEXT                   Filter by tenant
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|usage|fault|hfault|event|audit|diag|a
+                                  ll]  [default: state]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
+  --devel                         Developer output
+  --help                          Show this message and exit.
+
+Info: finished in 35 ms and logs saved in /tmp/iserver\d0849c225686
 ```
 
-Developer
-
-```
-# iserver get aci contract --apic apic21 --type filter --tenant k8s/*
-
-{
-    "duration": 944,
-    "apic": {
-        "read": true,
-        "success": 2,
-        "failed": 0,
-        "connect": 1,
-        "disconnect": 0,
-        "mo": 1,
-        "connect_time": 422,
-        "disconnect_time": 0,
-        "mo_time": 368,
-        "total_time": 790
-    },
-    "error": {
-        "read": false,
-        "lines": 0
-    },
-    "info": {
-        "read": false,
-        "lines": 0
-    },
-    "debug": {
-        "read": false,
-        "lines": 0
-    },
-    "cache_hits": 0
-}
-
-Log: apic
-----------
-
-True	422	-	connect apic21o.emea-sp.cisco.com:443
-True	368	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
-```
-
-[[Back]](./Contract.md)
+[[Back]](./README.md)

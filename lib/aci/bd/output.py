@@ -4,11 +4,12 @@ class BridgeDomainOutput():
 
     def print_bridge_domain_properties(self, info):
         order = [
+            'health',
+            'faults',
             'tenant',
             'name',
             'dn',
             'descr',
-            'health.score',
             'type',
             'fvSubnetCount',
             'fvRsCtx.nameTenant',
@@ -18,11 +19,12 @@ class BridgeDomainOutput():
         ]
 
         headers = [
+            'Health',
+            'Faults',
             'Tenant',
             'Name',
             'Dn',
             'Description',
-            'Health Score',
             'Type',
             'Subnet Count',
             'VRF',
@@ -266,15 +268,16 @@ class BridgeDomainOutput():
             )
 
     def print_bridge_domains_l2(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Bridge Domain L2 Forwarding Properties',
+                'Bridge Domain - L2 Forwarding Properties [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameTenant',
@@ -305,15 +308,16 @@ class BridgeDomainOutput():
         )
 
     def print_bridge_domains_l3(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Bridge Domain L3 Properties',
+                'Bridge Domain - L3 Forwarding Properties [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameTenant',
@@ -349,15 +353,16 @@ class BridgeDomainOutput():
         )
 
     def print_bridge_domains_mcast(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Bridge Domain Multicast Properties',
+                'Bridge Domain - Multicast Properties [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameTenant',
@@ -390,15 +395,16 @@ class BridgeDomainOutput():
         )
 
     def print_bridge_domains_vrf(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Bridge Domain VRF Properties',
+                'Bridge Domain - VRF Properties [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameTenant',
@@ -429,17 +435,20 @@ class BridgeDomainOutput():
         )
 
     def print_bridge_domains(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Bridge Domain Summary [#%s]' % (len(info)),
+                'Bridge Domain [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
 
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
+            'health',
+            'faults',
             'nameTenant',
             'pcTag',
             'seg',
@@ -451,6 +460,8 @@ class BridgeDomainOutput():
         ]
 
         headers = [
+            'Health',
+            'Faults',
             'Bridge Domain',
             'Class ID',
             'VNID',
@@ -472,6 +483,295 @@ class BridgeDomainOutput():
             allow_order_subkeys=True,
             row_separator=True,
             remove_empty_columns=False,
+            underline=True,
+            table=True
+        )
+
+    def print_bridge_domains_node(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Bridge Domain - Nodes [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'faults',
+            'nameTenant',
+            'node.name',
+            'node.interfaces'
+        ]
+
+        headers = [
+            'Faults',
+            'Bridge Domain',
+            'Node',
+            'Interfaces'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['node']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_bridge_domains_interface(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Bridge Domain - Interfaces [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'faults',
+            'nameTenant',
+            'interface.node_name',
+            'interface.intf_name'
+        ]
+
+        headers = [
+            'Faults',
+            'Bridge Domain',
+            'Node',
+            'Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['interface']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_bridge_domains_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Bridge Domain - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Bridge Domain - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Bridge Domain',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_bridge_domains_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Bridge Domain - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Bridge Domain',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_bridge_domains_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Bridge Domain - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Bridge Domain - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Bridge Domain',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_bridge_domains_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Bridge Domain - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Bridge Domain - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Bridge Domain',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )

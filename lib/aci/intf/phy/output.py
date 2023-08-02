@@ -5,11 +5,17 @@ class InterfacePhyOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_phy_state(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_state(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -18,6 +24,8 @@ class InterfacePhyOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'portName',
             'adminSt',
             'switchingSt',
@@ -40,6 +48,8 @@ class InterfacePhyOutput():
 
         headers = headers + [
             'Node',
+            'Health',
+            'Faults',
             'Interface',
             'Admin',
             'Switching',
@@ -57,7 +67,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -65,11 +75,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_ether(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_ether(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Ether Stats [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -115,7 +131,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -123,11 +139,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_err(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_err(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Errors [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -169,7 +191,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -177,11 +199,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_trans(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_trans(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Trans [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -221,7 +249,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -229,11 +257,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_vlan(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_vlan(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - VLAN [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -274,7 +308,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['epg_stats']
             ),
@@ -372,11 +406,17 @@ class InterfacePhyOutput():
 
         return info
 
-    def print_interfaces_phy_vlan_pivot(self, info):
-        if len(info) == 0:
+    def print_interfaces_phy_vlan_pivot(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - VLAN [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         info = self.get_interface_phy_vlans(
@@ -422,11 +462,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_epg(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_epg(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - EPG [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -457,7 +503,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['epg_stats']
             ),
@@ -468,11 +514,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_load(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_load(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Load [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -502,7 +554,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -510,13 +562,18 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_eee(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_eee(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - EEE [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
-            return
 
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
         order = []
         if self.is_apic:
             order = ['apic']
@@ -544,7 +601,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -552,11 +609,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_nei(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_nei(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - CDP/LLDP Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -591,7 +654,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['cdp', 'lldp']
             ),
@@ -602,11 +665,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_cdp(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_cdp(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - CDP Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -641,7 +710,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['cdp']
             ),
@@ -652,11 +721,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_lldp(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_lldp(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - LLDP Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -693,7 +768,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['cdp', 'lldp']
             ),
@@ -704,11 +779,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_policy(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_policy(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Policy [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -750,7 +831,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -758,11 +839,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_policy_group(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_policy_group(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - Policy Group [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -798,7 +885,7 @@ class InterfacePhyOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -806,18 +893,24 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_aaep(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_aaep(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - AAEP [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
         if self.is_apic:
             order = ['apic']
 
-        for item in interfaces:
+        for item in info:
             try:
                 item['infraRsDomP'] = item['policy_selector']['policy_group_info']['aaep']['infraRsDomP']
             except BaseException:
@@ -851,7 +944,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['infraRsDomP']
             ),
@@ -863,11 +956,17 @@ class InterfacePhyOutput():
             table=True
         )
 
-    def print_interfaces_phy_qos(self, interfaces, stream='default'):
-        if len(interfaces) == 0:
+    def print_interfaces_phy_qos(self, info, stream='default', title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Phy - QoS [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -912,7 +1011,7 @@ class InterfacePhyOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                interfaces,
+                info,
                 order,
                 ['qos']
             ),
@@ -922,6 +1021,221 @@ class InterfacePhyOutput():
             underline=True,
             table=True,
             stream=stream
+        )
+
+    def print_interface_phy_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Phy - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Phy - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_phy_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Phy - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_phy_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Phy - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Phy - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_phy_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Phy - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Phy - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
         )
 
     def print_interface_phy(self, port):

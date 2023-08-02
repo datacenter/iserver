@@ -133,6 +133,19 @@ class OcpVmGetInfo():
             if condition['type'] == 'AgentConnected':
                 continue
 
+            if condition['type'] == 'Provisioning':
+                continue
+
+            if condition['type'] == 'PodScheduled':
+                if condition['status'] == 'False':
+                    info['failures'].append(
+                        condition['reason']
+                    )
+                    info['failure'] = True
+                    info['failureTick'] = '\u2713'
+                    info['__Output']['failureTick'] = 'Red'
+                    continue
+
             if condition['type'] == 'Failure':
                 info['failures'].append(condition)
                 info['failure'] = True

@@ -72,7 +72,7 @@ class ProtocolIpv6RouteInfo():
                 match = False
                 if 'next_hop' in ipv6_route_info:
                     for next_hop in ipv6_route_info['next_hop']:
-                        if next_hop['addr'] == rule.split(':')[1]:
+                        if next_hop['addr'].split('/')[0] == rule.split(':')[1]:
                             match = True
 
                 if not match:
@@ -91,7 +91,7 @@ class ProtocolIpv6RouteInfo():
 
             if rule.startswith('subnet-longer:'):
                 ip_subnet_search = rule.split(':')[1]
-                if not ip_helper.is_subnet_in_subnet(ip_subnet_search, ipv6_route_info['prefix']):
+                if not ip_helper.is_subnet_in_subnet(ipv6_route_info['prefix'], ip_subnet_search):
                     return False
 
         return True
@@ -109,16 +109,28 @@ class ProtocolIpv6RouteInfo():
             )
         )
 
-        info['vrf'] = info['dn'].split('/')[5][6:]
+        info['vrf'] = info['dn'].split('/')[5][4:]
         if 'next_hop' in managed_object:
             for nh_info in managed_object['next_hop']:
                 if nh_info['if'] == 'unspecified':
                     nh_info['if'] = ''
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_ipv6_routes_info(self, pod_id, node_id, ipv6_domain_name):
-        key = '%s.%s.%s' % (pod_id, node_id, ipv6_domain_name)
+        key = '%s.%s.%s' % (pod_id, node_id, '.'.join(ipv6_domain_name.split(':')))
         if key in self.ipv6_routes:
             return self.ipv6_routes[key]
 

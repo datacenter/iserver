@@ -20,7 +20,7 @@ class ProtocolIpv6DomainApi():
             return self.ipv6_domains_mo[key]
 
         distinguished_name = 'topology/pod-%s/node-%s/sys/uribv6' % (pod_id, node_id)
-        query = 'query-target=children&target-subtree-class=uribv6Dom'
+        query = 'query-target=children&rsp-subtree-include=fault-count&target-subtree-class=uribv6Dom'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
@@ -34,8 +34,14 @@ class ProtocolIpv6DomainApi():
 
         self.ipv6_domains_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['uribv6Dom']['attributes']
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'uribv6Dom',
+                managed_object,
+                'faultCounts'
+            )
             self.ipv6_domains_mo[key].append(
-                managed_object['uribv6Dom']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

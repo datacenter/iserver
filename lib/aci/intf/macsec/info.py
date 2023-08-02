@@ -109,6 +109,18 @@ class InterfaceMacSecInfo():
         else:
             info['up'] = False
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_interfaces_macsec_info(self, pod_id, node_id):
@@ -163,9 +175,33 @@ class InterfaceMacSecInfo():
                         if not filter_helper.match_string(value, interface_info['portT']):
                             return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_macsec',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
         return True
 
-    def get_interfaces_macsec(self, pod_id, node_id, interface_filter=None, stats_info=False):
+    def get_interfaces_macsec(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            stats_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_macsec_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -211,6 +247,39 @@ class InterfaceMacSecInfo():
                     pod_id,
                     node_id,
                     interface_info['id']
+                )
+
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_macsec_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_macsec_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_macsec_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_macsec_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
                 )
 
             interfaces.append(

@@ -1,6 +1,6 @@
-# Policy Group - Access Interface VPC
+# Policy Group - Access Interface - Leaf Access PC/VPC
 
-## JSON
+## JSON output
 
 ```
 DOC_TEMPLATE:get_aci_pg_vpc.json:iserver.output.default

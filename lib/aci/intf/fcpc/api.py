@@ -23,8 +23,10 @@ class InterfaceFcPcApi():
             return self.interface_fcpc_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/pcFcAggrIf' % (pod_id, node_id)
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
-            class_name
+            class_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -37,6 +39,16 @@ class InterfaceFcPcApi():
         self.interface_fcpc_mo[key] = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['pcFcAggrIf']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'pcFcAggrIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'pcFcAggrIf',
+                managed_object,
+                'faultCounts'
+            )
             self.interface_fcpc_mo[key].append(
                 attributes
             )

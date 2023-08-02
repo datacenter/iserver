@@ -17,8 +17,10 @@ class ApplicationProfileApi():
             )
             return self.application_profile_mo
 
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_class(
-            'fvAp'
+            'fvAp',
+            query=query
         )
         if managed_objects is None:
             return None
@@ -26,6 +28,16 @@ class ApplicationProfileApi():
         self.application_profile_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['fvAp']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'fvAp',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvAp',
+                managed_object,
+                'faultCounts'
+            )
             self.application_profile_mo.append(
                 attributes
             )

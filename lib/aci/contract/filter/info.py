@@ -1,14 +1,21 @@
-import copy
-import time
-
 from lib import filter_helper
 
 
-class FilterInfo():
+class ContractFilterInfo():
     def __init__(self):
-        self.filters = None
+        self.contract_filter = None
 
-    def get_filter(self, tenant, name):
+    def get_contract_filter_count(self, tenant_name=None):
+        filter_filter = None
+        if tenant_name is not None:
+            filter_filter = ['tenant:%s' % (tenant_name)]
+
+        filters = self.get_contract_filters(
+            filter_filter=filter_filter
+        )
+        return len(filters)
+
+    def get_contract_filter(self, tenant, name):
         filter_filter = []
         filter_filter.append(
             'tenant:%s' % (tenant)
@@ -17,7 +24,7 @@ class FilterInfo():
             'name:%s' % (name)
         )
 
-        filters = self.get_filters(
+        filters = self.get_contract_filters(
             filter_filter=filter_filter
         )
 
@@ -26,7 +33,7 @@ class FilterInfo():
 
         return None
 
-    def get_filter_entry_info(self, managed_object):
+    def get_contract_filter_entry_info(self, managed_object):
         keys = [
             'applyToFrag',
             'arpOpc',
@@ -74,7 +81,7 @@ class FilterInfo():
 
         return info
 
-    def get_filter_info(self, managed_object):
+    def get_contract_filter_info(self, managed_object):
         keys = [
             'descr',
             'dn',
@@ -99,36 +106,44 @@ class FilterInfo():
         info['vzEntry'] = []
         for entry_mo in managed_object['vzEntry']:
             info['vzEntry'].append(
-                self.get_filter_entry_info(
+                self.get_contract_filter_entry_info(
                     entry_mo
                 )
             )
 
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
-    def get_filters_info(self):
-        if self.filters is None:
-            self.filters = []
+    def get_contract_filters_info(self):
+        if self.contract_filter is None:
+            self.contract_filter = []
 
-            filters = self.get_filters_mo()
+            filters = self.get_contract_filters_mo()
             if filters is not None:
                 for managed_object in filters:
-                    self.filters.append(
-                        self.get_filter_info(
+                    self.contract_filter.append(
+                        self.get_contract_filter_info(
                             managed_object
                         )
                     )
 
-        return self.filters
+        return self.contract_filter
 
-    def match_filter(self, filter_info, filter_filter):
+    def match_contract_filter(self, filter_info, filter_filter):
         if filter_filter is None or len(filter_filter) == 0:
             return True
 
         for filter_rule in filter_filter:
             (key, value) = filter_rule.split(':')
             if key == 'name':
-                if not filter_helper.match_string(value, filter_info['name']):
+                if not filter_helper.match_tenant_name(value, filter_info['nameTenant']):
                     return False
 
             if key == 'tenant':
@@ -137,13 +152,13 @@ class FilterInfo():
 
         return True
 
-    def get_filter_usage_info(self, filter_info):
+    def get_contract_filter_usage_info(self, filter_info):
         filter_filter = ['filter:%s' % (filter_info['nameTenant'])]
 
         filter_info['taboo'] = []
 
-        contracts = self.get_taboos(
-            taboo_filter=filter_filter
+        contracts = self.get_contract_filters(
+            filter_filter=filter_filter
         )
         if contracts is not None:
             for contract in contracts:
@@ -153,7 +168,7 @@ class FilterInfo():
 
         filter_info['contract'] = []
 
-        contracts = self.get_contracts(
+        contracts = self.get_standard_contracts(
             contract_filter=filter_filter
         )
         if contracts is not None:
@@ -164,21 +179,59 @@ class FilterInfo():
 
         return filter_info
 
-    def get_filters(self, filter_filter=None, usage_info=False):
-        start_time = int(time.time() * 1000)
-
-        all_filters = self.get_filters_info()
+    def get_contract_filters(
+            self,
+            filter_filter=None,
+            usage_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
+        all_filters = self.get_contract_filters_info()
         if all_filters is None:
             return None
 
         filters = []
 
         for filter_info in all_filters:
-            if not self.match_filter(filter_info, filter_filter):
+            if not self.match_contract_filter(filter_info, filter_filter):
                 continue
 
             if usage_info:
-                filter_info = self.get_filter_usage_info(filter_info)
+                filter_info = self.get_contract_filter_usage_info(filter_info)
+
+            if fault_info:
+                filter_info['faultInst'] = self.get_filter_contract_id_fault(
+                    filter_info['tenant'],
+                    filter_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                filter_info['faultRecord'] = self.get_filter_contract_id_fault(
+                    filter_info['tenant'],
+                    filter_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                filter_info['eventLog'] = self.get_filter_contract_id_event(
+                    filter_info['tenant'],
+                    filter_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                filter_info['auditLog'] = self.get_filter_contract_id_audit(
+                    filter_info['tenant'],
+                    filter_info['name'],
+                    audit_filter=audit_filter
+                )
 
             filters.append(filter_info)
 

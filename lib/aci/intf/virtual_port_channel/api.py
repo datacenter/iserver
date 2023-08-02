@@ -20,8 +20,10 @@ class InterfaceVirtualPortChannelApi():
             return self.interfaces_vpc_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/vpcDom' % (pod_id, node_id)
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
-            class_name
+            class_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -34,6 +36,22 @@ class InterfaceVirtualPortChannelApi():
         self.interfaces_vpc_mo[key] = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['vpcDom']['attributes']
+            attributes['vpcIf'] = self.get_mo_children_attributes(
+                'vpcDom',
+                managed_object,
+                'vpcIf',
+                include_grandchildren=True
+            )
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'vpcDom',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'vpcDom',
+                managed_object,
+                'faultCounts'
+            )
             self.interfaces_vpc_mo[key].append(
                 attributes
             )

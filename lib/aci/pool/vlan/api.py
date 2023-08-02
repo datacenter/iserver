@@ -37,7 +37,7 @@ class PoolVlanApi():
             )
             return self.pool_vlan_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=fvnsEncapBlk,fvnsRtVlanNs'
         managed_objects = self.get_class(
             'fvnsVlanInstP',
             query=query
@@ -54,6 +54,11 @@ class PoolVlanApi():
             )
             attributes['fvnsRtVlanNs'] = self.get_pool_vlan_domain_attributes(
                 managed_object
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvnsVlanInstP',
+                managed_object,
+                'faultCounts'
             )
             self.pool_vlan_mo.append(
                 attributes

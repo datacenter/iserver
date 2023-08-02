@@ -4,57 +4,65 @@
 
 ```
 # iserver get aci intf tun
-    --apic apic11
-    --node bl205-eu-spdc
+    --apic apic21
+    --node bl2205-eu-spdc
     --id tunnel16
-    --view verbose -o json
+    --view all -o json
 
 [
     {
         "__Output": {
             "id": "Blue",
             "adminSt": "Green",
-            "operSt": "Green"
+            "operSt": "Green",
+            "health": "Green",
+            "faults": ":R.M.Y.G"
         },
         "aclTcamStQual": "",
         "adminSt": "up",
         "cfgdMtu": "9000",
         "delInProg": "no",
-        "dest": "172.16.30.161",
-        "dn": "topology/pod-1/node-205/sys/tunnel-[tunnel16]",
+        "dest": "10.5.80.65",
+        "dn": "topology/pod-1/node-2205/sys/tunnel-[tunnel16]",
         "id": "tunnel16",
-        "idRequestorDn": "topology/pod-1/node-205/sys/bgp/inst/dom-overlay-1/db-dtep/dtep-[172.16.30.161]",
-        "iod": "121",
+        "idRequestorDn": "topology/pod-1/node-2205/sys/isis/inst-default/dom-overlay-1/lvl-l1/db-dtep/dtep-[10.5.80.65]",
+        "iod": "62",
         "keepAlvIntvl": "10",
         "keepAlvRetries": "3",
         "mac": "00:00:00:00:00:00",
         "operSt": "up",
         "operStQual": "",
-        "src": "10.3.192.64/32",
+        "src": "10.5.216.66/32",
         "tLayer": "l3",
         "tType": "ivxlan",
         "tmCfgFailedBmp": "",
         "tmCfgFailedTs": "00:00:00:00.000",
         "tmCfgState": "0",
-        "type": "dci-ucast,fabric-ext,physical",
+        "type": "physical,proxy-acast-v6",
         "underlayVrfName": "",
         "v6Src": "0.0.0.0",
         "vrfName": "overlay-1",
         "podId": "1",
-        "nodeId": "205",
-        "apic": "apic11",
-        "pod_node_name": "pod-1/bl205-eu-spdc",
-        "src_ip": "10.3.192.64",
-        "dest_ip": "172.16.30.161",
+        "nodeId": "2205",
+        "apic": "apic21",
+        "pod_node_name": "pod-1/bl2205-eu-spdc",
+        "src_ip": "10.5.216.66",
+        "dest_ip": "10.5.80.65",
         "typeT": [
-            "Fabric External",
             "Physical",
-            "dci-ucast"
+            "Proxy Anycast IPv6"
         ],
         "tunnelId": 16,
         "up": true,
-        "requestor": "bgp",
-        "dest_node": []
+        "requestor": "isis",
+        "dest_node": [],
+        "health": "100",
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
+        "faultInst": [],
+        "faultRecord": [],
+        "eventLog": [],
+        "auditLog": []
     }
 ]
 ```

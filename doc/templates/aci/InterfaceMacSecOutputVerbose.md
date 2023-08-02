@@ -1,6 +1,6 @@
 # Node Interface - MACsec
 
-## Verbose output
+## Verbose view
 
 ```
 DOC_TEMPLATE:get_aci_intf_macsec.verbose:iserver.output.default

@@ -44,7 +44,7 @@ class NoResultExit(Exception):
 @click.option("--hv", "hv_filter", default='', callback=validations.empty_string_to_none, help="Hypevisor filter")
 @click.option("--vm", "vm_filter", default='', callback=validations.empty_string_to_none, help="VM filter")
 @click.option("--xd", "xd_filter", default='', callback=validations.validate_aci_xd, help="Cross domain filter")
-@click.option("--view", "-v", type=click.Choice(['default', 'vm', 'fabric'], case_sensitive=False), multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|vm|fabric|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -80,8 +80,13 @@ def get_aci_ep_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state|vm|fabric|all',
+        'state',
+        []
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -246,9 +251,6 @@ def get_aci_ep_command(
 
         ctx.busy = False
 
-        if len(endpoints) == 0:
-            raise NoResultExit
-
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -261,7 +263,7 @@ def get_aci_ep_command(
 
         ctx.my_output.json_output(endpoints)
 
-        if 'default' in view:
+        if 'state' in view:
             aci_output_handler.print_endpoints(
                 endpoints
             )
@@ -286,6 +288,9 @@ def get_aci_ep_command(
                     ctx.my_output.error('Failed to set interface context')
                 else:
                     ctx.my_output.default('Interface context: ep')
+
+        if len(endpoints) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

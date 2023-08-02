@@ -1,27 +1,35 @@
 # Virtual Routing and Forwarding (VRF)
 
-Get default properties of [all](./VrfAllDefault.md) VRFs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./VrfName.md)
-  - [tenant](./VrfTenant.md)
-  - [pcTag](./VrfPcTag.md)
-  - [vnid](./VrfVnid.md)
-  - [bridge domain](./VrfBridgeDomain.md)
-  - [epg](./VrfEpg.md)
-  - [subnet](./VrfSubnet.md)
-  - [IP address](./VrfIp.md)
-  - [l3out](./VrfL3Out.md)
+  - [name](./VrfFilterName.md)
+  - [tenant](./VrfFilterTenant.md)
+  - [pcTag](./VrfFilterPcTag.md)
+  - [vnid](./VrfFilterVnid.md)
+  - [bridge domain](./VrfFilterBridgeDomain.md)
+  - [epg](./VrfFilterEpg.md)
+  - [subnet](./VrfFilterSubnet.md)
+  - [IP address](./VrfFilterIp.md)
+  - [l3out](./VrfFilterL3Out.md)
 
 View options:
-  - [default](./VrfAllDefault.md)
-  - [properties](./VrfAllProps.md)
-  - [verbose](./VrfVerbose.md)
-  - [route](./VrfRoute.md) output to get route table of selected VRF
+  - [state](./VrfViewState.md)
+  - [properties](./VrfViewProps.md)
+  - [route](./VrfViewRoute.md)
+  - [node](./VrfViewNode.md)
+  - [intf](./VrfViewIntf.md)
+  - [fault](./VrfViewFault.md)
+  - [hfault](./VrfViewFaultHistory.md)
+  - [event](./VrfViewEvent.md)
+  - [audit](./VrfViewAudit.md)
+  - [diag](./VrfViewDiag.md)
+  - [all](./VrfViewAll.md)
+  - [verbose](./VrfViewVerbose.md)
 
 Output options:
-  - [default](./VrfAllDefault.md)
-  - [json](./VrfJson.md)
+  - [default](./VrfOutputDefault.md)
+  - [json](./VrfOutputJson.md)
 
 Command options
 
@@ -47,14 +55,18 @@ Options:
   --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -v, --view [summary|route|prop|all|verbose]
-                                  [default: summary]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|route|prop|node|intf|fault|hfault|eve
+                                  nt|audit|diag|all|verbose]  [default: state]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 48 ms and logs saved in /tmp/iserver\8d9a5eab2a1a
+Info: finished in 30 ms and logs saved in /tmp/iserver\4b5654a395a5
 ```
 
 [[Back]](./README.md)

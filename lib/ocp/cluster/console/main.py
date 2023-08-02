@@ -1,10 +1,35 @@
 import os
 import socket
 
+from lib import ssh
+
 
 class OcpClusterConsole():
     def __init__(self):
         pass
+
+    def download_kubeadmin(self, installer_ip, installer_username, installer_password, silent=False):
+        ssh_handler = ssh.Ssh(
+            installer_ip,
+            installer_username,
+            password=installer_password
+        )
+        source = './install/auth/kubeadmin-password'
+        destination = '/tmp/kubeadmin'
+        success = ssh_handler.scp_file(
+            source,
+            destination,
+            put=False
+        )
+
+        if not success:
+            if not silent:
+                self.my_output.error('Kubeadmin download failed')
+            return None
+
+        if not silent:
+            self.my_output.default('Kubeadmin downloaded: %s => %s' % (source, destination))
+        return destination
 
     def is_kubeadmin_file(self, kubeadmin_filename):
         return os.path.isfile(kubeadmin_filename)

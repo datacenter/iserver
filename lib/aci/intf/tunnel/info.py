@@ -151,6 +151,18 @@ class InterfaceTunnelInfo():
 
         info['dest_node'] = []
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_interface_tunnel_info_resolved(self, info):
@@ -248,9 +260,33 @@ class InterfaceTunnelInfo():
                 if not ip_helper.is_ipv4_in_cidr(interface_info['src_ip'], value) and not ip_helper.is_ipv4_in_cidr(interface_info['dest'], value):
                     return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_tunnel',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
         return True
 
-    def get_interfaces_tunnel(self, pod_id, node_id, interface_filter=None, resolve=False):
+    def get_interfaces_tunnel(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            resolve=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_tunnel_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -265,6 +301,40 @@ class InterfaceTunnelInfo():
                 interface_info = self.get_interface_tunnel_info_resolved(
                     interface_info
                 )
+
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_tunnel_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_tunnel_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_tunnel_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_tunnel_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
+                )
+
             interfaces.append(
                 interface_info
             )

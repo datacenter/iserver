@@ -18,17 +18,33 @@ class DomainVmmEpgInfo():
             info['tenant'] = info['encapAllocKey'].split('/')[1][3:]
             info['appName'] = info['encapAllocKey'].split('/')[2][3:]
             info['epgName'] = info['encapAllocKey'].split('/')[3][4:]
+            info['tenantAppEpg'] = '%s/%s/%s' % (
+                info['tenant'],
+                info['appName'],
+                info['epgName']
+            )
 
         if info['allocMode'] == 'static':
             info['tenant'] = ''
             info['appName'] = ''
             info['epgName'] = ''
+            info['tenantAppEpg'] = 'static allocation'
 
         info['domainType'] = 'VMM Domain'
-        info['domainName'] = '%s/%s' % (
-            info['dn'].split('/')[1][5:],
-            info['dn'].split('/')[2][4:]
-        )
+        info['domainName'] = None
+
+        if info['domainName'] is None and 'dn' in info:
+            info['domainName'] = '%s/%s' % (
+                info['dn'].split('/')[1][5:],
+                info['dn'].split('/')[2][4:]
+            )
+
+        if info['domainName'] is None and 'idConsumerDn' in info:
+            if len(info['idConsumerDn']) > 0:
+                info['domainName'] = '%s/%s' % (
+                    info['idConsumerDn'].split('/')[1][5:],
+                    info['idConsumerDn'].split('/')[2][4:]
+                )
 
         return info
 

@@ -17,7 +17,7 @@ class DomainVmmApi():
             )
             return self.domain_vmm_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=infraRtDomP,vmmUplinkPCont,infraRsVlanNs,vmmUsrAccP,vmmCtrlrP,vmmVSwitchPolicyCont'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=infraRtDomP,vmmUplinkPCont,infraRsVlanNs,vmmUsrAccP,vmmCtrlrP,vmmVSwitchPolicyCont,aaaDomainRef,vmmEpPD'
         managed_objects = self.get_class(
             'vmmDomP',
             query=query,
@@ -40,37 +40,46 @@ class DomainVmmApi():
                 managed_object,
                 'vmmVSwitchPolicyCont'
             )
-
             attributes['vmmUsrAccP'] = self.get_mo_children_attributes(
                 'vmmDomP',
                 managed_object,
                 'vmmUsrAccP'
             )
-
             attributes['vmmUplinkPCont'] = self.get_mo_child_attributes(
                 'vmmDomP',
                 managed_object,
                 'vmmUplinkPCont'
             )
-
             attributes['infraRtDomP'] = self.get_mo_children_attributes(
                 'vmmDomP',
                 managed_object,
                 'infraRtDomP'
             )
-
             attributes['vmmCtrlrP'] = self.get_mo_children_attributes(
                 'vmmDomP',
                 managed_object,
                 'vmmCtrlrP'
             )
-
             attributes['infraRsVlanNs'] = self.get_mo_child_attributes(
                 'vmmDomP',
                 managed_object,
                 'infraRsVlanNs'
             )
-
+            attributes['aaaDomainRef'] = self.get_mo_children_attributes(
+                'vmmDomP',
+                managed_object,
+                'aaaDomainRef'
+            )
+            attributes['vmmEpPD'] = self.get_mo_children_attributes(
+                'vmmDomP',
+                managed_object,
+                'vmmEpPD'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'vmmDomP',
+                managed_object,
+                'faultCounts'
+            )
             self.domain_vmm_mo.append(
                 attributes
             )

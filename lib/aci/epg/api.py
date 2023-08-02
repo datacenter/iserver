@@ -17,7 +17,7 @@ class EpgApi():
             )
             return self.epg_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt'
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt'
         managed_objects = self.get_class(
             'fvAEPg',
             query=query
@@ -67,6 +67,16 @@ class EpgApi():
                 'fvAEPg',
                 managed_object,
                 'fvRsDomAtt'
+            )
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'fvAEPg',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'fvAEPg',
+                managed_object,
+                'faultCounts'
             )
             self.epg_mo.append(
                 attributes

@@ -23,7 +23,7 @@ class InterfaceCloudSecApi():
             return self.interface_cloudsec_mo[key]
 
         distinguished_name = 'topology/pod-%s/node-%s' % (pod_id, node_id)
-        query = 'query-target=subtree&target-subtree-class=cloudsecIf'
+        query = 'query-target=children&target-subtree-class=cloudsecIf&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
@@ -39,6 +39,16 @@ class InterfaceCloudSecApi():
         self.interface_cloudsec_mo[key] = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['cloudsecIf']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'cloudsecIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'cloudsecIf',
+                managed_object,
+                'faultCounts'
+            )
             self.interface_cloudsec_mo[key].append(
                 attributes
             )

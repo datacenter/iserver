@@ -5,7 +5,7 @@ class InterfaceSviOutput():
     def print_interfaces_svi_state(self, info, title=False):
         if title:
             self.my_output.default(
-                'Interface SVI State [#%s]' % (len(info)),
+                'Interface SVI - State [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -86,7 +86,7 @@ class InterfaceSviOutput():
     def print_interfaces_svi_counter(self, info, title=False):
         if title:
             self.my_output.default(
-                'Interface SVI Counters [#%s]' % (len(info)),
+                'Interface SVI - Counters [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -152,13 +152,13 @@ class InterfaceSviOutput():
         if title:
             if when is None:
                 self.my_output.default(
-                    'Interface SVI Event Logs [#%s]' % (len(info)),
+                    'Interface SVI - Event Logs [#%s]' % (len(info)),
                     underline=True,
                     before_newline=True
                 )
             else:
                 self.my_output.default(
-                    'Interface SVI Event Logs last %s [#%s]' % (when, len(info)),
+                    'Interface SVI - Event Logs last %s [#%s]' % (when, len(info)),
                     underline=True,
                     before_newline=True
                 )
@@ -207,7 +207,7 @@ class InterfaceSviOutput():
     def print_interface_svi_fault_inst(self, info, title=False):
         if title:
             self.my_output.default(
-                'Interface SVI Faults [#%s]' % (len(info)),
+                'Interface SVI - Faults [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -256,13 +256,13 @@ class InterfaceSviOutput():
         if title:
             if when is None:
                 self.my_output.default(
-                    'Interface SVI Fault Records [#%s]' % (len(info)),
+                    'Interface SVI - Fault Records [#%s]' % (len(info)),
                     underline=True,
                     before_newline=True
                 )
             else:
                 self.my_output.default(
-                    'Interface SVI Fault Records last %s [#%s]' % (when, len(info)),
+                    'Interface SVI - Fault Records last %s [#%s]' % (when, len(info)),
                     underline=True,
                     before_newline=True
                 )
@@ -307,125 +307,58 @@ class InterfaceSviOutput():
             table=True
         )
 
-    def print_interface_svi(self, interface, when=None):
+    def print_interface_svi_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface SVI - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface SVI - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
-            'sviIf.id',
-            'sviIf.adminSt',
-            'sviIf.operSt',
-            'sviIf.operStQual',
-            'sviIf.vlanId',
-            'sviIf.vlanT',
-            'sviIf.medium',
-            'mcastAllow',
-            'sviIf.mtu',
-            'sviIf.mac',
-            'sviIf.bw',
-            'sviIf.carDel',
-            'sviIf.delay',
-            'accEncapT',
-            'fabEncap'
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
         ]
 
         headers = [
+            'Node',
             'Interface',
-            'Admin State',
-            'Oper State',
-            'Reason',
-            'Vlan ID',
-            'Vlan Type',
-            'Medium',
-            'Multicast',
-            'MTU',
-            'MAC',
-            'Bandwidth',
-            'Carrier Delay',
-            'Delay',
-            'Access Encap',
-            'Fabric Encap'
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
         ]
 
-        self.my_output.dictionary(
-            interface,
-            title='Interface SVI',
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-        if len(interface['ipv4_info']) > 0:
-            order = [
-                'addr',
-                'operSt',
-                'operStQual',
-                'type'
-            ]
-
-            headers = [
-                'Address',
-                'Oper State',
-                'Reason',
-                'Type'
-            ]
-
-            self.my_output.my_table(
-                interface['ipv4_info'],
-                order=order,
-                headers=headers,
-                allow_order_subkeys=True,
-                remove_empty_columns=True,
-                underline=True,
-                table=True
-            )
-
-        order = [
-            'inOctets',
-            'inPackets',
-            'inMcast',
-            'inDiscards',
-            'inErrors',
-            'outOctets',
-            'outPackets',
-            'outMcast',
-            'outDiscards',
-            'outErrors'
-        ]
-
-        headers = [
-            'Input Octets',
-            'Input Unicast Packets',
-            'Input Multicast Packets',
-            'Input Discards',
-            'Input Errors',
-            'Output Octets',
-            'Output Unicast Packets',
-            'Output Multicast Packets',
-            'Output Discards',
-            'Output Errors'
-        ]
-
-        self.my_output.dictionary(
-            interface['counters'],
-            title='Interface Traffic Counters',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-        self.print_interface_svi_event_logs(
-            interface['eventLog'],
-            when=when,
-            title=True
-        )
-        self.print_interface_svi_fault_inst(
-            interface['faultInst'],
-            title=True
-        )
-        self.print_interface_svi_fault_record(
-            interface['faultRecord'],
-            when=when,
-            title=True
+            table=True
         )

@@ -5,12 +5,23 @@ class InterfaceAdjacencyLldpOutput():
     def __init__(self):
         pass
 
-    def print_lldp_adjacency_endpoints(self, info):
+    def print_lldp_adjacency_endpoints(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'LLDP Adjacency [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
             'pod_node_name',
+            'health',
+            'faults',
             'interface_id',
             'ttl',
             'sysName',
@@ -23,6 +34,8 @@ class InterfaceAdjacencyLldpOutput():
 
         headers = [
             'Node',
+            'Health',
+            'Faults',
             'Interface ID',
             'Hold Time',
             'Neighbor Device',
@@ -42,8 +55,17 @@ class InterfaceAdjacencyLldpOutput():
             table=True
         )
 
-    def print_lldp_adjacency_interface_endpoints(self, adjacency, interface):
+    def print_lldp_adjacency_interface_endpoints(self, adjacency, interface, title=False):
+        if title:
+            self.my_output.default(
+                'LLDP Adjacency - Endpoints [#%s]' % (len(interface)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(interface) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         for interface_info in interface:

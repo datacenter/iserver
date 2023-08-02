@@ -1,23 +1,31 @@
 # Bridge Domain (BD)
 
-Get default properties of [all](./BridgeDomainAllDefault.md) BDs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./BridgeDomainName.md)
-  - [tenant](./BridgeDomainTenant.md)
-  - [vrf](./BridgeDomainVrf.md)
-  - [epg](./BridgeDomainEpg.md)
-  - [subnet](./BridgeDomainSubnet.md)
-  - [IP address](./BridgeDomainIp.md)
-  - [l3out](./BridgeDomainL3Out.md)
+  - [name](./BridgeDomainFilterName.md)
+  - [tenant](./BridgeDomainFilterTenant.md)
+  - [vrf](./BridgeDomainFilterVrf.md)
+  - [epg](./BridgeDomainFilterEpg.md)
+  - [subnet](./BridgeDomainFilterSubnet.md)
+  - [IP address](./BridgeDomainFilterIp.md)
+  - [l3out](./BridgeDomainFilterL3Out.md)
 
 View options:
-  - [default](./BridgeDomainAllDefault.md)
-  - [l2 properties](./BridgeDomainAllL2.md)
-  - [l3 properties](./BridgeDomainAllL3.md)
-  - [mcast properties](./BridgeDomainAllMcast.md)
-  - [vrf properties](./BridgeDomainAllVrf.md)
-  - [verbose](./BridgeDomainVerbose.md)
+  - [state](./BridgeDomainViewState.md)
+  - [l2](./BridgeDomainViewL2.md)
+  - [l3](./BridgeDomainViewL3.md)
+  - [mcast](./BridgeDomainViewMcast.md)
+  - [vrf](./BridgeDomainViewVrf.md)
+  - [node](./BridgeDomainViewNode.md)
+  - [intf](./BridgeDomainViewIntf.md)
+  - [fault](./BridgeDomainViewFault.md)
+  - [hfault](./BridgeDomainViewHistoryFault.md)
+  - [event](./BridgeDomainViewEvent.md)
+  - [audit](./BridgeDomainViewAudit.md)
+  - [diag](./BridgeDomainViewDiag.md)
+  - [all](./BridgeDomainViewAll.md)
+  - [verbose](./BridgeDomainViewVerbose.md)
 
 Output options:
   - [default](./BridgeDomainAllDefault.md)
@@ -45,14 +53,19 @@ Options:
   --address TEXT                  Filter by subnet with IP
   --subnet TEXT                   Filter by subnet within subnet
   --l3out TEXT                    Filter by l3out name
-  -v, --view [summary|l2|l3|mcast|vrf|all|verbose]
-                                  [default: summary]
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|l2|l3|mcast|vrf|node|intf|fault|hfaul
+                                  t|event|audit|diag|all|verbose]  [default:
+                                  state]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 68 ms and logs saved in /tmp/iserver\e2831418739b
+Info: finished in 80 ms and logs saved in /tmp/iserver\f856f3fa1730
 ```
 
 [[Back]](./README.md)

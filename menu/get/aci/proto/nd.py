@@ -32,7 +32,9 @@ class NoResultExit(Exception):
 @click.option("--pod", "pod_id", default='', callback=validations.empty_string_to_none, help="Pod ID")
 @click.option("--node", "node_names", multiple=True, help="Node name patterns")
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
-@click.option("--view", "-v", type=click.Choice(['default', 'verbose'], case_sensitive=False), multiple=False, show_default=True, default='default')
+@click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['nei'], help="[inst|dom|nei|intf|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -46,6 +48,8 @@ def get_aci_node_proto_nd_command(
         pod_id,
         node_names,
         node_role,
+        fault_severity,
+        fault_when,
         view,
         output,
         no_cache,
@@ -57,6 +61,15 @@ def get_aci_node_proto_nd_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|dom|nei|intf|fault|hfault|event|diag|all',
+        'nei',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -83,52 +96,202 @@ def get_aci_node_proto_nd_command(
         if nodes_info is None:
             raise ErrorExit
 
+        hfault_filter = []
+        event_filter = []
+
+        if fault_severity != 'any':
+            hfault_filter.append(
+                'severity:%s' % (fault_severity)
+            )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        instance_info = False
+        domain_info = False
+        neighbor_info = False
+        interface_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+
+        if 'dom' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+
+        if 'nei' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+            interface_info = True
+
+        if 'intf' in view:
+            instance_info = True
+            domain_info = True
+            neighbor_info = True
+            interface_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        instances = []
+        proto_infos = []
+        instance = []
+        domain = []
+        neighbor = []
+        interface = []
+        fault_record = []
+        fault_inst = []
+        event = []
 
         for node_info in nodes_info:
-            node_instance_info = apic_handler.get_protocol_nd(
+            proto_info = apic_handler.get_protocol_nd(
                 node_info['podId'],
-                node_info['id']
+                node_info['id'],
+                instance_info=instance_info,
+                domain_info=domain_info,
+                neighbor_info=neighbor_info,
+                interface_info=interface_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
-            if node_instance_info is None:
+            if proto_info is None:
                 continue
 
-            instances.append(
-                node_instance_info
+            proto_infos.append(
+                proto_info
             )
 
-        ctx.busy = False
+            if 'instance' in proto_info:
+                if proto_info['instance'] is not None:
+                    instance.append(
+                        proto_info['instance']
+                    )
 
-        if len(instances) == 0:
-            raise NoResultExit
+            if 'domain' in proto_info:
+                if proto_info['domain'] is not None:
+                    domain = domain + proto_info['domain']
+
+            if 'interface' in proto_info:
+                if proto_info['interface'] is not None:
+                    interface = interface + proto_info['interface']
+
+            if 'neighbor' in proto_info:
+                if proto_info['neighbor'] is not None:
+                    neighbor = neighbor + proto_info['neighbor']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+            if 'faultRecord' in proto_info:
+                if proto_info['faultRecord'] is not None:
+                    fault_record = fault_record + proto_info['faultRecord']
+
+            if 'faultInst' in proto_info:
+                if proto_info['faultInst'] is not None:
+                    fault_inst = fault_inst + proto_info['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
+
+        ctx.busy = False
 
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
                 json.dumps(
-                    instances,
+                    proto_infos,
                     indent=4
                 )
             )
             return
 
-        ctx.my_output.json_output(instances)
+        ctx.my_output.json_output(proto_infos)
 
-        if view == 'default':
+        if 'inst' in view:
             aci_output_handler.print_proto_nd_instances(
-                instances
+                instance,
+                title=True
             )
 
-        if view == 'verbose':
-            for instance in instances:
-                aci_output_handler.print_proto_nd(
-                    instance
-                )
+        if 'dom' in view:
+            aci_output_handler.print_proto_nd_domains(
+                domain,
+                title=True
+            )
+
+        if 'nei' in view:
+            aci_output_handler.print_proto_nd_neighbors(
+                neighbor,
+                title=True
+            )
+
+        if 'intf' in view:
+            aci_output_handler.print_proto_nd_interfaces(
+                interface,
+                title=True
+            )
+
+            aci_output_handler.print_proto_nd_interface_stats(
+                interface,
+                title=True
+            )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_nd_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_nd_fault_record(
+                fault_record,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_nd_event_logs(
+                event,
+                title=True
+            )
+
+        if len(proto_infos) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

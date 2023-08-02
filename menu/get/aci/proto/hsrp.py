@@ -34,7 +34,8 @@ class NoResultExit(Exception):
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
 @click.option("--vrf", "hsrp_vrf", default='', callback=validations.empty_string_to_none, help="Filter by VRF name")
 @click.option("--id", "hsrp_neighbor", default='', callback=validations.empty_string_to_none, help="Filter by neighbor")
-@click.option("--view", "-v", type=click.Choice(['default', 'vrf', 'intf'], case_sensitive=False), multiple=True, show_default=False)
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['inst'], help="[inst|dom|intf|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -50,6 +51,7 @@ def get_aci_node_proto_hsrp_command(
         node_role,
         hsrp_vrf,
         hsrp_neighbor,
+        fault_when,
         view,
         output,
         no_cache,
@@ -61,8 +63,15 @@ def get_aci_node_proto_hsrp_command(
 
     ctx.developer = devel
     ctx.output = output
-    if len(view) == 0:
-        view = ['default']
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|dom|intf|fault|hfault|event|diag|all',
+        'inst',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -90,6 +99,9 @@ def get_aci_node_proto_hsrp_command(
             raise ErrorExit
 
         hsrp_filter = []
+        hfault_filter = []
+        event_filter = []
+
         if hsrp_neighbor is not None:
             hsrp_filter.append(
                 'id:%s' % (hsrp_neighbor)
@@ -100,19 +112,65 @@ def get_aci_node_proto_hsrp_command(
                 'vrf:%s' % (hsrp_vrf)
             )
 
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
+        instance_info = False
+        domain_info = False
+        interface_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+            domain_info = True
+            interface_info = True
+
+        if 'dom' in view:
+            domain_info = True
+
+        if 'intf' in view:
+            interface_info = True
+
+        if 'fault' in view:
+            fault_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+
+        if 'event' in view:
+            event_info = True
+
         instances = []
         interfaces = []
         domains = []
+        fault_inst = []
+        fault_record = []
+        event = []
 
         for node_info in nodes_info:
             proto_info = apic_handler.get_protocol_hsrp(
                 node_info['podId'],
                 node_info['id'],
-                hsrp_filter=hsrp_filter
+                hsrp_filter=hsrp_filter,
+                instance_info=instance_info,
+                domain_info=domain_info,
+                interface_info=interface_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
             if proto_info is None:
@@ -121,13 +179,43 @@ def get_aci_node_proto_hsrp_command(
             instances.append(
                 proto_info
             )
-            interfaces = interfaces + proto_info['interfaces']
-            domains = domains + proto_info['domains']
+
+            if 'interfaces' in proto_info:
+                if proto_info['interfaces'] is not None:
+                    interfaces = interfaces + proto_info['interfaces']
+
+            if 'domains' in proto_info:
+                if proto_info['domains'] is not None:
+                    domains = domains + proto_info['domains']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+            if 'faultRecord' in proto_info:
+                if proto_info['faultRecord'] is not None:
+                    fault_record = fault_record + proto_info['faultRecord']
+
+            if 'faultInst' in proto_info:
+                if proto_info['faultInst'] is not None:
+                    fault_inst = fault_inst + proto_info['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
 
         ctx.busy = False
-
-        if len(instances) == 0:
-            raise NoResultExit
 
         if output == 'json':
             ctx.log_prompt = False
@@ -139,23 +227,46 @@ def get_aci_node_proto_hsrp_command(
             )
             return
 
-        if 'default' in view:
-            ctx.my_output.json_output(instances)
+        ctx.my_output.json_output(instances)
+
+        if 'inst' in view:
             aci_output_handler.print_proto_hsrp_instances(
-                instances
+                instances,
+                title=True
             )
 
-        if 'vrf' in view:
-            ctx.my_output.json_output(domains)
+        if 'dom' in view:
             aci_output_handler.print_proto_hsrp_domains(
-                domains
+                domains,
+                title=True
             )
 
         if 'intf' in view:
-            ctx.my_output.json_output(interfaces)
             aci_output_handler.print_proto_hsrp_interfaces(
-                interfaces
+                interfaces,
+                title=True
             )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_hsrp_event_logs(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_hsrp_event_logs(
+                fault_record,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_hsrp_event_logs(
+                event,
+                title=True
+            )
+
+        if len(instances) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

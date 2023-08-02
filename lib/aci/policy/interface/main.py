@@ -125,9 +125,14 @@ class PolicyInterface(
 
         for key in keys:
             info[key] = None
-            if key in managed_object:
+            if managed_object is not None and key in managed_object:
                 info[key] = managed_object[key]
 
-        info['name'] = '-'.join(info['tRn'].split('-')[1:])
+        info['name'] = '--'
+        if managed_object is not None:
+            if managed_object['tType'] == 'name':
+                info['name'] = '-'.join(info['tRn'].split('-')[1:])
+            if managed_object['tType'] == 'mo':
+                info['name'] = '-'.join(info['tDn'].split('-')[1:])
 
         return info

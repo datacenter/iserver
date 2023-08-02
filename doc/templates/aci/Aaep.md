@@ -1,12 +1,25 @@
 # Attachable Access Entity Profile (AAEP)
 
-Get default properties of [all](./AaepAllDefault.md) AAEPs in selected APIC.
+## Command options
 
 Filter options:
-  - [name](./AaepName.md)
+  - [name](./AaepFilterName.md)
+
+View options:
+  - [state](./ProtocolAaepViewState.md)
+  - [epg](./ProtocolAaepViewEpg.md)
+  - [node](./ProtocolAaepViewNode.md)
+  - [intf](./ProtocolAaepViewInterface.md)
+  - [pol](./ProtocolAaepViewPolicy.md)
+  - [fault](./ProtocolAaepViewFault.md)
+  - [hfault](./ProtocolAaepViewFaultHistory.md)
+  - [event](./ProtocolAaepViewEvent.md)
+  - [audit](./ProtocolAaepViewAudit.md)
+  - [diag](./ProtocolAaepViewDiag.md)
+  - [all](./ProtocolAaepViewAll.md)
 
 Output options:
-  - [default](./AaepAllDefault.md)
+  - [default](./AaepOutputDefault.md)
   - [json](./AaepOutputJson.md)
 
 Command options

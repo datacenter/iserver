@@ -330,22 +330,20 @@ class EpgInfo():
 
         return info
 
-    def add_epg_fault_info(self, info):
-        info['faultInst'] = self.get_system_faults(
-            system_fault_filter=['epg:%s' % (info['nameApTenant'])]
-        )
-        info['faultCount'] = len(info['faultInst'])
-        info['faultSeverity'] = self.get_system_faults_max_severity(
-            info['faultInst']
-        )
-        info['faultColor'] = self.get_system_faults_severity_color(
-            info['faultSeverity']
-        )
+    def get_epg_name_from_dn(self, epg_dn):
+        # [0]: uni/tn-{name}/ap-{name}/epg-{name}
+        if len(epg_dn) == 0:
+            return ''
 
-        if info['faultColor'] is not None:
-            info['__Output']['faultCount'] = info['faultColor']
-
-        return info
+        tenant = epg_dn.split('/')[1][3:]
+        application_profile = epg_dn.split('/')[2][3:]
+        name = epg_dn.split('/')[3][4:]
+        epg_name = '%s/%s/%s' % (
+            tenant,
+            application_profile,
+            name
+        )
+        return epg_name
 
     def get_epg_info(self, managed_object):
         keys = [
@@ -444,6 +442,18 @@ class EpgInfo():
         )
         if info is None:
             return None
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -732,7 +742,14 @@ class EpgInfo():
             contract_info=False,
             vrf_info=False,
             l3out_info=False,
-            fault_info=False
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
             ):
         all_epgs = self.get_epgs_info()
         if all_epgs is None:
@@ -743,11 +760,6 @@ class EpgInfo():
         for epg_info in all_epgs:
             if not self.match_epg(epg_info, epg_filter):
                 continue
-
-            if fault_info:
-                epg_info = self.add_epg_fault_info(
-                    epg_info
-                )
 
             if ifconn_info:
                 epg_info['ifconn'] = self.get_epg_ifconn(
@@ -883,6 +895,51 @@ class EpgInfo():
 
                 if not self.match_epg(epg_info, epg_filter):
                     continue
+
+            if node_info:
+                ap_node_info = self.get_bridge_domain_node(
+                    epg_info['tenant'],
+                    epg_info['application_profile'],
+                    epg_info['name']
+                )
+                epg_info['node'] = None
+                epg_info['interface'] = None
+                if ap_node_info is not None:
+                    epg_info['node'] = ap_node_info['node']
+                    epg_info['interface'] = ap_node_info['interface']
+
+            if fault_info:
+                epg_info['faultInst'] = self.get_epg_id_fault(
+                    epg_info['tenant'],
+                    epg_info['application_profile'],
+                    epg_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                epg_info['faultRecord'] = self.get_epg_id_fault(
+                    epg_info['tenant'],
+                    epg_info['application_profile'],
+                    epg_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                epg_info['eventLog'] = self.get_epg_id_event(
+                    epg_info['tenant'],
+                    epg_info['application_profile'],
+                    epg_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                epg_info['auditLog'] = self.get_epg_id_audit(
+                    epg_info['tenant'],
+                    epg_info['application_profile'],
+                    epg_info['name'],
+                    audit_filter=audit_filter
+                )
 
             epgs.append(epg_info)
 

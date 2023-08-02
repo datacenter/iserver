@@ -1,21 +1,20 @@
-# Node Interface
+# Node Interface - Management
 
-## Management
-
-Node selection options:
-  - [single node](./InterfaceMgmtNode.md)
-  - [selected nodes](./InterfaceMgmtNodes.md)
-  - [all nodes](./InterfaceMgmtNodesAll.md)
-  - [multi APIC](./InterfaceMgmtNodesApics.md)
+## Command options
 
 View options:
-  - [default](./InterfaceMgmtOutputState.md)
-  - [address](./InterfaceMgmtOutputAddress.md)
-  - [neighbor](./InterfaceMgmtOutputNeighbor.md)
-  - [verbose](./InterfaceMgmtOutputVerbose.md)
+  - [state](./InterfaceMgmtViewState.md)
+  - [addr](./InterfaceMgmtViewAddr.md)
+  - [nei](./InterfaceMgmtViewNei.md)
+  - [fault](./InterfaceMgmtViewFault.md)
+  - [hfault](./InterfaceMgmtViewFaultHistory.md)
+  - [event](./InterfaceMgmtViewEvent.md)
+  - [audit](./InterfaceMgmtViewAudit.md)
+  - [diag](./InterfaceMgmtViewDiag.md)
+  - [all](./InterfaceMgmtViewAll.md)
 
 Output options:
-  - [default](./InterfaceMgmtOutputState.md)
+  - [default](./InterfaceMgmtOutputDefault.md)
   - [json](./InterfaceMgmtOutputJson.md)
 
 Command options
@@ -24,4 +23,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_mgmt.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

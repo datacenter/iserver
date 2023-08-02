@@ -1,0 +1,1092 @@
+# Node Interface - Tunnel
+
+## Fault history view
+
+```
+# iserver get aci intf tun
+    --apic apic21
+    --when any
+    --node bl2205-eu-spdc
+    --view hfault
+
+Apic: apic21 (mode:online, cache:off)
+Pod: 1
+Node: bl2205-eu-spdc
+
+Interface Loopback - Fault Records last 10y [#1000]
+---------------------------------------------------
+
++----------------------+-----------+-----+-------+-----------------------+-------------------------------+------------------+-------------------------------------------------------------------------------+
+| Node                 | Interface | Sev | Code  | Cause                 | Created Time                  | Lifecycle        | Description                                                                   |
++----------------------+-----------+-----+-------+-----------------------+-------------------------------+------------------+-------------------------------------------------------------------------------+
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-15T16:51:15.804+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2021-10-15T16:53:24.429+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2021-10-15T17:53:25.040+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:03.792+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:03.779+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:03.804+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:11.815+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:11.805+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-21T11:24:11.825+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2021-10-21T11:26:20.754+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2021-10-21T11:26:20.754+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2021-10-21T11:26:20.755+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2021-10-21T12:26:21.292+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2021-10-21T12:26:21.291+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2021-10-21T12:26:21.292+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:43:04.287+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:43:04.271+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:43:04.302+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:45:23.088+02:00 | raised           | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:45:23.087+02:00 | raised           | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:45:23.088+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2021-10-21T15:59:53.533+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:00:41.168+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:01:48.315+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel14 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:42.963+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:43.639+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:43.667+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:45.365+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:45.375+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2021-10-21T16:14:45.385+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-10-21T16:16:53.531+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2021-10-21T16:16:53.532+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2021-10-21T16:16:53.533+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:09:51.687+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:15.993+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.067+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.028+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.082+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.041+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.054+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.005+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:10:16.104+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.332+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.262+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.358+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.281+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.303+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.157+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.217+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:18.372+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:11:54.020+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.027+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.026+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.028+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.026+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.027+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.024+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.025+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-10-21T17:13:24.029+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-10-21T17:16:54.066+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2021-10-21T17:16:54.066+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2021-10-21T17:24:56.017+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.587+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.586+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.588+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.586+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.587+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.584+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.585+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:13:24.588+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:55.969+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:55.982+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:55.995+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:55.929+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:55.942+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:56.009+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:56.023+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:20:56.036+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.994+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.946+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.962+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.975+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.901+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:48.917+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:49.007+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:21:49.027+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.693+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.692+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.694+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.692+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.693+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.690+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.691+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:23:54.695+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:29:47.817+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-10-21T18:30:14.336+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-10-21T18:32:24.759+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.420+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.418+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.421+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.419+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.419+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.416+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.417+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-10-21T19:23:55.422+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-10-21T19:32:25.490+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-26T12:56:56.146+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-26T15:11:44.388+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-27T09:47:41.498+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-10-27T09:49:56.943+02:00 | raised           | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-10-27T11:41:56.494+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-10-27T12:58:28.932+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-10-27T13:15:29.091+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-09T13:36:36.265+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-09T13:37:11.969+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-09T13:38:11.531+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-09T13:38:47.189+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-11-09T13:40:49.822+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2021-11-09T14:40:50.351+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-10T05:32:14.596+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-10T05:34:30.483+02:00 | raised           | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-11-15T14:13:37.967+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-11-15T14:15:56.498+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2021-11-15T14:29:46.016+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:23:10.885+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:23:10.853+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:23:10.870+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:25:27.119+02:00 | raised           | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:25:27.118+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:25:27.118+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:36:11.180+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:38:44.275+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2021-11-15T15:40:19.360+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:10:20.547+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:10:22.242+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:11:14.405+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:11:16.217+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:12:41.628+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:12:43.448+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2021-11-16T19:12:51.965+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2021-11-16T19:13:21.969+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2021-11-16T19:14:51.987+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:15:57.197+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2021-11-16T19:16:55.061+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2021-11-16T19:19:22.025+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2021-11-16T20:08:49.024+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2021-11-16T20:08:50.914+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2021-11-16T20:10:52.560+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2021-11-16T20:12:52.583+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2021-11-16T20:13:22.583+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2021-11-16T20:19:22.638+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2021-11-16T20:46:35.089+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2021-11-16T20:48:52.904+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2021-11-16T20:56:53.143+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2021-11-16T20:59:22.989+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2021-11-16T21:10:53.089+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2021-11-16T21:59:23.525+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-19T13:13:25.710+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-19T13:15:35.716+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-11-19T13:15:35.469+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-19T13:18:05.486+02:00 | raised           | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2021-11-19T18:27:19.319+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-11-19T18:29:38.938+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2021-11-19T19:29:39.745+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:36:38.928+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:36:38.941+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:36:38.962+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:36:39.125+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:36:39.136+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-12-10T01:38:58.502+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-12-10T01:38:58.504+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:38:58.505+02:00 | raised           | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:48:35.292+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-12-10T01:50:58.618+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:59:19.764+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:59:19.564+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:59:19.776+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:59:19.579+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2021-12-10T01:59:19.607+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-12-10T02:01:28.699+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-12-10T02:01:28.700+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2021-12-10T02:01:28.701+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2021-12-10T02:11:03.108+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2021-12-10T02:13:28.799+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2021-12-10T02:50:59.299+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2021-12-10T03:01:29.383+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2021-12-10T03:01:29.384+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2021-12-10T03:13:29.491+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2021-12-17T12:56:40.559+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2021-12-17T12:58:48.054+02:00 | raised           | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2021-12-17T13:06:24.238+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2021-12-17T13:08:48.139+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2021-12-17T14:08:49.635+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2022-01-13T14:26:21.630+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2022-01-13T14:57:22.185+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:51:23.471+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:51:24.195+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:51:59.339+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:53:24.410+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:53:24.409+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:54:10.333+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:54:24.419+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-01-13T18:56:24.437+02:00 | raised           | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:02:34.809+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:05:13.076+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:05:16.695+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:05:19.880+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:05:24.594+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-01-13T19:06:11.691+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-01-13T19:07:24.540+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-01-13T19:07:24.542+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-01-13T19:07:54.553+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-01-13T19:08:24.548+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-01-13T20:07:25.291+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-01-13T20:07:25.292+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-01-13T20:07:55.313+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-01-13T20:08:25.299+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:43:35.963+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:43:35.979+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:43:36.172+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel11 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:43:36.182+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:43:36.009+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.455+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.495+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.533+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.583+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.623+02:00 | soaking          | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.651+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:57.734+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.667+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.674+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.680+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.639+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.653+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:57:59.625+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:58:43.191+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-13T23:59:50.778+02:00 |                  | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:18.390+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:18.392+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:18.393+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:18.393+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:18.395+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-01-14T00:00:48.651+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:19.255+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:19.257+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:19.258+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:19.258+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:19.260+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-01-14T01:00:49.259+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-26T14:59:22.189+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-26T15:01:26.137+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-01-26T15:07:26.203+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-26T15:22:29.772+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-01-26T15:24:56.337+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-01-26T15:42:56.655+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-01-26T16:24:57.015+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.061+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.240+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.000+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.252+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.033+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.264+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:28.047+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:29:35.476+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:31:09.510+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:31:41.984+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:31:41.984+02:00 | raised           | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-01-27T16:31:41.981+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-01-27T16:31:41.983+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-01-27T16:31:41.983+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.366+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.400+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.441+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.482+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.517+02:00 | soaking          | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.540+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:00.645+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.683+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.689+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.664+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.702+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.658+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.671+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:45:02.645+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-01-27T16:46:45.335+02:00 |                  | Tunnel destination to ip: 10.5.192.65 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.722+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.723+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.724+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.725+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.726+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-01-27T16:47:15.727+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:37:54.397+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:40:17.386+02:00 | raised           | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-01-27T17:47:17.439+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-01-27T17:47:17.440+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-27T17:47:17.442+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-27T17:47:17.442+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-01-27T17:47:17.444+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:31.682+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.972+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.795+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.987+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.809+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.997+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:56.820+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:49:59.935+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-01-27T17:51:47.486+02:00 | retaining        | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:52:10.821+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:52:17.487+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-01-27T17:52:17.484+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-01-27T17:52:17.486+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-01-27T17:52:17.486+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-27T17:54:17.509+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-01-27T18:03:18.167+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-01-27T18:05:24.011+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-27T18:05:47.607+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-27T18:07:47.627+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-01-27T18:51:47.997+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-01-27T18:52:18.006+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-01-27T18:52:18.007+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-01-27T18:52:18.008+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-01-27T19:05:48.123+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-01-27T19:07:48.144+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:17:13.298+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:19:22.288+02:00 | raised           | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:33:10.761+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-02-02T11:35:22.676+02:00 | retaining        | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:39:14.414+02:00 | soaking          | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:41:22.716+02:00 | raised           | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-02-02T11:54:35.794+02:00 |                  | Tunnel destination to ip: 10.5.240.33 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-02-02T20:19:42.452+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-02-02T20:20:50.918+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-02-02T20:22:58.734+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-02-02T20:24:49.986+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-02-02T20:24:52.392+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-02-02T20:26:58.766+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-02-02T21:22:59.573+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-02-02T21:26:59.604+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-02-03T10:27:18.226+02:00 | soaking          | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-02-03T10:29:37.832+02:00 | raised           | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-02-03T10:45:12.807+02:00 |                  | Tunnel destination to ip: 10.5.240.32 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-02-03T11:13:33.193+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-02-03T11:13:35.246+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-02-03T11:15:38.306+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-02-03T12:15:38.875+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-02-03T15:54:02.880+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-02-03T15:54:04.481+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.98 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2022-02-03T15:56:11.280+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-02-03T16:01:43.114+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-02-03T16:02:42.286+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-02-03T16:05:11.353+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2022-02-03T16:56:11.806+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel19 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-02-03T17:05:11.893+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-02-05T01:04:33.562+02:00 | soaking          | Tunnel destination to ip: 172.16.21.1/32 for tunnel20 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-02-05T01:04:34.505+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.21.1/32 for tunnel20 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2022-02-05T01:06:36.566+02:00 | retaining        | Tunnel destination to ip: 172.16.21.1/32 for tunnel20 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2022-02-05T02:06:37.075+02:00 |                  | Tunnel destination to ip: 172.16.21.1/32 for tunnel20 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2022-04-01T15:09:50.895+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2022-04-01T15:09:55.909+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2022-04-01T15:12:07.705+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2022-04-01T16:12:08.234+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-21T20:21:53.503+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-21T20:24:05.993+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-04-21T20:25:35.997+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-21T20:38:20.766+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-04-21T20:40:36.132+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-04-21T21:04:36.332+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-04-21T21:40:36.696+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:25:13.805+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:27:21.081+02:00 | raised           | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:35:30.091+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.055+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.205+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.020+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.216+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.034+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.230+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:37:09.045+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-04-22T15:37:51.166+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel17 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:39:21.176+02:00 | raised           | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-04-22T15:39:21.173+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-04-22T15:39:21.175+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-04-22T15:39:21.175+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.192+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.185+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.531+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.593+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.622+02:00 | soaking          | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.642+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:26.739+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.928+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.950+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.960+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.935+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.916+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.941+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T15:53:28.909+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.617+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.616+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.617+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.618+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.619+02:00 | retaining        | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.619+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-04-22T15:55:50.621+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.940+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.939+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.941+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.942+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.942+02:00 |                  | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.943+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-04-22T16:55:51.944+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:29:45.423+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:31:53.351+02:00 | raised           | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.821+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.419+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.588+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.386+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.601+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.399+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.611+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:32:25.409+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:34:45.394+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:34:53.384+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:34:53.384+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-04-22T19:34:53.381+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-04-22T19:34:53.383+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-04-22T19:34:53.383+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:36:53.402+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:40:06.632+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-04-22T19:42:23.451+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:46:40.021+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:46:57.961+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-04-22T19:48:48.478+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-04-22T19:48:53.511+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-04-22T19:49:23.516+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-04-22T19:50:53.532+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-04-22T20:34:54.083+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-04-22T20:34:54.084+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-04-22T20:34:54.085+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-04-22T20:42:24.156+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-04-22T20:48:54.216+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-04-22T20:49:24.220+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-04-22T20:50:54.232+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-05-09T20:01:33.035+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-05-09T20:03:52.606+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-05-09T20:12:10.561+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-05-09T20:12:21.909+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-05-09T20:12:23.473+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-05-09T20:14:52.708+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-05-09T21:14:53.554+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.593+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.406+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.604+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.419+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.613+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T22:47:02.431+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-05-09T22:49:25.228+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-05-09T22:49:25.230+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-05-09T22:49:25.231+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.727+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.917+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.694+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.927+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.705+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.936+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:20:17.716+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:22:25.523+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:22:25.520+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:22:25.522+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:22:25.522+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:31:48.368+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F3425 | src-down              | 2022-05-09T23:40:21.997+02:00 | soaking          | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F3425 | src-down              | 2022-05-09T23:40:21.959+02:00 | soaking          | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F3425 | src-down              | 2022-05-09T23:40:21.979+02:00 | soaking          | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F3425 | src-down              | 2022-05-09T23:40:22.012+02:00 | soaking          | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F3425 | src-down              | 2022-05-09T23:40:22.028+02:00 | soaking          | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F3425 | src-down              | 2022-05-09T23:40:42.562+02:00 | soaking-clearing | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:40:42.560+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F3425 | src-down              | 2022-05-09T23:40:42.571+02:00 | soaking-clearing | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:40:42.568+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F3425 | src-down              | 2022-05-09T23:40:42.580+02:00 | soaking-clearing | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:40:42.577+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F3425 | src-down              | 2022-05-09T23:40:42.589+02:00 | soaking-clearing | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:40:42.586+02:00 | soaking          | Tunnel destination to ip: 172.16.21.1/32 for tunnel17 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F3425 | src-down              | 2022-05-09T23:40:42.598+02:00 | soaking-clearing | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:40:42.595+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F3425 | src-down              | 2022-05-09T23:43:11.175+02:00 | retaining        | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:43:11.168+02:00 | raised           | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F3425 | src-down              | 2022-05-09T23:43:11.175+02:00 | retaining        | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:43:11.169+02:00 | raised           | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F3425 | src-down              | 2022-05-09T23:43:11.176+02:00 | retaining        | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:43:11.169+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:43:11.182+02:00 | raised           | Tunnel destination to ip: 172.16.21.1/32 for tunnel17 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F3425 | src-down              | 2022-05-09T23:43:11.174+02:00 | retaining        | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:43:11.182+02:00 | raised           | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F3425 | src-down              | 2022-05-09T23:43:11.174+02:00 | retaining        | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.706+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.717+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.773+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.878+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.928+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel25 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:57.983+02:00 | soaking          | Tunnel destination to ip: 10.5.80.64 for tunnel26 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:58.011+02:00 | soaking          | Tunnel destination to ip: 10.5.80.66 for tunnel27 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:44:58.035+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel28 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.166+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.176+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.184+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.306+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.21.1/32 for tunnel17 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.297+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.254+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.280+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.288+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.271+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.219+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel25 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.193+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.64 for tunnel26 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.210+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.66 for tunnel27 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-05-09T23:45:00.228+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.97 for tunnel28 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.258+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.260+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.260+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.263+02:00 | retaining        | Tunnel destination to ip: 172.16.21.1/32 for tunnel17 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.264+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.265+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.266+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.266+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.268+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.269+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel25 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.269+02:00 | retaining        | Tunnel destination to ip: 10.5.80.64 for tunnel26 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.270+02:00 | retaining        | Tunnel destination to ip: 10.5.80.66 for tunnel27 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-05-09T23:47:11.271+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel28 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F3425 | src-down              | 2022-05-10T00:43:11.834+02:00 |                  | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F3425 | src-down              | 2022-05-10T00:43:11.835+02:00 |                  | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F3425 | src-down              | 2022-05-10T00:43:11.835+02:00 |                  | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F3425 | src-down              | 2022-05-10T00:43:11.833+02:00 |                  | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F3425 | src-down              | 2022-05-10T00:43:11.833+02:00 |                  | Tunnel source is down, src ip: 10.5.216.66/32, operational stater qualifier:  | 
+|                      |           |     |       |                       |                               |                  | Tunnel source down.                                                           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.862+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.863+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.864+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.867+02:00 |                  | Tunnel destination to ip: 172.16.21.1/32 for tunnel17 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.867+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.868+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.869+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.869+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel24  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.870+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel24 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.871+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel25 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.872+02:00 |                  | Tunnel destination to ip: 10.5.80.64 for tunnel26 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.872+02:00 |                  | Tunnel destination to ip: 10.5.80.66 for tunnel27 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-05-10T00:47:11.873+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel28 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-06-08T18:25:04.817+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-06-08T18:27:21.743+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-06-13T12:11:06.033+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-06-13T12:11:10.158+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-06-13T12:12:45.948+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2022-06-13T12:12:45.904+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.738+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.740+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.740+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.742+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.742+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-06-13T12:13:28.743+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-06-13T12:14:58.774+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.348+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.349+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.350+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.351+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.351+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-06-13T13:13:29.352+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2022-06-13T13:14:59.370+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-06-21T12:36:56.906+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-06-21T12:37:23.111+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-06-21T12:39:38.569+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-06-21T13:39:39.243+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel16 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:21:32.907+02:00 | soaking          | Tunnel destination to ip: 172.16.70.209 for tunnel28 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:21:40.179+02:00 | soaking          | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:23:57.046+02:00 | raised           | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:23:57.045+02:00 | raised           | Tunnel destination to ip: 172.16.70.209 for tunnel28 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:30:28.992+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.70.209 for tunnel28 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-07-26T16:30:46.055+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-07-26T16:32:57.131+02:00 | retaining        | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-07-26T16:32:57.129+02:00 | retaining        | Tunnel destination to ip: 172.16.70.209 for tunnel28 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2022-07-26T16:50:30.226+02:00 |                  | Tunnel destination to ip: 172.16.70.209 for tunnel28 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-07-26T16:50:47.228+02:00 |                  | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-08-29T18:55:51.184+02:00 | soaking          | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-08-29T18:58:13.843+02:00 | raised           | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2022-08-29T19:07:26.412+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-08-29T19:09:43.947+02:00 | retaining        | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2022-08-29T19:27:27.486+02:00 |                  | Tunnel destination to ip: 172.16.70.25 for tunnel27 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-14T20:08:27.707+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-14T20:10:45.538+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2022-09-14T20:18:15.606+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-14T20:24:55.741+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-09-14T20:27:15.685+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-09-14T21:27:16.219+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:33:51.035+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:36:17.732+02:00 | raised           | Tunnel destination to ip: 10.5.80.97 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:11.854+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:11.991+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:11.806+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel12 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:11.839+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:12.018+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:37:13.678+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:27.912+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:27.939+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:27.969+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:28.029+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:28.072+02:00 | soaking          | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:28.094+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:28.195+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.257+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.276+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.282+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.263+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.245+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.269+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-14T23:53:30.239+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.985+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.986+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.987+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.987+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.988+02:00 | retaining        | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.988+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-09-14T23:55:48.990+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:18:31.156+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:37.979+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:37.945+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:37.958+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:37.969+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:38.138+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:38.148+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:38.159+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:43.095+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:20:49.216+02:00 | raised           | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:22:48.477+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:22:49.233+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:22:49.234+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-09-15T00:22:49.236+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-09-15T00:22:49.236+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-09-15T00:22:49.237+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:23:58.548+02:00 | soaking          | Tunnel destination to ip: 172.16.70.209 for tunnel19 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:24:49.257+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:26:19.267+02:00 | raised           | Tunnel destination to ip: 172.16.70.209 for tunnel19 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:29:07.028+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-09-15T00:31:19.311+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:34:53.331+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:34:55.343+02:00 |                  | Tunnel destination to ip: 172.16.70.209 for tunnel19 is not reachable.        | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:35:13.894+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-15T00:37:05.131+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:37:19.369+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:37:19.371+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:39:19.392+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:55:49.711+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:55:49.712+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2022-09-15T00:55:49.713+02:00 |                  | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2022-09-15T01:22:49.960+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2022-09-15T01:22:49.961+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2022-09-15T01:22:49.962+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2022-09-15T01:31:20.029+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2022-09-15T01:37:20.088+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2022-09-15T01:37:20.089+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2022-09-15T01:39:20.108+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:54:52.084+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:55:57.861+02:00 | soaking          | Tunnel destination to ip: 172.16.70.25 for tunnel20 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:57:18.295+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:57:18.394+02:00 | raised           | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:58:18.379+02:00 | raised           | Tunnel destination to ip: 172.16.70.25 for tunnel20 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-22T18:59:18.388+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:02:12.834+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:04:15.657+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:04:18.424+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:06:15.098+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:06:18.447+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:09:32.569+02:00 |                  | Tunnel destination to ip: 172.16.70.25 for tunnel20 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:14:49.803+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:14:49.840+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:14:49.875+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:24:47.673+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:24:49.269+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:25:23.012+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2022-09-22T19:25:24.821+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-09-22T19:27:18.628+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-09-22T19:27:48.634+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2022-09-22T20:27:19.424+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2022-09-22T20:27:49.425+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:39:19.191+02:00 | soaking          | Tunnel destination to ip: 172.16.70.25 for tunnel5 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:39:19.202+02:00 | soaking          | Tunnel destination to ip: 172.16.70.209 for tunnel7 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:39:19.180+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:41:36.376+02:00 | raised           | Tunnel destination to ip: 172.16.70.25 for tunnel5 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:41:36.376+02:00 | raised           | Tunnel destination to ip: 172.16.70.209 for tunnel7 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:41:36.375+02:00 | raised           | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:47:41.549+02:00 |                  | Tunnel destination to ip: 172.16.70.25 for tunnel5 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-01-09T16:49:56.586+02:00 |                  | Tunnel destination to ip: 172.16.70.209 for tunnel7 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-01-10T10:46:50.800+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-01-10T10:48:51.610+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-01-10T11:48:52.134+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel18 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-01T15:14:28.450+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-01T15:16:38.915+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-01T17:42:36.406+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-01T17:44:40.959+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-01T18:44:42.337+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2023-03-01T19:45:13.634+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-03-01T21:37:19.444+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-03-01T21:39:44.751+02:00 | raised           | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-03-01T21:50:44.845+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-03-01T22:50:54.205+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-03-01T22:53:15.607+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-03-01T23:53:16.160+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-02T02:08:13.092+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-02T02:10:17.680+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-02T02:26:13.345+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-02T02:28:17.840+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-03-02T02:56:48.110+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-02T03:28:18.397+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-03-02T20:30:26.750+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-03-02T20:32:32.333+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.855+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.856+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.856+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.857+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.857+02:00 | retaining        | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.858+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-03-02T20:49:18.859+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:07:11.117+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:18.995+02:00 | soaking          | Tunnel destination to ip: 172.16.70.25 for tunnel19 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:19.767+02:00 | raised           | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:24.510+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.044+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.235+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.011+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.250+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.023+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.264+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:09:28.034+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:11:19.787+02:00 | raised           | Tunnel destination to ip: 172.16.70.25 for tunnel19 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:11:37.050+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:11:49.789+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:11:49.790+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-03-02T21:11:49.793+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-03-02T21:11:49.793+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-02T21:11:49.794+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:13:49.812+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:17:56.371+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-03-02T21:20:19.875+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:20:25.874+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.70.25 for tunnel19 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-03-02T21:22:49.891+02:00 | retaining        | Tunnel destination to ip: 172.16.70.25 for tunnel19 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:23:29.730+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:23:58.367+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:25:49.923+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-03-02T21:25:54.351+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:26:19.923+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:28:19.942+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:49:20.148+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:49:20.149+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-03-02T21:49:20.150+02:00 |                  | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-03-02T22:00:28.733+02:00 |                  | Tunnel destination to ip: 172.16.70.25 for tunnel19 is not reachable.         | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-03-02T22:11:50.362+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-03-02T22:11:50.363+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-03-02T22:11:50.364+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-03-02T22:20:20.450+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-03-02T22:25:50.492+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-03-02T22:26:20.491+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-03-02T22:28:20.507+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:13:49.272+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:13:50.929+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.65 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:14:06.196+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:14:07.883+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.68 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-05-30T18:16:19.189+02:00 | retaining        | Tunnel destination to ip: 10.5.216.65 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2023-05-30T18:16:19.190+02:00 | retaining        | Tunnel destination to ip: 10.5.216.68 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:34:09.587+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.67 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2023-05-30T18:34:09.523+02:00 | soaking          | Tunnel destination to ip: 10.5.192.67 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2023-05-30T18:36:19.379+02:00 | retaining        | Tunnel destination to ip: 10.5.192.67 for tunnel21 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-05-30T19:56:25.361+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-05-30T19:58:50.469+02:00 | raised           | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:09:20.570+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:11:41.660+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:13:50.604+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:42:50.883+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:47:14.466+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:20.938+02:00 | raised           | Tunnel destination to ip: 10.5.216.65 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.367+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel14  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.180+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.379+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.196+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.389+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:43.208+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:49:48.958+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-05-30T20:51:50.961+02:00 | raised           | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel14  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:51:50.959+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel14 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel15  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:51:50.960+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel15 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel16  | --  | F0475 | interface-tunnel-down | 2023-05-30T20:51:50.957+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel16 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.583+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.617+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.625+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.703+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.770+02:00 | soaking          | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.754+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.878+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.910+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:04.937+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.973+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.935+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.979+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.948+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.942+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.954+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.967+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.898+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-05-30T21:06:06.905+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.97 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.353+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.354+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.354+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.355+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.356+02:00 | retaining        | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.355+02:00 | retaining        | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.358+02:00 | retaining        | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.358+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-05-30T21:08:21.359+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.920+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.921+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.921+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.922+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.923+02:00 |                  | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.922+02:00 |                  | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.925+02:00 |                  | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.925+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-05-30T22:08:21.926+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:03:16.829+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.196+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel17 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.007+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel17 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.209+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.2 for tunnel18 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.021+02:00 | soaking          | Tunnel destination to ip: 10.5.0.2 for tunnel18 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.219+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.3 for tunnel19 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:33.032+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel19 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:34.084+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:05:38.583+02:00 | raised           | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:07:38.608+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2023-05-31T22:07:38.605+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel17 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-05-31T22:07:38.606+02:00 | retaining        | Tunnel destination to ip: 10.5.0.2 for tunnel18 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-05-31T22:07:38.607+02:00 | retaining        | Tunnel destination to ip: 10.5.0.3 for tunnel19 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:07:47.122+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:10:08.631+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:16:25.415+02:00 |                  | Tunnel destination to ip: 10.5.216.68 for tunnel10 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:19:15.176+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-05-31T22:21:38.732+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-05-31T22:22:01.312+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-05-31T22:24:08.851+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2023-05-31T23:07:39.242+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel17 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-05-31T23:07:39.244+02:00 |                  | Tunnel destination to ip: 10.5.0.2 for tunnel18 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-05-31T23:07:39.244+02:00 |                  | Tunnel destination to ip: 10.5.0.3 for tunnel19 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-05-31T23:21:39.586+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-05-31T23:24:09.614+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2023-06-07T10:04:13.049+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2023-06-07T10:06:13.652+02:00 | raised           | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | Maj | F0475 | interface-tunnel-down | 2023-06-07T10:11:27.436+02:00 | raised-clearing  | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2023-06-07T10:13:44.133+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel21  | --  | F0475 | interface-tunnel-down | 2023-06-07T11:13:45.659+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel21 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:01:00.327+02:00 | soaking          | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:01:00.341+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:03:16.939+02:00 | raised           | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:03:16.939+02:00 | raised           | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:11:10.609+02:00 |                  | Tunnel destination to ip: 10.5.216.65 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-07T12:14:20.084+02:00 |                  | Tunnel destination to ip: 10.5.192.67 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-08T15:29:17.447+02:00 | soaking          | Tunnel destination to ip: 10.5.0.3 for tunnel19 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:51.842+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:51.864+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:52.575+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:52.625+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:52.655+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:19:52.701+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.328+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.360+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.341+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.348+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.317+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:20:00.335+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.852+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.852+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.853+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.854+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.855+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-06-12T11:22:01.856+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:26:31.624+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:28:31.908+02:00 | raised           | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:28:52.866+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.21.1/32 for tunnel11 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:28:52.299+02:00 | soaking          | Tunnel destination to ip: 172.16.21.1/32 for tunnel11 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:28:52.260+02:00 | soaking          | Tunnel destination to ip: 172.16.11.1/32 for tunnel12 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:29:08.334+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel17  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:29:09.163+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:29:17.923+02:00 | soaking-clearing | Tunnel destination to ip: 172.16.11.1/32 for tunnel12 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-12T11:30:19.522+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-06-12T11:31:03.541+02:00 | retaining        | Tunnel destination to ip: 172.16.21.1/32 for tunnel11 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-06-12T11:31:33.538+02:00 | retaining        | Tunnel destination to ip: 172.16.11.1/32 for tunnel12 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2023-06-12T11:31:33.541+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-06-12T11:32:33.547+02:00 | retaining        | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.959+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.960+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.961+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.962+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.962+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-06-12T12:22:04.963+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-06-12T12:31:05.144+02:00 |                  | Tunnel destination to ip: 172.16.21.1/32 for tunnel11 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-06-12T12:31:35.147+02:00 |                  | Tunnel destination to ip: 172.16.11.1/32 for tunnel12 is not reachable.       | 
+| pod-1/bl2205-eu-spdc | tunnel17  | --  | F0475 | interface-tunnel-down | 2023-06-12T12:31:35.149+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel17 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-06-12T12:32:35.156+02:00 |                  | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:57:52.051+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:57:53.626+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:57:54.913+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:57:57.034+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:59:04.741+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.67 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | Maj | F0475 | interface-tunnel-down | 2023-06-12T16:59:04.687+02:00 | soaking          | Tunnel destination to ip: 10.5.192.67 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-06-12T17:00:09.864+02:00 | retaining        | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-06-12T17:00:09.865+02:00 | retaining        | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2023-06-12T17:01:09.870+02:00 | retaining        | Tunnel destination to ip: 10.5.192.67 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel18  | --  | F0475 | interface-tunnel-down | 2023-06-12T18:00:10.437+02:00 |                  | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel19  | --  | F0475 | interface-tunnel-down | 2023-06-12T18:00:10.438+02:00 |                  | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel20  | --  | F0475 | interface-tunnel-down | 2023-06-12T18:01:10.454+02:00 |                  | Tunnel destination to ip: 10.5.192.67 for tunnel20 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-18T08:59:40.400+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-18T08:59:40.428+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:01:41.579+02:00 | raised           | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:01:41.580+02:00 | raised           | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:01:54.057+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:01:58.405+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:04:06.177+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:04:11.609+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:04:11.608+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:06:11.627+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:09:12.863+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:03.083+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:03.011+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:03.044+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:03.064+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:04.988+02:00 | raised           | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:05.184+02:00 | raised           | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:05.132+02:00 | raised           | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:10:05.165+02:00 | raised           | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:11:41.887+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel7 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:14:47.019+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:15:15.291+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel19  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:15:19.799+02:00 |                  | Tunnel destination to ip: 10.5.216.68 for tunnel19 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:16:52.344+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:16:53.487+02:00 | raised-clearing  | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel25  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:16:54.420+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.68 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:17:11.938+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:17:41.943+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:19:11.963+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel25  | --  | F0475 | interface-tunnel-down | 2023-06-18T09:19:11.964+02:00 | retaining        | Tunnel destination to ip: 10.5.216.68 for tunnel25 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:26:33.050+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:26:33.066+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:28:42.034+02:00 | raised           | Tunnel destination to ip: 10.5.80.97 for tunnel1 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel18  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:28:42.034+02:00 | raised           | Tunnel destination to ip: 10.5.216.65 for tunnel18 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:28:43.976+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel6 is not reachable.            | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:28:43.941+02:00 | soaking          | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:28:44.139+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.0.1 for tunnel10 is not reachable.             | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.020+02:00 | soaking          | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.008+02:00 | soaking          | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.042+02:00 | soaking          | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.084+02:00 | soaking          | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.179+02:00 | soaking          | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.166+02:00 | soaking          | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.294+02:00 | soaking          | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.319+02:00 | soaking          | Tunnel destination to ip: 10.5.80.97 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:44.347+02:00 | soaking          | Tunnel destination to ip: 10.5.80.98 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.275+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.331+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.344+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.301+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.253+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.311+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.226+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.237+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.97 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | Maj | F0475 | interface-tunnel-down | 2023-06-18T09:43:46.245+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.80.98 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.604+02:00 | retaining        | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.603+02:00 | retaining        | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.605+02:00 | retaining        | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.605+02:00 | retaining        | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.607+02:00 | retaining        | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.606+02:00 | retaining        | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.608+02:00 | retaining        | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.609+02:00 | retaining        | Tunnel destination to ip: 10.5.80.97 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-06-18T09:46:08.609+02:00 | retaining        | Tunnel destination to ip: 10.5.80.98 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel1   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.106+02:00 |                  | Tunnel destination to ip: 10.5.192.66 for tunnel1 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel2   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.104+02:00 |                  | Tunnel destination to ip: 10.5.240.34 for tunnel2 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel3   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.106+02:00 |                  | Tunnel destination to ip: 10.5.240.35 for tunnel3 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel5   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.107+02:00 |                  | Tunnel destination to ip: 10.5.216.64 for tunnel5 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel6   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.108+02:00 |                  | Tunnel destination to ip: 10.5.192.64 for tunnel6 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel7   | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.107+02:00 |                  | Tunnel destination to ip: 10.5.216.67 for tunnel7 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel10  | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.109+02:00 |                  | Tunnel destination to ip: 10.5.80.96 for tunnel10 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel11  | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.110+02:00 |                  | Tunnel destination to ip: 10.5.80.97 for tunnel11 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel12  | --  | F0475 | interface-tunnel-down | 2023-06-18T10:46:09.110+02:00 |                  | Tunnel destination to ip: 10.5.80.98 for tunnel12 is not reachable.           | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:09:20.986+02:00 | soaking          | Tunnel destination to ip: 10.5.216.68 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:09:22.700+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.68 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:09:36.765+02:00 | soaking          | Tunnel destination to ip: 10.5.216.65 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:09:38.441+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.216.65 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:10:49.206+02:00 | soaking-clearing | Tunnel destination to ip: 10.5.192.67 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | Maj | F0475 | interface-tunnel-down | 2023-07-19T16:10:49.163+02:00 | soaking          | Tunnel destination to ip: 10.5.192.67 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2023-07-19T16:11:28.222+02:00 | retaining        | Tunnel destination to ip: 10.5.216.68 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2023-07-19T16:11:58.210+02:00 | retaining        | Tunnel destination to ip: 10.5.216.65 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2023-07-19T16:12:58.215+02:00 | retaining        | Tunnel destination to ip: 10.5.192.67 for tunnel28 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel26  | --  | F0475 | interface-tunnel-down | 2023-07-19T17:11:28.754+02:00 |                  | Tunnel destination to ip: 10.5.216.68 for tunnel26 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel27  | --  | F0475 | interface-tunnel-down | 2023-07-19T17:11:58.759+02:00 |                  | Tunnel destination to ip: 10.5.216.65 for tunnel27 is not reachable.          | 
+| pod-1/bl2205-eu-spdc | tunnel28  | --  | F0475 | interface-tunnel-down | 2023-07-19T17:12:58.760+02:00 |                  | Tunnel destination to ip: 10.5.192.67 for tunnel28 is not reachable.          | 
++----------------------+-----------+-----+-------+-----------------------+-------------------------------+------------------+-------------------------------------------------------------------------------+
+```
+
+Developer
+
+```
+# iserver get aci intf tun
+    --apic apic21
+    --when any
+    --node bl2205-eu-spdc
+    --view hfault
+
+{
+    "duration": 9254,
+    "apic": {
+        "read": true,
+        "success": 4,
+        "failed": 0,
+        "connect": 1,
+        "disconnect": 0,
+        "mo": 3,
+        "connect_time": 377,
+        "disconnect_time": 0,
+        "mo_time": 6162,
+        "total_time": 6539
+    },
+    "error": {
+        "read": false,
+        "lines": 0
+    },
+    "info": {
+        "read": false,
+        "lines": 0
+    },
+    "debug": {
+        "read": false,
+        "lines": 0
+    },
+    "cache_hits": 0
+}
+
+Log: apic
+----------
+
+True	377	-	connect apic21o.emea-sp.cisco.com:443
+True	279	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	341	22	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/tunnelIf query rsp-subtree=children&rsp-subtree-include=health,fault-count,required
+True	5542	1000	apic21o.emea-sp.cisco.com:443 class topology/pod-1/node-2205/tunnelIf query rsp-subtree-include=fault-records,no-scoped,subtree&order-by=faultRecord.created|desc&page=0&page-size=1000
+```
+
+[[Back]](./InterfaceTunnel.md)

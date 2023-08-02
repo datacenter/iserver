@@ -7,6 +7,9 @@
 
 Apic: apic11 (mode:online, cache:off)
 
+Node - PSU [#13]
+----------------
+
 +---------------------+-------------+-----------------+-------------------+---------------+---------+---------+------------+
 | Node                | PSU Slot ID | Description     | Model             | Serial Number | Current | Voltage | Oper State |
 +---------------------+-------------+-----------------+-------------------+---------------+---------+---------+------------+
@@ -45,7 +48,7 @@ Developer
 # iserver get aci node --apic apic11 --view psu
 
 {
-    "duration": 1313,
+    "duration": 1081,
     "apic": {
         "read": true,
         "success": 3,
@@ -53,10 +56,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 421,
+        "connect_time": 378,
         "disconnect_time": 0,
-        "mo_time": 642,
-        "total_time": 1063
+        "mo_time": 580,
+        "total_time": 958
     },
     "error": {
         "read": false,
@@ -76,9 +79,9 @@ Developer
 Log: apic
 ----------
 
-True	421	-	connect apic11o.emea-sp.cisco.com:443
-True	325	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	317	26	apic11o.emea-sp.cisco.com:443 class eqptPsu
+True	378	-	connect apic11o.emea-sp.cisco.com:443
+True	297	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	283	26	apic11o.emea-sp.cisco.com:443 class eqptPsu
 ```
 
 [[Back]](./Node.md)

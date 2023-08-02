@@ -4,8 +4,8 @@
 
 ```
 # iserver get aci intf macsec
-    --apic apic11
-    --node bl205-eu-spdc
+    --apic apic21
+    --node bl2205-eu-spdc
     --id eth1/28 -o json
 
 [
@@ -13,14 +13,16 @@
         "__Output": {
             "id": "Blue",
             "adminSt": "Red",
-            "operSt": "Red"
+            "operSt": "Red",
+            "health": "Green",
+            "faults": ":R.M.Y.G"
         },
         "adminSt": "disabled",
         "cipherSuite": "gcm-aes-xpn-256",
         "cipherSuiteOper": "0",
         "confOffset": "offset-0",
         "confOffsetOper": "0",
-        "dn": "topology/pod-1/node-205/sys/macsec/inst/if-[eth1/28]",
+        "dn": "topology/pod-1/node-2205/sys/macsec/inst/if-[eth1/28]",
         "id": "eth1/28",
         "keyChain": "",
         "keySvrPrio": "16",
@@ -42,10 +44,13 @@
         "vlanTagCtrl": "skip-0",
         "iod": 28,
         "podId": "1",
-        "nodeId": "205",
-        "apic": "apic11",
-        "pod_node_name": "pod-1/bl205-eu-spdc",
+        "nodeId": "2205",
+        "apic": "apic21",
+        "pod_node_name": "pod-1/bl2205-eu-spdc",
         "up": false,
+        "health": "100",
+        "faults": "0 0 0 0",
+        "isAnyFault": false,
         "portT": "leaf"
     }
 ]

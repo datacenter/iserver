@@ -29,60 +29,87 @@ Alternatively, APIC access authentication details can be defined in each command
 - [Bridge Domain](./BridgeDomain.md)
 - [L2 Out](./L2Out.md)
 - [L3 Out and SR-MPLS VRF L3 Out](./L3Out.md)
-- [Contract](./Contract.md)
+- Contract
+  - [Standard](./ContractStandard.md)
+  - [Taboo](./ContractTaboo.md)
+  - [Filter](./ContractFilter.md)
 - [VRF](./Vrf.md)
 
 ## Inventory
 
 - [Node](./Node.md)
-- [Interface](./Interface.md)
-- [Protocol](./Protocol.md)
-
-## Endpoint
-
+- Interface
+  - [CloudSec](./InterfaceCloudSec.md)
+  - [Encapsulated Routed](./InterfaceL3e.md)
+  - [FC](./InterfaceFc.md)
+  - [FC PC](./InterfaceFcPc.md)
+  - [Looback](./InterfaceLoopback.md)
+  - [MACsec](./InterfaceMacSec.md)
+  - [Management](./InterfaceMgmt.md)
+  - [Phy](./InterfacePhy.md)
+  - [PC](./InterfacePc.md)
+  - [SVI](./InterfaceSvi.md)
+  - [Tunnel](./InterfaceTunnel.md)
+  - [VFC](./InterfaceVfc.md)
+  - [VPC](./InterfaceVpc.md)
+- Protocol
+  - [ARP](./ProtocolArp.md)
+  - [BFD](./ProtocolBfd.md)
+  - [BGP](./ProtocolBgp.md)
+  - [CDP](./ProtocolCdp.md)
+  - [HSRP](./ProtocolHsrp.md)
+  - [IPv4](./ProtocolIpv4.md)
+  - [IPv6](./ProtocolIpv6.md)
+  - [ISIS](./ProtocolIsis.md)
+  - [LACP](./ProtocolLacp.md)
+  - [LLDP](./ProtocolLldp.md)
+  - [ND](./ProtocolNd.md)
 - [Endpoint](./Endpoint.md)
 
-## Policy
+## Fabric Access
 
-- [Attachable Access Entity Profile](./Aaep.md)
-- Interface
-  - [Auth](./PolicyAuth.md)
-  - [CDP](./PolicyCdp.md)
-  - [CoPP](./PolicyCopp.md)
-  - [DPP](./PolicyDpp.md)
-  - [FC](./PolicyFc.md)
-  - [Flap](./PolicyFlap.md)
-  - [L2](./PolicyL2.md)
-  - [LACP](./PolicyLacp.md)
-  - [LACP Member](./PolicyLacpMember.md)
-  - [Link](./PolicyLink.md)
-  - [Link FC](./PolicyLinkFc.md)
-  - [LLDP](./PolicyLldp.md)
-  - [MCP](./PolicyMcp.md)
-  - [PFC](./PolicyPfc.md)
-  - [Port Security](./PolicyPortsec.md)
-  - [Slow Drain](./PolicyDrain.md)
-  - [Storm Control](./PolicyStomr.md)
-  - [STP](./PolicyStp.md)
-  - [SyncE](./PolicySynce.md)
-  - [Transceiver](./PolicyTransceiver.md)
-
-## Policy Group
-
-- Access Interface
-  - [Leaf Access Port](./PgAccessInterfacePort.md)
-  - [VPC](./PgAccessInterfaceVpc.md)
-
-## Pool
-
-- [VLAN](./PoolVlan.md)
-
-## Domain
+### Domain
 
 - [Phy](./DomainPhy.md)
 - [L2](./DomainL2.md)
 - [L3](./DomainL3.md)
 - [VMM](./DomainVmm.md)
+
+### Pool
+
+- [VLAN](./PoolVlan.md)
+
+### AEP
+
+- [Attachable Access Entity Profile](./Aaep.md)
+
+### Policy Group
+
+- [Port](./PgAccessInterfacePort.md)
+- [PC/VPC](./PgAccessInterfaceVpc.md)
+
+### Interface Policy
+
+- [Auth](./PolicyAuth.md)
+- [CDP](./PolicyCdp.md)
+- [CoPP](./PolicyCopp.md)
+- [DPP](./PolicyDpp.md)
+- [FC](./PolicyFc.md)
+- [Flap](./PolicyFlap.md)
+- [L2](./PolicyL2.md)
+- [LACP](./PolicyLacp.md)
+- [LACP Member](./PolicyLacpMember.md)
+- [Link](./PolicyLink.md)
+- [Link FC](./PolicyLinkFc.md)
+- [LLDP](./PolicyLldp.md)
+- [MCP](./PolicyMcp.md)
+- [PFC](./PolicyPfc.md)
+- [Port Security](./PolicyPortsec.md)
+- [Slow Drain](./PolicyDrain.md)
+- [Storm Control](./PolicyStomr.md)
+- [STP](./PolicyStp.md)
+- [SyncE](./PolicySynce.md)
+- [Transceiver](./PolicyTransceiver.md)
 
 ## System
 

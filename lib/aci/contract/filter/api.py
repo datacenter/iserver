@@ -1,23 +1,23 @@
-class FilterApi():
+class ContractFilterApi():
     def __init__(self):
-        self.filters_mo = None
+        self.contract_filter_mo = None
 
-    def get_filters_mo(self):
-        if self.filters_mo is not None:
-            return self.filters_mo
+    def get_contract_filters_mo(self):
+        if self.contract_filter_mo is not None:
+            return self.contract_filter_mo
 
         cache = self.get_object_cache(
             'vzFilter'
         )
         if cache is not None:
-            self.filters_mo = cache
+            self.contract_filter_mo = cache
             self.log.apic_mo(
                 'vzFilter',
-                self.filters_mo
+                self.contract_filter_mo
             )
-            return self.filters_mo
+            return self.contract_filter_mo
 
-        query = 'rsp-subtree=children&rsp-subtree-class=vzEntry'
+        query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=vzEntry'
         managed_objects = self.get_class(
             'vzFilter',
             query=query
@@ -25,12 +25,12 @@ class FilterApi():
 
         if managed_objects is None:
             self.log.error(
-                'get_filters_mo',
+                'get_contract_filters_mo',
                 'API failed'
             )
             return None
 
-        self.filters_mo = []
+        self.contract_filter_mo = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['vzFilter']['attributes']
             attributes['vzEntry'] = self.get_mo_children_attributes(
@@ -38,18 +38,23 @@ class FilterApi():
                 managed_object,
                 'vzEntry'
             )
-            self.filters_mo.append(
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'vzFilter',
+                managed_object,
+                'faultCounts'
+            )
+            self.contract_filter_mo.append(
                 attributes
             )
 
         self.log.apic_mo(
             'vzFilter',
-            self.filters_mo
+            self.contract_filter_mo
         )
 
         self.set_object_cache(
             'vzFilter',
-            self.filters_mo
+            self.contract_filter_mo
         )
 
-        return self.filters_mo
+        return self.contract_filter_mo

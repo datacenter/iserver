@@ -1,15 +1,15 @@
 # Node Interface - SVI
 
-## Diagnostics focused output i.e. faults and events
+## Diag view
 
 ```
-DOC_TEMPLATE:get_aci_intf_svi.diag:iserver.output.default
+DOC_TEMPLATE:get_aci_intf_svi.diag_view:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_intf_svi.diag:devel.debug
+DOC_TEMPLATE:get_aci_intf_svi.diag_view:devel.debug
 ```
 
 [[Back]](./InterfaceSvi.md)

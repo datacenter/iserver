@@ -66,9 +66,9 @@ class OcpCommon():
 
     def download_source_file(self, source_filename):
         self.my_output.default('Download file', underline=True, before_newline=True, after_newline=True)
-        self.my_output.info('Source: %s' % (source_filename))
+        self.my_output.default('Source: %s' % (source_filename))
         destination_filename = '/tmp/%s' % (str(uuid.uuid4()))
-        self.my_output.info('Destination: %s' % (destination_filename))
+        self.my_output.default('Destination: %s' % (destination_filename))
 
         if not ip_helper.download_url(source_filename, destination_filename):
             self.my_output.error('Web download failed')

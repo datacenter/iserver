@@ -1,15 +1,15 @@
-# Node Protocol - ARP
+# Node Protocol - BFD
 
-## All details view
+## All view
 
 ```
-DOC_TEMPLATE:get_aci_proto_bfd.all:iserver.output.default
+DOC_TEMPLATE:get_aci_proto_bfd.all_view:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_proto_bfd.all:devel.debug
+DOC_TEMPLATE:get_aci_proto_bfd.all_view:devel.debug
 ```
 
 [[Back]](./ProtocolBfd.md)

@@ -2,11 +2,17 @@ class InterfaceVirtualPortChannelOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_virtual_port_channel_state(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_virtual_port_channel_state(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Virtual Port Channel - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -15,8 +21,11 @@ class InterfaceVirtualPortChannelOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'id',
-            'operRole',
+            'lacpRole',
+            'summOperRole',
             'operSt',
             'peerSt',
             'peerStQual',
@@ -32,7 +41,10 @@ class InterfaceVirtualPortChannelOutput():
 
         headers = headers + [
             'Node',
-            'VPC Domain Id',
+            'Health',
+            'Faults',
+            'Domain',
+            'LACP Role',
             'Oper Role',
             'Oper State',
             'Peer State',
@@ -44,7 +56,7 @@ class InterfaceVirtualPortChannelOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -53,11 +65,17 @@ class InterfaceVirtualPortChannelOutput():
             table=True
         )
 
-    def print_interfaces_virtual_port_channel_address(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_virtual_port_channel_address(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Virtual Port Channel - Address [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -67,9 +85,6 @@ class InterfaceVirtualPortChannelOutput():
         order = order + [
             'pod_node_name',
             'id',
-            'operRole',
-            'operSt',
-            'peerSt',
             'virtualIp',
             'vpcMAC',
             'localMAC',
@@ -85,10 +100,7 @@ class InterfaceVirtualPortChannelOutput():
 
         headers = headers + [
             'Node',
-            'VPC Domain Id',
-            'Oper Role',
-            'Oper State',
-            'Peer State',
+            'Domain',
             'VPC IP',
             'VPC MAC',
             'Local MAC',
@@ -99,7 +111,7 @@ class InterfaceVirtualPortChannelOutput():
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -108,66 +120,26 @@ class InterfaceVirtualPortChannelOutput():
             table=True
         )
 
-    def print_interface_virtual_port_channel_info(self, interface):
+    def print_interfaces_virtual_port_channel_member(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Virtual Port Channel - Members [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
         order = [
-            'apic',
             'pod_node_name',
+            'domainId',
+            'health',
+            'faults',
             'id',
-            'operRole',
-            'operSt',
-            'localMAC',
-            'localPrio',
-            'peerSt',
-            'peerStQual',
-            'peerIp',
-            'peerMAC',
-            'peerPrio',
-            'peerVersion',
-            'compatSt',
-            'compatQualStr',
-            'vpcPrio',
-            'vpcMAC',
-            'virtualIp',
-            'localMemberSummary',
-            'peerMemberSummary'
-        ]
-
-        headers = [
-            'Apic',
-            'Node',
-            'VPC Domain Id',
-            'Oper Role',
-            'Oper State',
-            'Local MAC',
-            'Local Priority',
-            'Peer State',
-            'Reason',
-            'Peer IP',
-            'Peer MAC',
-            'Peer Priority',
-            'Peer Version',
-            'Configuration Constistency',
-            'Reason',
-            'VPC Priority',
-            'VPC MAC',
-            'Virtual IP',
-            'Local Members',
-            'Peer Members'
-        ]
-
-        self.my_output.dictionary(
-            interface,
-            title='Interface Virtual Port Channel',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_interface_virtual_port_channel_members(self, members):
-        order = [
-            'id',
+            'pc.id',
             'name',
             'pcMode',
             'localOperSt',
@@ -175,15 +147,24 @@ class InterfaceVirtualPortChannelOutput():
         ]
 
         headers = [
-            'ID',
-            'Name',
+            'Node',
+            'Domain',
+            'Health',
+            'Faults',
+            'Member',
+            'PC',
+            'Description',
             'PC Mode',
             'Local State',
             'Remote State'
         ]
 
         self.my_output.my_table(
-            members,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['pc']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
@@ -191,6 +172,349 @@ class InterfaceVirtualPortChannelOutput():
             table=True
         )
 
-    def print_interface_virtual_port_channel(self, interface):
-        self.print_interface_virtual_port_channel_info(interface)
-        self.print_interface_virtual_port_channel_members(interface['members'])
+    def print_interfaces_virtual_port_channel_vlan(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Virtual Port Channel Member - Configured VLANs [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'domainId',
+            'health',
+            'faults',
+            'id',
+            'pc.id',
+            'cfgdAccessVlan',
+            'cfgdTrunkVlansT',
+            'cfgdVlansT',
+            'upVlansT',
+            'suspVlansT',
+            'peerCfgdVlansT',
+            'peerUpVlansT'
+        ]
+
+        headers = [
+            'Node',
+            'Domain',
+            'Health',
+            'Faults',
+            'Member',
+            'PC',
+            'Cfg Access Vlans',
+            'Cfg Trunk Vlans',
+            'Cfg Vlans',
+            'Up Vlans',
+            'Susp Vlans',
+            'Peer Cfg Vlans',
+            'Peer Up Vlans'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['pc', 'cfgdTrunkVlansT', 'cfgdVlansT', 'upVlansT', 'suspVlansT', 'peerCfgdVlansT', 'peerUpVlansT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_virtual_port_channel_vlan_epg(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Virtual Port Channel Member - VLAN [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'domainId',
+            'health',
+            'faults',
+            'id',
+            'pc.id',
+            'vlan.id',
+            'vlan.hwId',
+            'vlan.encap',
+            'vlan.name',
+            'vlan.fabEncap'
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Domain',
+            'Health',
+            'Faults',
+            'Member',
+            'PC',
+            'VLAN ID',
+            'HW ID',
+            'Encap',
+            'EPG',
+            'Fabric Encap'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['pc', 'vlan']
+            ),
+            merge=True,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_virtual_port_channel_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'domainId',
+            'interfaceIdT',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Domain',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_virtual_port_channel_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Virtual Port Channel - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'domainId',
+            'interfaceIdT',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Domain',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_virtual_port_channel_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'domainId',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Domain',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_virtual_port_channel_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Virtual Port Channel - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'domainId',
+            'interfaceIdT',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Domain',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+

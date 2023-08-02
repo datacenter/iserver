@@ -1,143 +1,306 @@
 # Policy Group - Access Interface - Leaf Access Port
 
-## JSON
+## JSON output
 
 ```
-# iserver get aci pg access intf port --apic apic11 --name P5G* -o json
+# iserver get aci pg access intf port --apic apic21 --name *sriov* -o json
 
 [
     {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G ACI1 to Napoli 45 Trunk (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-ACI1-Napoli_PolGrp",
-        "name": "P5G-ACI1-Napoli_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
+        "annotation": "orchestrator:terraform",
+        "descr": "k8s_sriov_bm Access Policy",
+        "dn": "uni/infra/funcprof/accportgrp-k8s_sriov_2207_bm_PolGrp",
+        "name": "k8s_sriov_2207_bm_PolGrp",
+        "infraRsAttEntP": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/attentp-k8s_phys_AAEP",
+            "tRn": null,
+            "name": "k8s_phys_AAEP"
+        },
+        "infraRsCdpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/cdpIfP-k8s_cdp_enable",
+            "tRn": "cdpIfP-k8s_cdp_enable",
+            "name": "k8s_cdp_enable"
+        },
+        "infraRsHIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/hintfpol-k8s_default",
+            "tRn": "hintfpol-k8s_default",
+            "name": "k8s_default"
+        },
+        "infraRsLinkFlapPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/linkflappol-default",
+            "tRn": "linkflappol-default",
+            "name": "default"
+        },
+        "infraRsLldpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/lldpIfP-k8s_lldp_enable",
+            "tRn": "lldpIfP-k8s_lldp_enable",
+            "name": "k8s_lldp_enable"
+        },
+        "infraRsMonIfInfraPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/moninfra-default",
+            "tRn": "moninfra-default",
+            "name": "default"
+        },
+        "infraRsStpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/ifPol-default",
+            "tRn": "ifPol-default",
+            "name": "default"
+        },
+        "infraRsMcpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/mcpIfP-default",
+            "tRn": "mcpIfP-default",
+            "name": "default"
+        },
+        "infraRsStormctrlIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/stormctrlifp-default",
+            "tRn": "stormctrlifp-default",
+            "name": "default"
+        },
+        "faults": "0 0 0 0",
+        "isAnyFault": false
     },
     {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-Core Management Interface on MLOM (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-Core-MLOM-1_PolGrp",
-        "name": "P5G-Core-MLOM-1_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
+        "annotation": "orchestrator:terraform",
+        "descr": "k8s_sriov_esx Access Policy",
+        "dn": "uni/infra/funcprof/accportgrp-k8s_sriov_2207_esx_PolGrp",
+        "name": "k8s_sriov_2207_esx_PolGrp",
+        "infraRsAttEntP": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/attentp-k8s_phys_AAEP",
+            "tRn": null,
+            "name": "k8s_phys_AAEP"
+        },
+        "infraRsCdpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/cdpIfP-k8s_cdp_enable",
+            "tRn": "cdpIfP-k8s_cdp_enable",
+            "name": "k8s_cdp_enable"
+        },
+        "infraRsHIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/hintfpol-k8s_default",
+            "tRn": "hintfpol-k8s_default",
+            "name": "k8s_default"
+        },
+        "infraRsLinkFlapPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/linkflappol-default",
+            "tRn": "linkflappol-default",
+            "name": "default"
+        },
+        "infraRsLldpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/lldpIfP-k8s_lldp_enable",
+            "tRn": "lldpIfP-k8s_lldp_enable",
+            "name": "k8s_lldp_enable"
+        },
+        "infraRsMonIfInfraPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/moninfra-default",
+            "tRn": "moninfra-default",
+            "name": "default"
+        },
+        "infraRsStpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/ifPol-default",
+            "tRn": "ifPol-default",
+            "name": "default"
+        },
+        "infraRsMcpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/mcpIfP-default",
+            "tRn": "mcpIfP-default",
+            "name": "default"
+        },
+        "infraRsStormctrlIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/stormctrlifp-default",
+            "tRn": "stormctrlifp-default",
+            "name": "default"
+        },
+        "faults": "0 0 0 0",
+        "isAnyFault": false
     },
     {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-Core NGU (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-Core-PCIe1-A_PolGrp",
-        "name": "P5G-Core-PCIe1-A_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
+        "annotation": "orchestrator:terraform",
+        "descr": "k8s_sriov_bm Access Policy",
+        "dn": "uni/infra/funcprof/accportgrp-k8s_sriov_2208_bm_PolGrp",
+        "name": "k8s_sriov_2208_bm_PolGrp",
+        "infraRsAttEntP": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/attentp-k8s_phys_AAEP",
+            "tRn": null,
+            "name": "k8s_phys_AAEP"
+        },
+        "infraRsCdpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/cdpIfP-k8s_cdp_enable",
+            "tRn": "cdpIfP-k8s_cdp_enable",
+            "name": "k8s_cdp_enable"
+        },
+        "infraRsHIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/hintfpol-k8s_default",
+            "tRn": "hintfpol-k8s_default",
+            "name": "k8s_default"
+        },
+        "infraRsLinkFlapPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/linkflappol-default",
+            "tRn": "linkflappol-default",
+            "name": "default"
+        },
+        "infraRsLldpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/lldpIfP-k8s_lldp_enable",
+            "tRn": "lldpIfP-k8s_lldp_enable",
+            "name": "k8s_lldp_enable"
+        },
+        "infraRsMonIfInfraPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/moninfra-default",
+            "tRn": "moninfra-default",
+            "name": "default"
+        },
+        "infraRsStpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/ifPol-default",
+            "tRn": "ifPol-default",
+            "name": "default"
+        },
+        "infraRsMcpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/mcpIfP-default",
+            "tRn": "mcpIfP-default",
+            "name": "default"
+        },
+        "infraRsStormctrlIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/stormctrlifp-default",
+            "tRn": "stormctrlifp-default",
+            "name": "default"
+        },
+        "faults": "0 0 0 0",
+        "isAnyFault": false
     },
     {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-Core mgmt,NGC (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-Core-PCIe2-A_PolGrp",
-        "name": "P5G-Core-PCIe2-A_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
-    },
-    {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-CU NGU (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-CU-PCIe1-A_PolGrp",
-        "name": "P5G-CU-PCIe1-A_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
-    },
-    {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-CU mgmt,F1C,F1U,NGC (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-CU-PCIe2-A_PolGrp",
-        "name": "P5G-CU-PCIe2-A_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
-    },
-    {
-        "__Output": {},
-        "annotation": "",
-        "descr": "P5G-DU Management Interface (Created by Ansible)",
-        "dn": "uni/infra/funcprof/accportgrp-P5G-LOM_PolGrp",
-        "name": "P5G-LOM_PolGrp",
-        "aaep_name": "Private5G_AAEP",
-        "policy": {
-            "infraRsAttEntP": "",
-            "infraRsCdpIfPol": "default",
-            "infraRsHIfPol": "Inherit",
-            "infraRsLinkFlapPol": "default",
-            "infraRsLldpIfPol": "LLDP_enable",
-            "infraRsMonIfInfraPol": "default",
-            "infraRsStpIfPol": "default",
-            "infraRsMcpIfPol": "default",
-            "infraRsStormctrlIfPol": "default"
-        }
+        "__Output": {
+            "faults": ":R.M.Y.G"
+        },
+        "annotation": "orchestrator:terraform",
+        "descr": "k8s_sriov_esx Access Policy",
+        "dn": "uni/infra/funcprof/accportgrp-k8s_sriov_2208_esx_PolGrp",
+        "name": "k8s_sriov_2208_esx_PolGrp",
+        "infraRsAttEntP": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/attentp-k8s_phys_AAEP",
+            "tRn": null,
+            "name": "k8s_phys_AAEP"
+        },
+        "infraRsCdpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/cdpIfP-k8s_cdp_enable",
+            "tRn": "cdpIfP-k8s_cdp_enable",
+            "name": "k8s_cdp_enable"
+        },
+        "infraRsHIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/hintfpol-k8s_default",
+            "tRn": "hintfpol-k8s_default",
+            "name": "k8s_default"
+        },
+        "infraRsLinkFlapPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/linkflappol-default",
+            "tRn": "linkflappol-default",
+            "name": "default"
+        },
+        "infraRsLldpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/lldpIfP-k8s_lldp_enable",
+            "tRn": "lldpIfP-k8s_lldp_enable",
+            "name": "k8s_lldp_enable"
+        },
+        "infraRsMonIfInfraPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/moninfra-default",
+            "tRn": "moninfra-default",
+            "name": "default"
+        },
+        "infraRsStpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/ifPol-default",
+            "tRn": "ifPol-default",
+            "name": "default"
+        },
+        "infraRsMcpIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/mcpIfP-default",
+            "tRn": "mcpIfP-default",
+            "name": "default"
+        },
+        "infraRsStormctrlIfPol": {
+            "__Output": {},
+            "state": "formed",
+            "tDn": "uni/infra/stormctrlifp-default",
+            "tRn": "stormctrlifp-default",
+            "name": "default"
+        },
+        "faults": "0 0 0 0",
+        "isAnyFault": false
     }
 ]
 ```

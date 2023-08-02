@@ -19,9 +19,11 @@ class ProtocolBgpInstanceApi():
             )
             return self.bgp_instance_mo[key]
 
-        distinguished_name = 'topology/pod-%s/node-%s/sys/bgp/inst' % (pod_id, node_id)
+        distinguished_name = 'topology/pod-%s/node-%s/sys/bgp' % (pod_id, node_id)
+        query = 'query-target=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_managed_object(
-            distinguished_name
+            distinguished_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -41,7 +43,18 @@ class ProtocolBgpInstanceApi():
         if int(managed_objects['totalCount']) == 0:
             self.bgp_instance_mo[key] = {}
         else:
-            self.bgp_instance_mo[key] = managed_objects['imdata'][0]['bgpInst']['attributes']
+            attributes = managed_objects['imdata'][0]['bgpInst']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'bgpInst',
+                managed_objects['imdata'][0],
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'bgpInst',
+                managed_objects['imdata'][0],
+                'faultCounts'
+            )
+            self.bgp_instance_mo[key] = attributes
 
         self.log.apic_mo(
             'bgpInst.%s' % (key),

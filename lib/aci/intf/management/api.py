@@ -23,8 +23,10 @@ class InterfaceMgmtApi():
             return self.interface_mgmt_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/mgmtMgmtIf' % (pod_id, node_id)
+        query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
-            class_name
+            class_name,
+            query=query
         )
 
         if managed_objects is None:
@@ -36,8 +38,19 @@ class InterfaceMgmtApi():
 
         self.interface_mgmt_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['mgmtMgmtIf']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'mgmtMgmtIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'mgmtMgmtIf',
+                managed_object,
+                'faultCounts'
+            )
             self.interface_mgmt_mo[key].append(
-                managed_object['mgmtMgmtIf']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

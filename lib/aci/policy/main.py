@@ -25,12 +25,12 @@ class Policy(
     def get_policy_type_from_tcl(self, policy_type):
         mapping = {}
         mapping['infraInfra'] = 'Access Infra'
-        mapping['infraAccNodePGrp'] = 'Access Switch Policy Group'
-        mapping['infraSpineAccNodePGrp'] = 'Spine Switch Policy Group'
-        mapping['infraSpAccPortGrp'] = 'Spine Access Port Policy Group'
-        mapping['infraAccPortGrp'] = 'Leaf Access Port Policy Group'
+        mapping['infraAccNodePGrp'] = 'Access Switch'
+        mapping['infraSpineAccNodePGrp'] = 'Spine Switch'
+        mapping['infraSpAccPortGrp'] = 'Spine Access Port'
+        mapping['infraAccPortGrp'] = 'Leaf Access Port'
         mapping['infraAccBndlGrp'] = 'PC/VPC Interface'
-        mapping['infraBrkoutPortGrp'] = 'Breakout Port Group'
+        mapping['infraBrkoutPortGrp'] = 'Breakout'
         mapping['vmmDomP'] = 'VMM Domain'
         mapping['vmmVSwitchPolicyCont'] = 'VMM Virtual Switch'
 

@@ -1,15 +1,15 @@
-# Node Protocol - ARP
+# Node Protocol - BFD
 
-## Session state view
+## Session view
 
 ```
-DOC_TEMPLATE:get_aci_proto_bfd.session:iserver.output.default
+DOC_TEMPLATE:get_aci_proto_bfd.session_view:iserver.output.default
 ```
 
 Developer
 
 ```
-DOC_TEMPLATE:get_aci_proto_bfd.session:devel.debug
+DOC_TEMPLATE:get_aci_proto_bfd.session_view:devel.debug
 ```
 
 [[Back]](./ProtocolBfd.md)

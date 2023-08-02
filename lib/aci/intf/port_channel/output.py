@@ -2,11 +2,17 @@ class InterfacePortChannelOutput():
     def __init__(self):
         pass
 
-    def print_interfaces_port_channel_state(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_port_channel_state(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Port Channel - State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -15,15 +21,19 @@ class InterfacePortChannelOutput():
 
         order = order + [
             'pod_node_name',
+            'health',
+            'faults',
             'id',
             'name',
+            'operChannelModeT',
             'adminSt',
-            'switchingSt',
             'state.operSt',
             'state.operStQual',
-            'operChannelMode',
             'vpcDomain',
-            'activePorts'
+            'memberSummary',
+            'layerT',
+            'state.operMode',
+            'state.operSpeed'
         ]
 
         headers = []
@@ -32,19 +42,23 @@ class InterfacePortChannelOutput():
 
         headers = headers + [
             'Node',
+            'Health',
+            'Faults',
             'Id',
             'Name',
+            'Protocol',
             'Admin',
-            'Switching',
             'State',
             'Reason',
-            'Oper Mode',
-            'VPC Domain',
-            'Active Links'
+            'VPC',
+            'Members',
+            'Layer',
+            'Mode',
+            'Speed'
         ]
 
         self.my_output.my_table(
-            interfaces,
+            info,
             merge=True,
             order=order,
             headers=headers,
@@ -53,11 +67,17 @@ class InterfacePortChannelOutput():
             table=True
         )
 
-    def print_interfaces_port_channel_port(self, interfaces):
-        if len(interfaces) == 0:
+    def print_interfaces_port_channel_member(self, info, title=False):
+        if title:
             self.my_output.default(
-                'No interface'
+                'Interface Port Channel Member - Phy State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = []
@@ -67,11 +87,16 @@ class InterfacePortChannelOutput():
         order = order + [
             'pod_node_name',
             'id',
-            'name',
-            'state.operSt',
-            'state.operMode',
-            'state.operSpeed',
-            'state.portIds'
+            'member.isActiveMemberTick',
+            'member.tSKey',
+            'member.health',
+            'member.faults',
+            'member.adminSt',
+            'member.operSt',
+            'member.operMode',
+            'member.operDuplex',
+            'member.operSpeed',
+            'member.operVlans'
         ]
 
         headers = []
@@ -81,19 +106,579 @@ class InterfacePortChannelOutput():
         headers = headers + [
             'Node',
             'Id',
-            'Name',
-            'State',
+            'Active',
+            'Interface Id',
+            'Health',
+            'Faults',
+            'Admin',
+            'Oper',
             'Mode',
+            'Duplex',
             'Speed',
-            'Ports'
+            'VLAN'
         ]
 
+        row_separator = False
+        for item in info:
+            if len(item['member']) > 1:
+                row_separator = True
+
         self.my_output.my_table(
-            interfaces,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['member']
+            ),
             merge=True,
             order=order,
             headers=headers,
             allow_order_subkeys=True,
+            row_separator=row_separator,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_port_channel_lacp(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Port Channel Member - LACP State [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'id',
+            'isActiveMemberTick',
+            'local.id',
+            'local.adminSt',
+            'local.port',
+            'local.operPrio',
+            'local.activityFlags',
+            'local.key'
+        ]
+
+        headers = [
+            'Node',
+            'Id',
+            'Active',
+            'Interface',
+            'Admin',
+            'Port Num',
+            'Port Priority',
+            'Activity Flags',
+            'Key'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+        if title:
+            self.my_output.default(
+                'Interface Port Channel Member - LACP Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'id',
+            'isActiveMemberTick',
+            'local.id',
+            'adjacency.port',
+            'adjacency.portPrio',
+            'adjacency.sysId',
+            'adjacency.activityFlags',
+            'adjacency.key'
+        ]
+
+        headers = [
+            'Node',
+            'Id',
+            'Active',
+            'Interface',
+            'Nbr Port Num',
+            'Nbr Port Priority',
+            'Nbr System Id',
+            'Nbr Activity Flags',
+            'Nbr Key'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+        if title:
+            self.my_output.default(
+                'Interface Port Channel Member - LACP PDU [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'id',
+            'isActiveMemberTick',
+            'local.id',
+            'stats.pduSent',
+            'stats.pduRcvd',
+            'stats.pduTimeOut',
+            'stats.markerSent',
+            'stats.markerRcvd',
+            'stats.markerRspSent',
+            'stats.markerRspRcvd'
+        ]
+
+        headers = [
+            'Node',
+            'Id',
+            'Active',
+            'Interface',
+            'PDU Sent',
+            'PDU Rcvd',
+            'PDU Timeout',
+            'Marker Sent',
+            'Marker Rcvd',
+            'Marker Rsp Sent',
+            'Marker Rsp Rcvd'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_port_channel_vlan(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Port Channel - VLAN [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'id',
+            'state.allowedVlans',
+            'state.operVlans',
+            'state.primaryVlan',
+            'vlan.id',
+            'vlan.hwId',
+            'vlan.encap',
+            'vlan.name',
+            'vlan.fabEncap'
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Id',
+            'Allowed VLANs',
+            'Oper VLANs',
+            'Primary VLAN',
+            'VLAN ID',
+            'HW ID',
+            'Encap',
+            'EPG',
+            'Fabric Encap'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['vlan']
+            ),
+            merge=True,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_port_channel_stats(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Port Channel - Traffic Counters [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'id',
+            'rmonIfIn.octets',
+            'rmonIfIn.nUcastPkts',
+            'rmonIfIn.multicastPkts',
+            'rmonIfIn.broadcastPkts',
+            'rmonIfIn.discards',
+            'rmonIfIn.errors',
+            'rmonIfOut.octets',
+            'rmonIfOut.nUcastPkts',
+            'rmonIfOut.multicastPkts',
+            'rmonIfOut.broadcastPkts',
+            'rmonIfOut.discards',
+            'rmonIfOut.errors',
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Id',
+            'Bytes In',
+            'Ucast',
+            'Mcast',
+            'Bcast',
+            'Disc',
+            'Err',
+            'Bytes Out',
+            'Ucast',
+            'Mcast',
+            'Bcast',
+            'Disc',
+            'Err',
+        ]
+
+        self.my_output.my_table(
+            info,
+            merge=True,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            row_separator=False,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_port_channel_ether(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Port Channel - Ether Counters [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'id',
+            'rmonEtherStats.pkts',
+            'rmonEtherStats.octets',
+            'rmonEtherStats.multicastPkts',
+            'rmonEtherStats.broadcastPkts',
+            'rmonEtherStats.pkts64Octets',
+            'rmonEtherStats.pkts65to127Octets',
+            'rmonEtherStats.pkts128to255Octets',
+            'rmonEtherStats.pkts256to511Octets',
+            'rmonEtherStats.pkts512to1023Octets',
+            'rmonEtherStats.pkts1024to1518Octets'
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Id',
+            'Packets',
+            'Bytes',
+            'Mcast',
+            'Bcast',
+            '<64B',
+            '65B-127B',
+            '128B-255B',
+            '256B-511B',
+            '512B-1023B',
+            '1024B-1518B'
+        ]
+
+        self.my_output.my_table(
+            info,
+            merge=True,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            row_separator=False,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_port_channel_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Port Channel - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Port Channel Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_port_channel_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Port Channel - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_port_channel_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Port Channel - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Port Channel - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interface_port_channel_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Interface Port Channel - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Interface Port Channel - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'interfaceId',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )
@@ -173,158 +758,4 @@ class InterfacePortChannelOutput():
             justify=True,
             keys=order,
             title_keys=headers
-        )
-
-    def print_interface_port_channel(self, interface):
-        self.print_interface_port_channel_summary(interface)
-        self.print_interface_port_channel_vlan(interface)
-        self.print_lacp_instance(interface['lacp'])
-        if len(interface['members']) == 0:
-            self.my_output.default('No LACP member interfaces found')
-
-        if len(interface['members']) == 1:
-            self.print_interface_port_channel_lacp_member(interface['members'][0])
-
-        if len(interface['members']) > 1:
-            self.print_interface_port_channel_lacp_members(interface['members'])
-
-    def print_interface_port_channel_lacp_member(self, member):
-        order = [
-            'local.id',
-            'local.adminSt',
-            'local.port',
-            'local.operPrio',
-            'local.activityFlags',
-            'local.lastActive',
-            'local.key',
-            'port',
-            'portPrio',
-            'sysId',
-            'activityFlags',
-            'key',
-            'stats.pduSent',
-            'stats.pduRcvd',
-            'stats.pduTimeOut',
-            'stats.markerSent',
-            'stats.markerRcvd',
-            'stats.markerRspSent',
-            'stats.markerRspRcvd'
-        ]
-
-        headers = [
-            'LACP Interface',
-            'Admin State',
-            'Local Port Num',
-            'Local Port Priority',
-            'Local Activity Flags',
-            'Last Active',
-            'Key',
-            'Nbr Port Num',
-            'Nbr Port Priority',
-            'Nbr System Id',
-            'Nbr Activity Flags',
-            'Nbr Key',
-            'PDU Sent',
-            'PDU Rcvd',
-            'PDU Timeout',
-            'Marker Sent',
-            'Marker Rcvd',
-            'Marker Rsp Sent',
-            'Marker Rsp Rcvd'
-        ]
-
-        self.my_output.dictionary(
-            member,
-            title='LACP Interface',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_interface_port_channel_lacp_members(self, members):
-        order = [
-            'local.id',
-            'local.adminSt',
-            'local.port',
-            'local.operPrio',
-            'local.activityFlags',
-            'local.key'
-        ]
-
-        headers = [
-            'LACP Interface',
-            'Admin State',
-            'Port Num',
-            'Port Priority',
-            'Activity Flags',
-            'Key'
-        ]
-
-        self.my_output.my_table(
-            members,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
-        )
-
-        order = [
-            'port_id',
-            'port',
-            'portPrio',
-            'sysId',
-            'activityFlags',
-            'key'
-        ]
-
-        headers = [
-            'LACP Interface',
-            'Nbr Port Num',
-            'Nbr Port Priority',
-            'Nbr System Id',
-            'Nbr Activity Flags',
-            'Nbr Key'
-        ]
-
-        self.my_output.my_table(
-            members,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
-        )
-
-        order = [
-            'port_id',
-            'stats.pduSent',
-            'stats.pduRcvd',
-            'stats.pduTimeOut',
-            'stats.markerSent',
-            'stats.markerRcvd',
-            'stats.markerRspSent',
-            'stats.markerRspRcvd'
-        ]
-
-        headers = [
-            'LACP Interface',
-            'PDU Sent',
-            'PDU Rcvd',
-            'PDU Timeout',
-            'Marker Sent',
-            'Marker Rcvd',
-            'Marker Rsp Sent',
-            'Marker Rsp Rcvd'
-        ]
-
-        self.my_output.my_table(
-            members,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
         )

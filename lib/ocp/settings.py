@@ -3,7 +3,6 @@ import json
 import shutil
 import traceback
 
-from lib import file_helper
 from lib import filter_helper
 from lib import log_helper
 from lib import output_helper
@@ -242,6 +241,39 @@ class OcpSettings(Settings):
             ocp_name
         )
         return cluster_directory
+
+    def copy_ocp_cluster_file(self, ocp_name, source_filename, destination_filename):
+        if not os.path.isfile(source_filename):
+            self.log.error(
+                'copy_ocp_cluster_file',
+                'Source file not found: %s' % (source_filename)
+            )
+            return None
+
+        cluster_directory = self.get_ocp_cluster_directory(ocp_name)
+        if not os.path.isdir(cluster_directory):
+            self.log.error(
+                'copy_ocp_cluster_file',
+                'OCP directory not found: %s' % (cluster_directory)
+            )
+            return None
+
+        target_filename = os.path.join(
+            cluster_directory,
+            destination_filename
+        )
+        shutil.copy(
+            source_filename,
+            target_filename
+        )
+        if not os.path.isfile(target_filename):
+            self.log.error(
+                'copy_ocp_cluster_file',
+                'File copy failed: %s => %s' % (source_filename, target_filename)
+            )
+            return None
+
+        return target_filename
 
     def set_ocp_cluster(self, ocp_name, kubeconfig_filename, installation_parameters):
         if not os.path.isfile(kubeconfig_filename):

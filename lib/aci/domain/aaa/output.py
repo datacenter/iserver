@@ -8,10 +8,12 @@ class DomainAaaOutput():
             return
 
         order = [
+            'faults',
             'name'
         ]
 
         headers = [
+            'Faults',
             'AAA Domain Name'
         ]
 

@@ -10,10 +10,16 @@ Apic: apic11 (mode:online, cache:off)
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
 | SF | MAC Address       | IP Address   | VMM         | Hypervisor              | VM Name        | VM State  | vNIC Name         | vNIC State |
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
+| LV | 00:50:56:B2:12:35 | 10.58.239.61 | EU-SPDC-CDC | esx5-eu-spdc.cisco.com  | sr-cnc5-1vm    | poweredOn | Network adapter 1 | up         | 
+|    |                   | 10.58.239.60 |             |                         |                |           |                   |            | 
++----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
 | LV | 00:50:56:B2:1E:01 | 10.58.239.53 | EU-SPDC-CDC | esx10-eu-spdc.cisco.com | cnc50-hybrid-3 | poweredOn | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
 | LV | 00:50:56:B2:1E:4D | 10.58.239.41 | EU-SPDC-CDC | esx8-eu-spdc.cisco.com  | cnc41-hybrid-1 | poweredOn | Network adapter 1 | up         | 
 |    |                   | 10.58.239.40 |             |                         |                |           |                   |            | 
++----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
+| LV | 00:50:56:B2:58:B3 | 10.58.239.62 | EU-SPDC-CDC | esx9-eu-spdc.cisco.com  | sr-cnc5-cdg    | poweredOn | Network adapter 1 | up         | 
+|    |                   | 10.58.239.63 |             |                         |                |           |                   |            | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
 | LV | 00:50:56:B2:92:87 | 10.58.239.45 | EU-SPDC-CDC | esx3-eu-spdc.cisco.com  | cnc41-worker-2 | poweredOn | Network adapter 1 | up         | 
 +----+-------------------+--------------+-------------+-------------------------+----------------+-----------+-------------------+------------+
@@ -48,7 +54,7 @@ Developer
 # iserver get aci ep --apic apic11 --subnet 10.58.239.0/26 --view vm
 
 {
-    "duration": 4742,
+    "duration": 3230,
     "apic": {
         "read": true,
         "success": 5,
@@ -56,10 +62,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 4,
-        "connect_time": 418,
+        "connect_time": 388,
         "disconnect_time": 0,
-        "mo_time": 3320,
-        "total_time": 3738
+        "mo_time": 2310,
+        "total_time": 2698
     },
     "error": {
         "read": false,
@@ -79,11 +85,11 @@ Developer
 Log: apic
 ----------
 
-True	418	-	connect apic11o.emea-sp.cisco.com:443
-True	813	209	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
-True	1107	654	apic11o.emea-sp.cisco.com:443 class compVm
-True	1080	1870	apic11o.emea-sp.cisco.com:443 class compVNic
-True	320	68	apic11o.emea-sp.cisco.com:443 class compHv
+True	388	-	connect apic11o.emea-sp.cisco.com:443
+True	721	366	apic11o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health,fault-count&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	520	666	apic11o.emea-sp.cisco.com:443 class compVm
+True	765	1888	apic11o.emea-sp.cisco.com:443 class compVNic
+True	304	68	apic11o.emea-sp.cisco.com:443 class compHv
 ```
 
 [[Back]](./Endpoint.md)

@@ -31,11 +31,17 @@ class ProtocolBfdEventInfo():
             filter_helper.sanitize_string(
                 info['descr']
             ),
-            80
+            40
         )
 
         info['dnT'] = filter_helper.get_string_chunks(
             info['dn'],
+            40,
+            separator='/'
+        )
+
+        info['affectedT'] = filter_helper.get_string_chunks(
+            info['affected'],
             40,
             separator='/'
         )

@@ -42,12 +42,25 @@ class ProtocolNdInterfaceInfo():
         info = {}
         info['__Output'] = {}
         for key in managed_object:
-            if key == 'stats':
-                info[key] = self.get_protocol_nd_interface_stats_info(managed_object[key])
-                for output_key in info[key]['__Output']:
-                    info['__Output']['stats.%s' % (output_key)] = info[key]['__Output'][output_key]
-            else:
-                info[key] = managed_object[key]
+            if key == 'ndIfStats':
+                stats_info = self.get_protocol_nd_interface_stats_info(managed_object[key])
+                for stats_key in stats_info:
+                    if stats_key == '__Output':
+                        for stats_output_key in stats_info['__Output']:
+                            info['__Output'][stats_output_key] = stats_info['__Output'][stats_output_key]
+                        continue
+                    info[stats_key] = stats_info[stats_key]
+
+                continue
+
+            info[key] = managed_object[key]
+
+        info['pod_node_name'] = '%s/%s' % (
+            info['dn'].split('/')[1],
+            self.get_node_name(
+                info['dn'].split('/')[2].split('-')[1]
+            )
+        )
 
         # topology/pod-1/node-201/sys/nd/inst/dom-cvim4a:cvim4a_VRF/if-[vlan161]
         info['domainName'] = info['dn'].split('/')[6][4:]
@@ -79,7 +92,10 @@ class ProtocolNdInterfaceInfo():
 
         info = sorted(
             info,
-            key=lambda i: i['id']
+            key=lambda i: (
+                i['domainName'],
+                i['id']
+            )
         )
 
         return info

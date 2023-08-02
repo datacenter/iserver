@@ -9,15 +9,15 @@ EPGs associated with bridge domain with IP subnet that contains provided IP subn
 
 Apic: apic21 (mode:online, cache:off)
 
-EPG Summary
------------
+EPG [#1]
+--------
 
-+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
-| Up | EPG                | Class ID | BD            | BD Subnet       | Endpoint | Node                 | Domain               | Contract | StPort | StMember | DynMember |
-+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
-| V  | k8s/k8s_ANP/vk8s_3 | 49166    | k8s/vk8s_3_BD | 10.58.24.206/28 | 8        | pod-1/cl2207-eu-spdc | VMware/EU-SPDC-POD2B | 1        | 0      | 0        | 4         | 
-|    |                    |          |               |                 |          | pod-1/cl2208-eu-spdc | k8s_esx_PhysDom      |          |        |          |           | 
-+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
++--------+---------+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
+| Health | Faults  | Up | EPG                | Class ID | BD            | BD Subnet       | Endpoint | Node                 | Domain               | Contract | StPort | StMember | DynMember |
++--------+---------+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
+| 100    | 0 0 0 0 | V  | k8s/k8s_ANP/vk8s_3 | 49166    | k8s/vk8s_3_BD | 10.58.24.206/28 | 8        | pod-1/cl2207-eu-spdc | VMware/EU-SPDC-POD2B | 1        | 0      | 0        | 4         | 
+|        |         |    |                    |          |               |                 |          | pod-1/cl2208-eu-spdc | k8s_esx_PhysDom      |          |        |          |           | 
++--------+---------+----+--------------------+----------+---------------+-----------------+----------+----------------------+----------------------+----------+--------+----------+-----------+
 ```
 
 Developer
@@ -26,7 +26,7 @@ Developer
 # iserver get aci epg --apic apic21 --subnet 10.58.24.206/28
 
 {
-    "duration": 4485,
+    "duration": 5937,
     "apic": {
         "read": true,
         "success": 10,
@@ -34,10 +34,10 @@ Developer
         "connect": 1,
         "disconnect": 0,
         "mo": 9,
-        "connect_time": 401,
+        "connect_time": 495,
         "disconnect_time": 0,
-        "mo_time": 3256,
-        "total_time": 3657
+        "mo_time": 4288,
+        "total_time": 4783
     },
     "error": {
         "read": false,
@@ -57,16 +57,16 @@ Developer
 Log: apic
 ----------
 
-True	401	-	connect apic21o.emea-sp.cisco.com:443
-True	435	37	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
-True	292	15	apic21o.emea-sp.cisco.com:443 class fabricNode
-True	347	280	apic21o.emea-sp.cisco.com:443 class fvIfConn
-True	329	152	apic21o.emea-sp.cisco.com:443 class fvLocale
-True	390	36	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
-True	453	95	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
-True	342	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	339	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	329	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+True	495	-	connect apic21o.emea-sp.cisco.com:443
+True	538	36	apic21o.emea-sp.cisco.com:443 class fvAEPg query rsp-subtree=children&rsp-subtree-include=health,fault-count&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt
+True	366	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	422	282	apic21o.emea-sp.cisco.com:443 class fvIfConn
+True	566	154	apic21o.emea-sp.cisco.com:443 class fvLocale
+True	536	35	apic21o.emea-sp.cisco.com:443 class fvBD query rsp-subtree=children&rsp-subtree-include=health,fault-count&rsp-subtree-class=fvRsCtx&rsp-subtree-class=fvRsBdToEpRet&rsp-subtree-class=fvRsIgmpsn&rsp-subtree-class=fvRsMldsn&rsp-subtree-class=fvRsBDToOut&rsp-subtree-class=fvSubnet
+True	518	99	apic21o.emea-sp.cisco.com:443 class fvCEp query rsp-subtree-include=health,fault-count&rsp-subtree=children&rsp-subtree-class=fvIp&rsp-subtree-class=fvRsCEpToPathEp&rsp-subtree-class=fvRsToVm&rsp-subtree-class=fvRsHyper&rsp-subtree-class=fvRsToNic
+True	430	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
+True	419	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=vzRsSubjFiltAtt
+True	493	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=vzEntry
 ```
 
 [[Back]](./ApplicationEpg.md)

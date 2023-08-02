@@ -1,22 +1,22 @@
-# Node Interface
+# Node Interface - MACsec
 
-## MACsec
-
-Node selection options:
-  - [single node](./InterfaceMacSecNode.md)
-  - [selected nodes](./InterfaceMacSecNodes.md)
-  - [all nodes](./InterfaceMacSecNodesAll.md)
-  - [multi APIC](./InterfaceMacSecNodesApics.md)
+## Command options
 
 Filter options:
-  - [Interface ID](./InterfaceMacSecId.md)
+  - [Interface ID](./InterfaceMacSecFilterId.md)
 
 View options:
-  - [default](./InterfaceMacSecOutputState.md)
-  - [verbose](./InterfaceMacSecOutputVerbose.md)
+  - [state](./InterfaceMacSecViewState.md)
+  - [fault](./InterfaceMacSecViewFault.md)
+  - [hfault](./InterfaceMacSecViewFaultHistory.md)
+  - [event](./InterfaceMacSecViewEvent.md)
+  - [audit](./InterfaceMacSecViewAudit.md)
+  - [diag](./InterfaceMacSecViewDiag.md)
+  - [all](./InterfaceMacSecViewAll.md)
+  - [verbose](./InterfaceMacSecViewVerbose.md)
 
 Output options:
-  - [default](./InterfaceMacSecOutputState.md)
+  - [default](./InterfaceMacSecOutputDefault.md)
   - [json](./InterfaceMacSecOutputJson.md)
 
 Command options
@@ -25,4 +25,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_macsec.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

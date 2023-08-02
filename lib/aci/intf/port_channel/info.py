@@ -79,6 +79,39 @@ class InterfacePortChannelInfo():
 
         return info
 
+    def get_interface_port_channel_member_info(self, managed_object):
+        info = {}
+        info['__Output'] = {}
+
+        keys = [
+            'parentSKey',
+            'rn',
+            'state',
+            'stateQual',
+            'tCl',
+            'tDn',
+            'tSKey'
+        ]
+
+        for key in keys:
+            info[key] = None
+            if key in managed_object:
+                info[key] = managed_object[key]
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
+        return info
+
     def get_interface_port_channel_info(self, managed_object):
         keys = [
             'activePorts',
@@ -131,7 +164,10 @@ class InterfacePortChannelInfo():
             'speed',
             'suspMinlinks',
             'switchingSt',
-            'usage'
+            'usage',
+            'rmonIfOut',
+            'rmonIfIn',
+            'rmonEtherStats'
         ]
 
         info = {}
@@ -145,6 +181,31 @@ class InterfacePortChannelInfo():
         info['state'] = self.my_output.merge_output(
             info['state']
         )
+
+        info['member'] = []
+        for member_managed_object in managed_object['pcRsMbrIfs']:
+            info['member'].append(
+                self.get_interface_port_channel_member_info(
+                    member_managed_object
+                )
+            )
+
+        info['memberCount'] = len(info['member'])
+        info['memberSummary'] = '%s/%s' % (
+            info['activePorts'],
+            info['memberCount']
+        )
+        if int(info['activePorts']) < info['memberCount']:
+            info['__Output']['activePorts'] = 'Red'
+            info['__Output']['memberSummary'] = 'Red'
+
+        for member in info['member']:
+            if member['tSKey'] in info['state']['portId']:
+                member['isActiveMemberTick'] = '\u2713'
+                member['__Output']['isActiveMemberTick'] = 'Green'
+            else:
+                member['isActiveMemberTick'] = '\u2717'
+                member['__Output']['isActiveMemberTick'] = 'Red'
 
         # topology/pod-1/node-201/sys/aggr-[po15]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
@@ -181,17 +242,30 @@ class InterfacePortChannelInfo():
         else:
             info['__Output']['pcMode'] = 'Red'
 
+        info['operChannelModeT'] = info['operChannelMode']
         if info['operChannelMode'] == 'active':
+            info['operChannelModeT'] = 'lacp-active'
             info['__Output']['operChannelMode'] = 'Green'
+            info['__Output']['operChannelModeT'] = 'Green'
         else:
             info['__Output']['operChannelMode'] = 'Red'
-
-        if info['activePorts'] == '0':
-            info['__Output']['activePorts'] = 'Red'
+            info['__Output']['operChannelModeT'] = 'Red'
 
         info['up'] = False
         if info['adminSt'] == 'up' and info['state']['operSt'] == 'up':
             info['up'] = True
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -226,32 +300,73 @@ class InterfacePortChannelInfo():
         for ap_rule in interface_port_channel_filter:
             key = ap_rule.split(':')[0]
             value = ':'.join(ap_rule.split(':')[1:])
+            found = False
 
             if key == 'id':
+                found = True
                 if not filter_helper.match_string(value, interface_port_channel_info['id']):
                     return False
 
             if key == 'name':
+                found = True
                 if not filter_helper.match_string(value, interface_port_channel_info['name']):
                     return False
 
             if key == 'domain':
+                found = True
                 if 'vpcDomain' in interface_port_channel_info:
                     if not filter_helper.match_string(value, interface_port_channel_info['vpcDomain']):
                         return False
 
             if key == 'speed':
+                found = True
                 if not filter_helper.match_string(value, interface_port_channel_info['state']['operSpeed']):
                     return False
 
             if key == 'state':
+                found = True
                 if value != 'any':
                     if not filter_helper.match_string(value, interface_port_channel_info['state']['operSt']):
                         return False
 
+            if key == 'fault':
+                found = True
+                if value == 'any':
+                    if not interface_port_channel_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_port_channel',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not found:
+                self.log.error(
+                    'match_interface_port_channel',
+                    'Unsupported filtering key: %s' % (key)
+                )
+
         return True
 
-    def get_interface_port_channel(self, pod_id, node_id, interface_port_channel_filter=None, vpc_domain_info=False, vpc_domains=None, members_info=False, instance_info=False):
+    def get_interface_port_channel(
+            self,
+            pod_id,
+            node_id,
+            interface_port_channel_filter=None,
+            vpc_domain_info=False,
+            vpc_domains=None,
+            lacp_info=False,
+            member_info=False,
+            vlan_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interface_port_channels = self.get_interface_port_channels_info(pod_id, node_id)
         if all_interface_port_channels is None:
             return None
@@ -262,18 +377,32 @@ class InterfacePortChannelInfo():
             if not self.match_interface_port_channel(interface_port_channel_info, interface_port_channel_filter):
                 continue
 
-            if members_info:
-                interface_port_channel_info['members'] = self.get_interface_port_channel_lacp_members(
+            if member_info:
+                for member in interface_port_channel_info['member']:
+                    member = self.get_interface_port_channel_member_phy_info(
+                        pod_id,
+                        node_id,
+                        member
+                    )
+
+            if lacp_info:
+                interface_port_channel_info['lacp'] = self.get_interface_port_channel_lacp_members(
                     pod_id,
                     node_id,
-                    interface_port_channel_info['state']['portId']
+                    interface_port_channel_info
                 )
 
-            if instance_info:
-                interface_port_channel_info['lacp'] = self.get_protocol_lacp_instance(
-                    pod_id,
-                    node_id
-                )
+            if vlan_info:
+                interface_port_channel_info['vlan'] = []
+                if len(interface_port_channel_info['state']['operVlans']) > 0:
+                    vlans = self.get_oper_vlans_list(
+                        interface_port_channel_info['state']['operVlans']
+                    )
+                    interface_port_channel_info['vlan'] = self.get_vlan_stats(
+                        pod_id,
+                        node_id,
+                        vlan_filter=['vlans:%s' % (','.join(vlans))]
+                    )
 
             if vpc_domain_info:
                 interface_port_channel_info['vpcDomain'] = ''
@@ -281,18 +410,50 @@ class InterfacePortChannelInfo():
                 if vpc_domains is None:
                     vpc_domains = self.get_interface_virtual_port_channel(
                         pod_id=pod_id,
-                        node_id=node_id,
-                        members_info=True
+                        node_id=node_id
                     )
 
                 for vpc_domain in vpc_domains:
-                    for vpc_domain_member in vpc_domain['members']:
+                    for vpc_domain_member in vpc_domain['member']:
                         if vpc_domain_member['name'] == interface_port_channel_info['name']:
                             interface_port_channel_info['vpcDomain'] = vpc_domain['id']
                             break
 
                 if not self.match_interface_port_channel(interface_port_channel_info, interface_port_channel_filter):
                     continue
+
+            if fault_info:
+                interface_port_channel_info['faultInst'] = self.get_interface_port_channel_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_port_channel_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_port_channel_info['faultRecord'] = self.get_interface_port_channel_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_port_channel_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_port_channel_info['eventLog'] = self.get_interface_port_channel_id_event(
+                    pod_id,
+                    node_id,
+                    interface_port_channel_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_port_channel_info['auditLog'] = self.get_interface_port_channel_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_port_channel_info['id'],
+                    audit_filter=audit_filter
+                )
 
             interface_port_channels.append(
                 interface_port_channel_info
@@ -334,5 +495,8 @@ class InterfacePortChannelInfo():
             summary['portDown'],
             summary['portCount']
         )
+
+        if summary['portDown'] > 0:
+            summary['__Output']['portDown'] = 'Red'
 
         return summary

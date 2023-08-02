@@ -213,6 +213,18 @@ class InterfacePhyInfo():
             if info['adminSt'] == 'up' and info['switchingSt'] == 'enabled' and info['stats']['operSt'] == 'up':
                 info['up'] = True
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
+
         info = self.my_output.merge_output(info)
 
         return info
@@ -462,9 +474,44 @@ class InterfacePhyInfo():
                     if not found:
                         return False
 
+            if key == 'fault':
+                if value == 'any':
+                    if not interface_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_interface_phy',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
         return True
 
-    def get_interfaces_phy(self, pod_id, node_id, interface_filter=None, ether_stats_info=False, fc_stats_info=False, epg_stats_info=False, load_info=False, eee_info=False, cdp_info=False, lldp_info=False, policy_info=False, qos_info=False, qos_references=None, cap_info=False, pc_info=False):
+    def get_interfaces_phy(
+            self,
+            pod_id,
+            node_id,
+            interface_filter=None,
+            ether_stats_info=False,
+            fc_stats_info=False,
+            epg_stats_info=False,
+            load_info=False,
+            eee_info=False,
+            cdp_info=False,
+            lldp_info=False,
+            policy_info=False,
+            qos_info=False,
+            qos_references=None,
+            cap_info=False,
+            pc_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_interfaces = self.get_interfaces_phy_info(pod_id, node_id)
         if all_interfaces is None:
             return None
@@ -596,6 +643,39 @@ class InterfacePhyInfo():
                     interface_info['id']
                 )
 
+            if fault_info:
+                interface_info['faultInst'] = self.get_interface_phy_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                interface_info['faultRecord'] = self.get_interface_phy_id_fault(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                interface_info['eventLog'] = self.get_interface_phy_id_event(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                interface_info['auditLog'] = self.get_interface_phy_id_audit(
+                    pod_id,
+                    node_id,
+                    interface_info['id'],
+                    audit_filter=audit_filter
+                )
+
             interfaces.append(
                 interface_info
             )
@@ -607,11 +687,40 @@ class InterfacePhyInfo():
 
         return interfaces
 
-    def get_interface_phy(self, pod_id, node_id, interface_id):
+    def get_interface_phy(
+            self,
+            pod_id,
+            node_id,
+            interface_id,
+            ether_stats_info=False,
+            fc_stats_info=False,
+            epg_stats_info=False,
+            load_info=False,
+            eee_info=False,
+            cdp_info=False,
+            lldp_info=False,
+            policy_info=False,
+            qos_info=False,
+            qos_references=None,
+            cap_info=False,
+            pc_info=False
+            ):
         interfaces = self.get_interfaces_phy(
             pod_id,
             node_id,
-            interface_filter=['id:%s' % (interface_id)]
+            interface_filter=['id:%s' % (interface_id)],
+            ether_stats_info=ether_stats_info,
+            fc_stats_info=fc_stats_info,
+            epg_stats_info=epg_stats_info,
+            load_info=load_info,
+            eee_info=eee_info,
+            cdp_info=cdp_info,
+            lldp_info=lldp_info,
+            policy_info=policy_info,
+            qos_info=qos_info,
+            qos_references=qos_references,
+            cap_info=cap_info,
+            pc_info=pc_info
         )
 
         if interfaces is None or len(interfaces) != 1:

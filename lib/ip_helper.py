@@ -200,6 +200,9 @@ def get_last_ipv4_in_cidr(cidr):
         return None
 
     netaddr, bits = cidr.split('/')
+    if netaddr == '0.0.0.0':
+        return '0.0.0.0'
+
     address = struct.unpack('>L', socket.inet_aton(netaddr))[0]
     address = address + 2**(32 - int(bits)) - 2
     return socket.inet_ntoa(struct.pack('>L', address))

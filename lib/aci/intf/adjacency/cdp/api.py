@@ -27,7 +27,7 @@ class InterfaceAdjacencyCdpApi():
             node_id
         )
 
-        query = 'query-target=subtree&target-subtree-class=cdpAdjEp'
+        query = 'query-target=subtree&target-subtree-class=cdpAdjEp&rsp-subtree-include=fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
@@ -42,8 +42,14 @@ class InterfaceAdjacencyCdpApi():
 
         self.adjacency_cdp_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['cdpAdjEp']['attributes']
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'cdpAdjEp',
+                managed_object,
+                'faultCounts'
+            )
             self.adjacency_cdp_mo[key].append(
-                managed_object['cdpAdjEp']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

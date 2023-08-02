@@ -27,7 +27,7 @@ class InterfaceAdjacencyLacpApi():
             node_id
         )
 
-        query = 'query-target=subtree&target-subtree-class=lacpAdjEp'
+        query = 'query-target=subtree&target-subtree-class=lacpAdjEp&rsp-subtree-include=fault-count'
         managed_objects = self.get_managed_object(
             distinguished_name,
             query=query
@@ -42,8 +42,14 @@ class InterfaceAdjacencyLacpApi():
 
         self.adjacency_lacp_mo[key] = []
         for managed_object in managed_objects['imdata']:
+            attributes = managed_object['lacpAdjEp']['attributes']
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'lacpAdjEp',
+                managed_object,
+                'faultCounts'
+            )
             self.adjacency_lacp_mo[key].append(
-                managed_object['lacpAdjEp']['attributes']
+                attributes
             )
 
         self.log.apic_mo(

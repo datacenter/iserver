@@ -1,5 +1,4 @@
 import copy
-import time
 
 from lib import filter_helper
 from lib import ip_helper
@@ -81,6 +80,18 @@ class VrfInfo():
             info['knwMcastActTick'] = '\u2713'
         else:
             info['knwMcastActTick'] = '\u2717'
+
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -303,9 +314,22 @@ class VrfInfo():
 
         return None
 
-    def get_vrfs(self, vrf_filter=None, bridge_domain_info=False, l3out_info=False, epg_info=False, route_info=False):
-        start_time = int(time.time() * 1000)
-
+    def get_vrfs(
+            self,
+            vrf_filter=None,
+            bridge_domain_info=False,
+            l3out_info=False,
+            epg_info=False,
+            route_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_vrfs = self.get_vrfs_info()
         if all_vrfs is None:
             return None
@@ -359,6 +383,46 @@ class VrfInfo():
                         vrf_info['tenant'],
                         vrf_info['name']
                     )
+                )
+
+            if node_info:
+                ap_node_info = self.get_vrf_node(
+                    vrf_info['tenant'],
+                    vrf_info['name']
+                )
+                vrf_info['node'] = None
+                vrf_info['interface'] = None
+                if ap_node_info is not None:
+                    vrf_info['node'] = ap_node_info['node']
+                    vrf_info['interface'] = ap_node_info['interface']
+
+            if fault_info:
+                vrf_info['faultInst'] = self.get_vrf_id_fault(
+                    vrf_info['tenant'],
+                    vrf_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                vrf_info['faultRecord'] = self.get_vrf_id_fault(
+                    vrf_info['tenant'],
+                    vrf_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                vrf_info['eventLog'] = self.get_vrf_id_event(
+                    vrf_info['tenant'],
+                    vrf_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                vrf_info['auditLog'] = self.get_vrf_id_audit(
+                    vrf_info['tenant'],
+                    vrf_info['name'],
+                    audit_filter=audit_filter
                 )
 
             vrfs.append(vrf_info)

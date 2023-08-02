@@ -1,98 +1,54 @@
-# Contract
+# Standard Contract
 
-## Standard Contract
+## Command options
 
-Use '--type standard' to get standard contracts details
-- contract name and tenant
-- properties (scope, intent and target DSCP)
-- subject and filters
-- details of all filters used by selected contracts
-- standard contracts usage (consumer and provider EPG)
+Filter options:
+  - [name](./ContractStandardFilterName.md)
+  - [tenant](./ContractStandardFilterTenant.md)
 
-```
-# iserver get aci contract --apic apic21 --type standard --tenant k8s
+View options:
+  - [state](./ContractStandardViewState.md)
+  - [usage](./ContractStandardViewUsage.md)
+  - [fault](./ContractStandardViewFault.md)
+  - [hfault](./ContractStandardViewFaultHistory.md)
+  - [event](./ContractStandardViewEvent.md)
+  - [audit](./ContractStandardViewAudit.md)
+  - [diag](./ContractStandardViewDiag.md)
+  - [all](./ContractStandardViewAll.md)
 
-Apic: apic21 (mode:online, cache:off)
+Output options:
+  - [default](./ContractStandardOutputDefault.md)
+  - [json](./ContractStandardOutputJson.md)
 
-Standard Contracts
-------------------
-
-+---------------+---------+---------+-------------+---------------+----------------+
-| Contract      | Scope   | Intent  | Target DSCP | Subject       | Filter         |
-+---------------+---------+---------+-------------+---------------+----------------+
-| k8s/BT-Demo   | context | install | unspecified | k8s/Any       | k8s/alltraffic | 
-+---------------+---------+---------+-------------+---------------+----------------+
-| k8s/k8s_tn_bm | global  | install | unspecified | k8s/k8s_tn_vm | common/any     | 
-+---------------+---------+---------+-------------+---------------+----------------+
-| k8s/k8s_tn_vm | global  | install | unspecified | k8s/k8s_tn_vm | common/any     | 
-+---------------+---------+---------+-------------+---------------+----------------+
-
-Contract Filters
-----------------
-
-+----------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| Filter         | Entry      | Ether | ARP Flag | Proto | Fragments | Stateful | Source | Destination | Rules |
-+----------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| k8s/alltraffic | alltraffic |       |          |       | no        | no       |        |             |       | 
-+----------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-| common/any     | any        | ipv4  |          |       | no        | no       |        |             |       | 
-+----------------+------------+-------+----------+-------+-----------+----------+--------+-------------+-------+
-
-Standard Contracts Usage
-------------------------
-
-+---------------+---------------------+------------------------------+
-| Contract      | Consumer EPG        | Provider EPG                 |
-+---------------+---------------------+------------------------------+
-| k8s/BT-Demo   | k8s/k8s_ANP/SRIoV_A | k8s/k8s_ANP/SRIoV_A          | 
-+---------------+---------------------+------------------------------+
-| k8s/k8s_tn_bm |                     | k8s/bml3_k8s/bml3_k8s_ExtEPG | 
-+---------------+---------------------+------------------------------+
-| k8s/k8s_tn_vm |                     | k8s/vl3_k8s/vl3_k8s_ExtEPG   | 
-+---------------+---------------------+------------------------------+
-```
-
-Developer
+Command options
 
 ```
-# iserver get aci contract --apic apic21 --type standard --tenant k8s
+# iserver get aci contract standard --help
 
-{
-    "duration": 1914,
-    "apic": {
-        "read": true,
-        "success": 4,
-        "failed": 0,
-        "connect": 1,
-        "disconnect": 0,
-        "mo": 3,
-        "connect_time": 500,
-        "disconnect_time": 0,
-        "mo_time": 1098,
-        "total_time": 1598
-    },
-    "error": {
-        "read": false,
-        "lines": 0
-    },
-    "info": {
-        "read": false,
-        "lines": 0
-    },
-    "debug": {
-        "read": false,
-        "lines": 0
-    },
-    "cache_hits": 0
-}
+Usage: iserver.py get aci contract standard [OPTIONS]
 
-Log: apic
-----------
+  Get aci contract
 
-True	500	-	connect apic21o.emea-sp.cisco.com:443
-True	371	22	apic21o.emea-sp.cisco.com:443 class vzBrCP query rsp-subtree=children&rsp-subtree-class=vzSubj,vzRtCons,vzRtProv
-True	362	24	apic21o.emea-sp.cisco.com:443 class vzSubj query rsp-subtree=children&rsp-subtree-class=vzRsSubjFiltAtt
-True	365	30	apic21o.emea-sp.cisco.com:443 class vzFilter query rsp-subtree=children&rsp-subtree-class=vzEntry
+Options:
+  --apic TEXT                     APIC name
+  --ip TEXT                       APIC IP
+  --port INTEGER                  APIC Port  [default: 443]
+  --username TEXT                 APIC Username
+  --password TEXT                 APIC Password
+  --name TEXT                     Filter by name
+  --tenant TEXT                   Filter by tenant
+  --fault                         Filter with faults
+  --severity [any|critical|major|minor|warning]
+                                  Filter faults by severity  [default: any]
+  --when TEXT                     Filter faults by timestamp  [default: 7d]
+  -v, --view TEXT                 [state|usage|fault|hfault|event|audit|diag|a
+                                  ll]  [default: state]
+  -o, --output [default|json]     [default: default]
+  --no-cache                      Disable cache
+  --devel                         Developer output
+  --help                          Show this message and exit.
+
+Info: finished in 64 ms and logs saved in /tmp/iserver\f3727823f530
 ```
 
-[[Back]](./Contract.md)
+[[Back]](./README.md)

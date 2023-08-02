@@ -101,11 +101,19 @@ class InterfaceVlanStatsInfo():
             key = ap_rule.split(':')[0]
             value = ':'.join(ap_rule.split(':')[1:])
 
+            if key == 'vlans':
+                if not filter_helper.match_id(vlan_stats_info['id'], value):
+                    return False
+
             if key == 'vlan':
                 if not filter_helper.match_id(vlan_stats_info['id'], value):
                     return False
 
             if key == 'evlan':
+                if not filter_helper.match_id(vlan_stats_info['evlan'], value):
+                    return False
+
+            if key == 'evlans':
                 if not filter_helper.match_id(vlan_stats_info['evlan'], value):
                     return False
 

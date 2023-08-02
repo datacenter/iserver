@@ -16,6 +16,10 @@ class Api():
         self.session_connected = False
         self.token = None
 
+        self.api_fault_limit = 1000
+        self.api_event_limit = 1000
+        self.api_audit_limit = 1000
+
     def get_apic_ip(self):
         return self.apic_ip
 
@@ -88,24 +92,60 @@ class Api():
                 return False
         return True
 
-    def get_mo_children_attributes(self, mo_name, managed_object, child_name):
+    def get_mo_children_attributes(self, mo_name, managed_object, child_name, include_grandchildren=False):
         attributes = []
         if 'children' in managed_object[mo_name]:
             for child in managed_object[mo_name]['children']:
                 for key in child:
                     if key == child_name:
+                        child_attributes = child[child_name]['attributes']
+                        if include_grandchildren:
+                            if 'children' in child[child_name]:
+                                for grandchild in child[child_name]['children']:
+                                    for grandkey in grandchild:
+                                        child_attributes[grandkey] = grandchild[grandkey]['attributes']
+
                         attributes.append(
-                            child[child_name]['attributes']
+                            child_attributes
                         )
+
         return attributes
 
-    def get_mo_child_attributes(self, mo_name, managed_object, child_name):
+    def get_mo_child_attributes(self, mo_name, managed_object, child_name, include_grandchildren=False):
         if 'children' in managed_object[mo_name]:
             for child in managed_object[mo_name]['children']:
                 for key in child:
                     if key == child_name:
-                        return child[child_name]['attributes']
+                        child_attributes = child[child_name]['attributes']
+                        if include_grandchildren:
+                            if 'children' in child[child_name]:
+                                for grandchild in child[child_name]['children']:
+                                    for grandkey in grandchild:
+                                        child_attributes[grandkey] = grandchild[grandkey]['attributes']
+
+                        return child_attributes
+
         return None
+
+    def get_mo_node_resource_ctx(self, mo_name, managed_object):
+        resources = []
+        if 'children' in managed_object[mo_name]:
+            for child in managed_object[mo_name]['children']:
+                for key in child:
+                    if key == 'pconsNodeDeployCtx':
+                        if 'children' in child[key]:
+                            for item in child[key]['children']:
+                                for ckey in item:
+                                    if ckey == 'pconsResourceCtx':
+                                        resource = {}
+                                        resource['deployStatus'] = child[key]['attributes']['deployStatus']
+                                        resource['nodeId'] = child[key]['attributes']['nodeId']
+                                        resource['ctxClass'] = item[ckey]['attributes']['ctxClass']
+                                        resource['ctxDn'] = item[ckey]['attributes']['ctxDn']
+                                        resources.append(
+                                            resource
+                                        )
+        return resources
 
     def get_class(self, class_name, response_format='json', query_target_filter=None, query=None, node_class=False):
         if not self.is_connected():
@@ -1085,7 +1125,6 @@ class Api():
 
         # get_interface_policy_profile_mo(self, profile_name)
         # get_interface_port_channel_relations_mo(self, pod_id, node_id, port_channel_id)
-        # get_interface_virtual_port_channel_members_mo(self, pod_id, node_id, vpc_domain_id)
         # get_policy_group_access_interface_vpc_port_mo(self, policy_group_name, node_id)
         # get_policy_snoop_igmp_mo(self, tenant, name)
         # get_policy_snoop_mld_mo(self, tenant, name)

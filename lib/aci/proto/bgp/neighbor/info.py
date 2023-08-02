@@ -55,6 +55,40 @@ class ProtocolBgpNeighborInfo():
             if info['state']['af-ipv4-ucast']['acceptedPaths'] != '0':
                 info['__Output']['state.af-ipv4-ucast.acceptedPaths'] = 'Blue'
 
+        info['paths'] = []
+
+        if 'af-ipv4-ucast' in info['state']:
+            if info['state']['af-ipv4-ucast']['acceptedPaths'] != '0':
+                info['paths'].append(
+                    'IPv4-ucast:%s' % (
+                        info['state']['af-ipv4-ucast']['acceptedPaths']
+                    )
+                )
+
+        if 'af-ipv6-ucast' in info['state']:
+            if info['state']['af-ipv6-ucast']['acceptedPaths'] != '0':
+                info['paths'].append(
+                    'IPv6-ucast:%s' % (
+                        info['state']['af-ipv6-ucast']['acceptedPaths']
+                    )
+                )
+
+        if 'af-vpnv4-ucast' in info['state']:
+            if info['state']['af-vpnv4-ucast']['acceptedPaths'] != '0':
+                info['paths'].append(
+                    'VPNv4-ucast:%s' % (
+                        info['state']['af-vpnv4-ucast']['acceptedPaths']
+                    )
+                )
+
+        if 'af-vpnv6-ucast' in info['state']:
+            if info['state']['af-vpnv6-ucast']['acceptedPaths'] != '0':
+                info['paths'].append(
+                    'VPNv6-ucast:%s' % (
+                        info['state']['af-vpnv6-ucast']['acceptedPaths']
+                    )
+                )
+
         return info
 
     def get_protocol_bgp_neighbors_info(self, pod_id, node_id):
@@ -131,7 +165,14 @@ class ProtocolBgpNeighborInfo():
 
         return True
 
-    def get_protocol_bgp_neighbors(self, pod_id, node_id, bgp_neighbor_filter=None, stats_info=False, prefix_info=False):
+    def get_protocol_bgp_neighbors(
+            self,
+            pod_id,
+            node_id,
+            bgp_neighbor_filter=None,
+            stats_info=False,
+            prefix_info=False
+            ):
         all_bgp_neighbors = self.get_protocol_bgp_neighbors_info(pod_id, node_id)
         if all_bgp_neighbors is None:
             return None
@@ -152,7 +193,7 @@ class ProtocolBgpNeighborInfo():
                 )
 
                 if prefix_info:
-                    bgp_neighbor_info['routes'] = self.get_protocol_ipv4_routes(
+                    bgp_neighbor_info['route'] = self.get_protocol_ipv4_routes(
                         pod_id,
                         node_id,
                         bgp_neighbor_info['bgpDomainName'],

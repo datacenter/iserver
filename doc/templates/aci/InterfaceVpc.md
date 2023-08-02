@@ -1,25 +1,26 @@
-# Node Interface
+# Node Interface - Virtual Port Channel (VPC)
 
-## Virtual Port Channel (VPC)
-
-Node selection options:
-  - [single node](./InterfaceVpcNode.md)
-  - [selected nodes](./InterfaceVpcNodes.md)
-  - [all nodes](./InterfaceVpcNodesAll.md)
-  - [multi APIC](./InterfaceVpcNodesApics.md)
+## Command options
 
 Filter options:
-  - [Domain ID](./InterfaceVpcId.md)
-  - [Peer state](./InterfaceVpcState.md)
-  - [Members state](./InterfaceVpcMember.md)
+  - [Domain ID](./InterfaceVpcFilterId.md)
+  - [Peer state](./InterfaceVpcFilterState.md)
+  - [Members state](./InterfaceVpcFilterMember.md)
 
 View options:
-  - [default](./InterfaceVpcOutputState.md)
-  - [address](./InterfaceVpcOutputAddress.md)
-  - [verbose](./InterfaceVpcOutputVerbose.md)
+  - [state](./InterfaceVpcViewState.md)
+  - [addr](./InterfaceVpcViewAddr.md)
+  - [member](./InterfaceVpcViewMember.md)
+  - [vlan](./InterfaceVpcViewVlan.md)
+  - [fault](./InterfaceVpcViewFault.md)
+  - [hfault](./InterfaceVpcViewFaultHistory.md)
+  - [event](./InterfaceVpcViewEvent.md)
+  - [audit](./InterfaceVpcViewAudit.md)
+  - [diag](./InterfaceVpcViewDiag.md)
+  - [all](./InterfaceVpcViewAll.md)
 
 Output options:
-  - [default](./InterfaceVpcOutputState.md)
+  - [default](./InterfaceVpcOutputDefault.md)
   - [json](./InterfaceVpcOutputJson.md)
 
 Command options
@@ -28,4 +29,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_vpc.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

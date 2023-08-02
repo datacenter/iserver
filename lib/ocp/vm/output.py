@@ -178,7 +178,7 @@ class OcpVmOutput():
             'interfaces.info',
             'state',
             'readyTick',
-            'failureTick',
+            'failures',
             'ports.protocol_port',
             'ports.ip_port',
             'liveMigrationTick',
@@ -205,7 +205,7 @@ class OcpVmOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['disks', 'interfaces', 'ports']
+                ['disks', 'interfaces', 'ports', 'failures']
             ),
             order=order,
             headers=headers,

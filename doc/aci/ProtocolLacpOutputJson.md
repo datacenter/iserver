@@ -44,7 +44,10 @@
                     "adminSt": "Green",
                     "switchingSt": "Red",
                     "pcMode": "Green",
-                    "operChannelMode": "Green"
+                    "operChannelMode": "Green",
+                    "operChannelModeT": "Green",
+                    "health": "Green",
+                    "faults": ":R.M.Y.G"
                 },
                 "activePorts": "1",
                 "adminSt": "up",
@@ -97,6 +100,66 @@
                 "suspMinlinks": "no",
                 "switchingSt": "disabled",
                 "usage": "discovery",
+                "rmonIfOut": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368497",
+                    "nUcastPkts": "368497",
+                    "octets": "110991485",
+                    "qLen": "0",
+                    "rn": "dbgIfOut",
+                    "status": "",
+                    "ucastPkts": "0"
+                },
+                "rmonIfIn": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368511",
+                    "nUcastPkts": "368511",
+                    "octets": "102963204",
+                    "rn": "dbgIfIn",
+                    "status": "",
+                    "ucastPkts": "0",
+                    "unknownProtos": "0"
+                },
+                "rmonEtherStats": {
+                    "broadcastPkts": "0",
+                    "cRCAlignErrors": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "collisions": "0",
+                    "dropEvents": "0",
+                    "fragments": "0",
+                    "jabbers": "0",
+                    "modTs": "never",
+                    "multicastPkts": "737008",
+                    "octets": "213954689",
+                    "oversizePkts": "0",
+                    "pkts": "737008",
+                    "pkts1024to1518Octets": "0",
+                    "pkts128to255Octets": "294798",
+                    "pkts256to511Octets": "442210",
+                    "pkts512to1023Octets": "0",
+                    "pkts64Octets": "0",
+                    "pkts65to127Octets": "0",
+                    "rXNoErrors": "368511",
+                    "rn": "dbgEtherStats",
+                    "rxGiantPkts": "0",
+                    "rxOversizePkts": "0",
+                    "status": "",
+                    "tXNoErrors": "368497",
+                    "txGiantPkts": "0",
+                    "txOversizePkts": "0",
+                    "undersizePkts": "0"
+                },
                 "state": {
                     "__Output": {
                         "operSt": "Green"
@@ -133,12 +196,38 @@
                     ],
                     "portIds": "eth1/11"
                 },
+                "member": [
+                    {
+                        "__Output": {
+                            "health": "Green",
+                            "faults": ":R.M.Y.G",
+                            "isActiveMemberTick": "Green"
+                        },
+                        "parentSKey": "po1",
+                        "rn": "rsmbrIfs-[topology/pod-1/node-205/sys/phys-[eth1/11]]",
+                        "state": "formed",
+                        "stateQual": "none",
+                        "tCl": "l1PhysIf",
+                        "tDn": "topology/pod-1/node-205/sys/phys-[eth1/11]",
+                        "tSKey": "eth1/11",
+                        "health": "100",
+                        "faults": "0 0 0 0",
+                        "isAnyFault": false,
+                        "isActiveMemberTick": "\u2713"
+                    }
+                ],
+                "memberCount": 1,
+                "memberSummary": "1/1",
                 "podId": "1",
                 "nodeId": "205",
                 "apic": "apic11",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
                 "layerT": "switched",
+                "operChannelModeT": "lacp-active",
                 "up": true,
+                "health": "100",
+                "faults": "0 0 0 0",
+                "isAnyFault": false,
                 "lacp": [
                     {
                         "__Output": {
@@ -163,8 +252,8 @@
                             "markerRspSent": "0",
                             "markerSent": "0",
                             "modTs": "never",
-                            "pduRcvd": "5535",
-                            "pduSent": "5535",
+                            "pduRcvd": "147399",
+                            "pduSent": "147398",
                             "pduTimeOut": "0",
                             "rn": "ifstats",
                             "status": ""
@@ -172,6 +261,9 @@
                         "podId": "1",
                         "nodeId": "205",
                         "adjacency": {
+                            "__Output": {
+                                "faults": ":R.M.Y.G"
+                            },
                             "activityFlags": "active,aggregate,collect,distribute,sync",
                             "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/11]/adj",
                             "key": "200",
@@ -183,7 +275,8 @@
                             "sysPrio": "32768",
                             "pod_id": "pod-1",
                             "node_id": "node-205",
-                            "interface_id": "eth1/11"
+                            "interface_id": "eth1/11",
+                            "faults": "0 0 0 0"
                         }
                     }
                 ]
@@ -194,7 +287,10 @@
                     "adminSt": "Green",
                     "switchingSt": "Red",
                     "pcMode": "Green",
-                    "operChannelMode": "Green"
+                    "operChannelMode": "Green",
+                    "operChannelModeT": "Green",
+                    "health": "Green",
+                    "faults": ":R.M.Y.G"
                 },
                 "activePorts": "1",
                 "adminSt": "up",
@@ -247,6 +343,66 @@
                 "suspMinlinks": "no",
                 "switchingSt": "disabled",
                 "usage": "discovery",
+                "rmonIfOut": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368498",
+                    "nUcastPkts": "368498",
+                    "octets": "110991799",
+                    "qLen": "0",
+                    "rn": "dbgIfOut",
+                    "status": "",
+                    "ucastPkts": "0"
+                },
+                "rmonIfIn": {
+                    "broadcastPkts": "11",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368492",
+                    "nUcastPkts": "368503",
+                    "octets": "102956369",
+                    "rn": "dbgIfIn",
+                    "status": "",
+                    "ucastPkts": "0",
+                    "unknownProtos": "0"
+                },
+                "rmonEtherStats": {
+                    "broadcastPkts": "11",
+                    "cRCAlignErrors": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "collisions": "0",
+                    "dropEvents": "0",
+                    "fragments": "0",
+                    "jabbers": "0",
+                    "modTs": "never",
+                    "multicastPkts": "736990",
+                    "octets": "213948168",
+                    "oversizePkts": "0",
+                    "pkts": "737001",
+                    "pkts1024to1518Octets": "0",
+                    "pkts128to255Octets": "294795",
+                    "pkts256to511Octets": "442194",
+                    "pkts512to1023Octets": "0",
+                    "pkts64Octets": "11",
+                    "pkts65to127Octets": "1",
+                    "rXNoErrors": "368503",
+                    "rn": "dbgEtherStats",
+                    "rxGiantPkts": "0",
+                    "rxOversizePkts": "0",
+                    "status": "",
+                    "tXNoErrors": "368498",
+                    "txGiantPkts": "0",
+                    "txOversizePkts": "0",
+                    "undersizePkts": "0"
+                },
                 "state": {
                     "__Output": {
                         "operSt": "Green"
@@ -283,12 +439,38 @@
                     ],
                     "portIds": "eth1/12"
                 },
+                "member": [
+                    {
+                        "__Output": {
+                            "health": "Green",
+                            "faults": ":R.M.Y.G",
+                            "isActiveMemberTick": "Green"
+                        },
+                        "parentSKey": "po2",
+                        "rn": "rsmbrIfs-[topology/pod-1/node-205/sys/phys-[eth1/12]]",
+                        "state": "formed",
+                        "stateQual": "none",
+                        "tCl": "l1PhysIf",
+                        "tDn": "topology/pod-1/node-205/sys/phys-[eth1/12]",
+                        "tSKey": "eth1/12",
+                        "health": "100",
+                        "faults": "0 0 0 0",
+                        "isAnyFault": false,
+                        "isActiveMemberTick": "\u2713"
+                    }
+                ],
+                "memberCount": 1,
+                "memberSummary": "1/1",
                 "podId": "1",
                 "nodeId": "205",
                 "apic": "apic11",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
                 "layerT": "switched",
+                "operChannelModeT": "lacp-active",
                 "up": true,
+                "health": "100",
+                "faults": "0 0 0 0",
+                "isAnyFault": false,
                 "lacp": [
                     {
                         "__Output": {
@@ -313,8 +495,8 @@
                             "markerRspSent": "0",
                             "markerSent": "0",
                             "modTs": "never",
-                            "pduRcvd": "5535",
-                            "pduSent": "5535",
+                            "pduRcvd": "147397",
+                            "pduSent": "147398",
                             "pduTimeOut": "0",
                             "rn": "ifstats",
                             "status": ""
@@ -322,6 +504,9 @@
                         "podId": "1",
                         "nodeId": "205",
                         "adjacency": {
+                            "__Output": {
+                                "faults": ":R.M.Y.G"
+                            },
                             "activityFlags": "active,aggregate,collect,distribute,sync",
                             "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/12]/adj",
                             "key": "241",
@@ -333,7 +518,8 @@
                             "sysPrio": "32768",
                             "pod_id": "pod-1",
                             "node_id": "node-205",
-                            "interface_id": "eth1/12"
+                            "interface_id": "eth1/12",
+                            "faults": "0 0 0 0"
                         }
                     }
                 ]
@@ -344,7 +530,10 @@
                     "adminSt": "Green",
                     "switchingSt": "Green",
                     "pcMode": "Green",
-                    "operChannelMode": "Green"
+                    "operChannelMode": "Green",
+                    "operChannelModeT": "Green",
+                    "health": "Green",
+                    "faults": ":R.M.Y.G"
                 },
                 "activePorts": "1",
                 "adminSt": "up",
@@ -397,6 +586,66 @@
                 "suspMinlinks": "no",
                 "switchingSt": "enabled",
                 "usage": "epg",
+                "rmonIfOut": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368497",
+                    "nUcastPkts": "368497",
+                    "octets": "109886171",
+                    "qLen": "0",
+                    "rn": "dbgIfOut",
+                    "status": "",
+                    "ucastPkts": "0"
+                },
+                "rmonIfIn": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "2579486",
+                    "nUcastPkts": "2579486",
+                    "octets": "238637856",
+                    "rn": "dbgIfIn",
+                    "status": "",
+                    "ucastPkts": "0",
+                    "unknownProtos": "0"
+                },
+                "rmonEtherStats": {
+                    "broadcastPkts": "0",
+                    "cRCAlignErrors": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "collisions": "0",
+                    "dropEvents": "0",
+                    "fragments": "0",
+                    "jabbers": "0",
+                    "modTs": "never",
+                    "multicastPkts": "2947983",
+                    "octets": "348524027",
+                    "oversizePkts": "0",
+                    "pkts": "2947983",
+                    "pkts1024to1518Octets": "0",
+                    "pkts128to255Octets": "294796",
+                    "pkts256to511Octets": "442192",
+                    "pkts512to1023Octets": "0",
+                    "pkts64Octets": "0",
+                    "pkts65to127Octets": "2210995",
+                    "rXNoErrors": "2579486",
+                    "rn": "dbgEtherStats",
+                    "rxGiantPkts": "0",
+                    "rxOversizePkts": "0",
+                    "status": "",
+                    "tXNoErrors": "368497",
+                    "txGiantPkts": "0",
+                    "txOversizePkts": "0",
+                    "undersizePkts": "0"
+                },
                 "state": {
                     "__Output": {
                         "operSt": "Green"
@@ -433,12 +682,38 @@
                     ],
                     "portIds": "eth1/27"
                 },
+                "member": [
+                    {
+                        "__Output": {
+                            "health": "Green",
+                            "faults": ":R.M.Y.G",
+                            "isActiveMemberTick": "Green"
+                        },
+                        "parentSKey": "po3",
+                        "rn": "rsmbrIfs-[topology/pod-1/node-205/sys/phys-[eth1/27]]",
+                        "state": "formed",
+                        "stateQual": "none",
+                        "tCl": "l1PhysIf",
+                        "tDn": "topology/pod-1/node-205/sys/phys-[eth1/27]",
+                        "tSKey": "eth1/27",
+                        "health": "100",
+                        "faults": "0 0 0 0",
+                        "isAnyFault": false,
+                        "isActiveMemberTick": "\u2713"
+                    }
+                ],
+                "memberCount": 1,
+                "memberSummary": "1/1",
                 "podId": "1",
                 "nodeId": "205",
                 "apic": "apic11",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
                 "layerT": "switched",
+                "operChannelModeT": "lacp-active",
                 "up": true,
+                "health": "100",
+                "faults": "0 0 0 0",
+                "isAnyFault": false,
                 "lacp": [
                     {
                         "__Output": {
@@ -463,8 +738,8 @@
                             "markerRspSent": "0",
                             "markerSent": "0",
                             "modTs": "never",
-                            "pduRcvd": "5536",
-                            "pduSent": "5534",
+                            "pduRcvd": "147400",
+                            "pduSent": "147397",
                             "pduTimeOut": "0",
                             "rn": "ifstats",
                             "status": ""
@@ -472,6 +747,9 @@
                         "podId": "1",
                         "nodeId": "205",
                         "adjacency": {
+                            "__Output": {
+                                "faults": ":R.M.Y.G"
+                            },
                             "activityFlags": "active,aggregate,collect,distribute,sync",
                             "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/27]/adj",
                             "key": "1",
@@ -483,7 +761,8 @@
                             "sysPrio": "32768",
                             "pod_id": "pod-1",
                             "node_id": "node-205",
-                            "interface_id": "eth1/27"
+                            "interface_id": "eth1/27",
+                            "faults": "0 0 0 0"
                         }
                     }
                 ]
@@ -494,7 +773,10 @@
                     "adminSt": "Green",
                     "switchingSt": "Green",
                     "pcMode": "Green",
-                    "operChannelMode": "Green"
+                    "operChannelMode": "Green",
+                    "operChannelModeT": "Green",
+                    "health": "Green",
+                    "faults": ":R.M.Y.G"
                 },
                 "activePorts": "1",
                 "adminSt": "up",
@@ -547,13 +829,73 @@
                 "suspMinlinks": "no",
                 "switchingSt": "enabled",
                 "usage": "epg",
+                "rmonIfOut": {
+                    "broadcastPkts": "7293289",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "2151110",
+                    "nUcastPkts": "9444399",
+                    "octets": "775433287",
+                    "qLen": "0",
+                    "rn": "dbgIfOut",
+                    "status": "",
+                    "ucastPkts": "5698"
+                },
+                "rmonIfIn": {
+                    "broadcastPkts": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "368496",
+                    "nUcastPkts": "368496",
+                    "octets": "104430823",
+                    "rn": "dbgIfIn",
+                    "status": "",
+                    "ucastPkts": "0",
+                    "unknownProtos": "0"
+                },
+                "rmonEtherStats": {
+                    "broadcastPkts": "7293289",
+                    "cRCAlignErrors": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "collisions": "0",
+                    "dropEvents": "0",
+                    "fragments": "0",
+                    "jabbers": "0",
+                    "modTs": "never",
+                    "multicastPkts": "2519606",
+                    "octets": "879864110",
+                    "oversizePkts": "0",
+                    "pkts": "9818593",
+                    "pkts1024to1518Octets": "0",
+                    "pkts128to255Octets": "295969",
+                    "pkts256to511Octets": "442272",
+                    "pkts512to1023Octets": "8",
+                    "pkts64Octets": "0",
+                    "pkts65to127Octets": "9080344",
+                    "rXNoErrors": "368496",
+                    "rn": "dbgEtherStats",
+                    "rxGiantPkts": "0",
+                    "rxOversizePkts": "0",
+                    "status": "",
+                    "tXNoErrors": "9450097",
+                    "txGiantPkts": "0",
+                    "txOversizePkts": "0",
+                    "undersizePkts": "0"
+                },
                 "state": {
                     "__Output": {
                         "operSt": "Green"
                     },
                     "accessVlan": "",
                     "activeMbrs": "eth1/2,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified",
-                    "allowedVlans": "3-4,6-7,11-16,23-28,30-31,33-38,40-41,56,61-62,65-69",
+                    "allowedVlans": "3-4,6-7,11-16,23-28,30-31,33-38,40-41,45,56,61-62,68-69",
                     "backplaneMac": "4C:71:0D:7E:83:F2",
                     "bundleBupId": "1",
                     "bundleIndex": "unspecified",
@@ -576,19 +918,45 @@
                     "operSpeed": "40G",
                     "operSt": "up",
                     "operStQual": "",
-                    "operVlans": "3-4,6-7,11-16,23-28,30-31,33-38,40-41,56,61-62,65-69",
+                    "operVlans": "3-4,6-7,11-16,23-28,30-31,33-38,40-41,45,56,61-62,68-69",
                     "primaryVlan": "vlan-1",
                     "portId": [
                         "eth1/2"
                     ],
                     "portIds": "eth1/2"
                 },
+                "member": [
+                    {
+                        "__Output": {
+                            "health": "Green",
+                            "faults": ":R.M.Y.G",
+                            "isActiveMemberTick": "Green"
+                        },
+                        "parentSKey": "po4",
+                        "rn": "rsmbrIfs-[topology/pod-1/node-205/sys/phys-[eth1/2]]",
+                        "state": "formed",
+                        "stateQual": "none",
+                        "tCl": "l1PhysIf",
+                        "tDn": "topology/pod-1/node-205/sys/phys-[eth1/2]",
+                        "tSKey": "eth1/2",
+                        "health": "100",
+                        "faults": "0 0 0 0",
+                        "isAnyFault": false,
+                        "isActiveMemberTick": "\u2713"
+                    }
+                ],
+                "memberCount": 1,
+                "memberSummary": "1/1",
                 "podId": "1",
                 "nodeId": "205",
                 "apic": "apic11",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
                 "layerT": "switched",
+                "operChannelModeT": "lacp-active",
                 "up": true,
+                "health": "100",
+                "faults": "0 0 0 0",
+                "isAnyFault": false,
                 "lacp": [
                     {
                         "__Output": {
@@ -613,8 +981,8 @@
                             "markerRspSent": "0",
                             "markerSent": "0",
                             "modTs": "never",
-                            "pduRcvd": "5536",
-                            "pduSent": "5535",
+                            "pduRcvd": "147400",
+                            "pduSent": "147398",
                             "pduTimeOut": "0",
                             "rn": "ifstats",
                             "status": ""
@@ -622,6 +990,9 @@
                         "podId": "1",
                         "nodeId": "205",
                         "adjacency": {
+                            "__Output": {
+                                "faults": ":R.M.Y.G"
+                            },
                             "activityFlags": "active,aggregate,collect,distribute,sync",
                             "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/2]/adj",
                             "key": "15",
@@ -633,7 +1004,8 @@
                             "sysPrio": "32768",
                             "pod_id": "pod-1",
                             "node_id": "node-205",
-                            "interface_id": "eth1/2"
+                            "interface_id": "eth1/2",
+                            "faults": "0 0 0 0"
                         }
                     }
                 ]
@@ -644,7 +1016,10 @@
                     "adminSt": "Green",
                     "switchingSt": "Green",
                     "pcMode": "Green",
-                    "operChannelMode": "Green"
+                    "operChannelMode": "Green",
+                    "operChannelModeT": "Green",
+                    "health": "Green",
+                    "faults": ":R.M.Y.G"
                 },
                 "activePorts": "1",
                 "adminSt": "up",
@@ -697,13 +1072,73 @@
                 "suspMinlinks": "no",
                 "switchingSt": "enabled",
                 "usage": "epg",
+                "rmonIfOut": {
+                    "broadcastPkts": "14692749",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "2114113",
+                    "nUcastPkts": "16806862",
+                    "octets": "832220345105",
+                    "qLen": "0",
+                    "rn": "dbgIfOut",
+                    "status": "",
+                    "ucastPkts": "4333201874"
+                },
+                "rmonIfIn": {
+                    "broadcastPkts": "1465089",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "discards": "0",
+                    "errors": "0",
+                    "modTs": "never",
+                    "multicastPkts": "1568822",
+                    "nUcastPkts": "3033911",
+                    "octets": "831381645263",
+                    "rn": "dbgIfIn",
+                    "status": "",
+                    "ucastPkts": "4331897361",
+                    "unknownProtos": "0"
+                },
+                "rmonEtherStats": {
+                    "broadcastPkts": "16157838",
+                    "cRCAlignErrors": "0",
+                    "childAction": "",
+                    "clearTs": "never",
+                    "collisions": "0",
+                    "dropEvents": "0",
+                    "fragments": "0",
+                    "jabbers": "0",
+                    "modTs": "never",
+                    "multicastPkts": "3682935",
+                    "octets": "1663601990368",
+                    "oversizePkts": "0",
+                    "pkts": "8684940008",
+                    "pkts1024to1518Octets": "962099932",
+                    "pkts128to255Octets": "5557883",
+                    "pkts256to511Octets": "1691583",
+                    "pkts512to1023Octets": "8",
+                    "pkts64Octets": "0",
+                    "pkts65to127Octets": "7715590602",
+                    "rXNoErrors": "4334931272",
+                    "rn": "dbgEtherStats",
+                    "rxGiantPkts": "0",
+                    "rxOversizePkts": "0",
+                    "status": "",
+                    "tXNoErrors": "4350008736",
+                    "txGiantPkts": "0",
+                    "txOversizePkts": "0",
+                    "undersizePkts": "0"
+                },
                 "state": {
                     "__Output": {
                         "operSt": "Green"
                     },
                     "accessVlan": "",
                     "activeMbrs": "eth1/1,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified,unspecified",
-                    "allowedVlans": "3-4,6-7,11-16,21-31,33-41,43-45,49,56,59,61-62,65-69,72-81",
+                    "allowedVlans": "3-4,6-7,11-16,21-31,33-38,40-41,45,49,56,59,61-62,67-69,72-84",
                     "backplaneMac": "4C:71:0D:7E:83:F1",
                     "bundleBupId": "1",
                     "bundleIndex": "unspecified",
@@ -715,7 +1150,7 @@
                     "intfT": "phy",
                     "iod": "59",
                     "lastErrors": "0",
-                    "lastLinkStChg": "2023-06-12T10:37:27.016+02:00",
+                    "lastLinkStChg": "2023-07-12T17:50:40.487+02:00",
                     "nativeVlan": "",
                     "numActivePorts": "1",
                     "numMbrUp": "1",
@@ -726,19 +1161,45 @@
                     "operSpeed": "40G",
                     "operSt": "up",
                     "operStQual": "",
-                    "operVlans": "3-4,6-7,11-16,21-31,33-41,43-45,49,56,59,61-62,65-69,72-81",
+                    "operVlans": "3-4,6-7,11-16,21-31,33-38,40-41,45,49,56,59,61-62,67-69,72-84",
                     "primaryVlan": "vlan-1",
                     "portId": [
                         "eth1/1"
                     ],
                     "portIds": "eth1/1"
                 },
+                "member": [
+                    {
+                        "__Output": {
+                            "health": "Green",
+                            "faults": ":R.M.Y.G",
+                            "isActiveMemberTick": "Green"
+                        },
+                        "parentSKey": "po5",
+                        "rn": "rsmbrIfs-[topology/pod-1/node-205/sys/phys-[eth1/1]]",
+                        "state": "formed",
+                        "stateQual": "none",
+                        "tCl": "l1PhysIf",
+                        "tDn": "topology/pod-1/node-205/sys/phys-[eth1/1]",
+                        "tSKey": "eth1/1",
+                        "health": "100",
+                        "faults": "0 0 0 0",
+                        "isAnyFault": false,
+                        "isActiveMemberTick": "\u2713"
+                    }
+                ],
+                "memberCount": 1,
+                "memberSummary": "1/1",
                 "podId": "1",
                 "nodeId": "205",
                 "apic": "apic11",
                 "pod_node_name": "pod-1/bl205-eu-spdc",
                 "layerT": "switched",
+                "operChannelModeT": "lacp-active",
                 "up": true,
+                "health": "100",
+                "faults": "0 0 0 0",
+                "isAnyFault": false,
                 "lacp": [
                     {
                         "__Output": {
@@ -750,7 +1211,7 @@
                         "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/1]",
                         "id": "eth1/1",
                         "key": "32771",
-                        "lastActive": "2023-06-12T10:37:26.000+02:00",
+                        "lastActive": "2023-07-12T17:50:40.000+02:00",
                         "operPrio": "32768",
                         "port": "257",
                         "prio": "32768",
@@ -763,8 +1224,8 @@
                             "markerRspSent": "0",
                             "markerSent": "0",
                             "modTs": "never",
-                            "pduRcvd": "5535",
-                            "pduSent": "5534",
+                            "pduRcvd": "147407",
+                            "pduSent": "147403",
                             "pduTimeOut": "0",
                             "rn": "ifstats",
                             "status": ""
@@ -772,6 +1233,9 @@
                         "podId": "1",
                         "nodeId": "205",
                         "adjacency": {
+                            "__Output": {
+                                "faults": ":R.M.Y.G"
+                            },
                             "activityFlags": "active,aggregate,collect,distribute,sync",
                             "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/1]/adj",
                             "key": "14",
@@ -783,7 +1247,8 @@
                             "sysPrio": "32768",
                             "pod_id": "pod-1",
                             "node_id": "node-205",
-                            "interface_id": "eth1/1"
+                            "interface_id": "eth1/1",
+                            "faults": "0 0 0 0"
                         }
                     }
                 ]

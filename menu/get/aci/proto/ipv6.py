@@ -38,7 +38,8 @@ class NoResultExit(Exception):
 @click.option("--address", "ip_address_filter", default='', callback=validations.validate_ip, help="IP Address filter")
 @click.option("--subnet", "ip_subnet_filter", default='', callback=validations.validate_ip_subnet, help="IP Subnet filter")
 @click.option("--longer", "longer_prefixes", is_flag=True, show_default=True, default=False, help="Match longer prefixes")
-@click.option("--view", "-v", type=click.Choice(['default', 'summary'], case_sensitive=False), multiple=False, default='default', show_default=True)
+@click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
+@click.option("--view", "-v", default=['route'], help="[inst|dom|route|fault|hfault|event|diag|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -57,6 +58,7 @@ def get_aci_node_proto_ipv6_command(
         ip_address_filter,
         ip_subnet_filter,
         longer_prefixes,
+        fault_when,
         view,
         output,
         no_cache,
@@ -68,6 +70,15 @@ def get_aci_node_proto_ipv6_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|dom|route|fault|hfault|event|diag|all',
+        'route',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -95,88 +106,200 @@ def get_aci_node_proto_ipv6_command(
             raise ErrorExit
 
         ipv6_filter = []
+        hfault_filter = []
+        event_filter = []
+
         if vrf_name is not None:
             ipv6_filter.append(
                 'vrf:%s' % (vrf_name)
             )
 
+        if len(route_filter) > 0:
+            for item in route_filter:
+                ipv6_filter.append(
+                    item
+                )
+
+        if ip_address_filter is not None:
+            if len(ip_address_filter) > 0:
+                ipv6_filter.append(
+                    'ip:%s' % (ip_address_filter)
+                )
+
+        if ip_subnet_filter is not None:
+            if len(ip_subnet_filter) > 0:
+                if longer_prefixes:
+                    ipv6_filter.append(
+                        'subnet-longer:%s' % (ip_subnet_filter)
+                    )
+                else:
+                    ipv6_filter.append(
+                        'subnet:%s' % (ip_subnet_filter)
+                    )
+
+        if fault_when is not None:
+            hfault_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+            event_filter.append(
+                'timestamp:%s' % (fault_when)
+            )
+
+        instance_info = False
+        domain_info = False
+        route_info = False
+        fault_info = False
+        hfault_info = False
+        event_info = False
+
+        if 'inst' in view:
+            instance_info = True
+            domain_info = True
+            route_info = True
+
+        if 'dom' in view:
+            domain_info = True
+            route_info = True
+
+        if 'route' in view:
+            domain_info = True
+            route_info = True
+
+        if 'fault' in view:
+            fault_info = True
+            domain_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+            domain_info = True
+
+        if 'event' in view:
+            event_info = True
+            domain_info = True
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        domains_info = []
-        routes_info = []
-
-        get_routes_info = False
-        if output == 'json' or view == 'summary':
-            get_routes_info = True
+        proto_infos = []
+        instance = []
+        domain = []
+        route = []
+        fault_record = []
+        fault_inst = []
+        event = []
 
         for node_info in nodes_info:
-            node_domains_info = apic_handler.get_protocol_ipv6_domains(
+            proto_info = apic_handler.get_protocol_ipv6(
                 node_info['podId'],
                 node_info['id'],
-                routes_info=get_routes_info,
-                ipv6_domain_filter=ipv6_filter
+                ipv6_filter=ipv6_filter,
+                instance_info=instance_info,
+                domain_info=domain_info,
+                route_info=route_info,
+                fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
+                event_info=event_info,
+                event_filter=event_filter
             )
 
-            if node_domains_info is None:
+            if proto_info is None:
                 continue
 
-            domains_info = domains_info + node_domains_info
+            proto_infos.append(
+                proto_info
+            )
 
-            if output == 'json' or view == 'default':
-                if ip_address_filter is not None and len(ip_address_filter) > 0:
-                    route_filter = route_filter + ('ip:%s' % (ip_address_filter), )
-
-                if ip_subnet_filter is not None and len(ip_subnet_filter) > 0:
-                    if longer_prefixes:
-                        route_filter = route_filter + ('subnet-longer:%s' % (ip_subnet_filter), )
-                    else:
-                        route_filter = route_filter + ('subnet:%s' % (ip_subnet_filter), )
-
-                node_routes_info = []
-                for domain_info in node_domains_info:
-                    info = copy.deepcopy(
-                        apic_handler.get_protocol_ipv6_routes(
-                            node_info['podId'],
-                            node_info['id'],
-                            ipv6_domain_name=domain_info['name'],
-                            route_filter=route_filter
-                        )
+            if 'instance' in proto_info:
+                if proto_info['instance'] is not None:
+                    instance.append(
+                        proto_info['instance']
                     )
-                    node_routes_info = node_routes_info + info
 
-                routes_info = routes_info + node_routes_info
+            if 'domain' in proto_info:
+                if proto_info['domain'] is not None:
+                    domain = domain + proto_info['domain']
+
+            if 'route' in proto_info:
+                if proto_info['route'] is not None:
+                    route = route + proto_info['route']
+
+            if 'eventLog' in proto_info:
+                if proto_info['eventLog'] is not None:
+                    event = event + proto_info['eventLog']
+
+            if 'faultRecord' in proto_info:
+                if proto_info['faultRecord'] is not None:
+                    fault_record = fault_record + proto_info['faultRecord']
+
+            if 'faultInst' in proto_info:
+                if proto_info['faultInst'] is not None:
+                    fault_inst = fault_inst + proto_info['faultInst']
+
+        event = sorted(
+            event,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_inst = sorted(
+            fault_inst,
+            key=lambda i: i['timestamp']
+        )
+
+        fault_record = sorted(
+            fault_record,
+            key=lambda i: i['timestamp']
+        )
 
         ctx.busy = False
 
-        if len(domain_info) == 0 and len(routes_info) == 0:
-            raise NoResultExit
-
         if output == 'json':
-            info = {}
-            info['summary'] = domains_info
-            info['route'] = routes_info
-
             ctx.log_prompt = False
             ctx.my_output.default(
                 json.dumps(
-                    info,
-                    indent=6
+                    proto_infos,
+                    indent=4
                 )
             )
             return
 
-        if view == 'summary':
-            ctx.my_output.json_output(domains_info)
-            aci_output_handler.print_protocol_ipv6_domains(
-                domains_info
+        ctx.my_output.json_output(proto_infos)
+
+        if 'inst' in view:
+            aci_output_handler.print_proto_ipv6_instances(
+                instance,
+                title=True
             )
 
-        if view == 'default':
-            ctx.my_output.json_output(routes_info)
-            aci_output_handler.print_protocol_ipv6_routes(
-                routes_info
+        if 'dom' in view:
+            aci_output_handler.print_proto_ipv6_domains(
+                domain,
+                title=True
+            )
+
+        if 'route' in view:
+            aci_output_handler.print_proto_ipv6_routes(
+                route,
+                title=True
+            )
+
+        if 'fault' in view:
+            aci_output_handler.print_proto_ipv6_fault_inst(
+                fault_inst,
+                title=True
+            )
+
+        if 'hfault' in view:
+            aci_output_handler.print_proto_ipv6_fault_record(
+                fault_record,
+                title=True
+            )
+
+        if 'event' in view:
+            aci_output_handler.print_proto_ipv6_event_logs(
+                event,
+                title=True
             )
 
     except NoResultExit:

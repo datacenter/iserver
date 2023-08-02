@@ -1,27 +1,26 @@
-# Node Interface
+# Node Interface - Port Channel (PC)
 
-## Port Channel (PC)
-
-Node selection options:
-  - [single node](./InterfacePcNode.md)
-  - [selected nodes](./InterfacePcNodes.md)
-  - [all nodes](./InterfacePcNodesAll.md)
-  - [multi APIC](./InterfacePcApics.md)
+## Command options
 
 Filter options:
-  - [Port Channel ID](./InterfacePcId.md)
-  - [Port Channel Name](./InterfacePcName.md)
-  - [VPC Domain](./InterfacePcDomain.md)
-  - [Speed](./InterfacePcSpeed.md)
-  - [State](./InterfacePcState.md)
+  - [Port Channel ID](./InterfacePcFilterId.md)
+  - [Port Channel Name](./InterfacePcFilterName.md)
+  - [VPC Domain](./InterfacePcFilterDomain.md)
+  - [Speed](./InterfacePcFilterSpeed.md)
+  - [State](./InterfacePcFilterState.md)
 
 View options:
-  - [default](./InterfacePcOutputState.md)
-  - [port](./InterfacePcOutputPort.md)
-  - [verbose](./InterfacePcOutputVerbose.md)
+  - [state](./InterfacePcViewState.md)
+  - [port](./InterfacePcViewPort.md)
+  - [fault](./InterfacePcViewFault.md)
+  - [hfault](./InterfacePcViewFaultHistory.md)
+  - [event](./InterfacePcViewEvent.md)
+  - [audit](./InterfacePcViewAudit.md)
+  - [diag](./InterfacePcViewDiag.md)
+  - [all](./InterfacePcViewAll.md)
 
 Output options:
-  - [default](./InterfacePcOutputState.md)
+  - [default](./InterfacePcOutputDefault.md)
   - [json](./InterfacePcOutputJson.md)
 
 Command options
@@ -30,4 +29,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_pc.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

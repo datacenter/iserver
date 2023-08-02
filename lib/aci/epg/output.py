@@ -4,7 +4,8 @@ class EpgOutput():
 
     def print_epg_properties(self, info):
         order = [
-            'adminUpTick',
+            'health',
+            'faults',
             'configSt',
             'name',
             'application_profile',
@@ -23,7 +24,8 @@ class EpgOutput():
         ]
 
         headers = [
-            'Up',
+            'Health',
+            'Faults',
             'Configuration State',
             'EPG Name',
             'Application Profile',
@@ -183,13 +185,18 @@ class EpgOutput():
     def print_epgs_properties(self, info, title=False):
         if title:
             self.my_output.default(
-                'EPG Policy Properties',
+                'EPG - Properties [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
 
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
-            'adminUpTick',
+            'health',
+            'faults',
             'nameApTenant',
             'prefGrMemb',
             'floodOnEncap',
@@ -200,7 +207,8 @@ class EpgOutput():
         ]
 
         headers = [
-            'Up',
+            'Health',
+            'Faults',
             'EPG',
             'Preferred Member',
             'Flood',
@@ -224,10 +232,14 @@ class EpgOutput():
     def print_epgs_bridge_domain(self, info, title=False):
         if title:
             self.my_output.default(
-                'EPG BD Properties',
+                'EPG - Bridge Domain [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         for item in info:
             item['fvSubnet'] = None
@@ -271,15 +283,16 @@ class EpgOutput():
         )
 
     def print_epgs_contract(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Contracts',
+                'EPG - Contracts [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'adminUpTick',
@@ -314,15 +327,16 @@ class EpgOutput():
         )
 
     def print_epgs_contract_pivot(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Contracts (pivot view)',
+                'EPG - Contracts (pivot view) [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         contract_names = []
         contracts = []
@@ -417,15 +431,16 @@ class EpgOutput():
         )
 
     def print_epgs_node(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Deployed Nodes',
+                'EPG - Deployed Nodes [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameApTenant',
@@ -465,15 +480,16 @@ class EpgOutput():
         )
 
     def print_epgs_node_pivot(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Deployed Nodes (pivot view)',
+                'EPG - Deployed Nodes (pivot view) [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         names = []
         nodes = []
@@ -534,16 +550,16 @@ class EpgOutput():
         )
 
     def print_epgs_static_port(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Static Ports',
+                'EPG - Static Port [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
 
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
         order = [
             'nameApTenant',
             'staticPort.pathNodeT',
@@ -581,15 +597,16 @@ class EpgOutput():
         )
 
     def print_epgs_domain(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Domain',
+                'EPG - Domain [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameApTenant',
@@ -628,15 +645,16 @@ class EpgOutput():
         )
 
     def print_epgs_domain_pivot(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Domain (pivot view)',
+                'EPG - Domain (pivot view) [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         names = []
         domains = []
@@ -697,15 +715,16 @@ class EpgOutput():
         )
 
     def print_epgs_member(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Members',
+                'EPG - Member [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'nameApTenant',
@@ -740,15 +759,16 @@ class EpgOutput():
         )
 
     def print_epgs_endpoint(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Endpoints',
+                'EPG - Endpoints [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         order = [
             'flags',
@@ -786,20 +806,23 @@ class EpgOutput():
         )
 
     def print_epgs(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'EPG Summary [#%s]' % (len(info)),
+                'EPG [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
 
         for epg in info:
             epg['fvSubnet'] = epg['fvBD']['fvSubnet']
 
         order = [
+            'health',
+            'faults',
             'adminUpTick',
             'nameApTenant',
             'pcTag',
@@ -815,6 +838,8 @@ class EpgOutput():
         ]
 
         headers = [
+            'Health',
+            'Faults',
             'Up',
             'EPG',
             'Class ID',
@@ -840,5 +865,212 @@ class EpgOutput():
             allow_order_subkeys=True,
             underline=True,
             row_separator=True,
+            table=True
+        )
+
+    def print_epgs_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'EPG - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'EPG - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameApTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'EPG',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_epgs_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'EPG - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameApTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'EPG',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_epgs_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'EPG - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'EPG - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameApTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'EPG',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_epgs_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'EPG - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'EPG - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameApTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'EPG',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
             table=True
         )

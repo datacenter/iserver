@@ -2,12 +2,20 @@ class L3OutOutput():
     def __init__(self):
         pass
 
-    def print_l3outs_bgp(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_bgp(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - BGP [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'mplsEnabledTick',
             'bgpExtP.enabledTick',
@@ -17,6 +25,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'MPLS',
             'BGP',
@@ -27,7 +36,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -41,12 +50,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_eigrp(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_eigrp(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - EIGRP [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'eigrpExtP.enabledTick',
             'l3extRsEctx.nameTenant',
@@ -55,6 +72,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'EIGRP',
             'VRF',
@@ -64,7 +82,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -78,12 +96,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_ospf(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_ospf(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - OSPF [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'targetDscp',
             'ospfExtP.enabledTick',
@@ -98,6 +124,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'Target DSCP',
             'OSPF',
@@ -113,7 +140,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -127,12 +154,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_mpls(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_mpls(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - MPLS [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'mplsEnabledTick',
             'bgpExtP.enabledTick',
@@ -142,6 +177,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'Tenant',
             'PIM',
@@ -153,7 +189,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -167,12 +203,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_pim(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_pim(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - PIM [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'pimExtP.enabledTick',
             'l3extRsEctx.nameTenant',
@@ -181,6 +225,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'Tenant',
             'PIM',
@@ -191,7 +236,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -205,12 +250,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_epg(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_epg(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - EPG [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'l3extRsEctx.nameTenant',
             'l3extRsL3DomAtt.name',
@@ -218,6 +271,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out Name',
             'VRF',
             'L3 Domain',
@@ -226,7 +280,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['l3extInstP']
             ),
@@ -240,12 +294,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs_node(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs_node(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - Node [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'mplsEnabledTick',
             'pimExtP.enabledTick',
@@ -258,6 +320,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'MPLS',
             'PIM',
@@ -271,7 +334,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes']
             ),
@@ -285,12 +348,20 @@ class L3OutOutput():
             table=True
         )
 
-    def print_l3outs(self, l3outs):
-        if len(l3outs) == 0:
-            self.my_output.default('No L3Out found')
+    def print_l3outs(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
             return
 
         order = [
+            'faults',
             'nameTenant',
             'mplsEnabledTick',
             'pimExtP.enabledTick',
@@ -302,6 +373,7 @@ class L3OutOutput():
         ]
 
         headers = [
+            'Faults',
             'L3Out',
             'MPLS',
             'PIM',
@@ -314,7 +386,7 @@ class L3OutOutput():
 
         self.my_output.my_table(
             self.my_output.expand_lists(
-                l3outs,
+                info,
                 order,
                 ['nodes', 'l3extInstP']
             ),
@@ -333,7 +405,18 @@ class L3OutOutput():
         #         for node_profile in l3out['nodeProfiles']:
         #             self.print_l3out_node_profile(node_profile)
 
-    def print_l3out_node_profile(self, info):
+    def print_l3out_node_profile(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - Node Profile [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
             'dn',
             'descr',
@@ -354,4 +437,211 @@ class L3OutOutput():
             justify=True,
             keys=order,
             title_keys=headers
+        )
+
+    def print_l3outs_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'L3Out - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'L3Out - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'L3Out',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )
+
+    def print_l3outs_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'L3Out - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'L3Out',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_l3outs_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'L3Out - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'L3Out - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'L3Out',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_l3outs_audit_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'L3Out - Audit Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'L3Out - Audit Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'nameTenant',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT'
+        ]
+
+        headers = [
+            'L3Out',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
         )

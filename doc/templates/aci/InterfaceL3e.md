@@ -1,23 +1,22 @@
-# Node Interface
+# Node Interface - Encapsulated Routed
 
-## Encapsulated Routed
-
-Node selection options:
-  - [single node](./InterfaceL3eNode.md)
-  - [selected nodes](./InterfaceL3eNodes.md)
-  - [all nodes](./InterfaceL3eNodesAll.md)
-  - [multi APIC](./InterfaceL3eNodesApics.md)
+## Command options
 
 Filter options:
-  - [Interface ID](./InterfaceL3eId.md)
-  - [Oper State](./InterfaceL3eState.md)
+  - [Interface ID](./InterfaceL3eFilterId.md)
+  - [Oper State](./InterfaceL3eFilterState.md)
 
 View options:
-  - [default](./InterfaceL3eNode.md)
-  - [verbose](./InterfaceL3eOutputVerbose.md)
+  - [state](./InterfaceL3eViewState.md)
+  - [fault](./InterfaceL3eViewFault.md)
+  - [hfault](./InterfaceL3eViewFaultHistory.md)
+  - [event](./InterfaceL3eViewEvent.md)
+  - [audit](./InterfaceL3eViewAudit.md)
+  - [diag](./InterfaceL3eViewDiag.md)
+  - [all](./InterfaceL3eViewAll.md)
 
 Output options:
-  - [default](./InterfaceL3eOutputState.md)
+  - [default](./InterfaceL3eOutputDefault.md)
   - [json](./InterfaceL3eOutputJson.md)
 
 Command options
@@ -26,4 +25,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_l3e.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

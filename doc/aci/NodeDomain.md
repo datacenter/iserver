@@ -8,6 +8,9 @@
 Apic: apic11 (mode:online, cache:off)
 Apic: apic21 (mode:online, cache:off)
 
+Node - State [#28]
+------------------
+
 +--------+----------------------+---------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
 | Apic   | Node Name            | Node ID | VTEP IP       | Admin State | Fabric State | Role        | Model            | Serial      | Version        |
 +--------+----------------------+---------+---------------+-------------+--------------+-------------+------------------+-------------+----------------+
@@ -48,7 +51,7 @@ Developer
 # iserver get aci node --apic dom:milan
 
 {
-    "duration": 1871,
+    "duration": 2453,
     "apic": {
         "read": true,
         "success": 4,
@@ -56,10 +59,10 @@ Developer
         "connect": 2,
         "disconnect": 0,
         "mo": 2,
-        "connect_time": 862,
+        "connect_time": 1561,
         "disconnect_time": 0,
-        "mo_time": 705,
-        "total_time": 1567
+        "mo_time": 703,
+        "total_time": 2264
     },
     "error": {
         "read": false,
@@ -79,10 +82,10 @@ Developer
 Log: apic
 ----------
 
-True	450	-	connect apic11o.emea-sp.cisco.com:443
-True	353	13	apic11o.emea-sp.cisco.com:443 class fabricNode
-True	412	-	connect apic21o.emea-sp.cisco.com:443
-True	352	15	apic21o.emea-sp.cisco.com:443 class fabricNode
+True	1104	-	connect apic11o.emea-sp.cisco.com:443
+True	396	13	apic11o.emea-sp.cisco.com:443 class fabricNode
+True	457	-	connect apic21o.emea-sp.cisco.com:443
+True	307	15	apic21o.emea-sp.cisco.com:443 class fabricNode
 ```
 
 [[Back]](./Node.md)

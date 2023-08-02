@@ -2,77 +2,19 @@ class ProtocolIsisOutput():
     def __init__(self):
         pass
 
-    def print_proto_isis(self, info):
-        self.print_proto_isis_instance(
-            info['instance']
-        )
-
-        for domain_info in info['domain']:
-            self.print_proto_isis_domain(
-                domain_info
+    def print_proto_isis_domains(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Domain [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
 
-            if 'interface' in domain_info:
-                self.my_output.default(
-                    'Interfaces',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_interfaces(
-                    domain_info['interface']
-                )
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
-            if 'lsp' in domain_info:
-                self.my_output.default(
-                    'LSP Records',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_lsps(
-                    domain_info['lsp']
-                )
-
-            if 'neighbor' in domain_info:
-                self.my_output.default(
-                    'Neighbors',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_neighbors(
-                    domain_info['neighbor']
-                )
-
-            if 'route' in domain_info:
-                self.my_output.default(
-                    'IS-IS Routes',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_routes(
-                    domain_info['route']
-                )
-
-            if 'tree' in domain_info:
-                self.my_output.default(
-                    'IS-IS Fabric Multicast Trees',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_trees(
-                    domain_info['tree']
-                )
-
-            if 'tunnel' in domain_info:
-                self.my_output.default(
-                    'Discovered Tunnel Endpoints',
-                    underline=True,
-                    before_newline=True
-                )
-                self.print_proto_isis_tunnels(
-                    domain_info['tunnel']
-                )
-
-    def print_proto_isis_domains(self, info):
         order = [
             'name',
             'operSt',
@@ -107,49 +49,27 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_domain(self, info):
-        order = [
-            'name',
-            'operSt',
-            'sysId',
-            'areaId',
-            'nSel',
-            'mode',
-            'maxEcmp',
-            'metricStyle',
-            'mtu'
-        ]
+    def print_proto_isis_instances(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Instance [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
-        headers = [
-            'Name',
-            'Oper State',
-            'System ID',
-            'Area',
-            'Protocol',
-            'Mode',
-            'Max ECMP',
-            'Metric Style',
-            'MTU'
-        ]
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
-        self.my_output.dictionary(
-            info,
-            title='Domain',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_proto_isis_instances(self, info):
         if len(info) == 0:
             return
 
         order = [
             'instance.pod_node_name',
+            'instance.health',
+            'instance.faults',
             'instance.adminSt',
-            'instance.operSt',
             'domain.name',
             'domain.operSt',
             'domain.sysId',
@@ -163,8 +83,9 @@ class ProtocolIsisOutput():
 
         headers = [
             'Node',
+            'Health',
+            'Faults',
             'Admin State',
-            'Oper State',
             'Domain Name',
             'Oper State',
             'System ID',
@@ -187,36 +108,21 @@ class ProtocolIsisOutput():
             allow_order_subkeys=True,
             remove_empty_columns=True,
             underline=True,
-            table=True
+            table=True,
+            merge=True
         )
 
-    def print_proto_isis_instance(self, info):
-        order = [
-            'pod_node_name',
-            'adminSt',
-            'operSt',
-            'domainCount'
-        ]
+    def print_proto_isis_interfaces(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Interface [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
 
-        headers = [
-            'Node',
-            'Admin State',
-            'Oper State',
-            'Domains'
-        ]
-
-        self.my_output.dictionary(
-            info,
-            title='IS-IS Instance',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )
-
-    def print_proto_isis_interfaces(self, info):
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -249,8 +155,17 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_lsps(self, info):
+    def print_proto_isis_lsps(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - LSP [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -285,8 +200,17 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_neighbors(self, info):
+    def print_proto_isis_neighbors(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Neighbor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -321,8 +245,17 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_routes(self, info):
+    def print_proto_isis_routes(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Route [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -359,8 +292,17 @@ class ProtocolIsisOutput():
             table=True
         )
 
-    def print_proto_isis_trees(self, info):
+    def print_proto_isis_trees(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Tree [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(info) == 0:
+            if title:
+                self.my_output.default('None')
             return
 
         order = [
@@ -398,15 +340,17 @@ class ProtocolIsisOutput():
         )
 
     def print_proto_isis_tunnels(self, info, title=False):
-        if len(info) == 0:
-            return
-
         if title:
             self.my_output.default(
-                'Discovered Tunnel Endpoints',
-                before_newline=True,
-                underline=True
+                'Protocol ISIS - Tunnel [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
             )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
 
         order = [
             'pod_node_name',
@@ -432,6 +376,161 @@ class ProtocolIsisOutput():
             headers=headers,
             allow_order_subkeys=True,
             remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_isis_fault_inst(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Protocol ISIS - Faults [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_isis_fault_record(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Protocol ISIS - Fault Records [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Protocol ISIS - Fault Records last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'lc',
+            'descrT'
+        ]
+
+        headers = [
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Lifecycle',
+            'Description'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            underline=True,
+            table=True
+        )
+
+    def print_proto_isis_event_logs(self, info, when=None, title=False):
+        if title:
+            if when is None:
+                self.my_output.default(
+                    'Protocol ISIS - Event Logs [#%s]' % (len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+            else:
+                self.my_output.default(
+                    'Protocol ISIS - Event Logs last %s [#%s]' % (when, len(info)),
+                    underline=True,
+                    before_newline=True
+                )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'pod_node_name',
+            'severityT',
+            'code',
+            'cause',
+            'created',
+            'descrT',
+            'changeSetT',
+            'affectedT'
+        ]
+
+        headers = [
+            'Node',
+            'Sev',
+            'Code',
+            'Cause',
+            'Created Time',
+            'Description',
+            'Change Set',
+            'Affected'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['descrT', 'changeSetT', 'affectedT']
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )

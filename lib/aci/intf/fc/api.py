@@ -23,7 +23,7 @@ class InterfaceFcApi():
             return self.interface_fc_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/l1FcPhysIf' % (pod_id, node_id)
-        query = 'query-target=subtree&target-subtree-class=l1RtFcBrConf'
+        query = 'query-target=children&target-subtree-class=l1RtFcBrConf&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(
             class_name,
             query=query
@@ -39,6 +39,16 @@ class InterfaceFcApi():
         self.interface_fc_mo[key] = []
         for managed_object in managed_objects['imdata']:
             attributes = managed_object['l1FcPhysIf']['attributes']
+            attributes['healthInst'] = self.get_mo_child_attributes(
+                'l1FcPhysIf',
+                managed_object,
+                'healthInst'
+            )
+            attributes['faultCounts'] = self.get_mo_child_attributes(
+                'l1FcPhysIf',
+                managed_object,
+                'faultCounts'
+            )
             attributes['ethpmLbRtdIf'] = self.get_mo_child_attributes(
                 'l1FcPhysIf',
                 managed_object,

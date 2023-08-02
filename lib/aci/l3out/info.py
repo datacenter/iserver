@@ -29,6 +29,19 @@ class L3OutInfo():
 
         return len(l3outs)
 
+    def get_l3out_name_from_dn(self, l3out_dn):
+        # [0]: uni/tn-{name}/l3out-{name}
+        tenant = l3out_dn.split('/')[1][3:]
+        if '/l3out-' in l3out_dn:
+            name = l3out_dn.split('/')[2][6:]
+        if '/out-' in l3out_dn:
+            name = l3out_dn.split('/')[2][4:]
+        l3out_name = '%s/%s' % (
+            tenant,
+            name
+        )
+        return l3out_name
+
     def get_l3out_info(self, managed_object):
         keys = [
             'descr',
@@ -120,6 +133,14 @@ class L3OutInfo():
                     info['nodes'].append(
                         node_info
                     )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
+        info['isAnyFault'] = self.is_any_fault(
+            managed_object['faultCounts']
+        )
 
         return info
 
@@ -245,7 +266,17 @@ class L3OutInfo():
 
         return True
 
-    def get_l3outs(self, l3out_filter=None):
+    def get_l3outs(
+            self,
+            l3out_filter=None,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
         all_outs = self.get_l3outs_info()
         if all_outs is None:
             return None
@@ -255,6 +286,35 @@ class L3OutInfo():
         for l3out_info in all_outs:
             if not self.match_l3out(l3out_info, l3out_filter):
                 continue
+
+            if fault_info:
+                l3out_info['faultInst'] = self.get_l3out_id_fault(
+                    l3out_info['tenant'],
+                    l3out_info['name'],
+                    'faultInst'
+                )
+
+            if hfault_info:
+                l3out_info['faultRecord'] = self.get_l3out_id_fault(
+                    l3out_info['tenant'],
+                    l3out_info['name'],
+                    'faultRecord',
+                    fault_filter=hfault_filter
+                )
+
+            if event_info:
+                l3out_info['eventLog'] = self.get_l3out_id_event(
+                    l3out_info['tenant'],
+                    l3out_info['name'],
+                    event_filter=event_filter
+                )
+
+            if audit_info:
+                l3out_info['auditLog'] = self.get_l3out_id_audit(
+                    l3out_info['tenant'],
+                    l3out_info['name'],
+                    audit_filter=audit_filter
+                )
 
             l3outs.append(l3out_info)
 

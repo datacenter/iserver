@@ -1,0 +1,15 @@
+# Node Protocol - BGP
+
+## Default output
+
+```
+DOC_TEMPLATE:get_aci_proto_bgp.nei_view:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_proto_bgp.nei_view:devel.debug
+```
+
+[[Back]](./ProtocolBgp.md)

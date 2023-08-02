@@ -28,11 +28,12 @@ Filter options:
 View options:
   - [state](./InterfaceSviViewState.md)
   - [stats](./InterfaceSviViewStats.md)
-  - [event](./InterfaceSviViewEvent.md)
   - [fault](./InterfaceSviViewFault.md)
+  - [hfault](./InterfaceSviViewFaultHistory.md)
+  - [event](./InterfaceSviViewEvent.md)
+  - [audit](./InterfaceSviViewAudit.md)
   - [diag](./InterfaceSviViewDiag.md)
   - [all](./InterfaceSviViewAll.md)
-  - [verbose](./InterfaceSviViewVerbose.md)
 
 Output options:
   - [default](./InterfaceSviOutputDefault.md)
@@ -70,13 +71,14 @@ Options:
   --severity [any|critical|major|minor|warning]
                                   Filter faults by severity  [default: any]
   --when TEXT                     Filter faults by timestamp  [default: 7d]
-  -v, --view [state|stats|event|fault|diag|all|verbose]
+  -v, --view TEXT                 [state|stats|fault|hfault|event|audit|diag|a
+                                  ll]  [default: state]
   -o, --output [default|json]     [default: default]
   --no-cache                      Disable cache
   --devel                         Developer output
   --help                          Show this message and exit.
 
-Info: finished in 64 ms and logs saved in /tmp/iserver\b56fd20f2984
+Info: finished in 32 ms and logs saved in /tmp/iserver\4d1cc84865db
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

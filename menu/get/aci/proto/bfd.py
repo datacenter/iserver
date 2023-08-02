@@ -40,7 +40,7 @@ class NoResultExit(Exception):
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by IP subnet")
 @click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
 @click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
-@click.option("--view", "-v", type=click.Choice(['session', 'stats', 'summary', 'event', 'fault', 'diag', 'all', 'verbose'], case_sensitive=False), default='session', show_default=True)
+@click.option("--view", "-v", default=['session'], help="[inst|session|fault|hfault|event|diag|all|verbose]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -73,6 +73,17 @@ def get_aci_node_proto_bfd_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'inst|session|fault|hfault|event|diag|all|verbose',
+        'session',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         aci_output_handler = aci_output.ApicOutput(log_id=ctx.run_id)
@@ -100,7 +111,7 @@ def get_aci_node_proto_bfd_command(
             raise ErrorExit
 
         bfd_filter = []
-        fault_filter = []
+        hfault_filter = []
         event_filter = []
 
         if session_id is not None:
@@ -134,12 +145,12 @@ def get_aci_node_proto_bfd_command(
             )
 
         if fault_severity != 'any':
-            fault_filter.append(
+            hfault_filter.append(
                 'severity:%s' % (fault_severity)
             )
 
         if fault_when is not None:
-            fault_filter.append(
+            hfault_filter.append(
                 'timestamp:%s' % (fault_when)
             )
             event_filter.append(
@@ -156,12 +167,39 @@ def get_aci_node_proto_bfd_command(
         fault_inst = []
         event = []
 
+        instance_info = False
+        session_info = False
+        interface_info = False
         fault_info = False
+        hfault_info = False
         event_info = False
-        if view in ['fault', 'diag', 'all', 'verbose']:
-            fault_info = True
 
-        if view in ['event', 'diag', 'all', 'verbose']:
+        if 'inst' in view:
+            instance_info = True
+            session_info = True
+            interface_info = True
+
+        if 'session' in view:
+            session_info = True
+
+        if 'fault' in view:
+            fault_info = True
+            session_info = True
+
+        if 'hfault' in view:
+            hfault_info = True
+            session_info = True
+
+        if 'event' in view:
+            event_info = True
+            session_info = True
+
+        if 'verbose' in view:
+            instance_info = True
+            session_info = True
+            interface_info = True
+            fault_info = True
+            hfault_info = True
             event_info = True
 
         for node_info in nodes_info:
@@ -169,9 +207,13 @@ def get_aci_node_proto_bfd_command(
                 node_info['podId'],
                 node_info['id'],
                 bfd_filter=bfd_filter,
+                instance_info=instance_info,
+                session_info=session_info,
+                interface_info=interface_info,
                 fault_info=fault_info,
+                hfault_info=hfault_info,
+                hfault_filter=hfault_filter,
                 event_info=event_info,
-                fault_filter=fault_filter,
                 event_filter=event_filter
             )
 
@@ -214,9 +256,6 @@ def get_aci_node_proto_bfd_command(
 
         ctx.busy = False
 
-        if len(instances) == 0:
-            raise NoResultExit
-
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -229,66 +268,12 @@ def get_aci_node_proto_bfd_command(
 
         ctx.my_output.json_output(instances)
 
-        if view == 'session':
-            aci_output_handler.print_proto_bfd_sessions(
-                sessions,
-                title=True
-            )
-
-        if view == 'summary':
+        if 'inst' in view:
             aci_output_handler.print_proto_bfd_instances(
                 instances
             )
 
-        if view == 'stats':
-            aci_output_handler.print_proto_bfd_sessions_stats(
-                sessions,
-                title=True
-            )
-
-        if view == 'event':
-            aci_output_handler.print_proto_bfd_event_logs(
-                event,
-                when=fault_when,
-                title=True
-            )
-
-        if view == 'fault':
-            aci_output_handler.print_proto_bfd_fault_inst(
-                fault_inst,
-                title=True
-            )
-
-            aci_output_handler.print_proto_bfd_fault_record(
-                fault_record,
-                when=fault_when,
-                title=True
-            )
-
-        if view == 'diag':
-            aci_output_handler.print_proto_bfd_event_logs(
-                event,
-                when=fault_when,
-                title=True
-            )
-
-            aci_output_handler.print_proto_bfd_fault_inst(
-                fault_inst,
-                title=True
-            )
-
-            aci_output_handler.print_proto_bfd_fault_record(
-                fault_record,
-                when=fault_when,
-                title=True
-            )
-
-        if view == 'all':
-            aci_output_handler.print_proto_bfd_instances(
-                instances,
-                title=True
-            )
-
+        if 'session' in view:
             aci_output_handler.print_proto_bfd_sessions(
                 sessions,
                 title=True
@@ -299,29 +284,35 @@ def get_aci_node_proto_bfd_command(
                 title=True
             )
 
+        if 'fault' in view:
             aci_output_handler.print_proto_bfd_fault_inst(
                 fault_inst,
                 title=True
             )
 
+        if 'hfault' in view:
             aci_output_handler.print_proto_bfd_fault_record(
                 fault_record,
                 when=fault_when,
                 title=True
             )
 
+        if 'event' in view:
             aci_output_handler.print_proto_bfd_event_logs(
                 event,
                 when=fault_when,
                 title=True
             )
 
-        if view == 'verbose':
+        if 'verbose' in view:
             for session in sessions:
                 aci_output_handler.print_proto_bfd_session(
                     session,
                     when=fault_when
                 )
+
+        if len(instances) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

@@ -22,6 +22,14 @@ class ProtocolLldpInstanceInfo():
             info['enable'] = False
             info['__Output']['adminSt'] = 'Red'
 
+        (info['__Output']['health'], info['health']) = self.get_health_info(
+            managed_object['healthInst']['cur']
+        )
+
+        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+            managed_object['faultCounts']
+        )
+
         return info
 
     def get_protocol_lldp_instance(self, pod_id, node_id):

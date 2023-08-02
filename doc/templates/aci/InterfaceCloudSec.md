@@ -1,14 +1,8 @@
-# Node Interface
+# Node Interface - CloudSec
 
-## CloudSec
+## Command options
 
-Note: Feature *should* work. No environment available to test it (yet).
-
-Node selection options:
-  - single node
-  - selected nodes
-  - all nodes
-  - [multi APIC](./InterfaceCloudSecNodesApics.md)
+Note: Feature *should* work. No environment available to test it.
 
 Filter options:
   - Interface ID
@@ -16,12 +10,17 @@ Filter options:
   - Oper State
 
 View options:
-  - state
-  - verbose
+  - [state](./InterfaceCloudSecViewState.md)
+  - [fault](./InterfaceCloudSecViewFault.md)
+  - [hfault](./InterfaceCloudSecViewFaultHistory.md)
+  - [event](./InterfaceCloudSecViewEvent.md)
+  - [audit](./InterfaceCloudSecViewAudit.md)
+  - [diag](./InterfaceCloudSecViewDiag.md)
+  - [all](./InterfaceCloudSecViewAll.md)
 
-Output options
-  - default
-  - json
+Output options:
+  - [default](./InterfaceCloudSecOutputDefault.md)
+  - [json](./InterfaceCloudSecOutputJson.md)
 
 Command options
 
@@ -29,4 +28,4 @@ Command options
 DOC_TEMPLATE:get_aci_intf_cloudsec.help:output
 ```
 
-[[Back]](./Interface.md)
+[[Back]](./README.md)

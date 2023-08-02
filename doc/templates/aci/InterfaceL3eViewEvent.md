@@ -1,0 +1,15 @@
+# Node Interface - Encapsulated Routed
+
+## Event view
+
+```
+DOC_TEMPLATE:get_aci_intf_l3e.event_view:iserver.output.default
+```
+
+Developer
+
+```
+DOC_TEMPLATE:get_aci_intf_l3e.event_view:devel.debug
+```
+
+[[Back]](./InterfaceL3e.md)
