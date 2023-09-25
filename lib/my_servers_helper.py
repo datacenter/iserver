@@ -16,7 +16,7 @@ class MyServers(Settings):
             self.settings_dir,
             'my_servers'
         )
-        self.my_output = output_helper.OutputHelper()
+        self.my_output = None
 
     def clear_my_servers(self):
         return self.set_my_servers({})
@@ -293,6 +293,9 @@ class MyServers(Settings):
         return self.del_group_servers(group_name, [server])
 
     def print_group(self, group_name):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper()
+
         servers = self.get_group(group_name)
         if servers is None:
             self.my_output.error('Group not found: %s' % (group_name))

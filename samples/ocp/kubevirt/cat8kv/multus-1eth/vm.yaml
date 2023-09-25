@@ -1,0 +1,70 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+  labels:
+    app: ${NAME}
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: ${NAME}-image
+        namespace: ${NAMESPACE}
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: ${IMAGE_SIZE}
+          volumeMode: Block
+        source:
+          pvc:
+            name: ${IMAGE_NAME}
+            namespace: ${IMAGE_NAMESPACE}
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: ${NAME}
+        special: ${NAME}
+    spec:
+      domain:
+        cpu:
+          cores: ${CORES}
+          sockets: ${SOCKETS}
+          threads: ${THREADS}
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cdromdisk
+            cdrom:
+              readOnly: True
+              bus: sata
+          interfaces:
+          - masquerade: {}
+            name: default
+          - name: nic1
+            bridge: {}
+          rng: {}
+        resources:
+          requests:
+            memory: ${MEMORY}
+      hostname: ${NAME}
+      networks:
+      - name: default
+        pod: {}
+      - name: nic1
+        multus:
+          networkName: ${NAMESPACE}/${NAME}-net1
+      volumes:
+        - name: rootdisk
+          dataVolume:
+            name: ${NAME}-image
+        - name: cdromdisk
+          persistentVolumeClaim:
+            claimName: ${NAME}-day0

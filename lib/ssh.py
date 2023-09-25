@@ -147,6 +147,16 @@ class Ssh():
                     sftp.close()
 
                     session.close()
+                except paramiko.ssh_exception.AuthenticationException:
+                    self.my_output.error(
+                        'Authentication failed at %s with username: %s, password: %s, key: %s' % (
+                            self.ip_address,
+                            self.username,
+                            self.password,
+                            self.key_filename
+                        )
+                    )
+                    success = False
                 except BaseException:
                     self.my_output.error(
                         traceback.format_exc()

@@ -142,13 +142,35 @@ class ContractFilterInfo():
 
         for filter_rule in filter_filter:
             (key, value) = filter_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_tenant_name(value, filter_info['nameTenant']):
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, filter_info['tenant']):
                     return False
+
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not filter_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_contract_filter',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not key_found:
+                self.log.error(
+                    'match_contract_filter',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

@@ -57,47 +57,33 @@ class EquipmentPsu(IntersightCommon):
         self.cache_key = 'psu'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
 
-    def is_psu_on(self, item):
-        if item is None:
+    def is_psu_on(self, managed_object):
+        if managed_object is None:
             return False
 
-        if item['Voltage'] == 'ok':
+        if managed_object['Voltage'] == 'ok':
             return True
 
         try:
-            if int(item['Voltage']) > 0:
+            if int(managed_object['Voltage']) > 0:
                 return True
         except BaseException:
             pass
 
         return False
 
-    def get_all(self, max_errors=3, error_timeout=1):
-        items = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if items is not None:
-            for item in items:
-                item['On'] = self.is_psu_on(item)
-
-        return items
-
-    def get_psu_state(self, moid, cache=True):
-        if not cache:
-            return self.is_psu_on(self.get(moid))
-        return self.is_psu_on(self.get_cache_moid(moid))
-
-    def get_psu_info(self, moid, cache=True):
-        if cache:
-            psu_device = self.get_cache_moid(moid)
-        else:
-            psu_device = self.get(moid)
-
-        if psu_device is None:
+    def get_info(self, managed_object):
+        if managed_object is None:
             return None
 
         info = {}
         info['__Output'] = {}
-        for key in ['Moid', 'Name', 'Model', 'Serial', 'Vendor', 'Dn', 'Model', 'Vendor', 'On', 'Voltage']:
-            info[key] = psu_device[key]
+        for key in ['Moid', 'Name', 'Model', 'Serial', 'Vendor', 'Dn', 'Model', 'Vendor', 'Voltage']:
+            info[key] = managed_object[key]
+
+        info['On'] = self.is_psu_on(
+            managed_object
+        )
 
         if info['On']:
             info['__Output']['On'] = 'Green'

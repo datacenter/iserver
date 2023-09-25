@@ -5,7 +5,7 @@ vcenter:
   username: admin@admin.local
   password: "Cisco123!"
   datacenter: eu-spdc-dc
-  datastore: EU-SPDC-Datastore-WNAS
+  datastore: EU-SPDC-Datastore-ZNAS
   cluster: eu-spdc-dc-A-blades
   folder: OCP-Central-CL
   host_ip: esx51-eu-spdc.cisco.com

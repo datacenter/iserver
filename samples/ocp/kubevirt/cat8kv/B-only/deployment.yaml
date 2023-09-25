@@ -51,7 +51,7 @@ variables:
   SRIOV_VF_PREFIX: 24
   SRIOV_VF_NETMASK: 255.255.255.0
   SRIOV_VF_GATEWAY: 15.20.17.254
-  SRIOV_VF_VLAN: 807
+  SRIOV_VF_VLAN: 806
   TOOLS_IP: 10.58.28.207
   TOOLS_USERNAME: cisco
   TOOLS_PASSWORD: "!Cisc0_123"
@@ -74,9 +74,9 @@ netconf:
   username: ${SSH_USERNAME}
   password: ${SSH_PASSWORD}
 running:
-  wait: false
+  wait: true
 ready:
-  enabled: false
+  enabled: true
   type: ssh
   timeout: 600
   sleep: 120

@@ -286,7 +286,7 @@ class BridgeDomainInfo():
 
                 found = False
                 for bd_subnet in bridge_domain_info['fvSubnet']:
-                    if ip_helper.is_subnet_in_subnet(value, bd_subnet['network']):
+                    if ip_helper.is_subnet_in_subnet(bd_subnet['network'], value):
                         found = True
                         break
 
@@ -307,9 +307,21 @@ class BridgeDomainInfo():
                 if not found:
                     return False
 
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not bridge_domain_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_bd',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
             if not key_found:
                 self.log.error(
-                    'match_epg',
+                    'match_bd',
                     'Unsupported key: %s' % (key)
                 )
 

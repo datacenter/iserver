@@ -14,6 +14,9 @@ class OcpVmDeleteDeployment():
         if not self.delete_vm():
             return False
 
+        if not self.delete_multus_network():
+            return False
+
         if not self.delete_sriov_network():
             return False
 
@@ -29,7 +32,7 @@ class OcpVmDeleteDeployment():
 
                         namespace = content['metadata']['namespace']
                         name = content['metadata']['name']
-                        if self.is_ocp_sriov_network_node_policy(namespace, name):
+                        if self.k8s_handler.is_sriov_network_node_policy(name, cache_enabled=False):
                             self.my_output.default(
                                 'SRIOV network node policy remains: %s/%s' % (
                                     namespace,
@@ -53,7 +56,7 @@ class OcpVmDeleteDeployment():
                     namespace = content['metadata']['namespace']
                     name = content['metadata']['name']
 
-                    if self.is_ocp_dv(namespace, name, cache=False) or self.k8s_handler.is_pvc(namespace, name, cache=False):
+                    if self.k8s_handler.is_data_volume(namespace, name, cache_enabled=False) or self.k8s_handler.is_pvc(namespace, name, cache_enabled=False):
                         self.my_output.default(
                             'Image remains: %s/%s' % (
                                 namespace,

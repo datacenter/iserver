@@ -173,11 +173,15 @@ class L3OutInfo():
 
         for ap_rule in l3out_filter:
             (key, value) = ap_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_string(value, l3out_info['name']):
                     return False
 
             if key == 'names':
+                key_found = True
                 found = False
                 for name in value.split(','):
                     if '/' in name:
@@ -192,18 +196,22 @@ class L3OutInfo():
                     return False
 
             if key == 'dn':
+                key_found = True
                 if not filter_helper.match_string(value, l3out_info['dn']):
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, l3out_info['tenant']):
                     return False
 
             if key == 'vrf':
+                key_found = True
                 if not filter_helper.match_string(value, l3out_info['l3extRsEctx']['nameTenant']):
                     return False
 
             if key == 'domain':
+                key_found = True
                 if l3out_info['l3extRsL3DomAtt'] is None:
                     return False
 
@@ -211,6 +219,7 @@ class L3OutInfo():
                     return False
 
             if key == 'mpls':
+                key_found = True
                 if value == 'enabled':
                     if not l3out_info['mplsEnabled']:
                         return False
@@ -220,6 +229,7 @@ class L3OutInfo():
                         return False
 
             if key == 'bgp':
+                key_found = True
                 if value == 'enabled':
                     if not l3out_info['bgpExtP']['enabled']:
                         return False
@@ -229,6 +239,7 @@ class L3OutInfo():
                         return False
 
             if key == 'eigrp':
+                key_found = True
                 if value == 'enabled':
                     if not l3out_info['eigrpExtP']['enabled']:
                         return False
@@ -238,6 +249,7 @@ class L3OutInfo():
                         return False
 
             if key == 'ospf':
+                key_found = True
                 if value == 'enabled':
                     if not l3out_info['ospfExtP']['enabled']:
                         return False
@@ -247,6 +259,7 @@ class L3OutInfo():
                         return False
 
             if key == 'pim':
+                key_found = True
                 if value == 'enabled':
                     if not l3out_info['pimExtP']['enabled']:
                         return False
@@ -256,6 +269,7 @@ class L3OutInfo():
                         return False
 
             if key == 'node':
+                key_found = True
                 found = False
                 for node in l3out_info['nodes']:
                     if filter_helper.match_string(value, node['nodeId']):
@@ -263,6 +277,24 @@ class L3OutInfo():
 
                 if not found:
                     return False
+
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not l3out_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_l3out',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not key_found:
+                self.log.error(
+                    'match_l3out',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

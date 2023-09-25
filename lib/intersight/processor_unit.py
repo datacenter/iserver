@@ -110,46 +110,33 @@ class ProcessorUnit(IntersightCommon):
 
         return False
 
-    def get_processor_units_info(self):
-        processor_units = self.get_all()
-        if processor_units is None:
-            return None
+    def get_processor_unit_info(self, managed_object):
+        info = {}
+        info['__Output'] = {}
+        for key in ['Architecture', 'Model', 'NumCores', 'NumCoresEnabled', 'NumThreads', 'OperState', 'Presence', 'ProcessorId', 'SocketDesignation', 'Speed', 'Stepping', 'Vendor', 'Thermal']:
+            info[key] = managed_object[key]
 
-        processor_units_info = []
-        for processor_unit in processor_units:
-            info = {}
-            info['__Output'] = {}
-            for key in ['Architecture', 'Model', 'NumCores', 'NumCoresEnabled', 'NumThreads', 'OperState', 'Presence', 'ProcessorId', 'SocketDesignation', 'Speed', 'Stepping', 'Vendor', 'Thermal']:
-                info[key] = processor_unit[key]
+        if info['Presence'] == 'equipped':
+            info['__Output']['Presence'] = 'Green'
+        else:
+            info['__Output']['Presence'] = 'Red'
 
-            if info['Presence'] == 'equipped':
-                info['__Output']['Presence'] = 'Green'
+        if info['OperState'] == 'operable':
+            info['__Output']['OperState'] = 'Green'
+        else:
+            info['__Output']['OperState'] = 'Red'
+
+        if len(info['Thermal']) > 0:
+            if info['Thermal'].lower() == 'ok':
+                info['__Output']['Thermal'] = 'Green'
             else:
-                info['__Output']['Presence'] = 'Red'
+                info['__Output']['Thermal'] = 'Red'
 
-            if info['OperState'] == 'operable':
-                info['__Output']['OperState'] = 'Green'
-            else:
-                info['__Output']['OperState'] = 'Red'
+        if self.is_processor_unit_ok(info):
+            info['StateTick'] = '\u2713'
+            info['__Output']['StateTick'] = 'Green'
+        else:
+            info['StateTick'] = '\u2717'
+            info['__Output']['StateTick'] = 'Red'
 
-            if len(info['Thermal']) > 0:
-                if info['Thermal'].lower() == 'ok':
-                    info['__Output']['Thermal'] = 'Green'
-                else:
-                    info['__Output']['Thermal'] = 'Red'
-
-            if self.is_processor_unit_ok(info):
-                info['StateTick'] = '\u2713'
-                info['__Output']['StateTick'] = 'Green'
-            else:
-                info['StateTick'] = '\u2717'
-                info['__Output']['StateTick'] = 'Red'
-
-            processor_units_info.append(info)
-
-        processor_units_info = sorted(
-            processor_units_info,
-            key=lambda i: i['ProcessorId']
-        )
-
-        return processor_units_info
+        return info

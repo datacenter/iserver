@@ -190,65 +190,57 @@ class ComputeBlade(IntersightCommon):
         self.iobject = 'compute blade'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            blade = self.get_cache_moid(moid)
-        else:
-            blade = self.get(moid)
-
-        if blade is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
-        info['Moid'] = blade['Moid']
-        info['Dn'] = blade['Dn']
-        info['Name'] = blade['Name']
-        info['Model'] = blade['Model']
-        info['Serial'] = blade['Serial']
-        info['HardwareUuid'] = blade['HardwareUuid']
-        info['ServiceProfile'] = blade['ServiceProfile']
-        info['SlotId'] = blade['SlotId']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
+        info['Name'] = managed_object['Name']
+        info['Model'] = managed_object['Model']
+        info['Serial'] = managed_object['Serial']
+        info['HardwareUuid'] = managed_object['HardwareUuid']
+        info['ServiceProfile'] = managed_object['ServiceProfile']
+        info['SlotId'] = managed_object['SlotId']
 
-        info['AlarmCritical'] = blade['AlarmSummary']['Critical']
-        info['AlarmWarning'] = blade['AlarmSummary']['Warning']
-        if blade['AlarmSummary']['Warning'] == 0 and blade['AlarmSummary']['Critical'] == 0:
+        info['AlarmCritical'] = managed_object['AlarmSummary']['Critical']
+        info['AlarmWarning'] = managed_object['AlarmSummary']['Warning']
+        if managed_object['AlarmSummary']['Warning'] == 0 and managed_object['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Healthy'
             info['HealthSummary'] = 'Healthy'
             info['__Output']['Health'] = 'Green'
             info['__Output']['HealthSummary'] = 'Green'
-        if blade['AlarmSummary']['Warning'] > 0 and blade['AlarmSummary']['Critical'] == 0:
+        if managed_object['AlarmSummary']['Warning'] > 0 and managed_object['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Warnings'
-            info['HealthSummary'] = 'Warnings (%s)' % (blade['AlarmSummary']['Warning'])
+            info['HealthSummary'] = 'Warnings (%s)' % (managed_object['AlarmSummary']['Warning'])
             info['__Output']['Health'] = 'Yellow'
             info['__Output']['HealthSummary'] = 'Yellow'
-        if blade['AlarmSummary']['Critical'] > 0:
+        if managed_object['AlarmSummary']['Critical'] > 0:
             info['Health'] = 'Critical'
-            info['HealthSummary'] = 'Critical (%s)' % (blade['AlarmSummary']['Critical'])
+            info['HealthSummary'] = 'Critical (%s)' % (managed_object['AlarmSummary']['Critical'])
             info['__Output']['Health'] = 'Red'
             info['__Output']['HealthSummary'] = 'Red'
 
-        info['OperPowerState'] = blade['OperPowerState']
+        info['OperPowerState'] = managed_object['OperPowerState']
         info['PowerOn'] = False
-        if blade['OperPowerState'] == 'on':
+        if managed_object['OperPowerState'] == 'on':
             info['PowerOn'] = True
 
-        info['NumAdaptors'] = blade['NumAdaptors']
-        info['NumCpuCores'] = blade['NumCpuCores']
-        info['NumCpuCoresEnabled'] = blade['NumCpuCoresEnabled']
-        info['NumCpus'] = blade['NumCpus']
-        info['NumThreads'] = blade['NumThreads']
+        info['NumAdaptors'] = managed_object['NumAdaptors']
+        info['NumCpuCores'] = managed_object['NumCpuCores']
+        info['NumCpuCoresEnabled'] = managed_object['NumCpuCoresEnabled']
+        info['NumCpus'] = managed_object['NumCpus']
+        info['NumThreads'] = managed_object['NumThreads']
         info['CpuSummary'] = '%sS %sC %sT' % (
             info['NumCpus'],
             info['NumCpuCores'],
             info['NumThreads']
         )
-        info['TotalMemory'] = blade['TotalMemory']
+        info['TotalMemory'] = managed_object['TotalMemory']
         info['TotalMemoryUnit'] = self.info_helper.convert_memory(
             info['TotalMemory'] * 1024 * 1024
         )
 
-        info['NumEthHostInterfaces'] = blade['NumEthHostInterfaces']
-        info['NumFcHostInterfaces'] = blade['NumFcHostInterfaces']
+        info['NumEthHostInterfaces'] = managed_object['NumEthHostInterfaces']
+        info['NumFcHostInterfaces'] = managed_object['NumFcHostInterfaces']
 
         return info

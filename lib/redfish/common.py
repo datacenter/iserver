@@ -4,6 +4,7 @@ import time
 import traceback
 import requests
 
+from lib import info_helper
 from lib import log_helper
 from lib import output_helper
 
@@ -52,6 +53,8 @@ class RedfishEndpointCommon():
                 )
 
         self.deep_search_exclusions = deep_search_exlusions
+
+        self.info_handler = info_helper.InfoHelper()
 
     def get_endpoint_configuration(self):
         configuration = {}
@@ -540,3 +543,36 @@ class RedfishEndpointCommon():
             return None
 
         return self.system_id
+
+    def _get_property_value(self, value, key):
+        if value is None:
+            return '__ERROR'
+
+        if ':' in key:
+            subkey = key.split(':')[0]
+            if subkey not in value:
+                return '__ERROR'
+
+            new_key = ':'.join(key.split(':')[1:])
+            return self._get_property_value(value[subkey], new_key)
+
+        if key in value:
+            return value[key]
+
+        return '__ERROR'
+
+    def get_property_value(self, managed_object, key, on_error=None, on_none=None):
+        if managed_object is None:
+            return on_error
+
+        if not isinstance(managed_object, dict):
+            return on_error
+
+        value = self._get_property_value(managed_object, key)
+        if value == '__ERROR':
+            return on_error
+
+        if value is None:
+            return on_none
+
+        return value

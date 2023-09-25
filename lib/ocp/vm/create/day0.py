@@ -35,7 +35,7 @@ class OcpVmCreateDay0():
     def create_ocp_vm_day0(self, source_filename, source_content, destination, data_volume, tools=None):
         data_volume_namespace = data_volume['metadata']['namespace']
         data_volume_name = data_volume['metadata']['name']
-        if self.is_ocp_dv(data_volume_namespace, data_volume_name):
+        if self.k8s_handler.is_data_volume(data_volume_namespace, data_volume_name):
             self.my_output.default(
                 'Day0 data volume already exists: %s/%s' % (
                     data_volume_namespace,
@@ -193,7 +193,7 @@ class OcpVmCreateDay0():
             )
         )
 
-        success = self.create_ocp_dv(
+        success = self.k8s_handler.create_data_volume(
             data_volume
         )
         if not success:
@@ -211,6 +211,18 @@ class OcpVmCreateDay0():
                 data_volume['metadata']['name']
             )
         )
+
+        self.my_output.default(
+            'Wait till pvc %s/%s reaches bound state' % (
+                data_volume['metadata']['namespace'],
+                data_volume['metadata']['name']
+            )
+        )
+        if not self.k8s_handler.wait_pvc_bound(data_volume_namespace, data_volume_name):
+            self.my_output.error(
+                'Day0 PVC did not reach bound state'
+            )
+            return False
 
         attempt = 1
         while True:

@@ -3,7 +3,6 @@ import json
 import traceback
 
 from lib import log_helper
-from lib import output_helper
 from lib.settings_helper import Settings
 
 
@@ -11,12 +10,6 @@ class EndpointSettings(Settings):
     def __init__(self, log_id=None):
         Settings.__init__(self)
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
-
         self.endpoint_directory = os.path.join(
             self.settings_dir,
             'endpoint'

@@ -1,4 +1,3 @@
-from lib import output_helper
 from lib.intersight.intersight_common import IntersightCommon
 
 
@@ -127,39 +126,19 @@ class AssetDeviceRegistration(IntersightCommon):
     """
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'asset deviceregistration'
-        self.cache_key = 'asset_device_registration'
-        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-        self.my_output = output_helper.OutputHelper(log_id=log_id)
-
-    def get_info(self, moid, cache=True):
-        item = None
-        if cache:
-            item = self.get_cache_moid(moid)
-            if self.log.is_cache(self.cache_key) and item is None:
-                return None
-
-        if not cache and self.log.is_cache(self.cache_key):
-            item = self.get_cache_moid(moid)
-            if item is None:
-                return None
-
-        if item is None:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
-        info['Moid'] = item['Moid']
-        info['ClaimedByUserName'] = item['ClaimedByUserName']
-        info['ClaimedTime'] = item['ClaimedTime']
-        info['PlatformType'] = item['PlatformType']
-        info['ConnectorVersion'] = item['ConnectorVersion']
-        info['ConnectionStatus'] = item['ConnectionStatus']
-        info['DeviceExternalIpAddress'] = item['DeviceExternalIpAddress']
-        info['ConnectionStatusLastChangeTime'] = item['ConnectionStatusLastChangeTime']
+        info['Moid'] = managed_object['Moid']
+        info['ClaimedByUserName'] = managed_object['ClaimedByUserName']
+        info['ClaimedTime'] = managed_object['ClaimedTime']
+        info['PlatformType'] = managed_object['PlatformType']
+        info['ConnectorVersion'] = managed_object['ConnectorVersion']
+        info['ConnectionStatus'] = managed_object['ConnectionStatus']
+        info['DeviceExternalIpAddress'] = managed_object['DeviceExternalIpAddress']
+        info['ConnectionStatusLastChangeTime'] = managed_object['ConnectionStatusLastChangeTime']
         if info['ConnectionStatus'] == 'Connected':
             info['__Output']['ConnectionStatus'] = 'Green'
             info['Connected'] = True

@@ -1,5 +1,3 @@
-from lib import output_helper
-
 from lib.intersight.intersight_common import IntersightCommon
 from lib.intersight import hcl_operating_system_vendor
 
@@ -34,7 +32,6 @@ class HclOperatingSystem(IntersightCommon):
         self.iobject = 'hcl operatingsystem'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
         self.log_id = log_id
-        self.my_output = None
 
     def get_vendor_versions(self, vendor_id):
         all_versions = IntersightCommon.get_all(self)
@@ -70,40 +67,3 @@ class HclOperatingSystem(IntersightCommon):
         if self.get_vendor_version(vendor_id, version_name) is None:
             return False
         return True
-
-    def print(self, versions):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(log_id=self.log_id)
-
-        vendor_handler = hcl_operating_system_vendor.HclOperatingSystemVendor(self.iaccount)
-        vendors = vendor_handler.get_all()
-
-        for version in versions:
-            version['Vendor_id'] = None
-            version['Vendor_name'] = None
-            if vendors is not None:
-                for vendor in vendors:
-                    if vendor['Moid'] == version['Vendor']['Moid']:
-                        version['Vendor_id'] = vendor['Moid']
-                        version['Vendor_name'] = vendor['Name']
-
-        sorted_versions = sorted(versions, key=lambda i: i['Version'])
-
-        order = [
-            'Vendor_id',
-            'Vendor_name',
-            'Moid',
-            'Version'
-        ]
-        headers = [
-            'Vendor Moid',
-            'Vendor Version',
-            'Version Moid',
-            'Version Name'
-        ]
-        self.my_output.my_table(
-            sorted_versions,
-            order=order,
-            headers=headers,
-            table=True
-        )

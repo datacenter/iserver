@@ -73,15 +73,7 @@ class PowerControlState(IntersightCommon):
         self.iobject = 'power controlstate'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         keys = [
             'Moid',
             'AllocatedPower',
@@ -98,12 +90,12 @@ class PowerControlState(IntersightCommon):
 
         info = {}
         for key in keys:
-            info[key] = item[key]
+            info[key] = managed_object[key]
 
-        if item['AllocatedPower'] == 0:
-            item['AllocatedBudget'] = 'Not set'
+        if managed_object['AllocatedPower'] == 0:
+            managed_object['AllocatedBudget'] = 'Not set'
         else:
-            item['AllocatedBudget'] = item['AllocatedPower']
+            managed_object['AllocatedBudget'] = managed_object['AllocatedPower']
 
         keys = [
             'Moid',

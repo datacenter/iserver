@@ -21,21 +21,50 @@ class OcpClusterOutput(
 
     def print_ocp_clusters(self, clusters):
         order = [
-            'name',
-            'parameters.ocp.installation',
-            'parameters.ocp.release',
-            'parameters.cni.type'
+            'name'
         ]
 
         headers = [
-            'Name',
-            'Type',
-            'Release',
-            'CNI'
+            'Name'
         ]
 
         self.my_output.my_table(
             clusters,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            table=True
+        )
+
+    def print_ocp_clusters_state(self, info):
+        order = [
+            'name',
+            'online',
+            'ocp',
+            'version',
+            'cni',
+            'cluster.cidr',
+            'cluster.hostPrefix',
+            'service'
+        ]
+
+        headers = [
+            'Name',
+            'Online',
+            'OCP',
+            'Kubernetes',
+            'CNI',
+            'Cluster CIDR',
+            'Prefix',
+            'Service'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['cluster', 'service']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,

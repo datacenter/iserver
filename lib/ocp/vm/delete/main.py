@@ -5,7 +5,6 @@ from lib.ocp.vm.delete.network import OcpVmDeleteNetwork
 from lib.ocp.vm.delete.policy import OcpVmDeletePolicy
 from lib.ocp.vm.delete.service import OcpVmDeleteService
 from lib.ocp.vm.delete.vm import OcpVmDeleteVm
-from lib.ocp.vm.delete.vmi import OcpVmDeleteVmi
 
 
 class OcpVmDelete(
@@ -15,8 +14,7 @@ class OcpVmDelete(
     OcpVmDeleteNetwork,
     OcpVmDeletePolicy,
     OcpVmDeleteService,
-    OcpVmDeleteVm,
-    OcpVmDeleteVmi
+    OcpVmDeleteVm
     ):
     def __init__(self):
         OcpVmDeleteDay0.__init__(self)
@@ -26,4 +24,3 @@ class OcpVmDelete(
         OcpVmDeletePolicy.__init__(self)
         OcpVmDeleteService.__init__(self)
         OcpVmDeleteVm.__init__(self)
-        OcpVmDeleteVmi.__init__(self)

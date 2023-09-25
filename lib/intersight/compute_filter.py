@@ -1,5 +1,3 @@
-import json
-
 from lib import ip_helper
 
 
@@ -302,50 +300,6 @@ class ComputeFilter():
         if rules is None:
             return True
 
-        if not self.ip_filter_match(server, rules['ip']):
-            if debug_logs:
-                self.log.debug(
-                    'compute_filter.match_server',
-                    'Server %s match fails on IP %s' % (
-                        server['Moid'],
-                        rules['ip']
-                    )
-                )
-            return False
-
-        if not self.name_filter_match(server, rules['name']):
-            if debug_logs:
-                self.log.debug(
-                    'compute_filter.match_server',
-                    'Server %s match fails on name %s' % (
-                        server['Moid'],
-                        rules['name']
-                    )
-                )
-            return False
-
-        if not self.model_filter_match(server, rules['model']):
-            if debug_logs:
-                self.log.debug(
-                    'compute_filter.match_server',
-                    'Server %s match fails on model %s' % (
-                        server['Moid'],
-                        rules['model']
-                    )
-                )
-            return False
-
-        if not self.serial_filter_match(server, rules['serials']):
-            if debug_logs:
-                self.log.debug(
-                    'compute_filter.match_server',
-                    'Server %s match fails on serial %s' % (
-                        server['Moid'],
-                        rules['serials']
-                    )
-                )
-            return False
-
         if 'ancestor' in rules:
             if not self.ancestor_filter_match(server, rules['ancestor']):
                 if debug_logs:
@@ -495,3 +449,100 @@ class ComputeFilter():
             return False
 
         return True
+
+    def ip_filter_match_mo(self, server_mo, ip_filter):
+        if server_mo['ManagementIp'] is None:
+            return False
+
+        for item in ip_filter:
+            if item['type'] == 'address':
+                if server_mo['ManagementIp'] == item['value']:
+                    return True
+
+            if item['type'] == 'subnet':
+                if ip_helper.is_ipv4_in_cidr(server_mo['ManagementIp'], item['value']):
+                    return True
+
+        return False
+
+    def name_filter_match_mo(self, server_mo, name_filter):
+        for item in name_filter:
+            if item.lower() in server_mo['Name'].lower():
+                return True
+        return False
+
+    def model_filter_match_mo(self, server, model_filter):
+        for item in model_filter:
+            if item.lower() in server['Model'].lower():
+                return True
+        return False
+
+    def serial_filter_match_mo(self, server, serials):
+        if server['Serial'] in serials:
+            return True
+        return False
+
+    def match_server_mo(self, server_mo, match_rules):
+        if match_rules is None:
+            return True
+
+        if 'ip' in match_rules and len(match_rules['ip']) > 0:
+            if not self.ip_filter_match_mo(server_mo, match_rules['ip']):
+                return False
+
+        if 'name' in match_rules and len(match_rules['name']) > 0:
+            if not self.name_filter_match_mo(server_mo, match_rules['name']):
+                return False
+
+        if 'model' in match_rules and len(match_rules['model']) > 0:
+            if not self.model_filter_match_mo(server_mo, match_rules['model']):
+                return False
+
+        if 'serial' in match_rules and len(match_rules['serial']) > 0:
+            if not self.serial_filter_match_mo(server_mo, match_rules['serial']):
+                return False
+
+        return True
+
+    def get_mo_match_rules(self, ip_filter=None, name_filter=None, serial_filter=None, model_filter=None):
+        match_rules = {}
+        match_rules['ip'] = []
+        match_rules['name'] = []
+        match_rules['serial'] = []
+        match_rules['model'] = []
+
+        if ip_filter is not None and len(ip_filter) > 0:
+            for ip_filter_entry in ip_filter:
+                if ip_helper.is_valid_ipv4_address(ip_filter_entry):
+                    match_rules['ip'].append(
+                        dict(
+                            type='address',
+                            value=ip_filter_entry
+                        )
+                    )
+                    continue
+
+                if ip_helper.is_valid_ipv4_cidr(ip_filter_entry):
+                    match_rules['ip'].append(
+                        dict(
+                            type='subnet',
+                            value=ip_filter_entry
+                        )
+                    )
+                    continue
+
+                self.log_handler.error(
+                    'get_mo_match_rules',
+                    'Invalid ip entry: %s' % (ip_filter_entry)
+                )
+
+        if name_filter is not None and len(name_filter) > 0:
+            match_rules['name'] = name_filter
+
+        if serial_filter is not None and len(serial_filter) > 0:
+            match_rules['serial'] = serial_filter
+
+        if model_filter is not None and len(model_filter) > 0:
+            match_rules['model'] = model_filter
+
+        return match_rules

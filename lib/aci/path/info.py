@@ -68,7 +68,7 @@ class FabricPathInfo():
             port_info['pod_id'] = info['dn'].split('/')[1].split('-')[1]
             port_info['node_id'] = info['dn'].split('/')[2].split('-')[1]
             port_info['port_id'] = info['name']
-            port_info['ep'] = 'pod-%s node-%s %s' % (
+            port_info['ep'] = 'pod-%s:node-%s:%s' % (
                 port_info['pod_id'],
                 port_info['node_id'],
                 port_info['port_id']

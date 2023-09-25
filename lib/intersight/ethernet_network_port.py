@@ -91,38 +91,30 @@ class EthernetNetworkPort(IntersightCommon):
         self.iobject = 'ether networkport'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            network_port = self.get_cache_moid(moid)
-        else:
-            network_port = self.get(moid)
-
-        if network_port is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = network_port['Moid']
-        info['Dn'] = network_port['Dn']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
         info['Name'] = '%s/%s' % (
-            network_port['SlotId'],
-            network_port['PortId']
+            managed_object['SlotId'],
+            managed_object['PortId']
         )
 
-        info['IoModuleId'] = network_port['EquipmentIoCardBase']['Moid']
-        info['ModuleId'] = network_port['ModuleId']
-        info['OperState'] = network_port['OperState']
+        info['IoModuleId'] = managed_object['EquipmentIoCardBase']['Moid']
+        info['ModuleId'] = managed_object['ModuleId']
+        info['OperState'] = managed_object['OperState']
         info['Up'] = False
         if info['OperState'] == 'up':
             info['Up'] = True
-        info['PeerDn'] = network_port['PeerDn']
+        info['PeerDn'] = managed_object['PeerDn']
         info['PeerInterfaceId'] = None
         info['PeerInterfaceType'] = None
-        if network_port['PeerInterface'] is not None:
-            info['PeerInterfaceId'] = network_port['PeerInterface']['Moid']
-            info['PeerInterfaceType'] = network_port['PeerInterface']['ObjectType']
-        info['PortId'] = network_port['PortId']
-        info['SlotId'] = network_port['SlotId']
-        info['Speed'] = network_port['Speed']
-        info['SwitchId'] = network_port['SwitchId']
+        if managed_object['PeerInterface'] is not None:
+            info['PeerInterfaceId'] = managed_object['PeerInterface']['Moid']
+            info['PeerInterfaceType'] = managed_object['PeerInterface']['ObjectType']
+        info['PortId'] = managed_object['PortId']
+        info['SlotId'] = managed_object['SlotId']
+        info['Speed'] = managed_object['Speed']
+        info['SwitchId'] = managed_object['SwitchId']
 
         return info

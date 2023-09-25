@@ -14,7 +14,7 @@ class OcpVmCreatePolicy():
 
                     namespace = content['metadata']['namespace']
                     name = content['metadata']['name']
-                    if self.is_ocp_sriov_network_node_policy(namespace, name):
+                    if self.k8s_handler.is_sriov_network_node_policy(name, cache_enabled=False):
                         self.my_output.default(
                             'SRIOV network node policy already exists: %s/%s' % (
                                 namespace,
@@ -30,7 +30,7 @@ class OcpVmCreatePolicy():
                         )
                     )
 
-                    success = self.create_ocp_sriov_network_node_policy(
+                    success = self.k8s_handler.create_sriov_network_node_policy(
                         content
                     )
                     if not success:

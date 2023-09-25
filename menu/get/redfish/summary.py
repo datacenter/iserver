@@ -4,8 +4,7 @@ import threading
 import traceback
 import click
 
-from progress.bar import Bar
-
+from lib.intersight import compute
 from lib.redfish import endpoint_settings
 
 from menu import common
@@ -49,29 +48,23 @@ def get_redfish_summary_command(
             threading.Thread(target=progress.spinner_task, args=(ctx,)).start()
             bar_enabled = True
 
-        servers = common.get_servers(
-            ctx,
-            iaccount,
-            locator=False,
-            server_setting_id=False,
-            workflow=None,
-            registration=False
-        )
-        if servers is None or len(servers) == 0:
+        compute_handler = compute.Compute(iaccount, log_id=ctx.run_id)
+        servers_mo = compute_handler.get()
+        if servers_mo is None or len(servers_mo) == 0:
             ctx.my_output.default('No servers found')
             return
 
         endpoint_settings_handler = endpoint_settings.RedfishEndpointSettings(
             log_id=ctx.run_id
         )
-        servers = endpoint_settings_handler.get_servers_redfish_settings(
-            servers,
+        servers_mo = endpoint_settings_handler.get_servers_redfish_settings(
+            servers_mo,
             verify=verify,
             bar_enabled=bar_enabled
         )
 
         summary = endpoint_settings_handler.get_servers_redfish_summary(
-            servers,
+            servers_mo,
             verify=verify
         )
 

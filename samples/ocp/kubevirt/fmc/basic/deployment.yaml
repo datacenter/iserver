@@ -1,0 +1,56 @@
+kind: VirtualMachineDeployment
+deployment:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+  vm: vm.yaml
+  image:
+    enabled: true
+    ip: ${TOOLS_IP}
+    username: ${TOOLS_USERNAME}
+    password: "${TOOLS_PASSWORD}"
+    path: ${IMAGE_PATH}${IMAGE_FILENAME}
+    size: ${IMAGE_SIZE}
+    dv: image.yaml
+  day0:
+    enabled: true
+    filename: day0-config
+    source: day0-config
+    destination: day0.iso
+    size: ${DAY0_SIZE}
+    dv: day0.yaml
+variables:
+  NAME: fmc
+  NAMESPACE: default
+  NODE: ocp-bm2
+  CORES: 4
+  SOCKETS: 1
+  THREADS: 1
+  MEMORY: 32Gi
+  IMAGE_NAME: fmc-7.2.5-208-image
+  IMAGE_NAMESPACE: default
+  IMAGE_PATH: /home/cisco/image/
+  IMAGE_FILENAME: Cisco_Secure_FW_Mgmt_Center_Virtual_KVM-7.2.5-208.qcow2
+  IMAGE_SIZE: 260Gi
+  DAY0_SIZE: 1Gi
+  MACVLAN_MASTER: eno5
+  SSH_USERNAME: admin
+  SSH_PASSWORD: Cisco_123
+  DOMAIN_NAME: cisco.com
+  TOOLS_IP: 10.58.28.207
+  TOOLS_USERNAME: cisco
+  TOOLS_PASSWORD: "!Cisc0_123"
+tools:
+  enabled: true
+  ip: ${TOOLS_IP}
+  username: ${TOOLS_USERNAME}
+  password: "${TOOLS_PASSWORD}"
+ssh:
+  enabled: true
+  type: cisco
+  username: ${SSH_USERNAME}
+  password: ${SSH_PASSWORD}
+ready:
+  enabled: true
+  type: ssh
+  timeout: 600
+  sleep: 120

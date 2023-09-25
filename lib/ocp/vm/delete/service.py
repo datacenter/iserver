@@ -6,28 +6,26 @@ class OcpVmDeleteService():
         pass
 
     def delete_ocp_vm_services(self, label_special):
-        services_mo = self.get_ocp_vm_services(
+        services_info = self.k8s_handler.get_services_with_special_label(
             label_special
         )
 
-        if services_mo is not None and len(services_mo) > 0:
-            for service_mo in services_mo:
-                service_namespace = service_mo['metadata']['namespace']
-                service_name = service_mo['metadata']['name']
-                if not self.k8s_handler.delete_namespaced_service(service_namespace, service_name):
+        if services_info is not None and len(services_info) > 0:
+            for service_info in services_info:
+                if not self.k8s_handler.delete_namespaced_service(service_info['namespace'], service_info['name']):
                     self.log.error(
                         'delete_ocp_vm_service',
-                        'Service delete failed: %s/%s' % (service_namespace, service_name)
+                        'Service delete failed: %s/%s' % (service_info['namespace'], service_info['name'])
                     )
                     return False
 
                 self.log.debug(
                     'delete_ocp_vm_service',
-                    'Service deleted: %s/%s' % (service_namespace, service_name)
+                    'Service deleted: %s/%s' % (service_info['namespace'], service_info['name'])
                 )
 
                 self.my_output.default(
-                    'Service %s/%s deleted' % (service_namespace, service_name)
+                    'Service %s/%s deleted' % (service_info['namespace'], service_info['name'])
                 )
 
         return True
@@ -41,7 +39,7 @@ class OcpVmDeleteService():
         if 'spec' in content:
             if 'special' in content['spec']['template']['metadata']['labels']:
                 label_special = content['spec']['template']['metadata']['labels']['special']
-                is_service = self.is_ocp_vm_services(
+                is_service = self.k8s_handler.is_service_with_special_label(
                     label_special
                 )
 

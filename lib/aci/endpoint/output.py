@@ -14,8 +14,16 @@ class EndpointOutput():
 
         return True
 
-    def print_endpoints(self, endpoints, bridge_domain_name=True, stream='default'):
+    def print_endpoints(self, endpoints, bridge_domain_name=True, stream='default', title=False):
+        if title:
+            self.my_output.default(
+                'Endpoint [#%s]' % (len(endpoints)),
+                underline=True,
+                before_newline=True
+            )
+
         if len(endpoints) == 0:
+            self.my_output.default('None')
             return
 
         is_apic = self.print_endpoints_apic(endpoints)
@@ -30,7 +38,8 @@ class EndpointOutput():
             'epgNameApTenant',
             'encapT',
             'bdNameTenant',
-            'vrfNameTenant'
+            'vrfNameTenant',
+            'fabric.ep'
         ]
 
         headers = []
@@ -44,57 +53,13 @@ class EndpointOutput():
             'EPG',
             'Encap',
             'BD',
-            'VRF'
+            'VRF',
+            'Fabric'
         ]
 
         if not bridge_domain_name:
             order.remove('bdNameTenant')
             headers.remove('BD')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                endpoints,
-                order,
-                ['fvIp']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            remove_empty_columns=True,
-            table=True,
-            stream=stream
-        )
-
-    def print_endpoints_fabric(self, endpoints, stream='default'):
-        order = []
-
-        is_apic = self.print_endpoints_apic(endpoints)
-        if is_apic:
-            order = ['apic']
-
-        order = order + [
-            'flags',
-            'mac',
-            'fvIp.addr',
-            'epgName',
-            'encapT',
-            'fabric.ep'
-        ]
-
-        headers = []
-        if is_apic:
-            headers = ['Apic']
-
-        headers = headers + [
-            'SF',
-            'MAC Address',
-            'IP Address',
-            'EPG',
-            'Encapsulation',
-            'Fabric'
-        ]
 
         self.my_output.my_table(
             self.my_output.expand_lists(

@@ -8,21 +8,13 @@ class BootIscsiDevice(IntersightCommon):
         self.iobject = 'boot iscsidevice'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
 
-        info['Moid'] = item['Moid']
-        info['Name'] = item['Name']
-        info['Order'] = item['Order']
-        info['State'] = item['State']
-        info['Type'] = item['Type']
+        info['Moid'] = managed_object['Moid']
+        info['Name'] = managed_object['Name']
+        info['Order'] = managed_object['Order']
+        info['State'] = managed_object['State']
+        info['Type'] = managed_object['Type']
 
         return info

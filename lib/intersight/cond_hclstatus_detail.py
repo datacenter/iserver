@@ -83,15 +83,7 @@ class CondHclStatusDetail(IntersightCommon):
         self.iobject = 'cond hclstatusdetail'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
@@ -109,8 +101,8 @@ class CondHclStatusDetail(IntersightCommon):
         ]
 
         for key in keys:
-            if key in item:
-                info[key] = item[key]
+            if key in managed_object:
+                info[key] = managed_object[key]
 
         for key in ['Status', 'SoftwareStatus', 'HardwareStatus']:
             if key in info:

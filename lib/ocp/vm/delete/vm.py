@@ -5,9 +5,6 @@ class OcpVmDeleteVm():
     def __init__(self):
         pass
 
-    def delete_ocp_vm(self, namespace, vm_name):
-        return self.kubevirt_handler.delete_namespaced_virtual_machine(namespace, vm_name)
-
     def delete_vm(self):
         vm_filename = self.user_input['deployment']['vm']
         yaml_content = self.user_input['files'][vm_filename]
@@ -16,14 +13,16 @@ class OcpVmDeleteVm():
         namespace = content['metadata']['namespace']
         name = content['metadata']['name']
 
-        is_running = self.is_ocp_vmi_mo(
+        is_running = self.k8s_handler.is_virtual_machine_instance(
             namespace,
-            name
+            name,
+            cache_enabled=False
         )
 
-        is_defined = self.is_ocp_vm_mo(
+        is_defined = self.k8s_handler.is_virtual_machine(
             namespace,
-            name
+            name,
+            cache_enabled=False
         )
 
         if not is_running:
@@ -41,12 +40,12 @@ class OcpVmDeleteVm():
                     name
                 )
             )
-            if not self.stop_ocp_vm(namespace, name):
+            if not self.kubevirt_handler.stop_virtual_machine(namespace, name):
                 self.my_output.error('Virtual machine stop failed')
                 return False
 
             self.my_output.default('Wait for virtual machine stopped...')
-            if not self.wait_ocp_vm_stopped(namespace, name):
+            if not self.kubevirt_handler.wait_virtual_machine_stopped(namespace, name):
                 self.my_output.error('Timed out')
                 return False
 
@@ -65,7 +64,7 @@ class OcpVmDeleteVm():
                     name
                 )
             )
-            success = self.delete_ocp_vm(
+            success = self.kubevirt_handler.delete_namespaced_virtual_machine(
                 namespace,
                 name
             )

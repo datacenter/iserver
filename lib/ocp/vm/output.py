@@ -6,7 +6,7 @@ class OcpVmOutput():
         order = [
             'namespace',
             'name',
-            'nodeName',
+            'node_name',
             'cpu.cores',
             'memory',
             'state',
@@ -171,7 +171,7 @@ class OcpVmOutput():
     def print_ocp_vms(self, info):
         order = [
             'namespace_name',
-            'nodeName',
+            'node_name',
             'cpu.cores',
             'memory',
             'disks.info',
@@ -179,8 +179,8 @@ class OcpVmOutput():
             'state',
             'readyTick',
             'failures',
-            'ports.protocol_port',
-            'ports.ip_port',
+            'services.namespace_name',
+            'services.ports',
             'liveMigrationTick',
             'age'
         ]
@@ -201,11 +201,23 @@ class OcpVmOutput():
             'Age'
         ]
 
+        for item in info:
+            if len(item['failures']) == 0:
+                item['failures'].append('--')
+
+            if len(item['services']) == 0:
+                item['services'].append(
+                    dict(
+                        namespace_name='--',
+                        ports='--'
+                    )
+                )
+
         self.my_output.my_table(
             self.my_output.expand_lists(
                 info,
                 order,
-                ['disks', 'interfaces', 'ports', 'failures']
+                ['disks', 'interfaces', 'services', 'failures']
             ),
             order=order,
             headers=headers,
@@ -421,13 +433,13 @@ class OcpVmOutput():
 
         order = [
             'namespace_name',
-            'services.selector',
+            'services.specialT',
             'services.namespace_name',
             'services.type',
             'services.cluster_ip',
             'services.external_traffic_policy',
-            'services.ports.protocol_port',
-            'services.ports.ip_port'
+            'services.ports',
+            'services.age'
         ]
 
         headers = [
@@ -437,20 +449,9 @@ class OcpVmOutput():
             'Type',
             'Cluster IP',
             'External Traffic Policy',
-            'Target',
-            'Node Port'
+            'Port',
+            'Age'
         ]
-
-        for item in info:
-            service_order = [
-                'ports.protocol_port',
-                'ports.ip_port'
-            ]
-            item['services'] = self.my_output.expand_lists(
-                item['services'],
-                service_order,
-                ['ports']
-            )
 
         self.my_output.my_table(
             self.my_output.expand_lists(

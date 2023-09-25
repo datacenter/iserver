@@ -12,11 +12,12 @@ class OcpVmGetImage():
         return True
 
     def get_ocp_dv_vm_image(self, image_filename, cache=True):
-        if not self.get_ocp_dvs(cache=cache):
+        data_volumes = self.k8s_handler.get_data_volumes(return_mo=True, cache_enabled=cache)
+        if data_volumes is None:
             return []
 
         image_mo = []
-        for dv_mo in self.dvs:
+        for dv_mo in data_volumes:
             if 'labels' not in dv_mo['metadata']:
                 continue
 

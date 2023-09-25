@@ -109,44 +109,36 @@ class NetworkElementSummary(IntersightCommon):
         self.iobject = 'network elementsummary'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = item['Moid']
-        info['Name'] = item['Name']
-        if item['AlarmSummary']['Warning'] == 0 and item['AlarmSummary']['Critical'] == 0:
+        info['Moid'] = managed_object['Moid']
+        info['Name'] = managed_object['Name']
+        if managed_object['AlarmSummary']['Warning'] == 0 and managed_object['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Healthy'
             info['HealthSummary'] = 'Healthy'
-        if item['AlarmSummary']['Warning'] > 0 and item['AlarmSummary']['Critical'] == 0:
+        if managed_object['AlarmSummary']['Warning'] > 0 and managed_object['AlarmSummary']['Critical'] == 0:
             info['Health'] = 'Warnings'
-            info['HealthSummary'] = 'Warnings (%s)' % (item['AlarmSummary']['Warning'])
-        if item['AlarmSummary']['Critical'] > 0:
+            info['HealthSummary'] = 'Warnings (%s)' % (managed_object['AlarmSummary']['Warning'])
+        if managed_object['AlarmSummary']['Critical'] > 0:
             info['Health'] = 'Critical'
-            info['HealthSummary'] = 'Critical (%s)' % (item['AlarmSummary']['Critical'])
+            info['HealthSummary'] = 'Critical (%s)' % (managed_object['AlarmSummary']['Critical'])
 
-        info['ConnectionStatus'] = item['ConnectionStatus']
-        info['Dn'] = item['Dn']
-        info['Model'] = item['Model']
-        info['NumEtherPorts'] = item['NumEtherPorts']
-        info['NumEtherPortsConfigured'] = item['NumEtherPortsConfigured']
-        info['NumEtherPortsLinkUp'] = item['NumEtherPortsLinkUp']
+        info['ConnectionStatus'] = managed_object['ConnectionStatus']
+        info['Dn'] = managed_object['Dn']
+        info['Model'] = managed_object['Model']
+        info['NumEtherPorts'] = managed_object['NumEtherPorts']
+        info['NumEtherPortsConfigured'] = managed_object['NumEtherPortsConfigured']
+        info['NumEtherPortsLinkUp'] = managed_object['NumEtherPortsLinkUp']
         info['NumEtherPortsSummary'] = '%s/%s/%s' % (
             info['NumEtherPortsLinkUp'],
             info['NumEtherPortsConfigured'],
             info['NumEtherPorts']
         )
-        info['OutOfBandIpAddress'] = item['OutOfBandIpAddress']
-        info['OutOfBandIpGateway'] = item['OutOfBandIpGateway']
-        info['OutOfBandIpMask'] = item['OutOfBandIpMask']
-        info['Serial'] = item['Serial']
-        info['SwitchId'] = item['SwitchId']
-        info['Version'] = item['Version']
+        info['OutOfBandIpAddress'] = managed_object['OutOfBandIpAddress']
+        info['OutOfBandIpGateway'] = managed_object['OutOfBandIpGateway']
+        info['OutOfBandIpMask'] = managed_object['OutOfBandIpMask']
+        info['Serial'] = managed_object['Serial']
+        info['SwitchId'] = managed_object['SwitchId']
+        info['Version'] = managed_object['Version']
 
         return info

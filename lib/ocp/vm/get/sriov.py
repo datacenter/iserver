@@ -4,7 +4,7 @@ class OcpVmGetSriov():
 
     def get_ocp_vm_sriov_info(self, vm_info):
         linux_handler = self.get_ocp_node_linux_handler(
-            node_name=vm_info['nodeName']
+            node_name=vm_info['node_name']
         )
         if linux_handler is None:
             return vm_info

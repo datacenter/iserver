@@ -1,0 +1,22 @@
+#Firepower Threat Defense
+{
+    "EULA": "accept",
+    "Hostname": "ftdv-production",
+    "AdminPassword": "Cisco_123",
+    "FirewallMode": "routed",
+    "DNS1": "1.1.1.1",
+    "DNS2": "1.1.1.2",
+    "DNS3": "",
+    "IPv4Mode": "dhcp",
+    "IPv4Addr": "",
+    "IPv4Mask": "",
+    "IPv4Gw": "",
+    "IPv6Mode": "",
+    "IPv6Addr": "",
+    "IPv6Mask": "",
+    "IPv6Gw": "",
+    "FmcIp": "",
+    "FmcRegKey": "",
+    "FmcNatId": "",
+    "ManageLocally":"Yes"
+}

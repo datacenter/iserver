@@ -38,15 +38,20 @@ class DomainAaaInfo():
 
         for aepg_rule in domain_filter:
             (key, value) = aepg_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_string(value, domain_info['name']):
                     return False
 
             if key == 'dn':
+                key_found = True
                 if not filter_helper.match_string(value, domain_info['dn']):
                     return False
 
             if key == 'system':
+                key_found = True
                 keys = ['mgmt', 'all', 'common']
                 if value == 'true':
                     if domain_info['name'] not in keys:
@@ -57,6 +62,7 @@ class DomainAaaInfo():
                         return False
 
             if key == 'fault':
+                key_found = True
                 if value == 'any':
                     if not domain_info['isAnyFault']:
                         return False
@@ -66,6 +72,12 @@ class DomainAaaInfo():
                         'match_domain_aaa',
                         'Unsupported fault filtering value: %s' % (value)
                     )
+
+            if not key_found:
+                self.log.error(
+                    'match_domain_aaa',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

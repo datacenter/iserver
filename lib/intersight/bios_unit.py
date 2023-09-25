@@ -90,18 +90,3 @@ class BiosUnit(IntersightCommon):
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'bios unit'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
-
-    def get_running_firmware_id(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
-        for running_firmware in item['RunningFirmware']:
-            if running_firmware['ObjectType'] == 'firmware.RunningFirmware':
-                return running_firmware['Moid']
-
-        return None

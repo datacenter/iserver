@@ -4,7 +4,6 @@ import yaml
 
 from lib.intersight.intersight_common import IntersightCommon
 from lib import ip_helper
-from lib import output_helper
 from lib.intersight import organization
 from lib.intersight import hcl_operating_system_vendor
 from lib.intersight import hcl_operating_system
@@ -425,44 +424,3 @@ class OsImage(IntersightCommon):
                 update_attributes = '%s --%s=\'%s\'' % (update_attributes, 'Source', json.dumps(source))
 
         return IntersightCommon.update(self, moid, update_attributes)
-
-    def print(self, images):
-        """Print operating system images
-        +-------------------------+---------------------------+----------------------------+---------+----------------------------+-------+-------------------------------------------------------------------+
-        | Organization            | Image ID                  | Image Name                 | Vendor  | Version                    | Type  | Link                                                              |
-        +-------------------------+---------------------------+----------------------------+---------+----------------------------+-------+-------------------------------------------------------------------+
-        | EMEAR-SPDC-Specialists  | 61b9c6ff6567612d30140473  | Centos 7.6 Minimal         | CentOS  | CentOS 7.6                 | url   | http://10.60.0.252/Centos/CentOS-7-x86_64-DVD-1810.iso            |
-        | EMEAR-SPDC-Specialists  | 61c0ba846567612d305ffc9f  | Ubuntu Server 20.04.3 LTS  | Ubuntu  | Ubuntu Server 20.04.3 LTS  | nfs   | 10.49.234.1/home/filer/ubuntu-20.04.3-live-server-amd64.iso       |
-        | EMEAR-SPDC-Specialists  | 632c42d86567612d3019ee47  | Ubuntu 20.04.3 LTS         | Ubuntu  | Ubuntu Server 20.04.3 LTS  | url   | http://10.60.0.252/2-IMAGES/ubuntu-20.04.3-live-server-amd64.iso  |
-        | EMEAR-SPDC-Specialists  | 633068b96567612d304a7844  | Ubuntu 22.04LTS            | Ubuntu  | Ubuntu Server 22.04 LTS    | url   | http://10.60.0.252/2-IMAGES/ubuntu-22.04.1-live-server-amd64.iso  |
-        +-------------------------+---------------------------+----------------------------+---------+----------------------------+-------+-------------------------------------------------------------------+
-        """
-
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(log_id=self.log_id)
-
-        order = [
-            'Organization',
-            'Moid',
-            'Name',
-            'Vendor',
-            'Version',
-            'Type',
-            'Link'
-        ]
-        headers = [
-            'Organization',
-            'Image ID',
-            'Image Name',
-            'Vendor',
-            'Version',
-            'Type',
-            'Link'
-        ]
-
-        self.my_output.my_table(
-            images,
-            order=order,
-            headers=headers,
-            table=True
-        )

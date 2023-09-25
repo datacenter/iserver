@@ -7,6 +7,7 @@ from lib import template
 from lib import log_helper
 from lib import output_helper
 
+
 class OcpDeploymentValidate():
     def __init__(self, verbose=False, debug=False, log_id=None):
         self.my_output = output_helper.OutputHelper(
@@ -172,6 +173,20 @@ class OcpDeploymentValidate():
 
         if validated_data['deployment']['sriov']['network'] is not None:
             for filename in validated_data['deployment']['sriov']['network']:
+                validated_data['files'][filename] = self.template_handler.get_template(
+                    os.path.join(
+                        base_directory,
+                        filename
+                    ),
+                    self.variables,
+                    replace_variables_enabled=True,
+                    check_remaining_variables=True,
+                    yaml_check=True,
+                    yaml_conversion=False
+                )
+
+        if validated_data['deployment']['multus']['network'] is not None:
+            for filename in validated_data['deployment']['multus']['network']:
                 validated_data['files'][filename] = self.template_handler.get_template(
                     os.path.join(
                         base_directory,

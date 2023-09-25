@@ -7,6 +7,8 @@ import traceback
 from inputimeout import inputimeout, TimeoutOccurred
 import colorama
 
+from lib import filter_helper
+
 
 class OutputHelper():
     def __init__(self, silent=False, verbose=False, debug=False, log_id=None):
@@ -418,6 +420,50 @@ class OutputHelper():
             )
 
         return headers, order
+
+    def prepare_list(self, values_ref, empty=[], empty_char='--', chunk={}, separator={}, collapse={}):
+        values = []
+        for value_ref in values_ref:
+            item = {}
+            for value_key in value_ref:
+                if value_key in empty:
+                    if isinstance(value_ref[value_key], list):
+                        if len(item[value_key]) == 0:
+                            item[value_key] = [empty_char]
+                            continue
+
+                    if value_ref[value_key] is None:
+                        item[value_key] = empty_char
+                        continue
+
+                    item[value_key] = value_ref[value_key]
+                    continue
+
+                if value_key in chunk:
+                    key_separator = ' '
+                    if value_key in separator:
+                        key_separator = separator[value_key]
+
+                    item['%sT' % (value_key)] = filter_helper.get_string_chunks(
+                        value_ref[value_key],
+                        chunk[value_key],
+                        separator=key_separator
+                    )
+                    item[value_key] = value_ref[value_key]
+                    continue
+
+                item[value_key] = value_ref[value_key]
+
+            for key in collapse:
+                item[key] = []
+                for skey in collapse[key]:
+                    item[key].append(
+                        value_ref[skey]
+                    )
+
+            values.append(item)
+
+        return values
 
     def expand_lists(self, values_ref, order, keys, filtering_rules=None):
         # this optimizes the expand_lists by using only relevant keys

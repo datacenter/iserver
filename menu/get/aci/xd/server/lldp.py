@@ -1,0 +1,202 @@
+import sys
+import json
+import threading
+import traceback
+import click
+
+from lib import ip_helper
+from lib.aci import output as aci_output
+from lib.intersight import compute
+from lib.intersight import compute_output
+
+from menu import defaults
+from menu import validations
+from menu import progress
+
+
+class Failure(Exception):
+    pass
+
+
+class ErrorExit(Exception):
+    pass
+
+
+class NoResultExit(Exception):
+    pass
+
+
+@click.command("lldp")
+@click.pass_obj
+@click.option("--iaccount", is_flag=False, show_default=True, cls=defaults.default_from_context('iaccount'), callback=validations.validate_iaccount, type=click.STRING, help="Intersight account")
+@click.option("--apic", "controller", default='', callback=validations.validate_apic_name, help="APIC name")
+@click.option("--ip", "controller_ip", default='', callback=validations.validate_ip, help="APIC IP")
+@click.option("--port", "controller_port", default=443, show_default=True, help="APIC Port")
+@click.option("--username", "controller_username", default='', help="APIC Username")
+@click.option("--password", "controller_password", default='', help="APIC Password")
+@click.option("--node", "node_names", multiple=True, default=['any'], help="Node name patterns")
+@click.option("--server", "server_ip", callback=validations.validate_ip, help="Server IP")
+@click.option("--view", "-v", default=['nei'], help="[nei]", show_default=True, multiple=True)
+@click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
+@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
+def get_aci_xd_server_lldp_command(
+        ctx,
+        iaccount,
+        controller,
+        controller_ip,
+        controller_port,
+        controller_username,
+        controller_password,
+        node_names,
+        server_ip,
+        view,
+        output,
+        no_cache,
+        devel
+        ):
+    """Get aci lldp for server"""
+
+    # iserver get aci xd server lldp
+
+    ctx.developer = devel
+    ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'nei',
+        'nei',
+        [
+            'diag:fault,hfault,event'
+        ]
+    )
+
+    try:
+        apic_handler = validations.validate_apic_controller(
+            ctx,
+            controller,
+            controller_ip,
+            controller_port,
+            controller_username,
+            controller_password,
+            show_selected=False,
+            no_cache=no_cache
+        )
+        if apic_handler is None:
+            raise ErrorExit
+
+        nodes_info = validations.validate_apic_node_names(
+            ctx,
+            apic_handler,
+            node_names,
+            'any',
+            pod_id=''
+        )
+        if nodes_info is None:
+            raise ErrorExit
+
+        if output != 'json':
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
+        compute_output_handler = compute_output.ComputeOutput(log_id=ctx.run_id)
+        compute_handler = compute.Compute(iaccount, log_id=ctx.run_id)
+        match_rules = compute_handler.get_mo_match_rules(
+            ip_filter=[server_ip]
+        )
+        servers_mo = compute_handler.get_mo(
+            match_rules=match_rules,
+            include_rack=True,
+            include_blade=True
+        )
+        if len(servers_mo) == 0:
+            ctx.busy = False
+            ctx.my_output.error('Server not found')
+            raise ErrorExit
+
+        if len(servers_mo) > 1:
+            ctx.busy = False
+            ctx.my_output.error('Multiple servers found')
+            raise ErrorExit
+
+        settings = {}
+        settings['net'] = True
+
+        servers_info = compute_handler.get_info(
+            servers_mo,
+            settings,
+            None,
+            0
+        )
+
+        adjacency_filter = []
+        for mac_info in servers_info[0]['MacAddressInfo']:
+            adjacency_filter.append(
+                'mac:%s' % (mac_info['MacAddress'])
+            )
+
+        adjacency = []
+
+        for node_info in nodes_info:
+            proto_info = apic_handler.get_protocol_lldp(
+                node_info['podId'],
+                node_info['id'],
+                adjacency_filter=adjacency_filter,
+                instance_info=True,
+                stats_info=False,
+                adjacency_info=True,
+                fault_info=False,
+                hfault_info=False,
+                hfault_filter=None,
+                event_info=False,
+                event_filter=None
+            )
+
+            if proto_info is None:
+                continue
+
+            if proto_info['adjacency'] is not None:
+                adjacency = adjacency + proto_info['adjacency']
+
+        ctx.busy = False
+
+        for mac_info in servers_info[0]['MacAddressInfo']:
+            mac_info['adjacency'] = None
+            for adj_info in adjacency:
+                if ip_helper.is_mac_equal(mac_info['MacAddress'], adj_info['mac']):
+                    mac_info['adjacency'] = adj_info
+
+        if output == 'json':
+            ctx.log_prompt = False
+            ctx.my_output.default(
+                json.dumps(
+                    servers_info[0]['MacAddressInfo'],
+                    indent=4
+                )
+            )
+            return
+
+        ctx.my_output.json_output(servers_info[0]['MacAddressInfo'])
+
+        if 'nei' in view:
+            compute_output_handler.print_summary_table(
+                servers_info,
+                title=True
+            )
+            compute_output_handler.print_mac_lldp_adjacency(
+                servers_info[0],
+                title=True
+            )
+
+    except NoResultExit:
+        ctx.busy = False
+        sys.exit(666)
+
+    except ErrorExit:
+        ctx.busy = False
+        sys.exit(1)
+
+    except BaseException:
+        ctx.busy = False
+        ctx.my_output.traceback(traceback.format_exc())
+        sys.exit(1)

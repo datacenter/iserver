@@ -105,15 +105,7 @@ class ServerProfile(IntersightCommon):
         self.iobject = 'server profile'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
@@ -127,10 +119,10 @@ class ServerProfile(IntersightCommon):
         ]
 
         for key in keys:
-            info[key] = item[key]
+            info[key] = managed_object[key]
 
-        info['ConfigState'] = item['ConfigContext']['ConfigState']
-        info['ConfigChangeState'] = item['ConfigChangeContext']['ConfigChangeState']
+        info['ConfigState'] = managed_object['ConfigContext']['ConfigState']
+        info['ConfigChangeState'] = managed_object['ConfigChangeContext']['ConfigChangeState']
 
         if info['ConfigState'].lower() == 'out-of-sync':
             info['__Output']['ConfigState'] = 'Red'
@@ -145,7 +137,7 @@ class ServerProfile(IntersightCommon):
             info['__Output']['ConfigState'] = 'Green'
 
         info['ConfigChangeDetails'] = []
-        for config_change_details in item['ConfigChangeDetails']:
+        for config_change_details in managed_object['ConfigChangeDetails']:
             config_change_info = {}
             config_change_info['EntityMoid'] = config_change_details['ConfigChangeContext']['EntityMoid']
             config_change_info['EntityType'] = config_change_details['ConfigChangeContext']['EntityType']

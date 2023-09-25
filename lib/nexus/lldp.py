@@ -8,9 +8,6 @@ class Lldp():
         if neighbors is not None:
             return neighbors
 
-        if not self.connect():
-            return None
-
         response = self.run_show_command(command)
         if response is not None:
             neighbors = response['TABLE_nbor']['ROW_nbor']

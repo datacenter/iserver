@@ -143,25 +143,17 @@ class ComputeBoard(IntersightCommon):
         self.iobject = 'compute board'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_compute_board_info(self, managed_object):
         info = {}
 
-        info['BoardId'] = item['BoardId']
-        info['CpuTypeController'] = item['CpuTypeController']
-        info['Dn'] = item['Dn']
-        info['Model'] = item['Model']
-        info['Moid'] = item['Moid']
-        info['OperPowerState'] = item['OperPowerState']
-        info['Serial'] = item['Serial']
-        info['Vendor'] = item['Vendor']
+        info['BoardId'] = managed_object['BoardId']
+        info['CpuTypeController'] = managed_object['CpuTypeController']
+        info['Dn'] = managed_object['Dn']
+        info['Model'] = managed_object['Model']
+        info['Moid'] = managed_object['Moid']
+        info['OperPowerState'] = managed_object['OperPowerState']
+        info['Serial'] = managed_object['Serial']
+        info['Vendor'] = managed_object['Vendor']
 
         keys = [
             'EquipmentTpms',
@@ -178,9 +170,9 @@ class ComputeBoard(IntersightCommon):
         for key in keys:
             name_ids = '%sIds' % (key)
             info[name_ids] = []
-            for managed_object in item[key]:
+            for item in managed_object[key]:
                 info[name_ids].append(
-                    managed_object['Moid']
+                    item['Moid']
                 )
 
             name_count = '%sCount' % (key)

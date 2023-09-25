@@ -660,6 +660,18 @@ class EpgInfo():
                     if not found:
                         return False
 
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not epg_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_epg',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
             if not key_found:
                 self.log.error(
                     'match_epg',
@@ -838,7 +850,7 @@ class EpgInfo():
                 )
                 if len(contract_filter) > 0:
                     epg_info['contractConsumedInfo'] = copy.deepcopy(
-                        self.get_contracts(
+                        self.get_standard_contracts(
                             contract_filter=contract_filter
                         )
                     )
@@ -849,7 +861,7 @@ class EpgInfo():
                 )
                 if len(contract_filter) > 0:
                     epg_info['contractProvidedInfo'] = copy.deepcopy(
-                        self.get_contracts(
+                        self.get_standard_contracts(
                             contract_filter=contract_filter
                         )
                     )
@@ -860,7 +872,7 @@ class EpgInfo():
                 )
                 if len(contract_filter) > 0:
                     epg_info['contractTabooInfo'] = copy.deepcopy(
-                        self.get_taboos(
+                        self.get_taboo_contracts(
                             taboo_filter=contract_filter
                         )
                     )

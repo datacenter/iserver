@@ -3,7 +3,10 @@ import click
 from menu.get.aci.main import get_aci_menu
 from menu.get.intersight.main import get_intersight_menu
 from menu.get.iwo.main import get_iwo_menu
-from menu.get.nexus.main import get_nexus_menu
+from menu.get.k8s.main import get_k8s_menu
+from menu.get.kv.main import get_kv_menu
+from menu.get.linux.main import get_linux_menu
+from menu.get.nx.main import get_nx_menu
 from menu.get.nso.main import get_nso_menu
 from menu.get.ocp.main import get_ocp_menu
 from menu.get.power import get_power_command
@@ -26,7 +29,10 @@ def get_menu(ctx):
 get_menu.add_command(get_aci_menu)
 get_menu.add_command(get_intersight_menu)
 get_menu.add_command(get_iwo_menu)
-get_menu.add_command(get_nexus_menu)
+get_menu.add_command(get_k8s_menu)
+get_menu.add_command(get_kv_menu)
+get_menu.add_command(get_linux_menu)
+get_menu.add_command(get_nx_menu)
 get_menu.add_command(get_nso_menu)
 get_menu.add_command(get_ocp_menu)
 get_menu.add_command(get_power_command)

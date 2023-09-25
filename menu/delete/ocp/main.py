@@ -2,6 +2,7 @@ import click
 
 from menu.delete.ocp.addon.main import delete_ocp_addon_menu
 from menu.delete.ocp.cluster import delete_ocp_cluster_command
+from menu.delete.ocp.ssh import delete_ocp_ssh_command
 from menu.delete.ocp.vm import delete_ocp_vm_command
 
 
@@ -17,4 +18,5 @@ def delete_ocp_menu(ctx):
 
 delete_ocp_menu.add_command(delete_ocp_addon_menu)
 delete_ocp_menu.add_command(delete_ocp_cluster_command)
+delete_ocp_menu.add_command(delete_ocp_ssh_command)
 delete_ocp_menu.add_command(delete_ocp_vm_command)

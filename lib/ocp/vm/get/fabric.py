@@ -46,7 +46,7 @@ class OcpVmGetFabric():
         fabric_info['encap'] = endpoint_info['encap']
         fabric_info['mac'] = endpoint_info['mac']
         fabric_info['vrfTenant'] = endpoint_info['vrfTenant']
-        fabric_info['vrfCtx'] = endpoint_info['vrfCtx']
+        fabric_info['vrfCtx'] = endpoint_info['vrfName']
 
         fabric_info['ip'] = []
         for fv_ip in endpoint_info['fvIp']:

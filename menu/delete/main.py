@@ -1,6 +1,7 @@
 import click
 
 from menu.delete.aci.main import delete_aci_menu
+from menu.delete.k8s.main import delete_k8s_menu
 from menu.delete.nso.main import delete_nso_menu
 from menu.delete.ocp.main import delete_ocp_menu
 from menu.delete.os_image import delete_os_image_command
@@ -20,6 +21,7 @@ def delete_menu(ctx):
 
 
 delete_menu.add_command(delete_aci_menu)
+delete_menu.add_command(delete_k8s_menu)
 delete_menu.add_command(delete_nso_menu)
 delete_menu.add_command(delete_ocp_menu)
 delete_menu.add_command(delete_os_image_command)

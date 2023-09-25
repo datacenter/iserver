@@ -91,15 +91,7 @@ class EquipmentTpm(IntersightCommon):
         self.iobject = 'equipment tpm'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
@@ -117,7 +109,7 @@ class EquipmentTpm(IntersightCommon):
         ]
 
         for key in keys:
-            info[key] = item[key]
+            info[key] = managed_object[key]
 
         if info['ActivationStatus'].lower() == 'activated':
             info['__Output']['ActivationStatus'] = 'Green'

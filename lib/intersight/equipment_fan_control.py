@@ -74,11 +74,7 @@ class EquipmentFanControl(IntersightCommon):
         self.iobject = 'equipment fancontrol'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid):
-        item = self.get(moid)
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         keys = [
             'Moid',
             'Dn',
@@ -87,6 +83,6 @@ class EquipmentFanControl(IntersightCommon):
 
         info = {}
         for key in keys:
-            info[key] = item[key]
+            info[key] = managed_object[key]
 
         return info

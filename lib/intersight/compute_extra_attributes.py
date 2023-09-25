@@ -1,4 +1,4 @@
-import traceback
+import time
 
 from lib import info_helper
 
@@ -39,8 +39,10 @@ from lib.intersight import running_firmware
 from lib.intersight import search_item
 from lib.intersight import server_profile
 from lib.intersight import storage_physical_disk
+from lib.intersight import storage_physical_disk_usage
 from lib.intersight import storage_virtual_drive
 from lib.intersight import storage_controller
+from lib.intersight import tam_advisory_definition
 from lib.intersight import tam_advisory_instance
 from lib.intersight import tam_security_advisory
 from lib.intersight import workflow
@@ -54,11 +56,10 @@ from lib import log_helper
 class ComputeExtraAttributes():
     """Class for rack/blade compute object extra attributes
     """
-    def __init__(self, iaccount, settings, log_id=None):
+    def __init__(self, iaccount, log_id=None):
         self.log_id = log_id
         self.log = log_helper.Log(log_id=log_id)
 
-        self.settings = settings
         self.my_servers_handler = my_servers_helper.MyServers()
         self.my_servers_serials = self.my_servers_handler.get_serials()
         self.info_handler = info_helper.InfoHelper(
@@ -66,10 +67,9 @@ class ComputeExtraAttributes():
         )
 
         self.cache_handler = intersight_cache.IntersightCache(
+            iaccount,
             log_id=log_id
         )
-        self.cache_enabled = False
-        self.state_enabled = True
 
         self.adapter_ext_eth_interface_handler = adapter_ext_eth_interface.AdapterExtEthInterface(
             iaccount,
@@ -222,7 +222,15 @@ class ComputeExtraAttributes():
             iaccount,
             log_id=log_id
         )
+        self.storage_physical_disk_usage_handler = storage_physical_disk_usage.StoragePhysicalDiskUsage(
+            iaccount,
+            log_id=log_id
+        )
         self.storage_virtual_drive_handler = storage_virtual_drive.StorageVirtualDrive(
+            iaccount,
+            log_id=log_id
+        )
+        self.tam_advisory_definition_handler = tam_advisory_definition.TamAdvisoryDefinition(
             iaccount,
             log_id=log_id
         )
@@ -234,12 +242,10 @@ class ComputeExtraAttributes():
             iaccount,
             log_id=log_id
         )
-        self.workflow = workflow.Workflow(
+        self.workflow_handler = workflow.Workflow(
             iaccount,
             log_id=log_id
         )
-        self.last_workflows = None
-
         self.redfish_endpoint_settings_handler = redfish_endpoint_settings.RedfishEndpointSettings(
             log_id=log_id
         )
@@ -250,302 +256,7 @@ class ComputeExtraAttributes():
         self.server_info = {}
         self.chassis = None
 
-    def set_cache(self, key, moids, device_moids, registration_moids, board_moids, filter_length_threshold=20):
-        moids_list = []
-        for moid in moids:
-            moids_list.append('\'%s\'' % (moid))
-        moids_filter = ', '.join(moids_list)
-
-        device_moids_list = []
-        for device_moid in device_moids:
-            device_moids_list.append('\'%s\'' % (device_moid))
-        device_moids_filter = ', '.join(device_moids_list)
-
-        registration_moids_list = []
-        for registration_moid in registration_moids:
-            registration_moids_list.append('\'%s\'' % (registration_moid))
-        registration_moids_filter = ', '.join(registration_moids_list)
-
-        board_moids_list = []
-        for board_moid in board_moids:
-            board_moids_list.append('\'%s\'' % (board_moid))
-        board_moids_filter = ', '.join(board_moids_list)
-
-        if key == 'asset_device_registration':
-            if self.settings['registration']:
-                if len(registration_moids_list) < filter_length_threshold:
-                    self.asset_device_registration_handler.set_get_filter(
-                        "Moid in (%s)" % (registration_moids_filter)
-                    )
-                cache = self.asset_device_registration_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'locator_led':
-            if self.settings['locator']:
-                cache = self.locator_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'workflow':
-            if self.settings['workflow'] is not None:
-                cache = self.workflow.get_last(
-                    seconds=self.settings['workflow']
-                )
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'fanmodule':
-            if self.settings['fan']:
-                if len(moids) < filter_length_threshold:
-                    self.fan_handler.set_get_filter(
-                        "Parent/Moid in (%s)" % (moids_filter)
-                    )
-                cache = self.fan_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'pci':
-            if self.settings['pci']:
-                if len(moids) < filter_length_threshold:
-                    self.pci_handler.set_get_filter(
-                        "Parent/Moid in (%s)" % (moids_filter)
-                    )
-                cache = self.pci_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'psu':
-            if self.settings['psu']:
-                if len(moids) < filter_length_threshold:
-                    self.psu_handler.set_get_filter(
-                        "Parent/Moid in (%s)" % (moids_filter)
-                    )
-                cache = self.psu_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'firmware':
-            if self.settings['fw']:
-                if len(device_moids) < filter_length_threshold:
-                    self.running_firmware_handler.set_get_filter(
-                        "RegisteredDevice/Moid in (%s)" % (device_moids_filter)
-                    )
-                cache = self.running_firmware_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'storage_controller':
-            if self.settings['storage']:
-                if len(board_moids_list) < filter_length_threshold:
-                    self.storage_controller_handler.set_get_filter(
-                        "Parent/Moid in (%s)" % (board_moids_filter)
-                    )
-                cache = self.storage_controller_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'virtual_drive':
-            if self.settings['storage']:
-                if len(registration_moids) < filter_length_threshold:
-                    self.storage_virtual_drive_handler.set_get_filter(
-                        "RegisteredDevice/Moid in (%s)" % (registration_moids_filter)
-                    )
-                cache = self.storage_virtual_drive_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        if key == 'physical_disk':
-            if self.settings['storage']:
-                if len(registration_moids) < filter_length_threshold:
-                    self.storage_physical_disk_handler.set_get_filter(
-                        "RegisteredDevice/Moid in (%s)" % (registration_moids_filter)
-                    )
-                cache = self.storage_physical_disk_handler.get_all()
-                if cache is None:
-                    return False
-                return self.log.set_cache(key, cache)
-
-        return True
-
-    def set_filter(self, server):
-        self.asset_device_contract_information_handler.set_get_filter(
-            "DeviceId eq '%s'" % (server['Serial'])
-        )
-        self.boot_cdd_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_device_boot_security_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_hdd_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_iscsi_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_nvme_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_pxe_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_san_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_sd_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_uefi_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_usb_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.boot_vmedia_device_handler.set_get_filter(
-            "ComputePhysical/Moid eq '%s'" % (server['Moid'])
-        )
-        self.cond_hclstatus_handler.set_get_filter(
-            "ManagedObject/Moid eq '%s'" % (server['Moid'])
-        )
-        self.pci_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (server['Moid'])
-        )
-        self.processor_unit_handler.set_get_filter(
-            "ComputeBoard/Moid eq '%s'" % (server['Board']['Moid'])
-        )
-        self.running_firmware_handler.set_get_filter(
-            "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-        )
-        self.server_profile_handler.set_get_filter(
-            "AssignedServer/Moid eq '%s'" % (server['Moid'])
-        )
-        self.storage_controller_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (server['Board']['Moid'])
-        )
-        self.storage_physical_disk_handler.set_get_filter(
-            "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-        )
-        self.storage_virtual_drive_handler.set_get_filter(
-            "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-        )
-        self.tam_advisory_instance_handler.set_get_filter(
-            "AffectedObject/Moid eq '%s'" % (server['Moid'])
-        )
-
-        adapter_moids = []
-        for adapter in server['Adapters']:
-            if adapter['ObjectType'] == 'adapter.Unit':
-                adapter_moids.append(
-                    adapter['Moid']
-                )
-
-        if len(adapter_moids) > 0:
-            adapter_moids_list = []
-            for adapter_moid in adapter_moids:
-                adapter_moids_list.append('\'%s\'' % (adapter_moid))
-            adapter_moids_filter = ', '.join(adapter_moids_list)
-
-            self.adapter_unit_handler.set_get_filter(
-                "Moid in (%s)" % (adapter_moids_filter)
-            )
-
-            self.adapter_ext_eth_interface_handler.set_get_filter(
-                "AdapterUnit/Moid in (%s)" % (adapter_moids_filter)
-            )
-
-            self.adapter_host_eth_interface_handler.set_get_filter(
-                "AdapterUnit/Moid in (%s)" % (adapter_moids_filter)
-            )
-
-            self.adapter_host_fc_interface_handler.set_get_filter(
-                "AdapterUnit/Moid in (%s)" % (adapter_moids_filter)
-            )
-
-        if server['ObjectType'] == 'compute.RackUnit':
-            self.bios_boot_mode_handler.set_get_filter(
-                "ComputeRackUnit/Moid eq '%s'" % (server['Moid'])
-            )
-            self.boot_device_boot_mode_handler.set_get_filter(
-                "ComputeRackUnit/Moid eq '%s'" % (server['Moid'])
-            )
-            self.cond_alarm_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-            )
-            self.compute_board_handler.set_get_filter(
-                "ComputeRackUnit/Moid eq '%s'" % (server['Moid'])
-            )
-            self.fan_handler.set_get_filter(
-                "Parent/Moid eq '%s'" % (server['Moid'])
-            )
-            self.locator_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-            )
-            self.memory_unit_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-            )
-            self.psu_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-            )
-
-        if server['ObjectType'] == 'compute.Blade':
-            if self.settings['psu'] or self.settings['fan'] or self.settings['chassis']:
-                self.add_chassis_object(server)
-
-            self.bios_boot_mode_handler.set_get_filter(
-                "ComputeBlade/Moid eq '%s'" % (server['Moid'])
-            )
-            self.boot_device_boot_mode_handler.set_get_filter(
-                "ComputeBlade/Moid eq '%s'" % (server['Moid'])
-            )
-            self.cond_alarm_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s' and AffectedMo/Moid eq '%s'" % (
-                    server['RegisteredDevice']['Moid'],
-                    server['Moid']
-                )
-            )
-            self.compute_board_handler.set_get_filter(
-                "ComputeBlade/Moid eq '%s'" % (server['Moid'])
-            )
-            self.locator_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-            )
-            self.memory_unit_handler.set_get_filter(
-                "RegisteredDevice/Moid eq '%s' and Ancestors/any(a:a/Moid eq '%s')" % (
-                    server['RegisteredDevice']['Moid'],
-                    server['Moid']
-                )
-            )
-
-            if self.chassis is None:
-                self.psu_handler.set_get_filter(
-                    "RegisteredDevice/Moid eq '%s'" % (server['RegisteredDevice']['Moid'])
-                )
-                self.fan_handler.set_get_filter(
-                    "Parent/Moid eq '%s'" % (server['Moid'])
-                )
-
-            else:
-                self.psu_handler.set_get_filter(
-                    "EquipmentChassis/Moid eq '%s'" % (self.chassis['Moid'])
-                )
-                self.fan_handler.set_get_filter(
-                    "EquipmentChassis/Moid eq '%s'" % (self.chassis['Moid'])
-                )
-
     def add_advisory_info(self):
-        if not self.settings['advisory']:
-            return
-
         self.server_info['AdvisorySummary'] = {}
         self.server_info['AdvisorySummary']['__Output'] = {}
         self.server_info['AdvisorySummary']['__Output']['High'] = 'Red'
@@ -555,338 +266,633 @@ class ComputeExtraAttributes():
 
         self.server_info['AdvisoryInfo'] = []
 
-        advisories = self.tam_advisory_instance_handler.get_all()
-        for advisory in advisories:
-            if advisory['Advisory']['ObjectType'] == 'tam.SecurityAdvisory':
-                advisory_info = self.tam_security_advisory_handler.get_info(
-                    advisory['Advisory']['Moid']
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'advisory',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_advisory_info',
+                'No cache'
+            )
+            return
 
-                self.server_info['AdvisoryInfo'].append(
-                    advisory_info
-                )
+        security_advisories = self.cache_handler.get_intersight_cache_entry(
+            'advisory_security',
+            check_ttl=False
+        )
+        if security_advisories is None:
+            self.log.error(
+                'add_advisory_info',
+                'No main security advisory cache'
+            )
+            return
 
-                if advisory_info['Severity'] == 'high':
-                    self.server_info['AdvisorySummary']['High'] = self.server_info['AdvisorySummary']['High'] + 1
-                else:
-                    self.server_info['AdvisorySummary']['Info'] = self.server_info['AdvisorySummary']['Info'] + 1
+        advisory_definitions = self.cache_handler.get_intersight_cache_entry(
+            'advisory_definition',
+            check_ttl=False
+        )
+        if advisory_definitions is None:
+            self.log.error(
+                'add_advisory_info',
+                'No main advisory definitions cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            if managed_object['Advisory']['ObjectType'] == 'tam.SecurityAdvisory':
+                for advisory_mo in security_advisories:
+                    if managed_object['Advisory']['Moid'] == advisory_mo['Moid']:
+                        advisory_info = self.tam_security_advisory_handler.get_info(
+                            advisory_mo
+                        )
+                        self.server_info['AdvisoryInfo'].append(
+                            advisory_info
+                        )
+                        if advisory_info['Severity'] == 'high':
+                            self.server_info['AdvisorySummary']['High'] = self.server_info['AdvisorySummary']['High'] + 1
+                        else:
+                            self.server_info['AdvisorySummary']['Info'] = self.server_info['AdvisorySummary']['Info'] + 1
+
+                        break
+
+                continue
+
+            if managed_object['Advisory']['ObjectType'] == 'tam.AdvisoryDefinition':
+                for advisory_mo in advisory_definitions:
+                    if managed_object['Advisory']['Moid'] == advisory_mo['Moid']:
+                        advisory_info = self.tam_advisory_definition_handler.get_info(
+                            advisory_mo
+                        )
+                        self.server_info['AdvisoryInfo'].append(
+                            advisory_info
+                        )
+                        if advisory_info['Severity'] == 'high':
+                            self.server_info['AdvisorySummary']['High'] = self.server_info['AdvisorySummary']['High'] + 1
+                        else:
+                            self.server_info['AdvisorySummary']['Info'] = self.server_info['AdvisorySummary']['Info'] + 1
+
+                        break
 
                 continue
 
             self.log.error(
                 'add_advisory_info',
-                'Unsupported advisory: %s' % (advisory['Advisory']['ObjectType'])
+                'Unsupported advisory: %s' % (managed_object['Advisory']['ObjectType'])
             )
 
-    def add_alarm_info(self, server, include_cleared=False):
-        if not self.settings['alarm']:
-            return
-
+    def add_alarm_info(self, include_cleared=False):
         self.server_info['AlarmInfo'] = []
 
-        alarms = self.cond_alarm_handler.get_all()
-        for alarm in alarms:
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'alarm',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_alarm_info',
+                'No cache'
+            )
+            return
+
+        for managed_object in managed_objects:
             alarm_info = self.cond_alarm_handler.get_info(
-                alarm['Moid']
+                managed_object
             )
             if alarm_info['Severity'] == 'Cleared' and not include_cleared:
                 continue
+
             self.server_info['AlarmInfo'].append(
                 alarm_info
             )
 
-    def add_bios_info(self, server):
-        return
+    def add_adapters_info(self):
+        self.server_info['AdaptersInfo'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'adapter',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_adapters_info',
+                'No cache'
+            )
+        else:
+            for managed_object in managed_objects:
+                self.server_info['AdaptersInfo'].append(
+                    self.adapter_unit_handler.get_info(
+                        managed_object
+                    )
+                )
+        self.server_info['AdaptersInfo'] = sorted(
+            self.server_info['AdaptersInfo'],
+            key=lambda i: i['Name']
+        )
 
     def add_board_info(self):
-        if not self.settings['board'] and not self.settings['tpm']:
+        self.server_info['BoardInfo'] = None
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'board',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_board_info',
+                'No cache'
+            )
             return
 
-        boards = self.compute_board_handler.get_all()
-        if len(boards) == 0:
-            self.server_info['BoardInfo'] = None
+        if len(managed_objects) == 0:
+            return
 
-        if len(boards) > 1:
+        if len(managed_objects) > 1:
             self.log.error(
                 'add_board_info',
                 'Multiple board info objects found'
             )
             return
 
-        board_id = boards[0]['Moid']
-        self.server_info['BoardInfo'] = self.compute_board_handler.get_info(
-            board_id
+        self.server_info['BoardInfo'] = self.compute_board_handler.get_compute_board_info(
+            managed_objects[0]
         )
 
-        if not self.settings['board']:
-            return
-
-    def add_boot_info(self, server):
-        if not self.settings['boot']:
-            return
-
+    def add_boot_info(self):
         self.server_info['BootInfo'] = {}
         self.server_info['BootInfo']['ConfiguredBootMode'] = None
         self.server_info['BootInfo']['ActualBootMode'] = None
         self.server_info['BootInfo']['SecureBoot'] = None
         self.server_info['BootInfo']['Order'] = []
 
-        managed_objects = self.boot_device_boot_mode_handler.get_all()
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_mode',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot mode cache'
+            )
+            return
+
         if len(managed_objects) != 1:
             self.log.error(
                 'add_boot_info',
                 'Unexpected number of boot device boot mode objects'
             )
-        else:
-            self.server_info['BootInfo']['ConfiguredBootMode'] = self.boot_device_boot_mode_handler.get_info(
-                managed_objects[0]['Moid']
-            )['ConfiguredBootMode']
+            return
 
-        managed_objects = self.bios_boot_mode_handler.get_all()
+        self.server_info['BootInfo']['ConfiguredBootMode'] = self.boot_device_boot_mode_handler.get_info(
+            managed_objects[0]
+        )['ConfiguredBootMode']
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_bios',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot bios cache'
+            )
+            return
+
         if len(managed_objects) != 1:
             self.log.error(
                 'add_boot_info',
-                'Unexpected number of bios boot mode objects'
+                'Unexpected number of boot bios mode objects'
             )
-        else:
-            self.server_info['BootInfo']['ActualBootMode'] = self.bios_boot_mode_handler.get_info(
-                managed_objects[0]['Moid']
-            )['ActualBootMode']
+            return
 
-        managed_objects = self.boot_device_boot_security_handler.get_all()
+        self.server_info['BootInfo']['ActualBootMode'] = self.bios_boot_mode_handler.get_info(
+            managed_objects[0]
+        )['ActualBootMode']
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_security',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot security cache'
+            )
+            return
+
         if len(managed_objects) != 1:
             self.log.error(
                 'add_boot_info',
-                'Unexpected number of boot device security mode objects'
+                'Unexpected number of boot security mode objects'
             )
-        else:
-            self.server_info['BootInfo']['SecureBoot'] = self.boot_device_boot_security_handler.get_info(
-                managed_objects[0]['Moid']
-            )['SecureBoot']
+            return
 
-        if len(server['BootCddDevices']) > 0:
-            managed_objects = self.boot_cdd_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_cdd_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        self.server_info['BootInfo']['SecureBoot'] = self.boot_device_boot_security_handler.get_info(
+            managed_objects[0]
+        )['SecureBoot']
 
-        if len(server['BootCddDevices']) > 0:
-            managed_objects = self.boot_cdd_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_cdd_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_cdd',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot cdd cache'
+            )
+            return
 
-        if len(server['BootHddDevices']) > 0:
-            managed_objects = self.boot_hdd_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_hdd_device_handler.get_info(
-                        managed_object['Moid']
-                    )
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_cdd_device_handler.get_info(
+                    managed_object
                 )
+            )
 
-        if len(server['BootIscsiDevices']) > 0:
-            managed_objects = self.boot_iscsi_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_iscsi_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_hdd',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot hdd cache'
+            )
+            return
 
-        if len(server['BootNvmeDevices']) > 0:
-            managed_objects = self.boot_nvme_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_nvme_device_handler.get_info(
-                        managed_object['Moid']
-                    )
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_hdd_device_handler.get_info(
+                    managed_object
                 )
+            )
 
-        if len(server['BootPxeDevices']) > 0:
-            managed_objects = self.boot_pxe_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_pxe_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_iscsi',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot iscsi cache'
+            )
+            return
 
-        if len(server['BootSanDevices']) > 0:
-            managed_objects = self.boot_san_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_san_device_handler.get_info(
-                        managed_object['Moid']
-                    )
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_iscsi_device_handler.get_info(
+                    managed_object
                 )
+            )
 
-        if len(server['BootSdDevices']) > 0:
-            managed_objects = self.boot_sd_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_sd_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_nvme',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot nvme cache'
+            )
+            return
 
-        if len(server['BootUefiShellDevices']) > 0:
-            managed_objects = self.boot_uefi_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_uefi_device_handler.get_info(
-                        managed_object['Moid']
-                    )
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_nvme_device_handler.get_info(
+                    managed_object
                 )
+            )
 
-        if len(server['BootUsbDevices']) > 0:
-            managed_objects = self.boot_usb_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_usb_device_handler.get_info(
-                        managed_object['Moid']
-                    )
-                )
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_pxe',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot pxe cache'
+            )
+            return
 
-        if len(server['BootVmediaDevices']) > 0:
-            managed_objects = self.boot_vmedia_device_handler.get_all()
-            for managed_object in managed_objects:
-                self.server_info['BootInfo']['Order'].append(
-                    self.boot_vmedia_device_handler.get_info(
-                        managed_object['Moid']
-                    )
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_pxe_device_handler.get_info(
+                    managed_object
                 )
+            )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_san',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot san cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_san_device_handler.get_info(
+                    managed_object
+                )
+            )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_sd',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot sd cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_sd_device_handler.get_info(
+                    managed_object
+                )
+            )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_uefi',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot uefi cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_uefi_device_handler.get_info(
+                    managed_object
+                )
+            )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_usb',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot usb cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_usb_device_handler.get_info(
+                    managed_object
+                )
+            )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'boot_vmedia',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_boot_info',
+                'No boot vmedia cache'
+            )
+            return
+
+        for managed_object in managed_objects:
+            self.server_info['BootInfo']['Order'].append(
+                self.boot_vmedia_device_handler.get_info(
+                    managed_object
+                )
+            )
 
         self.server_info['BootInfo']['Order'] = sorted(
             self.server_info['BootInfo']['Order'],
             key=lambda i: i['Order']
         )
 
-    def add_chassis_object(self, server):
+    def add_chassis_object(self, server_mo):
         if self.chassis is not None:
             return
 
         self.chassis = self.equipment_chassis_handler.get(
-            server['EquipmentChassis']['Moid']
+            server_mo['EquipmentChassis']['Moid']
         )
 
     def add_chassis_info(self):
-        if self.chassis is None:
-            return
+        if self.chassis is not None:
+            self.server_info['ChassisInfo'] = self.equipment_chassis_handler.get_summary(
+                self.chassis
+            )
 
-        if not self.settings['chassis']:
-            return
-
-        self.server_info['ChassisInfo'] = self.equipment_chassis_handler.get_summary(
-            self.chassis
+    def add_connector_info(self):
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'connector',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
         )
-
-    def add_connector_info(self, server):
-        if not self.settings['connector']:
+        if managed_objects is None:
+            self.log.error(
+                'add_connector_info',
+                'No cache'
+            )
             return
 
-        self.server_info['ConnectorInfo'] = self.asset_device_registration_handler.get_info(
-            server['RegisteredDevice']['Moid'],
-            cache=False
-        )
+        if len(managed_objects) > 1:
+            self.log.error(
+                'add_connector_info',
+                'Unexpected number of device connector objects: %s' % (self.server_info['Moid'])
+            )
+            return
+
+        self.server_info['ConnectorInfo'] = None
+        if len(managed_objects) == 1:
+            self.server_info['ConnectorInfo'] = self.asset_device_registration_handler.get_info(
+                managed_objects[0]
+            )
+            self.server_info['Connected'] = self.server_info['ConnectorInfo']['Connected']
 
     def add_contract_info(self):
-        if not self.settings['contract']:
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'contract',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_contract_info',
+                'No cache'
+            )
             return
 
-        managed_objects = self.asset_device_contract_information_handler.get_all()
         if len(managed_objects) != 1:
             self.log.error(
                 'add_contract_info',
-                'Unexpected number of device contract objects'
+                'Unexpected number of device contract objects: %s' % (self.server_info['Moid'])
             )
-        else:
-            self.server_info['ContractInfo'] = self.asset_device_contract_information_handler.get_info(
-                managed_objects[0]['Moid']
-            )
-
-    def add_kvm_info(self, server):
-        if not self.settings['kvm']:
             return
 
-        self.server_info['KvmInfo'] = {}
-        self.server_info['KvmInfo']['KvmIpAddresses'] = server['KvmIpAddresses']
-        self.server_info['KvmInfo']['KvmServerStateEnabled'] = server['KvmServerStateEnabled']
-        self.server_info['KvmInfo']['KvmVendor'] = server['KvmVendor']
-        self.server_info['KvmInfo']['TunneledKvm'] = server['TunneledKvm']
-
-    def add_cpu_info(self, server):
-        keys = [
-            'NumCpus',
-            'NumCpuCores',
-            'NumThreads'
-        ]
-        for key in keys:
-            if key in keys:
-                self.server_info[key] = server[key]
-        self.server_info['Cpu'] = '%sS %sC %sT' % (
-            server['NumCpus'],
-            server['NumCpuCores'],
-            server['NumThreads']
+        self.server_info['ContractInfo'] = self.asset_device_contract_information_handler.get_info(
+            managed_objects[0]
         )
 
-        if self.settings['cpu']:
-            self.server_info['CpuInfo'] = self.processor_unit_handler.get_processor_units_info()
+    def add_cpu_info(self):
+        self.server_info['CpuInfo'] = []
 
-    def add_fan_info(self, server):
-        if not self.settings['fan']:
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'cpu',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_cpu_info',
+                'No cache'
+            )
+        else:
+            for managed_object in managed_objects:
+                self.server_info['CpuInfo'].append(
+                    self.processor_unit_handler.get_processor_unit_info(
+                        managed_object
+                    )
+                )
+
+        self.server_info['CpuInfo'] = sorted(
+            self.server_info['CpuInfo'],
+            key=lambda i: i['ProcessorId']
+        )
+
+    def add_ext_eth_info(self):
+        self.server_info['MacAddressInfo'] = []
+        self.server_info['ExtEthInfo'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'adapter_ext_eth_interface',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_ext_eth_info',
+                'No cache'
+            )
             return
 
+        for managed_object in managed_objects:
+            interface_info = self.adapter_ext_eth_interface_handler.get_info(
+                managed_object
+            )
+
+            mac_info = {}
+            mac_info['InterfaceDn'] = interface_info['Dn']
+            mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
+            mac_info['MacAddress'] = interface_info['MacAddress'].lower()
+            mac_info['AdapterModel'] = None
+            mac_info['AdapterPciSlot'] = None
+
+            interface_info['AdapterName'] = None
+            interface_info['AdapterPciSlot'] = None
+            for adapter_info in self.server_info['AdaptersInfo']:
+                if managed_object['Moid'] in adapter_info['ExtEthIfsIds']:
+                    interface_info['AdapterName'] = adapter_info['Name']
+                    interface_info['AdapterPciSlot'] = adapter_info['PciSlot']
+                    mac_info['AdapterModel'] = adapter_info['Model']
+                    mac_info['AdapterPciSlot'] = adapter_info['PciSlot']
+
+            self.server_info['ExtEthInfo'].append(
+                interface_info
+            )
+
+            self.server_info['MacAddressInfo'].append(
+                mac_info
+            )
+
+        self.server_info['ExtEthInfo'] = sorted(
+            self.server_info['ExtEthInfo'],
+            key=lambda i: (
+                i['Dn'],
+                i['InterfaceId']
+            )
+        )
+
+    def add_fan_info(self):
         if self.server_info['Type'] == 'Blade':
             if self.chassis is None:
                 self.server_info['FanSummary'] = ''
                 self.server_info['FanHealthy'] = True
-                self.server_info['FanInfo'] = None
+                self.server_info['FanInfo'] = []
                 return
 
             self.server_info['FanInfo'] = []
 
-            for fan_module in self.chassis['Fanmodules']:
-                self.server_info['FanInfo'].append(
-                    self.fan_handler.get_fan_info(
-                        fan_module['Moid']
-                    )
-                )
+            # for fan_module in self.chassis['Fanmodules']:
+            #     self.server_info['FanInfo'].append(
+            #         self.fan_handler.get_fan_info(
+            #             fan_module['Moid']
+            #         )
+            #     )
 
-            self.server_info['FanInfo'] = sorted(
-                self.server_info['FanInfo'],
-                key=lambda i: i['Dn']
-            )
+            # self.server_info['FanInfo'] = sorted(
+            #     self.server_info['FanInfo'],
+            #     key=lambda i: i['Dn']
+            # )
 
-            self.server_info['FanOn'] = 0
-            for fan_module in self.chassis['Fanmodules']:
-                if self.fan_handler.get_fan_state(fan_module['Moid']):
-                    self.server_info['FanOn'] = self.server_info['FanOn'] + 1
+            # self.server_info['FanOn'] = 0
+            # for fan_module in self.chassis['Fanmodules']:
+            #     if self.fan_handler.get_fan_state(fan_module['Moid']):
+            #         self.server_info['FanOn'] = self.server_info['FanOn'] + 1
 
-            self.server_info['FanCount'] = len(self.chassis['Fanmodules'])
-            self.server_info['FanSummary'] = '%s/%s' % (
-                self.server_info['FanOn'],
-                self.server_info['FanCount']
-            )
-            self.server_info['FanHealthy'] = True
-            if self.server_info['FanOn'] < self.server_info['FanCount']:
-                self.server_info['FanHealthy'] = False
+            # self.server_info['FanCount'] = len(self.chassis['Fanmodules'])
+            # self.server_info['FanSummary'] = '%s/%s' % (
+            #     self.server_info['FanOn'],
+            #     self.server_info['FanCount']
+            # )
+            # self.server_info['FanHealthy'] = True
+            # if self.server_info['FanOn'] < self.server_info['FanCount']:
+            #     self.server_info['FanHealthy'] = False
 
         if self.server_info['Type'] == 'Rack':
             self.server_info['FanInfo'] = []
 
-            for fan_module in server['Fanmodules']:
-                self.server_info['FanInfo'].append(
-                    self.fan_handler.get_fan_info(
-                        fan_module['Moid']
-                    )
+            managed_objects = self.cache_handler.get_intersight_cache_entry(
+                'fanmodule',
+                subdirectory=self.server_info['Moid'],
+                check_ttl=False
+            )
+            if managed_objects is None:
+                self.log.error(
+                    'add_fan_info',
+                    'No cache'
                 )
+            else:
+                for managed_object in managed_objects:
+                    self.server_info['FanInfo'].append(
+                        self.fan_handler.get_fan_info(
+                            managed_object
+                        )
+                    )
 
             self.server_info['FanInfo'] = sorted(
                 self.server_info['FanInfo'],
@@ -894,11 +900,11 @@ class ComputeExtraAttributes():
             )
 
             self.server_info['FanOn'] = 0
-            for fan_module in server['Fanmodules']:
-                if self.fan_handler.get_fan_state(fan_module['Moid']):
+            for fan_module_info in self.server_info['FanInfo']:
+                if fan_module_info['On']:
                     self.server_info['FanOn'] = self.server_info['FanOn'] + 1
 
-            self.server_info['FanCount'] = len(server['Fanmodules'])
+            self.server_info['FanCount'] = len(self.server_info['FanInfo'])
             self.server_info['FanSummary'] = '%s/%s' % (
                 self.server_info['FanOn'],
                 self.server_info['FanCount']
@@ -907,37 +913,49 @@ class ComputeExtraAttributes():
             if self.server_info['FanOn'] < self.server_info['FanCount']:
                 self.server_info['FanHealthy'] = False
 
-    def add_firmware_info(self, server):
-        if not self.settings['fw']:
+    def add_firmware_info(self):
+        self.server_info['FirmwarewComponents'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'firmware',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_firmware_info',
+                'No cache'
+            )
             return
 
-        self.server_info['FirmwarewComponents'] = self.running_firmware_handler.add_info(
-            self.info_handler.get_objects_with_ancestor(
-                self.running_firmware_handler.get_all(),
-                server['ObjectType'],
-                self.server_info['Moid'],
-                sort_by='Dn'
+        for managed_object in managed_objects:
+            self.server_info['FirmwarewComponents'].append(
+                self.running_firmware_handler.get_info(
+                    managed_object
+                )
             )
-        )
 
         self.server_info['FirmwareVersion'] = self.running_firmware_handler.get_firmware_version(
-            self.server_info['FirmwarewComponents']
+            managed_objects
         )
 
-    def add_gpu_info(self, server):
-        if not self.settings['gpu']:
-            return
+        self.server_info['FirmwarewComponents'] = sorted(
+            self.server_info['FirmwarewComponents'],
+            key=lambda i: i['Dn']
+        )
 
+    def add_flags(self, workflow_days):
+        self.add_state_flag()
+        self.add_management_flag()
+        self.add_workflow_flag(workflow_days)
+
+    def add_gpu_info(self):
         self.server_info['GpuInfo'] = []
-
         for pci_device_info in self.server_info['PciDevicesInfo']:
             if '-GPU-' in pci_device_info['Pid']:
                 self.server_info['GpuInfo'].append(
                     pci_device_info
                 )
-
-        if not self.settings['pci']:
-            del self.server_info['PciDevicesInfo']
 
     def add_group_info(self):
         self.server_info['Groups'] = ''
@@ -948,38 +966,56 @@ class ComputeExtraAttributes():
                 )
 
     def add_hcl_info(self):
-        if not self.settings['hcl']:
-            return
-
-        hcl_infos = self.cond_hclstatus_handler.get_all()
-        if len(hcl_infos) == 0:
-            self.server_info['HclInfo'] = None
-
-        if len(hcl_infos) > 1:
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'hcl',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
             self.log.error(
                 'add_hcl_info',
-                'Multiple hcl info objects found'
+                'No cache'
             )
             return
 
-        hcl_info_id = hcl_infos[0]['Moid']
-        self.server_info['HclInfo'] = self.cond_hclstatus_handler.get_info(
-            hcl_info_id
-        )
+        if len(managed_objects) == 0:
+            self.server_info['HclInfo'] = None
+            return
 
-        self.cond_hclstatus_detail_handler.set_get_filter(
-            "HclStatus/Moid eq '%s'" % (hcl_info_id)
+        if len(managed_objects) > 1:
+            self.log.error(
+                'add_hcl_info',
+                'Multiple hcl info objects found: %s' % (self.server_info['Moid'])
+            )
+            return
+
+        self.server_info['HclInfo'] = self.cond_hclstatus_handler.get_info(
+            managed_objects[0]
         )
-        hcl_details = self.cond_hclstatus_detail_handler.get_all()
         self.server_info['HclInfo']['Details'] = []
-        for hcl_detail in hcl_details:
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'hcl_detail',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_hcl_info',
+                'No hcl detail cache'
+            )
+            return
+
+        for managed_object in managed_objects:
             self.server_info['HclInfo']['Details'].append(
                 self.cond_hclstatus_detail_handler.get_info(
-                    hcl_detail['Moid']
+                    managed_object
                 )
             )
 
-    def add_health_info(self, server):
+        return
+
+    def add_health_info(self, server_mo):
         # Rack
         #
         # "AlarmSummary": {
@@ -1007,8 +1043,8 @@ class ComputeExtraAttributes():
         self.server_info['AlarmSummary']['__Output']['Cleared'] = 'Green'
 
         for key in ['Critical', 'Warning', 'Info', 'Cleared']:
-            if key in server['AlarmSummary']:
-                self.server_info['AlarmSummary'][key] = server['AlarmSummary'][key]
+            if key in server_mo['AlarmSummary']:
+                self.server_info['AlarmSummary'][key] = server_mo['AlarmSummary'][key]
 
         self.server_info['Health'] = 'Healthy'
 
@@ -1028,230 +1064,49 @@ class ComputeExtraAttributes():
                 self.server_info['AlarmSummary']['Critical']
             )
 
-    def add_license_info(self, server):
-        if not self.settings['license']:
-            return
-
-        for tag in server['Tags']:
-            if tag['Key'] == 'Intersight.LicenseTier':
-                self.server_info['LicenseInfo'] = {}
-                self.server_info['LicenseInfo']['Tier'] = tag['Value']
-
-    def add_locator_info(self, server):
-        if self.state_enabled:
-            self.server_info['LocatorLedOn'] = False
-
-            if not self.settings['locator']:
-                return
-
-            if self.server_info['Type'] == 'Rack':
-                try:
-                    self.server_info['LocatorLedOn'] = self.locator_handler.get_locator_led(
-                        server['LocatorLed']['Moid']
-                    )
-                except BaseException:
-                    pass
-
-    def get_management_ip(self, server):
-        try:
-            if 'KvmIpAddresses' in server:
-                for kvm_ip in server['KvmIpAddresses']:
-                    if kvm_ip['ClassId'] == 'compute.IpAddress':
-                        return kvm_ip['Address']
-        except BaseException:
-            print(traceback.format_exc())
-        return None
-
-    def add_management_ip(self, server):
-        self.server_info['ManagementIp'] = self.get_management_ip(server)
-
-    def add_management_options(self):
-        self.server_info['Redfish'] = {}
-        self.server_info['UCSM'] = {}
-        self.server_info['IMC'] = {}
-
-        if self.server_info['ManagementMode'] == 'UCSM':
-            self.server_info['Redfish']['Capable'] = False
-            self.server_info['Redfish']['Enabled'] = False
-            self.server_info['UCSM']['Capable'] = True
-            self.server_info['UCSM']['Enabled'] = self.ucsm_endpoint_settings_handler.is_ucsm_endpoint(
-                self.server_info['Serial']
-            )
-            self.server_info['IMC']['Capable'] = False
-            self.server_info['IMC']['Enabled'] = False
-
-        else:
-            self.server_info['Redfish']['Capable'] = True
-            self.server_info['Redfish']['Enabled'] = self.redfish_endpoint_settings_handler.is_redfish_endpoint(
-                self.server_info['Serial']
-            )
-            self.server_info['UCSM']['Capable'] = False
-            self.server_info['UCSM']['Enabled'] = False
-            self.server_info['IMC']['Capable'] = True
-            self.server_info['IMC']['Enabled'] = False
-
-    def add_memory_info(self, server):
-        keys = [
-            'AvailableMemory',
-            'TotalMemory'
-        ]
-        for key in keys:
-            if key in keys:
-                self.server_info[key] = server[key]
-
-        self.server_info['UsedMemory'] = self.server_info['TotalMemory'] - self.server_info['AvailableMemory']
-
-        self.server_info['TotalMemoryUnit'] = self.info_handler.convert_memory(
-            self.server_info['TotalMemory'] * 1024 * 1024,
-            precision=0
-        )
-
-        self.server_info['TotalMemoryGB'] = int(
-            self.server_info['TotalMemory'] / 1024
-        )
-
-        self.server_info['AvailableMemoryUnit'] = self.info_handler.convert_memory(
-            self.server_info['AvailableMemory'] * 1024 * 1024,
-            precision=0
-        )
-
-        self.server_info['AvailableMemoryGB'] = int(
-            self.server_info['AvailableMemory'] / 1024
-        )
-
-        self.server_info['UsedMemoryUnit'] = self.info_handler.convert_memory(
-            self.server_info['UsedMemory'] * 1024 * 1024,
-            precision=0
-        )
-
-        self.server_info['UsedMemoryGB'] = int(
-            self.server_info['UsedMemory'] / 1024
-        )
-
-        usage = int(self.server_info['UsedMemory'] * 100 / self.server_info['TotalMemory'])
-        self.server_info['UsedMemoryPct'] = usage
-        self.server_info['UsedMemoryPctUnit'] = '%s%%' % (usage)
-
-        if self.settings['memory'] and self.server_info['Type'] == 'Rack':
-            self.server_info['MemoryInfo'] = self.memory_unit_handler.get_memory_units_info()
-
-        if self.settings['memory'] and self.server_info['Type'] == 'Blade':
-            chassis_memory_info = self.memory_unit_handler.get_memory_units_info()
-            memory_info = []
-
-            for item in chassis_memory_info:
-                if item['ServerId'] == server['Moid']:
-                    memory_info.append(item)
-
-            self.server_info['MemoryInfo'] = memory_info
-
-    def add_ext_eth_info(self):
-        if not self.settings['net'] and not self.settings['mac']:
-            return
-
-        if self.cache_enabled:
-            if not self.settings['net']:
-                if 'MacAddressInfo' in self.server_info['Cache']:
-                    return
-
-        self.server_info['ExtEthInfo'] = []
-
-        interfaces = self.adapter_ext_eth_interface_handler.get_all()
-        self.log.set_log(
-            'server_info.%s.adapter_ext_eth_interface' % (self.server_info['Moid']),
-            interfaces,
-            json_conversion=True
-        )
-
-        for interface in interfaces:
-            interface_info = self.adapter_ext_eth_interface_handler.get_info(
-                interface['Moid']
-            )
-
-            if self.settings['mac']:
-                mac_info = {}
-                mac_info['InterfaceDn'] = interface_info['Dn']
-                mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
-                mac_info['MacAddress'] = interface_info['MacAddress'].lower()
-                mac_info['AdapterModel'] = None
-                mac_info['AdapterPciSlot'] = None
-
-            interface_info['AdapterName'] = None
-            interface_info['AdapterPciSlot'] = None
-            for adapter_info in self.server_info['AdaptersInfo']:
-                if interface['Moid'] in adapter_info['ExtEthIfsIds']:
-                    interface_info['AdapterName'] = adapter_info['Name']
-                    interface_info['AdapterPciSlot'] = adapter_info['PciSlot']
-                    if self.settings['mac']:
-                        mac_info['AdapterModel'] = adapter_info['Model']
-                        mac_info['AdapterPciSlot'] = adapter_info['PciSlot']
-
-            self.server_info['ExtEthInfo'].append(
-                interface_info
-            )
-
-            if self.settings['mac']:
-                self.server_info['MacAddressInfo'].append(
-                    mac_info
-                )
-
-        self.server_info['ExtEthInfo'] = sorted(
-            self.server_info['ExtEthInfo'],
-            key=lambda i: (
-                i['Dn'],
-                i['InterfaceId']
-            )
-        )
-
     def add_host_eth_info(self):
-        if not self.settings['net'] and not self.settings['mac']:
-            return
-
-        if self.cache_enabled:
-            if not self.settings['net']:
-                if 'MacAddressInfo' in self.server_info['Cache']:
-                    return
-
         self.server_info['HostEthInfo'] = []
 
-        interfaces = self.adapter_host_eth_interface_handler.get_all()
-        self.log.set_log(
-            'server_info.%s.adapter_host_eth_interface' % (self.server_info['Moid']),
-            interfaces,
-            json_conversion=True
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'adapter_host_eth_interface',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
         )
+        if managed_objects is None:
+            self.log.error(
+                'add_host_eth_info',
+                'No cache'
+            )
+            return
 
-        for interface in interfaces:
+        for managed_object in managed_objects:
             interface_info = self.adapter_host_eth_interface_handler.get_info(
-                interface['Moid']
+                managed_object
             )
 
-            if self.settings['mac']:
-                mac_info = {}
-                mac_info['InterfaceDn'] = interface_info['Dn']
-                mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
-                mac_info['MacAddress'] = interface_info['MacAddress'].lower()
-                mac_info['AdapterModel'] = None
-                mac_info['AdapterPciSlot'] = None
+            mac_info = {}
+            mac_info['InterfaceDn'] = interface_info['Dn']
+            mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
+            mac_info['MacAddress'] = interface_info['MacAddress'].lower()
+            mac_info['AdapterModel'] = None
+            mac_info['AdapterPciSlot'] = None
 
             interface_info['AdapterName'] = None
             interface_info['AdapterPciSlot'] = None
             for adapter_info in self.server_info['AdaptersInfo']:
-                if interface['Moid'] in adapter_info['HostEthIfsIds']:
+                if managed_object['Moid'] in adapter_info['HostEthIfsIds']:
                     interface_info['AdapterName'] = adapter_info['Name']
                     interface_info['AdapterPciSlot'] = adapter_info['PciSlot']
-                    if self.settings['mac']:
-                        mac_info['AdapterModel'] = adapter_info['Model']
-                        mac_info['AdapterPciSlot'] = adapter_info['PciSlot']
+                    mac_info['AdapterModel'] = adapter_info['Model']
+                    mac_info['AdapterPciSlot'] = adapter_info['PciSlot']
 
             self.server_info['HostEthInfo'].append(
                 interface_info
             )
 
-            if self.settings['mac']:
-                self.server_info['MacAddressInfo'].append(
-                    mac_info
-                )
+            self.server_info['MacAddressInfo'].append(
+                mac_info
+            )
 
         self.server_info['HostEthInfo'] = sorted(
             self.server_info['HostEthInfo'],
@@ -1262,21 +1117,29 @@ class ComputeExtraAttributes():
         )
 
     def add_host_fc_info(self):
-        if not self.settings['net']:
-            return
-
         self.server_info['HostFcInfo'] = []
 
-        interfaces = self.adapter_host_fc_interface_handler.get_all()
-        for interface in interfaces:
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'adapter_host_fc_interface',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_host_fc_info',
+                'No cache'
+            )
+            return
+
+        for managed_object in managed_objects:
             interface_info = self.adapter_host_fc_interface_handler.get_info(
-                interface['Moid']
+                managed_object
             )
 
             interface_info['AdapterName'] = None
             interface_info['AdapterPciSlot'] = None
             for adapter_info in self.server_info['AdaptersInfo']:
-                if interface['Moid'] in adapter_info['HostFcIfsIds']:
+                if managed_object['Moid'] in adapter_info['HostFcIfsIds']:
                     interface_info['AdapterName'] = adapter_info['Name']
                     interface_info['AdapterPciSlot'] = adapter_info['PciSlot']
 
@@ -1292,483 +1155,54 @@ class ComputeExtraAttributes():
             )
         )
 
-    def add_adapters_info(self):
-        if not self.settings['net'] and not self.settings['mac']:
+    def add_kvm_info(self, server_mo):
+        self.server_info['KvmInfo'] = {}
+        self.server_info['KvmInfo']['KvmIpAddresses'] = server_mo['KvmIpAddresses']
+        self.server_info['KvmInfo']['KvmServerStateEnabled'] = server_mo['KvmServerStateEnabled']
+        self.server_info['KvmInfo']['KvmVendor'] = server_mo['KvmVendor']
+        self.server_info['KvmInfo']['TunneledKvm'] = server_mo['TunneledKvm']
+
+    def add_license_info(self, server_mo):
+        for tag in server_mo['Tags']:
+            if tag['Key'] == 'Intersight.LicenseTier':
+                self.server_info['LicenseInfo'] = {}
+                self.server_info['LicenseInfo']['Tier'] = tag['Value']
+
+    def add_locator_info(self, server_mo):
+        self.server_info['LocatorLedOn'] = False
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'locator',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_locator_info',
+                'No cache'
+            )
             return
 
-        if self.settings['mac']:
-            self.server_info['MacAddressInfo'] = []
-
-        if self.cache_enabled:
-            if not self.settings['net']:
-                mac_address_info = self.cache_handler.get_intersight_cache_entry_property(
-                    self.server_info['Serial'],
-                    'MacAddressInfo'
-                )
-                if mac_address_info is None:
-                    self.log.error(
-                        'add_adapters_info',
-                        'MacAddressInfo cache miss'
-                    )
-                if mac_address_info is not None:
-                    self.server_info['MacAddressInfo'] = mac_address_info
-                    self.server_info['Cache'].append('MacAddressInfo')
-                    return
-
-        self.server_info['AdaptersInfo'] = []
-
-        adapters = self.adapter_unit_handler.get_all()
-        self.log.set_log(
-            'server_info.%s.adapter_unit' % (self.server_info['Moid']),
-            adapters,
-            json_conversion=True
-        )
-
-        for adapter in adapters:
-            self.server_info['AdaptersInfo'].append(
-                self.adapter_unit_handler.get_info(
-                    adapter['Moid']
-                )
-            )
-
-        self.server_info['AdaptersInfo'] = sorted(
-            self.server_info['AdaptersInfo'],
-            key=lambda i: i['Name']
-        )
-
-    def add_pci_info(self, server):
-        if not self.settings['pci'] and not self.settings['gpu']:
+        if len(managed_objects) == 0:
             return
 
-        if self.cache_enabled:
-            pci_devices_info = self.cache_handler.get_intersight_cache_entry_property(
-                self.server_info['Serial'],
-                'PciDevicesInfo'
+        if len(managed_objects) > 1:
+            self.log.error(
+                'add_locator_info',
+                'Unexpected object count: %s' % (self.server_info['Moid'])
             )
-
-            pci_models = self.cache_handler.get_intersight_cache_entry_property(
-                self.server_info['Serial'],
-                'PciModels'
-            )
-
-            if pci_devices_info is not None and pci_models is not None:
-                self.server_info['PciDevicesInfo'] = pci_devices_info
-                self.server_info['PciModels'] = pci_models
-                self.server_info['Cache'].append('PciDevicesInfo')
-                self.server_info['Cache'].append('PciModels')
-                return
-
-        self.server_info['PciDevicesInfo'] = []
-        for server_pci_device in server['PciDevices']:
-            self.server_info['PciDevicesInfo'].append(
-                self.pci_handler.get_pci_info(
-                    server_pci_device['Moid']
-                )
-            )
-        self.server_info['PciDevicesInfo'] = sorted(
-            self.server_info['PciDevicesInfo'],
-            key=lambda i: i['Dn']
-        )
-
-        self.server_info['PciModels'] = []
-        for server_pci_device in server['PciDevices']:
-            self.server_info['PciModels'].append(
-                self.pci_handler.get_pci_model(
-                    server_pci_device['Moid']
-                )
-            )
-
-    def add_power_info(self):
-        if not self.settings['power']:
             return
 
-        self.server_info['Power'] = None
-
-        if self.server_info['Redfish']['Enabled']:
-            self.server_info['Power'] = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
-                self.server_info['Serial'],
-                'power'
-            )
-
-        if self.server_info['UCSM']['Enabled']:
-            self.server_info['Power'] = self.ucsm_endpoint_settings_handler.get_ucsm_endpoint_template(
-                self.server_info['Serial'],
-                'power'
-            )
-
-    def add_profile_info(self, server):
-        if not self.settings['profile']:
-            return
-
-        managed_objects = self.server_profile_handler.get_all()
-        if len(managed_objects) != 1:
-            return
-
-        profile_id = managed_objects[0]['Moid']
-        self.server_info['ProfileInfo'] = self.server_profile_handler.get_info(
-            profile_id
+        self.server_info['LocatorLedOn'] = self.locator_handler.get_locator_led(
+            managed_objects[0]
         )
 
-        self.search_item_handler.set_get_filter(
-            "IndexMotypes eq 'policy.AbstractPolicy' and Profiles/any(a:a/Moid eq '%s')" % (profile_id)
-        )
-        policies = self.search_item_handler.get_all()
-        self.server_info['ProfileInfo']['Policies'] = []
-        for policy in policies:
-            policy_info = {}
-            policy_info['__Output'] = {}
-            policy_info['Moid'] = policy['Moid']
-            policy_info['Name'] = policy['Name']
-            policy_info['ModTime'] = policy['ModTime']
-            policy_info['ClassId'] = policy['ClassId']
-            policy_info['Shared'] = False
-            if len(policy['Profiles']) > 1:
-                policy_info['Shared'] = True
-
-            policy_info['InSync'] = True
-            policy_info['__Output']['InSync'] = 'Green'
-            for config_change_info in self.server_info['ProfileInfo']['ConfigChangeDetails']:
-                if config_change_info['EntityMoid'] == policy_info['Moid']:
-                    if config_change_info['EntityType'] == policy_info['ClassId']:
-                        policy_info['InSync'] = False
-                        policy_info['__Output']['InSync'] = 'Red'
-
-            self.server_info['ProfileInfo']['Policies'].append(
-                policy_info
-            )
-
-    def add_psu_info(self, server):
-        if not self.settings['psu']:
-            return
-
-        if self.server_info['Type'] == 'Blade':
-            if self.chassis is None:
-                self.server_info['PsuSummary'] = ''
-                self.server_info['PsuHealthy'] = True
-                self.server_info['PsuInfo'] = None
-                return
-
-            self.server_info['PsuInfo'] = []
-
-            for psu in self.chassis['Psus']:
-                self.server_info['PsuInfo'].append(
-                    self.psu_handler.get_psu_info(
-                        psu['Moid']
-                    )
-                )
-
-            self.server_info['PsuInfo'] = sorted(
-                self.server_info['PsuInfo'],
-                key=lambda i: i['Dn']
-            )
-
-            self.server_info['PsuOn'] = 0
-            for psu in self.chassis['Psus']:
-                if self.psu_handler.get_psu_state(psu['Moid']):
-                    self.server_info['PsuOn'] = self.server_info['PsuOn'] + 1
-
-            self.server_info['PsuCount'] = len(self.chassis['Psus'])
-            self.server_info['PsuSummary'] = '%s/%s' % (
-                self.server_info['PsuOn'],
-                self.server_info['PsuCount']
-            )
-            self.server_info['PsuHealthy'] = True
-            if self.server_info['PsuOn'] < self.server_info['PsuCount']:
-                self.server_info['PsuHealthy'] = False
-
-        if self.server_info['Type'] == 'Rack':
-            self.server_info['PsuInfo'] = []
-
-            for psu in server['Psus']:
-                self.server_info['PsuInfo'].append(
-                    self.psu_handler.get_psu_info(
-                        psu['Moid']
-                    )
-                )
-
-            self.server_info['PsuInfo'] = sorted(
-                self.server_info['PsuInfo'],
-                key=lambda i: i['Dn']
-            )
-
-            self.server_info['PsuOn'] = 0
-            for psu in server['Psus']:
-                if self.psu_handler.get_psu_state(psu['Moid']):
-                    self.server_info['PsuOn'] = self.server_info['PsuOn'] + 1
-
-            self.server_info['PsuCount'] = len(server['Psus'])
-            self.server_info['PsuSummary'] = '%s/%s' % (
-                self.server_info['PsuOn'],
-                self.server_info['PsuCount']
-            )
-            self.server_info['PsuHealthy'] = True
-            if self.server_info['PsuOn'] < self.server_info['PsuCount']:
-                self.server_info['PsuHealthy'] = False
-
-    def add_registration_info(self, server):
-        if not self.settings['registration']:
-            self.server_info['Connected'] = False
-            return
-
-        self.server_info['Connected'] = False
-        device_registration_info = self.asset_device_registration_handler.get_info(
-            server['RegisteredDevice']['Moid'],
-            cache=False
-        )
-        if device_registration_info is not None:
-            self.server_info['Connected'] = device_registration_info['Connected']
-
-    def add_setting_id(self):
-        if self.settings['server_setting_id']:
-            self.server_info['ServerSettingId'] = self.compute_server_setting_handler.get_id_by_device_moid(
-                self.server_info['DeviceMoId']
-            )
-
-    def add_storage_virtual_disk_info(self, server_id):
-        self.server_info['VirtualDisks'] = self.storage_virtual_drive_handler.get_virtual_drives_info(
-            server_id,
-            storage_controllers_info=self.server_info['StorageControllersInfo']
-        )
-
-        self.server_info['VirtualDiskCount'] = self.storage_virtual_drive_handler.get_virtual_drives_count(
-            server_id
-        )
-
-        self.server_info['VirtualDiskCapacity'] = self.storage_virtual_drive_handler.get_virtual_drives_size(
-            server_id
-        )
-        self.server_info['VirtualDiskCapacityUnit'] = self.info_handler.convert_storage(
-            self.server_info['VirtualDiskCapacity']
-        )
-
-    def add_storage_hdd_info(self, server_id):
-        self.server_info['HddDisks'] = self.storage_physical_disk_handler.get_compute_disks_info(
-            server_id,
-            disk_type='HDD',
-            virtual_drives_info=self.server_info['VirtualDisks'],
-            storage_controllers_info=self.server_info['StorageControllersInfo']
-        )
-        self.server_info['HddDiskCount'] = self.storage_physical_disk_handler.get_compute_disks_count(
-            server_id,
-            disk_type='HDD'
-        )
-        self.server_info['HddDiskCapacity'] = self.storage_physical_disk_handler.get_compute_disks_size(
-            server_id,
-            disk_type='HDD'
-        )
-        self.server_info['HddDiskCapacityUnit'] = self.info_handler.convert_storage(
-            self.server_info['HddDiskCapacity']
-        )
-
-    def add_storage_ssd_info(self, server_id):
-        self.server_info['SsdDisks'] = self.storage_physical_disk_handler.get_compute_disks_info(
-            server_id,
-            disk_type='SSD',
-            virtual_drives_info=self.server_info['VirtualDisks'],
-            storage_controllers_info=self.server_info['StorageControllersInfo']
-        )
-        self.server_info['SsdDiskCount'] = self.storage_physical_disk_handler.get_compute_disks_count(
-            server_id,
-            disk_type='SSD'
-        )
-        self.server_info['SsdDiskCapacity'] = self.storage_physical_disk_handler.get_compute_disks_size(
-            server_id,
-            disk_type='SSD'
-        )
-        self.server_info['SsdDiskCapacityUnit'] = self.info_handler.convert_storage(
-            self.server_info['SsdDiskCapacity']
-        )
-
-    def add_storage_physical_disk_info(self, server_id):
-        self.server_info['PhysicalDisks'] = self.storage_physical_disk_handler.get_compute_disks_info(
-            server_id,
-            virtual_drives_info=self.server_info['VirtualDisks'],
-            storage_controllers_info=self.server_info['StorageControllersInfo']
-        )
-        self.server_info['PhysicalDiskCount'] = self.storage_physical_disk_handler.get_compute_disks_count(
-            server_id
-        )
-        self.server_info['PhysicalDiskCapacity'] = self.storage_physical_disk_handler.get_compute_disks_size(
-            server_id
-        )
-        self.server_info['PhysicalDiskCapacityUnit'] = self.info_handler.convert_storage(
-            self.server_info['PhysicalDiskCapacity']
-        )
-
-    def add_storage_info(self, server):
-        if not self.settings['storage']:
-            return
-
-        if self.server_info['Type'] == 'Rack':
-            storage_server_id = server['Board']['Moid']
-            self.server_info['StorageControllersInfo'] = self.storage_controller_handler.get_board_storage_controllers_info(
-                server['Board']['Moid']
-            )
-
-            if self.server_info['StorageControllersInfo'] is None:
-                self.server_info['StorageControllersCount'] = 0
-            else:
-                self.server_info['StorageControllersCount'] = len(self.server_info['StorageControllersInfo'])
-
-        if self.server_info['Type'] == 'Blade':
-            storage_server_id = server['Moid']
-            self.server_info['StorageControllersInfo'] = self.storage_controller_handler.get_blade_storage_controllers_info(
-                self.server_info['Moid']
-            )
-            if self.server_info['StorageControllersInfo'] is None:
-                self.server_info['StorageControllersCount'] = 0
-            else:
-                self.server_info['StorageControllersCount'] = len(self.server_info['StorageControllersInfo'])
-
-        self.add_storage_virtual_disk_info(storage_server_id)
-        self.add_storage_hdd_info(storage_server_id)
-        self.add_storage_ssd_info(storage_server_id)
-        self.add_storage_physical_disk_info(storage_server_id)
-
-        self.server_info['StorageDrives'] = '%sC %sH %sS %sVD' % (
-            self.server_info['StorageControllersCount'],
-            self.server_info['HddDiskCount'],
-            self.server_info['SsdDiskCount'],
-            self.server_info['VirtualDiskCount']
-        )
-
-        self.server_info['StorageCapacity'] = 'R %s , VD %s' % (
-            self.server_info['PhysicalDiskCapacityUnit'],
-            self.server_info['VirtualDiskCapacityUnit']
-        )
-
-        self.server_info['StorageSummary'] = '%sC %sH %sS %sVD R%s L%s' % (
-            self.server_info['StorageControllersCount'],
-            self.server_info['HddDiskCount'],
-            self.server_info['SsdDiskCount'],
-            self.server_info['VirtualDiskCount'],
-            self.server_info['PhysicalDiskCapacityUnit'],
-            self.server_info['VirtualDiskCapacityUnit']
-        )
-
-    def add_thermal_info(self):
-        if not self.settings['thermal']:
-            return
-
-        self.server_info['Thermal'] = None
-
-        if self.server_info['Redfish']['Enabled']:
-            if self.server_info['OperPowerState'] == 'on':
-                self.server_info['Thermal'] = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
-                    self.server_info['Serial'],
-                    'thermal'
-                )
-
-        if self.server_info['UCSM']['Enabled']:
-            self.server_info['Thermal'] = self.ucsm_endpoint_settings_handler.get_ucsm_endpoint_template(
-                self.server_info['Serial'],
-                'thermal'
-            )
-
-    def add_tpm_info(self):
-        if not self.settings['tpm']:
-            return
-
-        if 'BoardInfo' not in self.server_info:
-            self.server_info['TpmInfo'] = None
-            return
-
-        if self.server_info['BoardInfo']['EquipmentTpmsCount'] == 0:
-            self.server_info['TpmInfo'] = None
-            return
-
-        tpm_moids_list = []
-        for tpm_moid in self.server_info['BoardInfo']['EquipmentTpmsIds']:
-            tpm_moids_list.append('\'%s\'' % (tpm_moid))
-        tpm_moids_filter = ', '.join(tpm_moids_list)
-
-        self.equipment_tpm_handler.set_get_filter(
-            "Moid in (%s)" % (tpm_moids_filter)
-        )
-
-        tpms = self.equipment_tpm_handler.get_all()
-        self.server_info['TpmInfo'] = []
-        for tpm in tpms:
-            self.server_info['TpmInfo'].append(
-                self.equipment_tpm_handler.get_info(
-                    tpm['Moid']
-                )
-            )
-
-        if not self.settings['board']:
-            del self.server_info['BoardInfo']
-
-    def add_workflow_info(self):
-        if self.settings['workflow'] is None:
-            return
-
-        self.server_info['Workflow'] = {}
-        self.server_info['Workflow']['Days'] = int(self.settings['workflow'] / 86400)
-        self.server_info['Workflow']['Running'] = None
-        self.server_info['Workflow']['LatestMoid'] = None
-        self.server_info['Workflow']['Last'] = []
-
-        if self.last_workflows is None:
-            self.last_workflows = self.workflow.get_last(
-                seconds=self.settings['workflow']
-            )
-            if self.last_workflows is None:
-                return
-
-        latest_create_time = None
-        for last_workflow in self.last_workflows:
-            if self.workflow.is_server_workflow(self.server_info['Moid'], last_workflow):
-                workflow_info = self.workflow.get_workflow_info(
-                    last_workflow
-                )
-                if workflow_info['Running']:
-                    self.server_info['Workflow']['Running'] = workflow_info
-                    continue
-
-                if latest_create_time is None or latest_create_time < workflow_info['CreateTimeEpoch']:
-                    self.server_info['Workflow']['LatestMoid'] = workflow_info['Moid']
-                    latest_create_time = workflow_info['CreateTimeEpoch']
-
-                self.server_info['Workflow']['Last'].append(
-                    workflow_info
-                )
-
-        self.server_info['Workflow']['Last'] = sorted(
-            self.server_info['Workflow']['Last'],
-            key=lambda i: i['CreateTimeEpoch'], reverse=True
-        )
-
-    def add_state_flag(self):
-        color = ':'
-        if self.server_info['OperPowerState'] == 'on':
-            state = 'P+'
-            color = '%sGG' % (color)
-        else:
-            state = 'P-'
-            color = '%sRR' % (color)
-
-        if self.server_info['AlarmSummary']['Warning'] == 0 and self.server_info['AlarmSummary']['Critical'] == 0:
-            alarm_state = 'H'
-            alarm_color = 'G'.rjust(len(alarm_state), 'G')
-            state = '%s %s' % (state, alarm_state)
-            color = '%s.%s' % (color, alarm_color)
-        if self.server_info['AlarmSummary']['Warning'] > 0 and self.server_info['AlarmSummary']['Critical'] == 0:
-            alarm_state = 'W(%s)' % (self.server_info['AlarmSummary']['Warning'])
-            alarm_color = 'Y'.rjust(len(alarm_state), 'Y')
-            state = '%s %s' % (state, alarm_state)
-            color = '%s.%s' % (color, alarm_color)
-        if self.server_info['AlarmSummary']['Critical'] > 0:
-            alarm_state = 'C(%s)' % (self.server_info['AlarmSummary']['Critical'])
-            alarm_color = 'R'.rjust(len(alarm_state), 'R')
-            state = '%s %s' % (state, alarm_state)
-            color = '%s.%s' % (color, alarm_color)
-
-        if self.server_info['LocatorLedOn']:
-            state = '%s L' % (state)
-            color = '%s..' % (color)
-
-        self.server_info['FlagState'] = state
-        self.server_info['__Output']['FlagState'] = color
+    def get_management_ip(self, server_mo):
+        if 'KvmIpAddresses' in server_mo:
+            for kvm_ip in server_mo['KvmIpAddresses']:
+                if kvm_ip['ClassId'] == 'compute.IpAddress':
+                    return kvm_ip['Address']
+        return None
 
     def add_management_flag(self):
         color = ':'
@@ -1808,10 +1242,591 @@ class ComputeExtraAttributes():
         self.server_info['FlagManagement'] = state
         self.server_info['__Output']['FlagManagement'] = color
 
-    def add_workflow_flag(self):
+    def add_management_options(self):
+        self.server_info['Redfish'] = {}
+        self.server_info['UCSM'] = {}
+        self.server_info['IMC'] = {}
+
+        if self.server_info['ManagementMode'] == 'UCSM':
+            self.server_info['Redfish']['Capable'] = False
+            self.server_info['Redfish']['Enabled'] = False
+            self.server_info['UCSM']['Capable'] = True
+            self.server_info['UCSM']['Enabled'] = self.ucsm_endpoint_settings_handler.is_ucsm_endpoint(
+                self.server_info['Serial']
+            )
+            self.server_info['IMC']['Capable'] = False
+            self.server_info['IMC']['Enabled'] = False
+
+        else:
+            self.server_info['Redfish']['Capable'] = True
+            self.server_info['Redfish']['Enabled'] = self.redfish_endpoint_settings_handler.is_redfish_endpoint(
+                self.server_info['Serial']
+            )
+            self.server_info['UCSM']['Capable'] = False
+            self.server_info['UCSM']['Enabled'] = False
+            self.server_info['IMC']['Capable'] = True
+            self.server_info['IMC']['Enabled'] = False
+
+    def add_memory_info(self):
+        self.server_info['MemoryInfo'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'memory',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_memory_info',
+                'No cache'
+            )
+        else:
+            for managed_object in managed_objects:
+                self.server_info['MemoryInfo'].append(
+                    self.memory_unit_handler.get_memory_unit_info(
+                        managed_object
+                    )
+                )
+
+        self.server_info['MemoryInfo'] = sorted(
+            self.server_info['MemoryInfo'],
+            key=lambda i: i['MemoryId']
+        )
+
+        # if self.server_info['Type'] == 'Rack':
+        #     self.server_info['MemoryInfo'] = self.memory_unit_handler.get_memory_units_info()
+
+        # if self.server_info['Type'] == 'Blade':
+        #     chassis_memory_info = self.memory_unit_handler.get_memory_units_info()
+        #     memory_info = []
+
+        #     for item in chassis_memory_info:
+        #         if item['ServerId'] == server['Moid']:
+        #             memory_info.append(item)
+
+        #     self.server_info['MemoryInfo'] = memory_info
+
+    def add_pci_info(self):
+        self.server_info['PciDevicesInfo'] = []
+        self.server_info['PciModels'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'pci',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_pci_info',
+                'No cache'
+            )
+        else:
+            for managed_object in managed_objects:
+                self.server_info['PciDevicesInfo'].append(
+                    self.pci_handler.get_pci_info(
+                        managed_object
+                    )
+                )
+
+                self.server_info['PciModels'].append(
+                    self.pci_handler.get_pci_model(
+                        managed_object
+                    )
+                )
+
+        self.server_info['PciDevicesInfo'] = sorted(
+            self.server_info['PciDevicesInfo'],
+            key=lambda i: i['Dn']
+        )
+
+    def add_power_info(self):
+        self.server_info['Power'] = self.cache_handler.get_intersight_cache_entry(
+            'power',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if self.server_info['Power'] is None:
+            self.log.error(
+                'add_power_info',
+                'No cache'
+            )
+
+        # if self.server_info['Redfish']['Enabled']:
+        #     self.server_info['Power'] = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
+        #         self.server_info['Serial'],
+        #         'power'
+        #     )
+
+        # if self.server_info['UCSM']['Enabled']:
+        #     self.server_info['Power'] = self.ucsm_endpoint_settings_handler.get_ucsm_endpoint_template(
+        #         self.server_info['Serial'],
+        #         'power'
+        #     )
+
+    def add_profile_info(self):
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'profile',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_profile_info',
+                'No cache'
+            )
+
+        if len(managed_objects) == 0:
+            self.server_info['ProfileInfo'] = None
+            return
+
+        if len(managed_objects) > 1:
+            self.log.error(
+                'add_profile_info',
+                'Unexpected count of profile objects: %s' % (self.server_info['Moid'])
+            )
+            return
+
+        self.server_info['ProfileInfo'] = self.server_profile_handler.get_info(
+            managed_objects[0]
+        )
+
+        self.search_item_handler.set_get_filter(
+            "IndexMotypes eq 'policy.AbstractPolicy' and Profiles/any(a:a/Moid eq '%s')" % (self.server_info['ProfileInfo']['Moid'])
+        )
+        policies = self.search_item_handler.get_all()
+        self.server_info['ProfileInfo']['Policies'] = []
+        for policy in policies:
+            policy_info = {}
+            policy_info['__Output'] = {}
+            policy_info['Moid'] = policy['Moid']
+            policy_info['Name'] = policy['Name']
+            policy_info['ModTime'] = policy['ModTime']
+            policy_info['ClassId'] = policy['ClassId']
+            policy_info['Shared'] = False
+            if len(policy['Profiles']) > 1:
+                policy_info['Shared'] = True
+
+            policy_info['InSync'] = True
+            policy_info['__Output']['InSync'] = 'Green'
+            for config_change_info in self.server_info['ProfileInfo']['ConfigChangeDetails']:
+                if config_change_info['EntityMoid'] == policy_info['Moid']:
+                    if config_change_info['EntityType'] == policy_info['ClassId']:
+                        policy_info['InSync'] = False
+                        policy_info['__Output']['InSync'] = 'Red'
+
+            self.server_info['ProfileInfo']['Policies'].append(
+                policy_info
+            )
+
+        return
+
+    def add_psu_info(self, server_mo):
+        if self.server_info['Type'] == 'Blade':
+            if self.chassis is None:
+                self.server_info['PsuSummary'] = ''
+                self.server_info['PsuHealthy'] = True
+                self.server_info['PsuInfo'] = []
+                return
+
+            # self.server_info['PsuInfo'] = []
+
+            # for psu in self.chassis['Psus']:
+            #     self.server_info['PsuInfo'].append(
+            #         self.psu_handler.get_psu_info(
+            #             psu['Moid']
+            #         )
+            #     )
+
+            # self.server_info['PsuInfo'] = sorted(
+            #     self.server_info['PsuInfo'],
+            #     key=lambda i: i['Dn']
+            # )
+
+            # self.server_info['PsuOn'] = 0
+            # for psu in self.chassis['Psus']:
+            #     if self.psu_handler.get_psu_state(psu['Moid']):
+            #         self.server_info['PsuOn'] = self.server_info['PsuOn'] + 1
+
+            # self.server_info['PsuCount'] = len(self.chassis['Psus'])
+            # self.server_info['PsuSummary'] = '%s/%s' % (
+            #     self.server_info['PsuOn'],
+            #     self.server_info['PsuCount']
+            # )
+            # self.server_info['PsuHealthy'] = True
+            # if self.server_info['PsuOn'] < self.server_info['PsuCount']:
+            #     self.server_info['PsuHealthy'] = False
+
+        if self.server_info['Type'] == 'Rack':
+            self.server_info['PsuInfo'] = []
+
+            managed_objects = self.cache_handler.get_intersight_cache_entry(
+                'psu',
+                subdirectory=self.server_info['Moid'],
+                check_ttl=False
+            )
+            if managed_objects is None:
+                self.log.error(
+                    'add_psu_info',
+                    'No cache'
+                )
+            else:
+                for managed_object in managed_objects:
+                    self.server_info['PsuInfo'].append(
+                        self.psu_handler.get_info(
+                            managed_object
+                        )
+                    )
+
+            self.server_info['PsuInfo'] = sorted(
+                self.server_info['PsuInfo'],
+                key=lambda i: i['Dn']
+            )
+
+            self.server_info['PsuOn'] = 0
+            for psu_info in self.server_info['PsuInfo']:
+                if psu_info['On']:
+                    self.server_info['PsuOn'] = self.server_info['PsuOn'] + 1
+
+            self.server_info['PsuCount'] = len(server_mo['Psus'])
+            self.server_info['PsuSummary'] = '%s/%s' % (
+                self.server_info['PsuOn'],
+                self.server_info['PsuCount']
+            )
+            self.server_info['PsuHealthy'] = True
+            if self.server_info['PsuOn'] < self.server_info['PsuCount']:
+                self.server_info['PsuHealthy'] = False
+
+    def add_setting_id(self):
+        self.server_info['ServerSettingId'] = self.compute_server_setting_handler.get_id_by_device_moid(
+            self.server_info['DeviceMoId']
+        )
+
+    def add_state_flag(self):
+        color = ':'
+        if self.server_info['OperPowerState'] == 'on':
+            state = 'P+'
+            color = '%sGG' % (color)
+        else:
+            state = 'P-'
+            color = '%sRR' % (color)
+
+        if self.server_info['AlarmSummary']['Warning'] == 0 and self.server_info['AlarmSummary']['Critical'] == 0:
+            alarm_state = 'H'
+            alarm_color = 'G'.rjust(len(alarm_state), 'G')
+            state = '%s %s' % (state, alarm_state)
+            color = '%s.%s' % (color, alarm_color)
+        if self.server_info['AlarmSummary']['Warning'] > 0 and self.server_info['AlarmSummary']['Critical'] == 0:
+            alarm_state = 'W(%s)' % (self.server_info['AlarmSummary']['Warning'])
+            alarm_color = 'Y'.rjust(len(alarm_state), 'Y')
+            state = '%s %s' % (state, alarm_state)
+            color = '%s.%s' % (color, alarm_color)
+        if self.server_info['AlarmSummary']['Critical'] > 0:
+            alarm_state = 'C(%s)' % (self.server_info['AlarmSummary']['Critical'])
+            alarm_color = 'R'.rjust(len(alarm_state), 'R')
+            state = '%s %s' % (state, alarm_state)
+            color = '%s.%s' % (color, alarm_color)
+
+        if self.server_info['LocatorLedOn']:
+            state = '%s L' % (state)
+            color = '%s..' % (color)
+
+        self.server_info['FlagState'] = state
+        self.server_info['__Output']['FlagState'] = color
+
+    def add_storage_virtual_disk_info(self, virtual_drives_mo, physical_disks_usage_mo):
+        self.server_info['VirtualDisks'] = self.storage_virtual_drive_handler.get_virtual_drives_info(
+            virtual_drives_mo,
+            storage_controllers_info=self.server_info['StorageControllersInfo']
+        )
+
+        for virtual_disk_info in self.server_info['VirtualDisks']:
+            virtual_disk_info['PhysicalDiskIds'] = []
+
+            if virtual_disk_info['PhysicalDiskCount'] > 0:
+                if physical_disks_usage_mo is not None:
+                    for physical_disk_usage_mo in physical_disks_usage_mo:
+                        if physical_disk_usage_mo['StorageVirtualDrive']['Moid'] == virtual_disk_info['Moid']:
+                            virtual_disk_info['PhysicalDiskIds'].append(
+                                physical_disk_usage_mo['PhysicalDrive']
+                            )
+
+        self.server_info['VirtualDiskCount'] = len(
+            self.server_info['VirtualDisks']
+        )
+
+        self.server_info['VirtualDiskCapacity'] = self.storage_virtual_drive_handler.get_virtual_drives_size(
+            self.server_info['VirtualDisks']
+        )
+        self.server_info['VirtualDiskCapacityUnit'] = self.info_handler.convert_storage(
+            self.server_info['VirtualDiskCapacity']
+        )
+
+    def add_storage_physical_disk_info(self, physical_disks_mo):
+        self.server_info['PhysicalDisks'] = self.storage_physical_disk_handler.get_compute_disks_info(
+            physical_disks_mo,
+            virtual_drives_info=self.server_info['VirtualDisks'],
+            storage_controllers_info=self.server_info['StorageControllersInfo']
+        )
+        self.server_info['PhysicalDiskCount'] = len(
+            self.server_info['PhysicalDisks']
+        )
+        self.server_info['PhysicalDiskCapacity'] = self.storage_physical_disk_handler.get_compute_disks_size(
+            self.server_info['PhysicalDisks']
+        )
+        self.server_info['PhysicalDiskCapacityUnit'] = self.info_handler.convert_storage(
+            self.server_info['PhysicalDiskCapacity']
+        )
+
+    def add_storage_info(self, server):
+        start_time = int(time.time() * 1000)
+
+        storage_controllers_mo = None
+        if self.server_info['Type'] == 'Rack':
+            storage_server_id = server['Board']['Moid']
+            if self.cache_handler.intersight_cache_enabled:
+                storage_controllers_mo = self.cache_handler.get_intersight_cache_entry(
+                    'storage_controller',
+                    subdirectory=server['Moid']
+                )
+
+            if storage_controllers_mo is None:
+                storage_controllers_mo = self.storage_controller_handler.get_board_storage_controllers(
+                    server['Board']['Moid'],
+                    cache=True
+                )
+                if storage_controllers_mo is not None:
+                    self.cache_handler.set_intersight_cache_entry(
+                        'storage_controller',
+                        storage_controllers_mo,
+                        subdirectory=server['Moid']
+                    )
+
+        if self.server_info['Type'] == 'Blade':
+            storage_server_id = server['Moid']
+            if self.cache_handler.intersight_cache_enabled:
+                storage_controllers_mo = self.cache_handler.get_intersight_cache_entry(
+                    'storage_controller',
+                    subdirectory=server['Moid']
+                )
+
+            if storage_controllers_mo is None:
+                storage_controllers_mo = self.storage_controller_handler.get_blade_storage_controllers(
+                    self.server_info['Moid'],
+                    cache=True
+                )
+                if storage_controllers_mo is not None:
+                    self.cache_handler.set_intersight_cache_entry(
+                        'storage_controller',
+                        storage_controllers_mo,
+                        subdirectory=server['Moid']
+                    )
+
+        virtual_drives_mo = None
+        if self.cache_handler.intersight_cache_enabled:
+            virtual_drives_mo = self.cache_handler.get_intersight_cache_entry(
+                'virtual_drive',
+                subdirectory=server['Moid']
+            )
+
+        if virtual_drives_mo is None:
+            virtual_drives_mo = self.storage_virtual_drive_handler.get_virtual_drives(
+                storage_server_id,
+                cache=True
+            )
+            if virtual_drives_mo is not None:
+                self.cache_handler.set_intersight_cache_entry(
+                    'virtual_drive',
+                    virtual_drives_mo,
+                    subdirectory=server['Moid']
+                )
+
+        physical_disks_mo = None
+        if self.cache_handler.intersight_cache_enabled:
+            physical_disks_mo = self.cache_handler.get_intersight_cache_entry(
+                'physical_disk',
+                subdirectory=server['Moid']
+            )
+
+        if physical_disks_mo is None:
+            physical_disks_mo = self.storage_physical_disk_handler.get_compute_disks(
+                storage_server_id,
+                cache=True
+            )
+            if physical_disks_mo is not None:
+                self.cache_handler.set_intersight_cache_entry(
+                    'physical_disk',
+                    physical_disks_mo,
+                    subdirectory=server['Moid']
+                )
+
+        physical_disks_usage_mo = None
+        if self.cache_handler.intersight_cache_enabled:
+            physical_disks_usage_mo = self.cache_handler.get_intersight_cache_entry(
+                'physical_disk_usage',
+                subdirectory=server['Moid']
+            )
+
+        if physical_disks_usage_mo is None:
+            if virtual_drives_mo is not None:
+                virtual_drive_moids = []
+                for virtual_drive_mo in virtual_drives_mo:
+                    virtual_drive_moids.append(
+                        virtual_drive_mo['Moid']
+                    )
+
+                if len(virtual_drive_moids) > 0:
+                    virtual_drive_moids_list = []
+                    for virtual_drive_moid in virtual_drive_moids:
+                        virtual_drive_moids_list.append('\'%s\'' % (virtual_drive_moid))
+                    virtual_drive_moids_filter = ', '.join(virtual_drive_moids_list)
+                    self.storage_physical_disk_usage_handler.set_get_filter(
+                        "StorageVirtualDrive/Moid in (%s)" % (virtual_drive_moids_filter)
+                    )
+
+                    physical_disks_usage_mo = self.storage_physical_disk_usage_handler.get_all()
+                    if physical_disks_usage_mo is not None:
+                        self.cache_handler.set_intersight_cache_entry(
+                            'physical_disk_usage',
+                            physical_disks_usage_mo,
+                            subdirectory=server['Moid']
+                        )
+
+        self.log.debug(
+            'add_storage_info',
+            'Storage (disk): %s' % (int(time.time() * 1000) - start_time)
+        )
+
+        if self.server_info['Type'] == 'Rack':
+            self.server_info['StorageControllersInfo'] = self.storage_controller_handler.get_board_storage_controllers_info(
+                storage_controllers_mo,
+                physical_disks_mo=physical_disks_mo
+            )
+
+        if self.server_info['Type'] == 'Blade':
+            self.server_info['StorageControllersInfo'] = self.storage_controller_handler.get_blade_storage_controllers_info(
+                controllers=storage_controllers_mo
+            )
+
+        if self.server_info['StorageControllersInfo'] is None:
+            self.server_info['StorageControllersCount'] = 0
+        else:
+            self.server_info['StorageControllersCount'] = len(self.server_info['StorageControllersInfo'])
+
+        self.add_storage_virtual_disk_info(virtual_drives_mo, physical_disks_usage_mo)
+        self.add_storage_physical_disk_info(physical_disks_mo)
+
+        self.server_info['StorageDrives'] = '%sC %sD %sVD' % (
+            self.server_info['StorageControllersCount'],
+            self.server_info['PhysicalDiskCount'],
+            self.server_info['VirtualDiskCount']
+        )
+
+        self.server_info['StorageCapacity'] = 'R %s , VD %s' % (
+            self.server_info['PhysicalDiskCapacityUnit'],
+            self.server_info['VirtualDiskCapacityUnit']
+        )
+
+        self.server_info['StorageSummary'] = '%sC %sD %sVD R%s L%s' % (
+            self.server_info['StorageControllersCount'],
+            self.server_info['PhysicalDiskCount'],
+            self.server_info['VirtualDiskCount'],
+            self.server_info['PhysicalDiskCapacityUnit'],
+            self.server_info['VirtualDiskCapacityUnit']
+        )
+
+    def add_thermal_info(self):
+        self.server_info['Thermal'] = self.cache_handler.get_intersight_cache_entry(
+            'thermal',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if self.server_info['Thermal'] is None:
+            self.log.error(
+                'add_thermal_info',
+                'No cache'
+            )
+
+        # self.server_info['Thermal'] = None
+
+        # if self.server_info['Redfish']['Enabled']:
+        #     if self.server_info['OperPowerState'] == 'on':
+        #         self.server_info['Thermal'] = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
+        #             self.server_info['Serial'],
+        #             'thermal'
+        #         )
+
+        # if self.server_info['UCSM']['Enabled']:
+        #     self.server_info['Thermal'] = self.ucsm_endpoint_settings_handler.get_ucsm_endpoint_template(
+        #         self.server_info['Serial'],
+        #         'thermal'
+        #     )
+
+    def add_tpm_info(self):
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'tpm',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_tpm_info',
+                'No cache'
+            )
+            return
+
+        self.server_info['TpmInfo'] = []
+        for managed_object in managed_objects:
+            self.server_info['TpmInfo'].append(
+                self.equipment_tpm_handler.get_info(
+                    managed_object
+                )
+            )
+
+    def add_workflow_info(self, workflow_days):
+        self.server_info['Workflow'] = {}
+        self.server_info['Workflow']['Days'] = int(workflow_days / 86400)
+        self.server_info['Workflow']['Running'] = None
+        self.server_info['Workflow']['LatestMoid'] = None
+        self.server_info['Workflow']['Last'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'workflow',
+            subdirectory=self.server_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log.error(
+                'add_workflow_info',
+                'No cache'
+            )
+            return
+
+        latest_create_time = None
+        for managed_object in managed_objects:
+            workflow_info = self.workflow_handler.get_info(
+                managed_object
+            )
+            if workflow_info['Running']:
+                self.server_info['Workflow']['Running'] = workflow_info
+                continue
+
+            if latest_create_time is None or latest_create_time < workflow_info['CreateTimeEpoch']:
+                self.server_info['Workflow']['LatestMoid'] = workflow_info['Moid']
+                latest_create_time = workflow_info['CreateTimeEpoch']
+
+            self.server_info['Workflow']['Last'].append(
+                workflow_info
+            )
+
+        self.server_info['Workflow']['Last'] = sorted(
+            self.server_info['Workflow']['Last'],
+            key=lambda i: i['CreateTimeEpoch'], reverse=True
+        )
+
+    def add_workflow_flag(self, workflow_days):
         state = ''
         color = ':'
-        if self.settings['workflow'] is not None:
+        if workflow_days is not None:
             if self.server_info['Workflow']['Running'] is not None:
                 state = '%sR' % (state)
                 color = '%sY' % (color)
@@ -1855,65 +1870,13 @@ class ComputeExtraAttributes():
         self.server_info['FlagWorkflow'] = state
         self.server_info['__Output']['FlagWorkflow'] = color
 
-    def add_flags(self):
-        if self.state_enabled:
-            self.add_state_flag()
-            self.add_management_flag()
-            self.add_workflow_flag()
-
-    def set_server_info_cache(self):
-        if 'MacAddressInfo' in self.server_info:
-            self.log.debug(
-                'set_server_info_cache',
-                'Server %s MacAddressInfo' % (self.server_info['Serial'])
-            )
-            self.cache_handler.set_intersight_cache_entry_property(
-                self.server_info['Serial'],
-                'MacAddressInfo',
-                self.server_info['MacAddressInfo']
-            )
-
-        if 'PciDevicesInfo' in self.server_info:
-            self.log.debug(
-                'set_server_info_cache',
-                'Server %s PciDevicesInfo' % (self.server_info['Serial'])
-            )
-            self.cache_handler.set_intersight_cache_entry_property(
-                self.server_info['Serial'],
-                'PciDevicesInfo',
-                self.server_info['PciDevicesInfo']
-            )
-
-        if 'PciModels' in self.server_info:
-            self.log.debug(
-                'set_server_info_cache',
-                'Server %s PciModels' % (self.server_info['Serial'])
-            )
-            self.cache_handler.set_intersight_cache_entry_property(
-                self.server_info['Serial'],
-                'PciModels',
-                self.server_info['PciModels']
-            )
-
-    def get_server_info(self, server, include_object=False, state_enabled=True, cache_enabled=False):
-        if server is None:
-            return None
-
-        self.state_enabled = state_enabled
-        self.cache_enabled = cache_enabled
-
-        self.log.set_log(
-            'server.%s' % (server['Moid']),
-            server,
-            json_conversion=True
-        )
-
+    def get_server_info(self, server_mo, settings):
         self.server_info = {}
         self.server_info['__Output'] = {}
-        self.server_info['StateEnabled'] = self.state_enabled
-        self.server_info['Cache'] = []
-        if include_object:
-            self.server_info['IntersightObject'] = server
+        if 'state' not in settings:
+            settings['state'] = False
+        self.server_info['StateEnabled'] = settings['state']
+        self.server_info['IntersightObject'] = server_mo
 
         keys = [
             'Moid',
@@ -1923,64 +1886,333 @@ class ComputeExtraAttributes():
             'Model',
             'Serial',
             'ManagementMode',
-            'OperPowerState'
+            'OperPowerState',
+            'NumCpus',
+            'NumCpuCores',
+            'NumThreads',
+            'AvailableMemory',
+            'TotalMemory'
         ]
         for key in keys:
-            self.server_info[key] = server[key]
+            self.server_info[key] = server_mo[key]
 
-        if server['ObjectType'] == 'compute.RackUnit':
+        self.server_info['Cpu'] = '%sS %sC %sT' % (
+            self.server_info['NumCpus'],
+            self.server_info['NumCpuCores'],
+            self.server_info['NumThreads']
+        )
+
+        self.server_info['UsedMemory'] = self.server_info['TotalMemory'] - self.server_info['AvailableMemory']
+
+        self.server_info['TotalMemoryUnit'] = self.info_handler.convert_memory(
+            self.server_info['TotalMemory'] * 1024 * 1024,
+            precision=0
+        )
+
+        self.server_info['TotalMemoryGB'] = int(
+            self.server_info['TotalMemory'] / 1024
+        )
+
+        self.server_info['AvailableMemoryUnit'] = self.info_handler.convert_memory(
+            self.server_info['AvailableMemory'] * 1024 * 1024,
+            precision=0
+        )
+
+        self.server_info['AvailableMemoryGB'] = int(
+            self.server_info['AvailableMemory'] / 1024
+        )
+
+        self.server_info['UsedMemoryUnit'] = self.info_handler.convert_memory(
+            self.server_info['UsedMemory'] * 1024 * 1024,
+            precision=0
+        )
+
+        self.server_info['UsedMemoryGB'] = int(
+            self.server_info['UsedMemory'] / 1024
+        )
+
+        usage = int(self.server_info['UsedMemory'] * 100 / self.server_info['TotalMemory'])
+        self.server_info['UsedMemoryPct'] = usage
+        self.server_info['UsedMemoryPctUnit'] = '%s%%' % (usage)
+
+        if server_mo['ObjectType'] == 'compute.RackUnit':
             self.server_info['Type'] = 'Rack'
             self.server_info['TypeModel'] = '(R) %s' % (self.server_info['Model'])
 
-        if server['ObjectType'] == 'compute.Blade':
+        if server_mo['ObjectType'] == 'compute.Blade':
             self.server_info['Type'] = 'Blade'
-            self.server_info['TypeModel'] = '(B) %s' % (server['Model'])
+            self.server_info['TypeModel'] = '(B) %s' % (server_mo['Model'])
 
-        self.set_filter(server)
+        self.server_info['Connected'] = False
 
-        self.add_advisory_info()
-        self.add_alarm_info(server)
-        self.add_bios_info(server)
-        self.add_board_info()
-        self.add_boot_info(server)
-        self.add_chassis_info()
-        self.add_connector_info(server)
-        self.add_contract_info()
-        self.add_cpu_info(server)
-        self.add_fan_info(server)
-        self.add_firmware_info(server)
         self.add_group_info()
-        self.add_health_info(server)
-        self.add_hcl_info()
-        self.add_kvm_info(server)
-        self.add_license_info(server)
-        self.add_locator_info(server)
-        self.add_management_ip(server)
+        self.add_health_info(server_mo)
+        self.add_kvm_info(server_mo)
+        self.add_license_info(server_mo)
+        self.server_info['ManagementIp'] = self.get_management_ip(server_mo)
         self.add_management_options()
-        self.add_memory_info(server)
-        self.add_pci_info(server)
-        self.add_gpu_info(server)
-        self.add_adapters_info()
-        self.add_ext_eth_info()
-        self.add_host_eth_info()
-        self.add_host_fc_info()
-        self.add_power_info()
-        self.add_profile_info(server)
-        self.add_psu_info(server)
-        self.add_registration_info(server)
-        self.add_setting_id()
-        self.add_storage_info(server)
-        self.add_thermal_info()
-        self.add_workflow_info()
-        self.add_tpm_info()
-        self.add_flags()
+
+        if 'advisory' in settings and settings['advisory']:
+            start_time = int(time.time() * 1000)
+            self.add_advisory_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (advisory): %s' % (duration)
+            )
+
+        if 'alarm' in settings and settings['alarm']:
+            start_time = int(time.time() * 1000)
+            self.add_alarm_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (alarm): %s' % (duration)
+            )
+
+        if 'board' in settings and settings['board']:
+            start_time = int(time.time() * 1000)
+            self.add_board_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (board): %s' % (duration)
+            )
+
+        if 'boot' in settings and settings['boot']:
+            start_time = int(time.time() * 1000)
+            self.add_boot_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (boot): %s' % (duration)
+            )
+
+        if 'chassis' in settings and settings['chassis']:
+            start_time = int(time.time() * 1000)
+            self.add_chassis_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (chassis): %s' % (duration)
+            )
+
+        if 'connector' in settings and settings['connector']:
+            start_time = int(time.time() * 1000)
+            self.add_connector_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (connector): %s' % (duration)
+            )
+
+        if 'contract' in settings and settings['contract']:
+            start_time = int(time.time() * 1000)
+            self.add_contract_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (contract): %s' % (duration)
+            )
+
+        if 'cpu' in settings and settings['cpu']:
+            start_time = int(time.time() * 1000)
+            self.add_cpu_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (cpu): %s' % (duration)
+            )
+
+        if 'fan' in settings and settings['fan']:
+            start_time = int(time.time() * 1000)
+            self.add_fan_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (fan): %s' % (duration)
+            )
+
+        if 'fw' in settings and settings['fw']:
+            start_time = int(time.time() * 1000)
+            self.add_firmware_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (fw): %s' % (duration)
+            )
+
+        if 'hcl' in settings and settings['hcl']:
+            start_time = int(time.time() * 1000)
+            self.add_hcl_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (hcl): %s' % (duration)
+            )
+
+        if 'locator' in settings and settings['locator']:
+            start_time = int(time.time() * 1000)
+            self.add_locator_info(server_mo)
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (locator): %s' % (duration)
+            )
+
+        if 'memory' in settings and settings['memory']:
+            start_time = int(time.time() * 1000)
+            self.add_memory_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (memory): %s' % (duration)
+            )
+
+        if 'pci' in settings and settings['pci']:
+            start_time = int(time.time() * 1000)
+            self.add_pci_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (pci): %s' % (duration)
+            )
+
+        if 'gpu' in settings and settings['gpu']:
+            start_time = int(time.time() * 1000)
+            self.add_gpu_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (gpu): %s' % (duration)
+            )
+
+            if 'pci' not in settings or not settings['pci']:
+                if 'PciDevicesInfo' in self.server_info:
+                    del self.server_info['PciDevicesInfo']
+
+        if 'net' in settings and settings['net']:
+            start_time = int(time.time() * 1000)
+            self.add_adapters_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (adapters): %s' % (duration)
+            )
+
+            start_time = int(time.time() * 1000)
+            self.add_ext_eth_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (eth): %s' % (duration)
+            )
+
+            start_time = int(time.time() * 1000)
+            self.add_host_eth_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (host-eth): %s' % (duration)
+            )
+
+            start_time = int(time.time() * 1000)
+            self.add_host_fc_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (fc): %s' % (duration)
+            )
+
+        if 'power' in settings and settings['power']:
+            start_time = int(time.time() * 1000)
+            self.add_power_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (power): %s' % (duration)
+            )
+
+        if 'profile' in settings and settings['profile']:
+            start_time = int(time.time() * 1000)
+            self.add_profile_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (profile): %s' % (duration)
+            )
+
+        if 'psu' in settings and settings['psu']:
+            start_time = int(time.time() * 1000)
+            self.add_psu_info(server_mo)
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (psu): %s' % (duration)
+            )
+
+        if 'server_setting_id' in settings and settings['server_setting_id']:
+            start_time = int(time.time() * 1000)
+            self.add_setting_id()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (settings): %s' % (duration)
+            )
+
+        if 'storage' in settings and settings['storage']:
+            start_time = int(time.time() * 1000)
+            self.add_storage_info(server_mo)
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (storage): %s' % (duration)
+            )
+
+        if 'thermal' in settings and settings['thermal']:
+            start_time = int(time.time() * 1000)
+            self.add_thermal_info()
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (thermal): %s' % (duration)
+            )
+
+        if 'workflow' in settings and settings['workflow'] is not None:
+            start_time = int(time.time() * 1000)
+            self.add_workflow_info(
+                settings['workflow']
+            )
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (workflow): %s' % (duration)
+            )
+
+        if 'tpm' in settings and settings['tpm']:
+            start_time = int(time.time() * 1000)
+            self.add_tpm_info()
+            if not settings['board']:
+                del self.server_info['BoardInfo']
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (tpm): %s' % (duration)
+            )
+
+        if 'state' in settings and settings['state']:
+            start_time = int(time.time() * 1000)
+            self.add_flags(settings['workflow'])
+            duration = int(time.time() * 1000) - start_time
+            self.log.debug(
+                'get_server_info',
+                'Duration (flags): %s' % (duration)
+            )
 
         self.log.set_log(
-            'server_info.%s' % (server['Moid']),
+            'server_info.%s' % (server_mo['Moid']),
             self.server_info,
             json_conversion=True
         )
-
-        self.set_server_info_cache()
 
         return self.server_info

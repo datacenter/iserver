@@ -99,35 +99,7 @@ class EquipmentFan(IntersightCommon):
         self.iobject = 'equipment fan'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def is_fan_on(self, item):
-        if item is None:
-            return False
-
-        if item['Presence'].lower() == 'equipped' and item['OperState'].lower() == 'operable':
-            return True
-
-        if item['Presence'].lower() == 'equipped' and item['OperState'].lower() == 'ok':
-            return True
-
-        return False
-
-    def get_all(self, max_errors=3, error_timeout=1):
-        items = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if items is not None:
-            for item in items:
-                item['On'] = self.is_fan_on(item)
-
-        return items
-
-    def get_info(self, moid, cache=True):
-        if cache:
-            fan_device = self.get_cache_moid(moid)
-        else:
-            fan_device = self.get(moid)
-
-        if fan_device is None:
-            return None
-
+    def get_info(self, managed_object):
         keys = [
             'Dn',
             'FanId',
@@ -135,7 +107,6 @@ class EquipmentFan(IntersightCommon):
             'Model',
             'ModuleId',
             'OperState',
-            'On',
             'PartNumber',
             'Pid',
             'Presence',
@@ -148,16 +119,23 @@ class EquipmentFan(IntersightCommon):
         info = {}
         info['__Output'] = {}
         for key in keys:
-            if isinstance(fan_device[key], str):
-                info[key] = fan_device[key].strip()
+            if isinstance(managed_object[key], str):
+                info[key] = managed_object[key].strip()
                 continue
 
-            info[key] = fan_device[key]
+            info[key] = managed_object[key]
 
         info['Name'] = 'Fan Module %s - Fan %s' % (
-            fan_device['ModuleId'],
-            fan_device['FanId']
+            managed_object['ModuleId'],
+            managed_object['FanId']
         )
+
+        info['On'] = False
+        if managed_object['Presence'].lower() == 'equipped' and managed_object['OperState'].lower() == 'operable':
+            info['On'] = True
+
+        if managed_object['Presence'].lower() == 'equipped' and managed_object['OperState'].lower() == 'ok':
+            info['On'] = True
 
         if info['Presence'].lower() == 'equipped':
             info['__Output']['Presence'] = 'Green'

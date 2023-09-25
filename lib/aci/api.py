@@ -15,6 +15,7 @@ class Api():
 
         self.session_connected = False
         self.token = None
+        self.request_info = {}
 
         self.api_fault_limit = 1000
         self.api_event_limit = 1000
@@ -23,10 +24,15 @@ class Api():
     def get_apic_ip(self):
         return self.apic_ip
 
-    def get_token(self):
-        if self.token is not None:
-            return
+    def get_request_info(self):
+        return self.request_info
 
+    def get_token(self, generate_if_none=False):
+        if generate_if_none and self.token is None:
+            self.generate_token()
+        return self.token
+
+    def generate_token(self):
         url = "https://%s:%s/api/aaaLogin.json" % (
             self.apic_ip,
             self.apic_port
@@ -87,9 +93,10 @@ class Api():
             return False
 
         if self.token is None:
-            self.get_token()
+            self.generate_token()
             if self.token is None:
                 return False
+
         return True
 
     def get_mo_children_attributes(self, mo_name, managed_object, child_name, include_grandchildren=False):
@@ -148,7 +155,15 @@ class Api():
         return resources
 
     def get_class(self, class_name, response_format='json', query_target_filter=None, query=None, node_class=False):
+        self.request_info = {}
+        self.request_info['url'] = '--'
+        self.request_info['status_code'] = '--'
+        self.request_info['duration'] = '--'
+        self.request_info['error'] = None
+        self.request_info['connected'] = True
+
         if not self.is_connected():
+            self.request_info['connected'] = False
             return None
 
         if node_class:
@@ -192,11 +207,13 @@ class Api():
         success = True
         item_count = '-'
         try:
+            self.request_info['url'] = url
             response = requests.get(
                 url,
                 headers=headers,
                 verify=False
             )
+            self.request_info['status_code'] = response.status_code
             if response.status_code >= 300:
                 self.log.error(
                     'apic.get_class',
@@ -214,6 +231,7 @@ class Api():
                     )
                 )
 
+                self.request_info['error'] = response.content.decode('utf-8')
                 success = False
                 response = None
 
@@ -234,6 +252,7 @@ class Api():
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
+        self.request_info['duration'] = duration_ms
 
         log_info = '%s:%s class %s' % (
             self.apic_ip,
@@ -261,7 +280,15 @@ class Api():
         return response
 
     def get_managed_object(self, distinguished_name, response_format='json', query_target_filter=None, query=None, node_mo=False):
+        self.request_info = {}
+        self.request_info['url'] = '--'
+        self.request_info['status_code'] = '--'
+        self.request_info['duration'] = '--'
+        self.request_info['error'] = None
+        self.request_info['connected'] = True
+
         if not self.is_connected():
+            self.request_info['connected'] = False
             return None
 
         if node_mo:
@@ -300,11 +327,13 @@ class Api():
         success = True
         item_count = None
         try:
+            self.request_info['url'] = url
             response = requests.get(
                 url,
                 headers=headers,
                 verify=False
             )
+            self.request_info['status_code'] = response.status_code
             if response.status_code >= 300:
                 self.log.error(
                     'apic.get_managed_object',
@@ -322,6 +351,7 @@ class Api():
                     )
                 )
 
+                self.request_info['error'] = response.content.decode('utf-8')
                 success = False
                 response = None
 
@@ -342,6 +372,7 @@ class Api():
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
+        self.request_info['duration'] = duration_ms
 
         log_info = '%s:%s mo %s' % (
             self.apic_ip,

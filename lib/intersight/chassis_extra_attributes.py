@@ -1,3 +1,5 @@
+from lib import log_helper
+from lib.intersight import cache as intersight_cache
 from lib.intersight import equipment_fan_module
 from lib.intersight import equipment_fan
 from lib.intersight import equipment_fan_control
@@ -21,18 +23,31 @@ from lib.intersight import network_element_summary
 class ChassisExtraAttributes():
     """Class for chassis object extra attributes
     """
-    def __init__(self, iaccount, settings, log_id=None):
-        self.settings = settings
+    def __init__(self, iaccount, log_id=None):
+        self.chassis = None
+        self.chassis_info = {}
+        self.chassis_helper = {}
+        self.settings = None
+
+        self.log_handler = log_helper.Log(log_id=log_id)
+
+        self.cache_handler = intersight_cache.IntersightCache(
+            iaccount,
+            log_id=log_id
+        )
+
         self.iocard_handler = equipment_iocard.EquipmentIoCard(iaccount, log_id=log_id)
         self.ether_host_port_handler = ethernet_host_port.EthernetHostPort(iaccount, log_id=log_id)
         self.ether_network_port_handler = ethernet_network_port.EthernetNetworkPort(iaccount, log_id=log_id)
         self.ether_physical_port_handler = ethernet_physical_port.EthernetPhysicalPort(iaccount, log_id=log_id)
+
         self.fan_module_handler = equipment_fan_module.EquipmentFanModule(iaccount, log_id=log_id)
         self.fan_handler = equipment_fan.EquipmentFan(iaccount, log_id=log_id)
         self.fan_control_handler = equipment_fan_control.EquipmentFanControl(iaccount, log_id=log_id)
         self.psu_handler = equipment_psu.EquipmentPsu(iaccount, log_id=log_id)
         self.psu_control_handler = equipment_psu_control.EquipmentPsuControl(iaccount, log_id=log_id)
         self.power_control_state_handler = power_control_state.PowerControlState(iaccount, log_id=log_id)
+
         self.compute_blade_handler = compute_blade.ComputeBlade(iaccount, log_id=log_id)
         self.adapter_unit_handler = adapter_unit.AdapterUnit(iaccount, log_id=log_id)
         self.adapter_ext_eth_interface_handler = adapter_ext_eth_interface.AdapterExtEthInterface(iaccount, log_id=log_id)
@@ -43,8 +58,6 @@ class ChassisExtraAttributes():
         self.network_element_summary_handler = network_element_summary.NetworkElementSummary(iaccount, log_id=log_id)
 
     def add_common_attributes(self):
-        self.chassis_info['Chassis'] = {}
-
         keys = [
             'ConnectionPath',
             'ConnectionStatus',
@@ -65,130 +78,169 @@ class ChassisExtraAttributes():
 
         for key in keys:
             if isinstance(self.chassis[key], str):
-                self.chassis_info['Chassis'][key] = self.chassis[key].strip()
+                self.chassis_info[key] = self.chassis[key].strip()
                 continue
 
-            self.chassis_info['Chassis'][key] = self.chassis[key]
+            self.chassis_info[key] = self.chassis[key]
 
         if self.chassis['AlarmSummary']['Warning'] == 0 and self.chassis['AlarmSummary']['Critical'] == 0:
-            self.chassis_info['Chassis']['Health'] = 'Healthy'
-            self.chassis_info['Chassis']['HealthSummary'] = 'Healthy'
+            self.chassis_info['Health'] = 'Healthy'
+            self.chassis_info['HealthSummary'] = 'Healthy'
         if self.chassis['AlarmSummary']['Warning'] > 0 and self.chassis['AlarmSummary']['Critical'] == 0:
-            self.chassis_info['Chassis']['Health'] = 'Warnings'
-            self.chassis_info['Chassis']['HealthSummary'] = 'Warnings (%s)' % (self.chassis['AlarmSummary']['Warning'])
+            self.chassis_info['Health'] = 'Warnings'
+            self.chassis_info['HealthSummary'] = 'Warnings (%s)' % (self.chassis['AlarmSummary']['Warning'])
         if self.chassis['AlarmSummary']['Critical'] > 0:
-            self.chassis_info['Chassis']['Health'] = 'Critical'
-            self.chassis_info['Chassis']['HealthSummary'] = 'Critical (%s)' % (self.chassis['AlarmSummary']['Critical'])
+            self.chassis_info['Health'] = 'Critical'
+            self.chassis_info['HealthSummary'] = 'Critical (%s)' % (self.chassis['AlarmSummary']['Critical'])
 
-        self.chassis_info['Chassis']['AlarmWarning'] = self.chassis['AlarmSummary']['Warning']
-        self.chassis_info['Chassis']['AlarmCritical'] = self.chassis['AlarmSummary']['Critical']
+        self.chassis_info['AlarmWarning'] = self.chassis['AlarmSummary']['Warning']
+        self.chassis_info['AlarmCritical'] = self.chassis['AlarmSummary']['Critical']
 
-        self.chassis_info['Chassis']['ConnectionSummary'] = '%s / %s' % (
-            self.chassis_info['Chassis']['ConnectionPath'],
-            self.chassis_info['Chassis']['ConnectionStatus']
+        self.chassis_info['ConnectionSummary'] = '%s / %s' % (
+            self.chassis_info['ConnectionPath'],
+            self.chassis_info['ConnectionStatus']
         )
 
-        self.chassis_info['Chassis']['NodeMax'] = None
-        self.chassis_info['Chassis']['IfmMax'] = None
-        self.chassis_info['Chassis']['FanModuleMax'] = None
-        self.chassis_info['Chassis']['FanMax'] = None
-        self.chassis_info['Chassis']['PsuMax'] = None
+        self.chassis_info['NodeMax'] = None
+        self.chassis_info['IfmMax'] = None
+        self.chassis_info['FanModuleMax'] = None
+        self.chassis_info['FanMax'] = None
+        self.chassis_info['PsuMax'] = None
 
-        if self.chassis_info['Chassis']['Model'] == 'UCSX-9508':
-            self.chassis_info['Chassis']['NodeMax'] = 8
-            self.chassis_info['Chassis']['IfmMax'] = 2
-            self.chassis_info['Chassis']['FanModuleMax'] = 4
-            self.chassis_info['Chassis']['FanMax'] = 8
-            self.chassis_info['Chassis']['PsuMax'] = 6
+        if self.chassis_info['Model'] == 'UCSX-9508':
+            self.chassis_info['NodeMax'] = 8
+            self.chassis_info['IfmMax'] = 2
+            self.chassis_info['FanModuleMax'] = 4
+            self.chassis_info['FanMax'] = 8
+            self.chassis_info['PsuMax'] = 6
 
     def add_chassis_alarms_attributes(self):
-        # Dependencies
-        # - only base chassis object required
+        self.chassis_info['Alarms'] = []
 
-        self.cond_alarm_handler.set_get_filter(
-            "AncestorMoId eq '%s'" % (self.chassis['Moid'])
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'alarm',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
         )
-
-        self.chassis_info['Chassis']['Alarms'] = []
-
-        for alarm_item in self.cond_alarm_handler.get_all():
-            self.chassis_info['Chassis']['Alarms'].append(
-                self.cond_alarm_handler.get_info(
-                    alarm_item['Moid']
-                )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_chassis_alarms_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['Alarms'].append(
+                    self.cond_alarm_handler.get_info(
+                        managed_object
+                    )
+                )
 
     def add_chassis_advisory_attributes(self):
-        # Dependencies
-        # - only base chassis object required
+        self.chassis_info['Advisory'] = []
 
-        self.tam_advisory_instance_handler.set_get_filter(
-            "AffectedObjectMoid eq '%s'" % (self.chassis['Moid'])
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'advisory',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
         )
-
-        self.chassis_info['Chassis']['Advisory'] = []
-
-        for advisory_item in self.tam_advisory_instance_handler.get_all():
-            self.chassis_info['Chassis']['Advisory'].append(
-                self.cond_alarm_handler.get_info(
-                    advisory_item['Moid']
-                )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_chassis_advisory_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['Advisory'].append(
+                    self.tam_advisory_instance_handler.get_info(
+                        managed_object
+                    )
+                )
 
-        self.chassis_info['Chassis']['AdvisoryCount'] = len(
-            self.chassis_info['Chassis']['Advisory']
+        self.chassis_info['AdvisoryCount'] = len(
+            self.chassis_info['Advisory']
         )
 
     def add_chassis_contract_attributes(self):
-        # Dependencies
-        # - only base chassis object required
+        self.chassis_info['Contract'] = None
 
-        self.asset_device_contract_information_handler.set_get_filter(
-            "DeviceId eq '%s'" % (self.chassis['Serial'])
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'contract',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
         )
-
-        contracts = self.asset_device_contract_information_handler.get_all()
-        if len(contracts) == 0:
-            self.chassis_info['Chassis']['Contract'] = None
-
-        if len(contracts) > 0:
-            self.chassis_info['Chassis']['Contract'] = self.asset_device_contract_information_handler.get_info(
-                contracts[0]['Moid']
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_chassis_contract_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+            return
+
+        if len(managed_objects) == 0:
+            return
+
+        if len(managed_objects) > 1:
+            self.log_handler.error(
+                'add_chassis_contract_attributes',
+                'Unexpected contract count: %s' % (self.chassis['Moid'])
+            )
+            return
+
+        self.chassis_info['Contract'] = self.asset_device_contract_information_handler.get_info(
+            managed_objects[0]
+        )
 
     def add_chassis_profile_attributes(self):
-        # Dependencies
-        # - only base chassis object required
+        self.chassis_info['Profile'] = None
 
-        self.chassis_profile_handler.set_get_filter(
-            "AssignedChassis/Moid eq '%s'" % (self.chassis['Moid'])
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'profile',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
         )
-
-        profiles = self.chassis_profile_handler.get_all()
-        if len(profiles) == 0:
-            self.chassis_info['Chassis']['Profile'] = None
-
-        if len(profiles) > 0:
-            self.chassis_info['Chassis']['Profile'] = self.chassis_profile_handler.get_info(
-                profiles[0]['Moid']
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_chassis_profile_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+            return
+
+        if len(managed_objects) == 0:
+            return
+
+        if len(managed_objects) > 1:
+            self.log_handler.error(
+                'add_chassis_profile_attributes',
+                'Unexpected profile count: %s' % (self.chassis['Moid'])
+            )
+            return
+
+        self.chassis_info['Profile'] = self.chassis_profile_handler.get_info(
+            managed_objects[0]
+        )
 
     def add_chassis_domain_attributes(self):
         self.chassis_info['Domain'] = {}
         self.chassis_info['Domain']['Name'] = self.chassis['RegisteredDevice']['DeviceHostname'][0]
 
-        self.network_element_summary_handler.set_get_filter(
-            "DeviceMoId eq '%s'" % (self.chassis['DeviceMoId'])
-        )
-
-        domain_switches = self.network_element_summary_handler.get_all()
         self.chassis_info['Domain']['Switch'] = []
-        for domain_switch in domain_switches:
-            self.chassis_info['Domain']['Switch'].append(
-                self.network_element_summary_handler.get_info(
-                    domain_switch['Moid']
-                )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'network',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_chassis_domain_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['Domain']['Switch'].append(
+                    self.network_element_summary_handler.get_info(
+                        managed_object
+                    )
+                )
 
         self.chassis_info['Domain']['Switch'] = sorted(
             self.chassis_info['Domain']['Switch'],
@@ -196,23 +248,25 @@ class ChassisExtraAttributes():
         )
 
     def add_node_attributes(self):
-        # Dependencies
-        # - only base chassis object required
-
-        # Limit the scope of isctl get query
-
-        self.compute_blade_handler.set_get_filter(
-            "EquipmentChassis/Moid eq '%s'" % (self.chassis['Moid'])
-        )
-
         self.chassis_info['NodeInfo'] = []
-        for blade in self.chassis['Blades']:
-            blade_info = self.compute_blade_handler.get_info(
-                blade['Moid']
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'blade',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_node_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
-            self.chassis_info['NodeInfo'].append(
-                blade_info
-            )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['NodeInfo'].append(
+                    self.compute_blade_handler.get_info(
+                        managed_object
+                    )
+                )
 
         # Sort for nice display
         self.chassis_info['NodeInfo'] = sorted(
@@ -222,48 +276,50 @@ class ChassisExtraAttributes():
 
         # Summaries
 
-        self.chassis_info['Chassis']['NodePowerOn'] = 0
+        self.chassis_info['NodePowerOn'] = 0
         for blade_info in self.chassis_info['NodeInfo']:
             if blade_info['PowerOn']:
-                self.chassis_info['Chassis']['NodePowerOn'] = self.chassis_info['Chassis']['NodePowerOn'] + 1
+                self.chassis_info['NodePowerOn'] = self.chassis_info['NodePowerOn'] + 1
 
-        self.chassis_info['Chassis']['NodeCount'] = len(
+        self.chassis_info['NodeCount'] = len(
             self.chassis_info['NodeInfo']
         )
 
-        if self.chassis_info['Chassis']['NodeMax'] is None:
-            self.chassis_info['Chassis']['NodeSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['NodePowerOn'],
-                self.chassis_info['Chassis']['NodeCount']
+        if self.chassis_info['NodeMax'] is None:
+            self.chassis_info['NodeSummary'] = '%s/%s' % (
+                self.chassis_info['NodePowerOn'],
+                self.chassis_info['NodeCount']
             )
         else:
-            self.chassis_info['Chassis']['NodeSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['NodePowerOn'],
-                self.chassis_info['Chassis']['NodeCount'],
-                self.chassis_info['Chassis']['NodeMax']
+            self.chassis_info['NodeSummary'] = '%s/%s/%s' % (
+                self.chassis_info['NodePowerOn'],
+                self.chassis_info['NodeCount'],
+                self.chassis_info['NodeMax']
             )
 
     def add_adapter_unit_attributes(self):
-        # Dependencies
-        # - nodes information required
-
-        blade_ids = []
-        for blade in self.chassis['Blades']:
-            blade_ids.append('\'%s\'' % (blade['Moid']))
-        self.adapter_unit_handler.set_get_filter(
-            "Parent/Moid in (%s)" % (', '.join(blade_ids))
-        )
-
         self.chassis_helper['AdapterUnitIds'] = []
         self.chassis_info['AdapterUnitInfo'] = []
 
-        for adapter_unit_item in self.adapter_unit_handler.get_all():
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'adapter',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_adapter_unit_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
+            )
+            return
+
+        for managed_object in managed_objects:
             self.chassis_helper['AdapterUnitIds'].append(
-                adapter_unit_item['Moid']
+                managed_object['Moid']
             )
 
             adapter_unit_info = self.adapter_unit_handler.get_info(
-                adapter_unit_item['Moid']
+                managed_object
             )
             self.chassis_info['AdapterUnitInfo'].append(
                 adapter_unit_info
@@ -275,21 +331,23 @@ class ChassisExtraAttributes():
                     adapter_unit_info['ComputeNodePowerOn'] = node_info['PowerOn']
 
     def add_adapter_ext_eth_interface_attributes(self):
-        # Dependencies
-        # - must run after adaptor unit collection
-
-        adapter_unit_ids = []
-        for adapter_unit_id in self.chassis_helper['AdapterUnitIds']:
-            adapter_unit_ids.append('\'%s\'' % (adapter_unit_id))
-        self.adapter_ext_eth_interface_handler.set_get_filter(
-            "Parent/Moid in (%s)" % (', '.join(adapter_unit_ids))
-        )
-
         self.chassis_info['AdapterExtEthInterfaceInfo'] = []
 
-        for adapter_ext_eth_interface_item in self.adapter_ext_eth_interface_handler.get_all():
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'interface',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_adapter_ext_eth_interface_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
+            )
+            return
+
+        for managed_object in managed_objects:
             adapter_ext_eth_interface_info = self.adapter_ext_eth_interface_handler.get_info(
-                adapter_ext_eth_interface_item['Moid']
+                managed_object
             )
 
             for adapter_unit_info in self.chassis_info['AdapterUnitInfo']:
@@ -333,31 +391,26 @@ class ChassisExtraAttributes():
                             host_port['PeerInfo'] = ext_eth_interface_info['PeerInfo']
 
     def add_io_module_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
-
-        # Limit the scope of isctl get query
-        self.iocard_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (self.chassis['Moid'])
-        )
-
-        self.chassis_helper['IfmIds'] = []
         self.chassis_info['IfmInfo'] = []
 
-        # Get io module info
-        for io_module in self.chassis['Ioms']:
-            self.chassis_helper['IfmIds'].append(
-                io_module['Moid']
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'iocard',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_io_module_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['IfmInfo'].append(
+                    self.iocard_handler.get_info(
+                        managed_object
+                    )
+                )
 
-            io_module_info = self.iocard_handler.get_info(
-                io_module['Moid']
-            )
-            self.chassis_info['IfmInfo'].append(
-                io_module_info
-            )
-
-        # Sort for nice display
         self.chassis_info['IfmInfo'] = sorted(
             self.chassis_info['IfmInfo'],
             key=lambda k: (k['ModuleId'])
@@ -365,59 +418,56 @@ class ChassisExtraAttributes():
 
         # Summaries
 
-        self.chassis_info['Chassis']['IfmOn'] = 0
+        self.chassis_info['IfmOn'] = 0
         for io_module in self.chassis_info['IfmInfo']:
             if io_module['On']:
-                self.chassis_info['Chassis']['IfmOn'] = self.chassis_info['Chassis']['IfmOn'] + 1
+                self.chassis_info['IfmOn'] = self.chassis_info['IfmOn'] + 1
 
-        self.chassis_info['Chassis']['IfmCount'] = len(
+        self.chassis_info['IfmCount'] = len(
             self.chassis_info['IfmInfo']
         )
 
-        if self.chassis_info['Chassis']['IfmMax'] is None:
-            self.chassis_info['Chassis']['IfmSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['IfmOn'],
-                self.chassis_info['Chassis']['IfmCount']
+        if self.chassis_info['IfmMax'] is None:
+            self.chassis_info['IfmSummary'] = '%s/%s' % (
+                self.chassis_info['IfmOn'],
+                self.chassis_info['IfmCount']
             )
         else:
-            self.chassis_info['Chassis']['IfmSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['IfmOn'],
-                self.chassis_info['Chassis']['IfmCount'],
-                self.chassis_info['Chassis']['IfmMax']
+            self.chassis_info['IfmSummary'] = '%s/%s/%s' % (
+                self.chassis_info['IfmOn'],
+                self.chassis_info['IfmCount'],
+                self.chassis_info['IfmMax']
             )
-
-    def get_io_modules_filter(self):
-        io_module_ids = []
-        for io_module_id in self.chassis_helper['IfmIds']:
-            io_module_ids.append('\'%s\'' % (io_module_id))
-        return ', '.join(io_module_ids)
 
     def add_host_port_attributes(self):
-        # Dependencies
-        # - must run after base io module attributes
-
-        io_module_ids_filter = self.get_io_modules_filter()
-        self.ether_host_port_handler.set_get_filter(
-            'EquipmentIoCardBase/Moid in (%s)' % (io_module_ids_filter)
-        )
-
         self.chassis_info['HostPortInfo'] = []
-        for host_port in self.ether_host_port_handler.get_all():
-            # Base object info
-            host_port_info = self.ether_host_port_handler.get_info(
-                host_port['Moid']
-            )
 
-            # Enrich with module info
-            for io_module in self.chassis_info['IfmInfo']:
-                if io_module['Moid'] == host_port_info['IoModuleId']:
-                    host_port_info['IfmDn'] = io_module['Dn']
-                    host_port_info['IfmName'] = io_module['Name']
-                    host_port_info['IfmId'] = io_module['ModuleId']
-
-            self.chassis_info['HostPortInfo'].append(
-                host_port_info
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'ether_host_port',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_host_port_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                host_port_info = self.ether_host_port_handler.get_info(
+                    managed_object
+                )
+
+                # Enrich with module info
+                for io_module in self.chassis_info['IfmInfo']:
+                    if io_module['Moid'] == host_port_info['IoModuleId']:
+                        host_port_info['IfmDn'] = io_module['Dn']
+                        host_port_info['IfmName'] = io_module['Name']
+                        host_port_info['IfmId'] = io_module['ModuleId']
+
+                self.chassis_info['HostPortInfo'].append(
+                    host_port_info
+                )
 
         # Sort for nice display
         self.chassis_info['HostPortInfo'] = sorted(
@@ -451,53 +501,55 @@ class ChassisExtraAttributes():
 
         # Global Summaries
 
-        self.chassis_info['Chassis']['HostPortCount'] = 0
-        self.chassis_info['Chassis']['HostPortUp'] = 0
+        self.chassis_info['HostPortCount'] = 0
+        self.chassis_info['HostPortUp'] = 0
 
         for io_module_info in self.chassis_info['IfmInfo']:
-            self.chassis_info['Chassis']['HostPortCount'] = self.chassis_info['Chassis']['HostPortCount'] + io_module_info['HostPortCount']
-            self.chassis_info['Chassis']['HostPortUp'] = self.chassis_info['Chassis']['HostPortUp'] + io_module_info['HostPortUp']
+            self.chassis_info['HostPortCount'] = self.chassis_info['HostPortCount'] + io_module_info['HostPortCount']
+            self.chassis_info['HostPortUp'] = self.chassis_info['HostPortUp'] + io_module_info['HostPortUp']
 
-        self.chassis_info['Chassis']['HostPortSummary'] = '%s/%s' % (
-            self.chassis_info['Chassis']['HostPortUp'],
-            self.chassis_info['Chassis']['HostPortCount']
+        self.chassis_info['HostPortSummary'] = '%s/%s' % (
+            self.chassis_info['HostPortUp'],
+            self.chassis_info['HostPortCount']
         )
 
     def add_network_port_attributes(self):
-        # Dependencies
-        # - must run after base io module attributes
-
-        io_module_ids_filter = self.get_io_modules_filter()
-        self.ether_network_port_handler.set_get_filter(
-            'EquipmentIoCardBase/Moid in (%s)' % (io_module_ids_filter)
-        )
-
         self.chassis_helper['PhysicalPortIds'] = []
         self.chassis_info['NetworkPortInfo'] = []
 
-        for network_port in self.ether_network_port_handler.get_all():
-            # Base object info
-            network_port_info = self.ether_network_port_handler.get_info(
-                network_port['Moid']
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'ether_network_port',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_network_port_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                network_port_info = self.ether_network_port_handler.get_info(
+                    managed_object
+                )
 
-            # Enrich with module info
-            for io_module in self.chassis_info['IfmInfo']:
-                if io_module['Moid'] == network_port_info['IoModuleId']:
-                    network_port_info['IfmDn'] = io_module['Dn']
-                    network_port_info['IfmName'] = io_module['Name']
-                    network_port_info['IfmId'] = io_module['ModuleId']
+                # Enrich with module info
+                for io_module in self.chassis_info['IfmInfo']:
+                    if io_module['Moid'] == network_port_info['IoModuleId']:
+                        network_port_info['IfmDn'] = io_module['Dn']
+                        network_port_info['IfmName'] = io_module['Name']
+                        network_port_info['IfmId'] = io_module['ModuleId']
 
-            self.chassis_info['NetworkPortInfo'].append(
-                network_port_info
-            )
+                self.chassis_info['NetworkPortInfo'].append(
+                    network_port_info
+                )
 
-            # Populate physical port ids for later use
-            if network_port_info['PeerInterfaceType'] is not None:
-                if network_port_info['PeerInterfaceType'] == 'ether.PhysicalPort':
-                    self.chassis_helper['PhysicalPortIds'].append(
-                        network_port_info['PeerInterfaceId']
-                    )
+                # Populate physical port ids for later use
+                if network_port_info['PeerInterfaceType'] is not None:
+                    if network_port_info['PeerInterfaceType'] == 'ether.PhysicalPort':
+                        self.chassis_helper['PhysicalPortIds'].append(
+                            network_port_info['PeerInterfaceId']
+                        )
 
         # Sort for nice display
         self.chassis_info['NetworkPortInfo'] = sorted(
@@ -536,58 +588,48 @@ class ChassisExtraAttributes():
 
         # Global Summaries
 
-        self.chassis_info['Chassis']['NetworkPortUp'] = 0
-        self.chassis_info['Chassis']['NetworkPortCount'] = 0
-        self.chassis_info['Chassis']['NetworkPortMax'] = 0
+        self.chassis_info['NetworkPortUp'] = 0
+        self.chassis_info['NetworkPortCount'] = 0
+        self.chassis_info['NetworkPortMax'] = 0
 
         for io_module_info in self.chassis_info['IfmInfo']:
             if io_module_info['NetworkPortMax'] is not None:
-                self.chassis_info['Chassis']['NetworkPortMax'] = self.chassis_info['Chassis']['NetworkPortMax'] + io_module_info['NetworkPortMax']
+                self.chassis_info['NetworkPortMax'] = self.chassis_info['NetworkPortMax'] + io_module_info['NetworkPortMax']
 
-            self.chassis_info['Chassis']['NetworkPortCount'] = self.chassis_info['Chassis']['NetworkPortCount'] + io_module_info['NetworkPortCount']
-            self.chassis_info['Chassis']['NetworkPortUp'] = self.chassis_info['Chassis']['NetworkPortUp'] + io_module_info['NetworkPortUp']
+            self.chassis_info['NetworkPortCount'] = self.chassis_info['NetworkPortCount'] + io_module_info['NetworkPortCount']
+            self.chassis_info['NetworkPortUp'] = self.chassis_info['NetworkPortUp'] + io_module_info['NetworkPortUp']
 
-        if self.chassis_info['Chassis']['NetworkPortMax'] == 0:
-            self.chassis_info['Chassis']['NetworkPortSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['NetworkPortUp'],
-                self.chassis_info['Chassis']['NetworkPortCount']
+        if self.chassis_info['NetworkPortMax'] == 0:
+            self.chassis_info['NetworkPortSummary'] = '%s/%s' % (
+                self.chassis_info['NetworkPortUp'],
+                self.chassis_info['NetworkPortCount']
             )
         else:
-            self.chassis_info['Chassis']['NetworkPortSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['NetworkPortUp'],
-                self.chassis_info['Chassis']['NetworkPortCount'],
-                self.chassis_info['Chassis']['NetworkPortMax']
+            self.chassis_info['NetworkPortSummary'] = '%s/%s/%s' % (
+                self.chassis_info['NetworkPortUp'],
+                self.chassis_info['NetworkPortCount'],
+                self.chassis_info['NetworkPortMax']
             )
-
-    def get_physical_port_ids_filter(self):
-        # Dependencies
-        # - must run after network port collection to populate physial port ids
-
-        physical_port_ids = []
-        if len(self.chassis_helper['PhysicalPortIds']) == 0:
-            return physical_port_ids
-
-        for physical_port_id in self.chassis_helper['PhysicalPortIds']:
-            physical_port_ids.append('\'%s\'' % (physical_port_id))
-
-        return ', '.join(physical_port_ids)
 
     def add_physical_port_attributes(self):
-        # Dependencies
-        # - must run after network port collection to populate physial port ids
-
         self.chassis_info['PhysicalPortInfo'] = []
 
-        if len(self.chassis_helper['PhysicalPortIds']) > 0:
-            physical_port_ids_filter = self.get_physical_port_ids_filter()
-            self.ether_physical_port_handler.set_get_filter(
-                'Moid in (%s)' % (physical_port_ids_filter)
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'ether_physical_port',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_physical_port_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
-
-            for physical_port in self.ether_physical_port_handler.get_all():
-                physical_port_info = self.ether_physical_port_handler.get_info(physical_port['Moid'])
+        else:
+            for managed_object in managed_objects:
                 self.chassis_info['PhysicalPortInfo'].append(
-                    physical_port_info
+                    self.ether_physical_port_handler.get_info(
+                        managed_object
+                    )
                 )
 
         for network_port in self.chassis_info['NetworkPortInfo']:
@@ -602,34 +644,55 @@ class ChassisExtraAttributes():
                             network_port['PeerOperSpeed'] = physical_port_info['OperSpeed']
 
     def add_fan_control_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
+        self.chassis_info['FanControlInfo'] = None
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'fan_control',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_fan_control_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
+            )
+            return
+
+        if len(managed_objects) == 0:
+            return
+
+        if len(managed_objects) > 1:
+            self.log_handler.error(
+                'add_fan_control_attributes',
+                'Unexpected fan control count: %s' % (self.chassis['Moid'])
+            )
+            return
 
         self.chassis_info['FanControlInfo'] = self.fan_control_handler.get_info(
-            self.chassis['FanControl']['Moid']
+            managed_objects[0]
         )
 
     def add_fan_module_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
-
-        # Limit the scope of isctl get query
-        self.fan_module_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (self.chassis['Moid'])
-        )
-
-        # Get fan modules state
         self.chassis_helper['FanModuleIds'] = []
         self.chassis_info['FanModuleInfo'] = []
 
-        for fan_module in self.chassis['Fanmodules']:
-            self.chassis_helper['FanModuleIds'].append(
-                fan_module['Moid']
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'fan_module',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_fan_module_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
-
-            self.chassis_info['FanModuleInfo'].append(
-                self.fan_module_handler.get_fan_info(fan_module['Moid'])
-            )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['FanModuleInfo'].append(
+                    self.fan_module_handler.get_info(
+                        managed_object
+                    )
+                )
 
         # Sort for nice display
         self.chassis_info['FanModuleInfo'] = sorted(
@@ -639,45 +702,44 @@ class ChassisExtraAttributes():
 
         # Summaries
 
-        self.chassis_info['Chassis']['FanModulesOn'] = 0
+        self.chassis_info['FanModulesOn'] = 0
         for fan_module in self.chassis_info['FanModuleInfo']:
             if fan_module['On']:
-                self.chassis_info['Chassis']['FanModulesOn'] = self.chassis_info['Chassis']['FanModulesOn'] + 1
+                self.chassis_info['FanModulesOn'] = self.chassis_info['FanModulesOn'] + 1
 
-        self.chassis_info['Chassis']['FanModuleCount'] = len(self.chassis_info['FanModuleInfo'])
+        self.chassis_info['FanModuleCount'] = len(self.chassis_info['FanModuleInfo'])
 
-        if self.chassis_info['Chassis']['FanModuleMax'] is None:
-            self.chassis_info['Chassis']['FanModuleSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['FanModulesOn'],
-                self.chassis_info['Chassis']['FanModuleCount']
+        if self.chassis_info['FanModuleMax'] is None:
+            self.chassis_info['FanModuleSummary'] = '%s/%s' % (
+                self.chassis_info['FanModulesOn'],
+                self.chassis_info['FanModuleCount']
             )
         else:
-            self.chassis_info['Chassis']['FanModuleSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['FanModulesOn'],
-                self.chassis_info['Chassis']['FanModuleCount'],
-                self.chassis_info['Chassis']['FanModuleMax']
+            self.chassis_info['FanModuleSummary'] = '%s/%s/%s' % (
+                self.chassis_info['FanModulesOn'],
+                self.chassis_info['FanModuleCount'],
+                self.chassis_info['FanModuleMax']
             )
 
     def add_fan_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
-        # - must run after fan module state collection
-
-        # Limit the scope of isctl get query
-        fan_module_ids = []
-        for fan_module_id in self.chassis_helper['FanModuleIds']:
-            fan_module_ids.append('\'%s\'' % (fan_module_id))
-
-        self.fan_handler.set_get_filter(
-            "Parent/Moid in (%s)" % (', '.join(fan_module_ids))
-        )
-
-        # Get fan info based on the fans in fan module
         self.chassis_info['FanInfo'] = []
-        for fan_module in self.chassis_info['FanModuleInfo']:
-            for fan_moid in fan_module['FanMoids']:
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'fan',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_fan_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
+            )
+        else:
+            for managed_object in managed_objects:
                 self.chassis_info['FanInfo'].append(
-                    self.fan_handler.get_info(fan_moid)
+                    self.fan_handler.get_info(
+                        managed_object
+                    )
                 )
 
         # Sort for nice display
@@ -688,71 +750,105 @@ class ChassisExtraAttributes():
 
         # Summaries
 
-        self.chassis_info['Chassis']['FanOn'] = 0
+        self.chassis_info['FanOn'] = 0
         for fan in self.chassis_info['FanInfo']:
             if fan['On']:
-                self.chassis_info['Chassis']['FanOn'] = self.chassis_info['Chassis']['FanOn'] + 1
+                self.chassis_info['FanOn'] = self.chassis_info['FanOn'] + 1
 
-        self.chassis_info['Chassis']['FanCount'] = len(
+        self.chassis_info['FanCount'] = len(
             self.chassis_info['FanInfo']
         )
 
-        if self.chassis_info['Chassis']['FanMax'] is None:
-            self.chassis_info['Chassis']['FanSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['FanOn'],
-                self.chassis_info['Chassis']['FanCount']
+        if self.chassis_info['FanMax'] is None:
+            self.chassis_info['FanSummary'] = '%s/%s' % (
+                self.chassis_info['FanOn'],
+                self.chassis_info['FanCount']
             )
         else:
-            self.chassis_info['Chassis']['FanSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['FanOn'],
-                self.chassis_info['Chassis']['FanCount'],
-                self.chassis_info['Chassis']['FanMax']
+            self.chassis_info['FanSummary'] = '%s/%s/%s' % (
+                self.chassis_info['FanOn'],
+                self.chassis_info['FanCount'],
+                self.chassis_info['FanMax']
             )
 
     def add_psu_control_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
-
-        # Limit the scope of isctl get query
-        self.psu_control_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (self.chassis['Moid'])
-        )
-
         self.chassis_info['PsuControlStateInfo'] = None
 
-        items = self.psu_control_handler.get_all()
-        if len(items) == 1:
-            self.chassis_info['PsuControlStateInfo'] = self.psu_control_handler.get_info(
-                items[0]['Moid']
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'psu_control',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_psu_control_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+            return
+
+        if len(managed_objects) == 0:
+            return
+
+        if len(managed_objects) > 1:
+            self.log_handler.error(
+                'add_psu_control_attributes',
+                'Unexpected psu control count: %s' % (self.chassis['Moid'])
+            )
+            return
+
+        self.chassis_info['PsuControlStateInfo'] = self.psu_control_handler.get_info(
+            managed_objects[0]
+        )
 
     def add_power_control_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
+        self.chassis_info['PowerControlStateInfo'] = None
 
-        # Get power control state
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'power_control',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_power_control_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
+            )
+            return
+
+        if len(managed_objects) == 0:
+            return
+
+        if len(managed_objects) > 1:
+            self.log_handler.error(
+                'add_power_control_attributes',
+                'Unexpected psu control count: %s' % (self.chassis['Moid'])
+            )
+            return
+
         self.chassis_info['PowerControlStateInfo'] = self.power_control_state_handler.get_info(
-            self.chassis['PowerControlState']['Moid'],
-            cache=False
+            managed_objects[0]
         )
 
     def add_psu_attributes(self):
-        # Dependencies
-        # - self.chassis (original chassis object)
-
-        # Limit the scope of isctl get query
-        self.psu_handler.set_get_filter(
-            "Parent/Moid eq '%s'" % (self.chassis['Moid'])
-        )
-
-        # Get power supply units info
         self.chassis_info['PsuInfo'] = []
-        for psu in self.chassis['Psus']:
-            self.chassis_info['PsuInfo'].append(
-                self.psu_handler.get_psu_info(
-                    psu['Moid']
-                )
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'psu',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_psu_attributes',
+                'No cache:%s' % (self.chassis['Moid'])
             )
+        else:
+            for managed_object in managed_objects:
+                self.chassis_info['PsuInfo'].append(
+                    self.psu_handler.get_info(
+                        managed_object
+                    )
+                )
 
         # Sort psu info for nice display
         self.chassis_info['PsuInfo'] = sorted(
@@ -762,72 +858,61 @@ class ChassisExtraAttributes():
 
         # Summaries
 
-        self.chassis_info['Chassis']['PsuCount'] = len(
+        self.chassis_info['PsuCount'] = len(
             self.chassis_info['PsuInfo']
         )
 
-        self.chassis_info['Chassis']['PsuOn'] = 0
+        self.chassis_info['PsuOn'] = 0
         for psu_info in self.chassis_info['PsuInfo']:
             if psu_info['On']:
-                self.chassis_info['Chassis']['PsuOn'] = self.chassis_info['Chassis']['PsuOn'] + 1
+                self.chassis_info['PsuOn'] = self.chassis_info['PsuOn'] + 1
 
-        if self.chassis_info['Chassis']['PsuMax'] is None:
-            self.chassis_info['Chassis']['PsuSummary'] = '%s/%s' % (
-                self.chassis_info['Chassis']['PsuOn'],
-                self.chassis_info['Chassis']['PsuCount']
+        if self.chassis_info['PsuMax'] is None:
+            self.chassis_info['PsuSummary'] = '%s/%s' % (
+                self.chassis_info['PsuOn'],
+                self.chassis_info['PsuCount']
             )
         else:
-            self.chassis_info['Chassis']['PsuSummary'] = '%s/%s/%s' % (
-                self.chassis_info['Chassis']['PsuOn'],
-                self.chassis_info['Chassis']['PsuCount'],
-                self.chassis_info['Chassis']['PsuMax']
+            self.chassis_info['PsuSummary'] = '%s/%s/%s' % (
+                self.chassis_info['PsuOn'],
+                self.chassis_info['PsuCount'],
+                self.chassis_info['PsuMax']
             )
 
-    def add_chassis_attributes(self):
+    def add_chassis_attributes(self, chassis_mo, settings):
+        self.chassis = chassis_mo
+        self.chassis_info = {}
+        self.settings = settings
+
         self.add_common_attributes()
+        self.add_node_attributes()
 
-        if self.settings['summary']['enabled'] or self.settings['module']['enabled']:
-            self.add_io_module_attributes()
-            self.add_host_port_attributes()
-            self.add_network_port_attributes()
+        self.add_io_module_attributes()
+        self.add_host_port_attributes()
+        self.add_network_port_attributes()
+        self.add_physical_port_attributes()
 
-        if self.settings['summary']['enabled'] or self.settings['node']['enabled']:
-            self.add_node_attributes()
+        self.add_adapter_unit_attributes()
+        self.add_adapter_ext_eth_interface_attributes()
 
-        if self.settings['summary']['enabled']:
-            self.add_chassis_domain_attributes()
-            self.add_chassis_alarms_attributes()
-            self.add_chassis_advisory_attributes()
-            self.add_chassis_contract_attributes()
-            self.add_chassis_profile_attributes()
-            self.add_psu_control_attributes()
+        self.add_chassis_domain_attributes()
+        self.add_chassis_alarms_attributes()
+        self.add_chassis_advisory_attributes()
+        self.add_chassis_contract_attributes()
+        self.add_chassis_profile_attributes()
 
-        if self.settings['port']['enabled']:
-            if self.settings['port']['type'] is None or self.settings['port']['type'] == 'host':
-                if not self.settings['module']['enabled']:
-                    self.add_io_module_attributes()
-                    self.add_host_port_attributes()
-                if not self.settings['node']['enabled']:
-                    self.add_node_attributes()
-                self.add_adapter_unit_attributes()
-                self.add_adapter_ext_eth_interface_attributes()
+        self.add_fan_control_attributes()
+        self.add_fan_module_attributes()
+        self.add_fan_attributes()
 
-            if self.settings['port']['type'] is None or self.settings['port']['type'] == 'net':
-                if not self.settings['module']['enabled']:
-                    self.add_io_module_attributes()
-                    self.add_network_port_attributes()
-                self.add_physical_port_attributes()
+        self.add_power_control_attributes()
+        self.add_psu_control_attributes()
+        self.add_psu_attributes()
 
-        if self.settings['fan']['enabled']:
-            self.add_fan_control_attributes()
+        self.log_handler.set_log(
+            'chassis_info.%s' % (chassis_mo['Moid']),
+            self.chassis_info,
+            json_conversion=True
+        )
 
-        if self.settings['summary']['enabled'] or self.settings['fan']['enabled']:
-            self.add_fan_module_attributes()
-            self.add_fan_attributes()
-
-        if self.settings['power']['enabled']:
-            self.add_power_control_attributes()
-
-        if self.settings['summary']['enabled'] or self.settings['power']['enabled']:
-            self.add_psu_control_attributes()
-            self.add_psu_attributes()
+        return self.chassis_info

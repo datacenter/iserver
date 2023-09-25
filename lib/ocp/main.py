@@ -6,14 +6,13 @@ from lib.kubevirt import main as kubevirt
 
 from lib.ocp import settings
 
-from lib.ocp.api.main import OcpApi
 from lib.ocp.cluster.main import OcpCluster
 from lib.ocp.node.main import OcpNode
 from lib.ocp.task.main import OcpTask
 from lib.ocp.vm.main import OcpVm
 
 
-class Ocp(OcpApi, OcpCluster, OcpNode, OcpTask, OcpVm):
+class Ocp(OcpCluster, OcpNode, OcpTask, OcpVm):
     def __init__(self, ocp_cluster_name, verbose=False, debug=False, log_id=None):
         self.verbose = verbose
         self.debug = debug
@@ -34,6 +33,7 @@ class Ocp(OcpApi, OcpCluster, OcpNode, OcpTask, OcpVm):
 
         self.k8s_handler = k8s.K8s(
             self.ocp_cluster_settings['kubeconfig'],
+            cluster_type='ocp',
             verbose=verbose,
             debug=debug,
             log_id=log_id
@@ -46,10 +46,6 @@ class Ocp(OcpApi, OcpCluster, OcpNode, OcpTask, OcpVm):
             log_id=log_id
         )
 
-        OcpApi.__init__(
-            self,
-            self.ocp_cluster_settings['kubeconfig']
-        )
         OcpCluster.__init__(self)
         OcpNode.__init__(self)
         OcpTask.__init__(self)

@@ -5,7 +5,6 @@ from lib.ocp.vm.create.network import OcpVmCreateNetwork
 from lib.ocp.vm.create.policy import OcpVmCreatePolicy
 from lib.ocp.vm.create.service import OcpVmCreateService
 from lib.ocp.vm.create.vm import OcpVmCreateVm
-from lib.ocp.vm.create.vmi import OcpVmCreateVmi
 
 
 class OcpVmCreate(
@@ -15,8 +14,7 @@ class OcpVmCreate(
     OcpVmCreateNetwork,
     OcpVmCreatePolicy,
     OcpVmCreateService,
-    OcpVmCreateVm,
-    OcpVmCreateVmi
+    OcpVmCreateVm
     ):
     def __init__(self):
         OcpVmCreateDay0.__init__(self)
@@ -26,4 +24,3 @@ class OcpVmCreate(
         OcpVmCreatePolicy.__init__(self)
         OcpVmCreateService.__init__(self)
         OcpVmCreateVm.__init__(self)
-        OcpVmCreateVmi.__init__(self)

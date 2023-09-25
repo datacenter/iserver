@@ -17,14 +17,14 @@ class OcpVmDeleteImage():
                 namespace = content['metadata']['namespace']
                 name = content['metadata']['name']
 
-                if self.is_ocp_dv(namespace, name, cache=False):
+                if self.k8s_handler.is_data_volume(namespace, name, cache_enabled=False):
                     self.my_output.default(
                         'Image dv will be deleted: %s/%s' % (
                             namespace,
                             name
                         )
                     )
-                    success = self.delete_ocp_dv(
+                    success = self.k8s_handler.delete_data_volume(
                         namespace,
                         name
                     )

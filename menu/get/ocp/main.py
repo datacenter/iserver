@@ -2,6 +2,7 @@ import click
 
 from menu.get.ocp.cluster import get_ocp_cluster_command
 from menu.get.ocp.node import get_ocp_node_command
+from menu.get.ocp.ssh import get_ocp_ssh_command
 from menu.get.ocp.vm import get_ocp_vm_command
 
 
@@ -17,4 +18,5 @@ def get_ocp_menu(ctx):
 
 get_ocp_menu.add_command(get_ocp_cluster_command)
 get_ocp_menu.add_command(get_ocp_node_command)
+get_ocp_menu.add_command(get_ocp_ssh_command)
 get_ocp_menu.add_command(get_ocp_vm_command)

@@ -150,7 +150,8 @@ class EpgOutput():
             )
             self.print_endpoints(
                 info['fvCEp'],
-                bridge_domain_name=False
+                bridge_domain_name=False,
+                title=True
             )
 
     def print_epg(self, info):

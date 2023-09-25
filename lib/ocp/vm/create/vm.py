@@ -5,9 +5,6 @@ class OcpVmCreateVm():
     def __init__(self):
         pass
 
-    def create_ocp_vm(self, vm_definition):
-        return self.kubevirt_handler.create_namespaced_virtual_machine(vm_definition)
-
     def create_vm(self):
         vm_filename = self.user_input['deployment']['vm']
         vm_yaml = yaml.safe_load(self.user_input['files'][vm_filename])
@@ -15,7 +12,7 @@ class OcpVmCreateVm():
         namespace = vm_yaml['metadata']['namespace']
         name = vm_yaml['metadata']['name']
 
-        if not self.create_ocp_vm(vm_yaml):
+        if not self.kubevirt_handler.create_namespaced_virtual_machine(vm_yaml):
             self.my_output.error(
                 'Create virtual machine request failed'
             )
@@ -34,13 +31,13 @@ class OcpVmCreateVm():
 
         if vm_yaml['spec']['running']:
             self.my_output.default('Wait for virtual machine running...')
-            if not self.wait_ocp_vm_running(namespace, name):
+            if not self.kubevirt_handler.wait_virtual_machine_running(namespace, name, output_handler=self.my_output):
                 self.my_output.error('Timed out')
                 return False
 
         if not vm_yaml['spec']['running']:
             self.my_output.default('Wait for virtual machine stopped...')
-            if not self.wait_ocp_vm_stopped(namespace, name):
+            if not self.kubevirt_handler.wait_virtual_machine_stopped(namespace, name):
                 self.my_output.error('Timed out')
                 return False
 

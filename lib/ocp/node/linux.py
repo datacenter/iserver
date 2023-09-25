@@ -21,7 +21,7 @@ class OcpNodeLinux():
             return None
 
         if node_ip is None:
-            node_ip = self.k8s_handler.get_node_ip_by_name(
+            node_ip = self.k8s_handler.get_node_ip(
                 node_name
             )
             if node_ip is None:

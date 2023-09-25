@@ -4,42 +4,49 @@ import traceback
 
 class K8sNamespaceApi():
     def __init__(self):
-        self.namespaces = None
+        self.namespace_mo = None
 
-    def get_namespaces(self, cache=True):
-        if not self.connect():
-            return False
+    def get_namespace_mo(self, cache_enabled=True):
+        if cache_enabled:
+            if self.namespace_mo is not None:
+                return self.namespace_mo
 
-        if self.namespaces is not None and cache:
-            return True
+        api_handler = self.get_api()
+        if api_handler is None:
+            return None
 
-        # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/V1NodeList.md
         try:
             start_time = int(time.time() * 1000)
-            response = self.api.list_namespace(
+            response = api_handler.list_namespace(
                 timeout_seconds=self.api_timeout_seconds
             )
             self.log.k8s(
                 'get',
-                'namespaces',
+                'namespace',
                 True,
                 int(time.time() * 1000) - start_time
             )
 
         except BaseException:
-            self.log.error('k8s_namespaces.get_namespaces', traceback.format_exc())
+            self.log.error('k8s.get_namespace_mo', traceback.format_exc())
             self.log.k8s(
                 'get',
-                'namespaces',
+                'namespace',
                 True,
                 int(time.time() * 1000) - start_time
             )
-            return False
+            return None
 
-        self.namespaces = []
+        self.namespace_mo = []
         for item in response.items:
-            namespace = self.convert_namespace(item)
-            if namespace is not None:
-                self.namespaces.append(namespace)
+            namespace_mo = self.convert_object(item.to_dict())
+            self.namespace_mo.append(
+                namespace_mo
+            )
 
-        return True
+        self.log.k8s_mo(
+            'namespace',
+            self.namespace_mo
+        )
+
+        return self.namespace_mo

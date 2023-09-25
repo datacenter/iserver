@@ -74,18 +74,10 @@ class BootDeviceBootSecurity(IntersightCommon):
         self.iobject = 'boot devicebootsecurity'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
 
-        info['SecureBoot'] = item['SecureBoot']
-        info['Moid'] = item['Moid']
+        info['SecureBoot'] = managed_object['SecureBoot']
+        info['Moid'] = managed_object['Moid']
 
         return info

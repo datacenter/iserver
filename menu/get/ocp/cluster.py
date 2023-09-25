@@ -25,7 +25,7 @@ class ErrorExit(Exception):
 @click.pass_obj
 @click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Filter by cluster name")
 @click.option("--verify", is_flag=True, show_default=True, default=False, help="Verify access")
-@click.option("--view", "-v", type=click.Choice(['default', 'vcenter', 'kc', 'manager', 'iwo', 'console', 'cnv', 'all'], case_sensitive=False), multiple=False, default='default')
+@click.option("--view", "-v", type=click.Choice(['default', 'state', 'vcenter', 'kc', 'manager', 'iwo', 'console', 'cnv', 'all'], case_sensitive=False), multiple=False, default='default')
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_ocp_cluster_command(
@@ -81,6 +81,40 @@ def get_ocp_cluster_command(
             ctx.my_output.json_output(clusters)
             ocp_output_handler.print_ocp_clusters(
                 clusters
+            )
+
+        if view == 'state':
+            states_info = []
+
+            for cluster_settings in clusters:
+                cluster_handler = ocp.Ocp(
+                    cluster_settings['name'],
+                    log_id=ctx.run_id
+                )
+
+                state_info = {}
+                state_info['name'] = cluster_settings['name']
+                state_info['online'] = False
+                ocp_version = cluster_handler.k8s_handler.get_version()
+                if ocp_version is not None:
+                    state_info['online'] = True
+                    for key in ocp_version:
+                        state_info[key] = ocp_version[key]
+
+                ocp_cni = cluster_handler.k8s_handler.get_cni()
+                if ocp_cni is not None:
+                    for key in ocp_cni:
+                        state_info[key] = ocp_cni[key]
+
+                states_info.append(
+                    state_info
+                )
+
+            ctx.busy = False
+            ctx.my_output.json_output(states_info)
+
+            ocp_output_handler.print_ocp_clusters_state(
+                states_info
             )
 
         if view == 'manager':

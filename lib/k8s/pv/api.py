@@ -4,63 +4,49 @@ import traceback
 
 class K8sPvApi():
     def __init__(self):
-        self.pvs = None
+        self.pv_mo = None
 
-    def is_pv(self, name, cache=True):
-        if self.get_pv(name, cache=cache) is None:
-            return False
-        return True
+    def get_pv_mo(self, cache_enabled=True):
+        if cache_enabled:
+            if self.pv_mo is not None:
+                return self.pv_mo
 
-    def get_pv(self, name, cache=True):
-        pvs = self.get_pvs(cache=cache)
-        if pvs is None:
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
-
-        for pv in pvs:
-            if pv['metadata']['name'] == name:
-                return pv
-
-        return None
-
-    def get_pvs(self, cache=True):
-        if not self.connect():
-            return None
-
-        if self.pvs is not None and cache:
-            return self.pvs
 
         try:
             start_time = int(time.time() * 1000)
-            response = self.api.list_persistent_volume(
+            response = api_handler.list_persistent_volume(
                 timeout_seconds=self.api_timeout_seconds
             )
             self.log.k8s(
                 'get',
-                'pvs',
+                'pv',
                 True,
                 int(time.time() * 1000) - start_time
             )
 
         except BaseException:
-            self.log.error('k8s.get_pvs', traceback.format_exc())
+            self.log.error('k8s.get_pv', traceback.format_exc())
             self.log.k8s(
                 'get',
-                'pvs',
+                'pv',
                 True,
                 int(time.time() * 1000) - start_time
             )
             return None
 
-        self.pvs = []
+        self.pv_mo = []
         for item in response.items:
-            pv = self.convert_object(item.to_dict())
-            self.pvs.append(
-                pv
+            pv_mo = self.convert_object(item.to_dict())
+            self.pv_mo.append(
+                pv_mo
             )
 
         self.log.k8s_mo(
             'pv',
-            self.pvs
+            self.pv_mo
         )
 
-        return self.pvs
+        return self.pv_mo

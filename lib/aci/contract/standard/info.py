@@ -124,24 +124,28 @@ class ContractStandardInfo():
                 continue
 
             for filter_item in subject_info['vzFilter']:
+                filter_tenant = filter_item['tenant']
+                if len(filter_tenant) == 0:
+                    filter_tenant = subject_tenant
+
                 filter_info = self.get_contract_filter(
-                    filter_item['tenant'],
+                    filter_tenant,
                     filter_item['name']
                 )
                 if filter_info is None:
                     self.log.error(
-                        'get_contract_filters_info',
+                        'get_standard_contract_filters_info',
                         'Filter not found: %s/%s' % (
-                            filter_item['tenant'],
+                            filter_tenant,
                             filter_item['name']
                         )
                     )
                     self.log.error(
-                        'get_contract_filters_info',
+                        'get_standard_contract_filters_info',
                         subject_info
                     )
                     self.log.error(
-                        'get_contract_filters_info',
+                        'get_standard_contract_filters_info',
                         managed_object
                     )
                     continue
@@ -238,11 +242,15 @@ class ContractStandardInfo():
 
         for contract_rule in contract_filter:
             (key, value) = contract_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_tenant_name(value, contract_info['nameTenant']):
                     return False
 
             if key == 'names':
+                key_found = True
                 found = False
                 for name in value.split(','):
                     if filter_helper.match_tenant_name(name, contract_info['nameTenant']):
@@ -253,10 +261,12 @@ class ContractStandardInfo():
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, contract_info['tenant']):
                     return False
 
             if key == 'filter':
+                key_found = True
                 found = False
                 for filter_info in contract_info['vzFilter']:
                     if filter_helper.match_tenant_name(value, filter_info['nameTenant']):
@@ -265,6 +275,24 @@ class ContractStandardInfo():
 
                 if not found:
                     return False
+
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not contract_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_standard_contract',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not key_found:
+                self.log.error(
+                    'match_standard_contract',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

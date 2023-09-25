@@ -136,56 +136,48 @@ class AdapterUnit(IntersightCommon):
         self.iobject = 'adapter unit'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            adapter_unit = self.get_cache_moid(moid)
-        else:
-            adapter_unit = self.get(moid)
-
-        if adapter_unit is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = adapter_unit['Moid']
-        info['Dn'] = adapter_unit['Dn']
-        info['AdapterId'] = adapter_unit['AdapterId']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
+        info['AdapterId'] = managed_object['AdapterId']
         info['Name'] = 'Adapter %s' % (info['AdapterId'])
-        info['BaseMacAddress'] = adapter_unit['BaseMacAddress']
-        if adapter_unit['ComputeBlade'] is not None:
-            info['ComputeNodeMoid'] = adapter_unit['ComputeBlade']['Moid']
-        if adapter_unit['ComputeRackUnit'] is not None:
-            info['ComputeNodeMoid'] = adapter_unit['ComputeRackUnit']['Moid']
+        info['BaseMacAddress'] = managed_object['BaseMacAddress']
+        if managed_object['ComputeBlade'] is not None:
+            info['ComputeNodeMoid'] = managed_object['ComputeBlade']['Moid']
+        if managed_object['ComputeRackUnit'] is not None:
+            info['ComputeNodeMoid'] = managed_object['ComputeRackUnit']['Moid']
 
         info['ExtEthIfsIds'] = []
-        for interface in adapter_unit['ExtEthIfs']:
+        for interface in managed_object['ExtEthIfs']:
             info['ExtEthIfsIds'].append(interface['Moid'])
         info['ExtEthIfsCount'] = len(info['ExtEthIfsIds'])
 
         info['HostEthIfsIds'] = []
-        for interface in adapter_unit['HostEthIfs']:
+        for interface in managed_object['HostEthIfs']:
             info['HostEthIfsIds'].append(interface['Moid'])
         info['HostEthIfsCount'] = len(info['HostEthIfsIds'])
 
         info['HostFcIfsIds'] = []
-        for interface in adapter_unit['HostFcIfs']:
+        for interface in managed_object['HostFcIfs']:
             info['HostFcIfsIds'].append(interface['Moid'])
         info['HostFcIfsCount'] = len(info['HostFcIfsIds'])
 
         info['HostIscsiIfsIds'] = []
-        for interface in adapter_unit['HostIscsiIfs']:
+        for interface in managed_object['HostIscsiIfs']:
             info['HostIscsiIfsIds'].append(interface['Moid'])
         info['HostIscsiIfsCount'] = len(info['HostIscsiIfsIds'])
 
-        info['Model'] = adapter_unit['Model']
-        info['OperState'] = adapter_unit['OperState']
-        info['PartNumber'] = adapter_unit['PartNumber']
-        info['Presence'] = adapter_unit['Presence']
+        info['Model'] = managed_object['Model']
+        info['OperState'] = managed_object['OperState']
+        info['PartNumber'] = managed_object['PartNumber']
+        info['Presence'] = managed_object['Presence']
         info['Healthy'] = False
         if info['Presence'] == 'equipped' and info['OperState'] == 'OK':
             info['Healthy'] = True
-        info['PciSlot'] = adapter_unit['PciSlot']
-        info['Thermal'] = adapter_unit['Thermal']
-        info['Serial'] = adapter_unit['Serial']
-        info['Vendor'] = adapter_unit['Vendor']
+        info['PciSlot'] = managed_object['PciSlot']
+        info['Thermal'] = managed_object['Thermal']
+        info['Serial'] = managed_object['Serial']
+        info['Vendor'] = managed_object['Vendor']
 
         return info

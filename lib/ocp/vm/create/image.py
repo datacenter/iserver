@@ -31,7 +31,7 @@ class OcpVmCreateImage():
     def create_ocp_vm_image(self, server_ip, server_username, server_password, server_key_filename, image_filename, data_volume):
         data_volume_namespace = data_volume['metadata']['namespace']
         data_volume_name = data_volume['metadata']['name']
-        if self.is_ocp_dv(data_volume_namespace, data_volume_name):
+        if self.k8s_handler.is_data_volume(data_volume_namespace, data_volume_name):
             self.my_output.default(
                 'Image data volume already exists: %s/%s' % (
                     data_volume_namespace,
@@ -117,7 +117,7 @@ class OcpVmCreateImage():
             )
         )
 
-        success = self.create_ocp_dv(
+        success = self.k8s_handler.create_data_volume(
             data_volume
         )
         if not success:

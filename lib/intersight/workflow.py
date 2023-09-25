@@ -6,7 +6,6 @@ from lib.intersight.intersight_common import IntersightCommon
 
 class Workflow(IntersightCommon):
     """Class for intersight workflowinfo object
-
     {
         "Account": null,
         "AccountMoid": "5be4b2ce67626c6d661ca38d",
@@ -243,28 +242,25 @@ class Workflow(IntersightCommon):
         except BaseException:
             return None
 
-    def get_workflow_info(self, workflow_object):
-        if workflow_object is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
         for key in ['Moid', 'Name', 'Progress', 'CreateTime', 'StartTime', 'EndTime', 'Status', 'Type']:
             info[key] = None
-            if key in workflow_object:
-                info[key] = workflow_object[key]
+            if key in managed_object:
+                info[key] = managed_object[key]
 
         for key in ['CreateTime', 'StartTime', 'EndTime']:
             info['%sEpoch' % (key)] = self.convert_time_epoch(info[key])
 
         info['Running'] = False
         info['Completed'] = False
-        if workflow_object['Status'] == 'RUNNING':
+        if managed_object['Status'] == 'RUNNING':
             info['Running'] = True
 
         if not info['Running']:
-            if workflow_object['Status'] in ['COMPLETED', 'FAILED']:
+            if managed_object['Status'] in ['COMPLETED', 'FAILED']:
                 info['Completed'] = True
 
             if info['Status'].lower() == 'completed':
@@ -288,43 +284,21 @@ class Workflow(IntersightCommon):
 
         return info
 
-    def get_last(self, seconds=86400, brief=False, force=False):
-        start_time = int(time.time()) - seconds
-        reference_time = '%s.000Z' % (
-            time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(int(start_time)))
-        )
-        self.set_get_filter('CreateTime gt %s' % (reference_time))
-
-        self.prepare_cache(force=force)
-        if self.cache is None:
-            return None
-
-        if not brief:
-            return self.cache
-
-        brief_objects = []
-        for full_object in self.cache:
-            brief_objects.append(
-                self.get_workflow_info(full_object)
-            )
-
-        return brief_objects
-
-    def is_server_workflow(self, server_id, workflow_object):
+    def is_server_workflow(self, server_id, managed_object):
         try:
-            if workflow_object['Input']['Server']['Moid'] == server_id:
+            if managed_object['Input']['Server']['Moid'] == server_id:
                 return True
         except BaseException:
             pass
 
         try:
-            if workflow_object['Input']['ServerMoId'] == server_id:
+            if managed_object['Input']['ServerMoId'] == server_id:
                 return True
         except BaseException:
             pass
 
         try:
-            for target in workflow_object['Input']['workflowContext']['TargetCtxList']:
+            for target in managed_object['Input']['workflowContext']['TargetCtxList']:
                 if target['TargetMoid'] == server_id:
                     return True
         except BaseException:

@@ -17,10 +17,10 @@ class OcpVmGetSsh():
         namespace = content['metadata']['namespace']
         name = content['metadata']['name']
 
-        node_ip, node_port = self.get_ocp_vm_service_ip_port(
+        node_ip, node_port = self.k8s_handler.get_service_node_ip_port(
             namespace,
             name,
-            cache=False
+            cache_enabled=False
         )
         if node_ip is None or node_port is None:
             return None

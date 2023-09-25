@@ -12,10 +12,10 @@ class OcpNodeInfo():
 
         # change labels from dict to list of dict
         labels = []
-        for key in info['labels']:
+        for key in info['label']:
             label = {}
             label['key'] = key
-            label['value'] = info['labels'][key]
+            label['value'] = info['label'][key]
             labels.append(
                 label
             )
@@ -59,11 +59,10 @@ class OcpNodeInfo():
         if self.nodes is not None:
             return self.nodes
 
-        if not self.k8s_handler.get_nodes():
-            return None
+        nodes_mo = self.k8s_handler.get_nodes(return_mo=True)
 
         self.nodes = []
-        for node_mo in self.k8s_handler.nodes:
+        for node_mo in nodes_mo:
             node_info = self.get_ocp_node_info(node_mo)
             if node_info is not None:
                 self.nodes.append(

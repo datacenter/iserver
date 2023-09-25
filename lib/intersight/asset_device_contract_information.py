@@ -71,7 +71,7 @@ class AssetDeviceContractInformation(IntersightCommon):
             "ObjectType": "asset.GlobalUltimate"
         },
         "IsValid": true,
-        "ItemType": "CHASSIS",
+        "managed_objectType": "CHASSIS",
         "MaintenancePurchaseOrderNumber": "",
         "MaintenanceSalesOrderNumber": "",
         "ModTime": "2022-11-15T22:03:15.018Z",
@@ -177,30 +177,22 @@ class AssetDeviceContractInformation(IntersightCommon):
         self.iobject = 'asset devicecontractinformation'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
-        info['Moid'] = item['Moid']
-        info['PurchaseOrderNumber'] = item['PurchaseOrderNumber']
-        info['SalesOrderNumber'] = item['SalesOrderNumber']
-        info['ContractStatus'] = item['ContractStatus']
-        info['ContractNumber'] = item['Contract']['ContractNumber']
-        info['ContractUpdatedTime'] = item['ContractUpdatedTime']
-        info['ServiceDescription'] = item['ServiceDescription']
-        info['ServiceLevel'] = item['ServiceLevel']
-        info['ServiceSku'] = item['ServiceSku']
-        info['ServiceStartDate'] = item['ServiceStartDate']
-        info['ServiceEndDate'] = item['ServiceEndDate']
-        info['IsValid'] = item['IsValid']
+        info['Moid'] = managed_object['Moid']
+        info['PurchaseOrderNumber'] = managed_object['PurchaseOrderNumber']
+        info['SalesOrderNumber'] = managed_object['SalesOrderNumber']
+        info['ContractStatus'] = managed_object['ContractStatus']
+        info['ContractNumber'] = managed_object['Contract']['ContractNumber']
+        info['ContractUpdatedTime'] = managed_object['ContractUpdatedTime']
+        info['ServiceDescription'] = managed_object['ServiceDescription']
+        info['ServiceLevel'] = managed_object['ServiceLevel']
+        info['ServiceSku'] = managed_object['ServiceSku']
+        info['ServiceStartDate'] = managed_object['ServiceStartDate']
+        info['ServiceEndDate'] = managed_object['ServiceEndDate']
+        info['IsValid'] = managed_object['IsValid']
 
         if info['ContractStatus'] == 'Active':
             info['__Output']['ContractStatus'] = 'Green'

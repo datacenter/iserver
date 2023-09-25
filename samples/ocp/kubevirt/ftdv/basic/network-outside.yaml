@@ -1,0 +1,21 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  namespace: ${NAMESPACE}
+  name: ${NAME}-net-outside
+spec:
+  config: '{
+            "cniVersion": "0.3.1",
+            "name": "${NAME}-net-outside",
+            "type": "macvlan",
+            "master": "${MACVLAN_MASTER}",
+            "mode": "bridge",
+            "ipam": {
+              "type": "static",
+              "addresses": [
+                {
+                  "address": "${NET_OUTSIDE_BRIDGE_IP}/${NET_OUTSIDE_PREFIX}"
+                }
+              ]
+            }
+          }'

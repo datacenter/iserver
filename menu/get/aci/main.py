@@ -12,6 +12,7 @@ from menu.get.aci.epg import get_aci_epg_command
 from menu.get.aci.intf.main import get_aci_node_intf_menu
 from menu.get.aci.l2out import get_aci_l2out_command
 from menu.get.aci.l3out import get_aci_l3out_command
+from menu.get.aci.mo import get_aci_mo_command
 from menu.get.aci.node import get_aci_node_command
 from menu.get.aci.pg.main import get_aci_pg_menu
 from menu.get.aci.policy.main import get_aci_policy_menu
@@ -20,6 +21,7 @@ from menu.get.aci.proto.main import get_aci_node_proto_menu
 from menu.get.aci.system.main import get_aci_system_menu
 from menu.get.aci.tenant import get_aci_tenant_command
 from menu.get.aci.vrf import get_aci_vrf_command
+from menu.get.aci.xd.main import get_aci_xd_menu
 
 
 class Failure(Exception):
@@ -44,6 +46,7 @@ get_aci_menu.add_command(get_aci_ep_command)
 get_aci_menu.add_command(get_aci_node_intf_menu)
 get_aci_menu.add_command(get_aci_l2out_command)
 get_aci_menu.add_command(get_aci_l3out_command)
+get_aci_menu.add_command(get_aci_mo_command)
 get_aci_menu.add_command(get_aci_node_command)
 get_aci_menu.add_command(get_aci_pg_menu)
 get_aci_menu.add_command(get_aci_policy_menu)
@@ -52,3 +55,4 @@ get_aci_menu.add_command(get_aci_node_proto_menu)
 get_aci_menu.add_command(get_aci_system_menu)
 get_aci_menu.add_command(get_aci_tenant_command)
 get_aci_menu.add_command(get_aci_vrf_command)
+get_aci_menu.add_command(get_aci_xd_menu)

@@ -1,5 +1,3 @@
-import time
-
 from lib import filter_helper
 from lib import ip_helper
 
@@ -8,67 +6,55 @@ class OcpVmGetInfo():
     def __init__(self):
         self.virtual_machine = None
 
-    def get_ocp_vm_cpu_info(self, vm_mo, vmi_mo):
-        if vmi_mo is None:
-            info = vm_mo['spec']['template']['spec']['domain']['cpu']
-
-        if vmi_mo is not None:
-            info = vmi_mo['spec']['domain']['cpu']
-
-        return info
-
-    def get_ocp_vm_memory_info(self, vm_mo):
-        return vm_mo['spec']['template']['spec']['domain']['resources']['requests']['memory']
-
-    def get_ocp_vm_special_label(self, vm_mo):
-        try:
-            label = vm_mo['spec']['template']['metadata']['labels']['special']
-        except BaseException:
-            label = None
-
-        return label
-
-    def get_ocp_vm_node_name(self, vmi_mo):
-        node_name = ''
-        if vmi_mo is not None:
-            if 'node_name' in vmi_mo['status']:
-                node_name = vmi_mo['status']['node_name']
-        return node_name
-
-    def get_ocp_vm_guest_os_info(self, vmi_mo):
-        info = None
-        if vmi_mo is not None:
-            info = vmi_mo['status']['guest_os_info']
-        return info
-
-    def get_ocp_vm_age(self, vmi_mo):
-        age = ''
-        if vmi_mo is not None:
-            for step in vmi_mo['status']['phase_transition_timestamps']:
-                if step['phase'] == 'Running':
-                    create_timestamp = self.k8s_handler.convert_timestamp(step['phase_transition_timestamp'])
-                    age = self.k8s_handler.convert_age(
-                        int(time.time()) - create_timestamp
-                    )
-        return age
-
-    def get_ocp_vm_info(self, vm_mo, vmi_mo):
+    def get_ocp_vm_info(self, vm_info, vmi_info):
         info = {}
         info['__Output'] = {}
-        info['name'] = vm_mo['metadata']['name']
-        info['namespace'] = vm_mo['metadata']['namespace']
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
-        )
-        info['vm_id'] = vm_mo['metadata']['uid']
-        info['special'] = self.get_ocp_vm_special_label(vm_mo)
-        info['cpu'] = self.get_ocp_vm_cpu_info(vm_mo, vmi_mo)
-        info['memory'] = self.get_ocp_vm_memory_info(vm_mo)
-        info['disks'] = self.get_ocp_vm_disks_info(vm_mo, vmi_mo)
 
-        info['networks'] = self.get_ocp_vm_networks_info(vm_mo, vmi_mo)
-        info['interfaces'] = self.get_ocp_vm_interfaces_info(vm_mo, vmi_mo)
+        vm_keys = [
+            'namespace',
+            'name',
+            'namespace_name',
+            'vm_id',
+            'special',
+            'cpu',
+            'memory',
+            'state',
+            'networks',
+            'ready',
+            'readyTick',
+            'liveMigration',
+            'liveMigrationTick',
+            'failures',
+            'failure',
+            'failureTick'
+        ]
+        for vm_key in vm_keys:
+            info[vm_key] = vm_info[vm_key]
+
+        for key in vm_info['__Output']:
+            info['__Output'][key] = vm_info['__Output'][key]
+
+        vmi_keys = [
+            'vmi_id',
+            'cpu',
+            'node_name',
+            'guest_os_info',
+            'state_transitions',
+            'age'
+        ]
+        for vmi_key in vmi_keys:
+            if vmi_key not in info:
+                info[vmi_key] = None
+
+            if vmi_info is not None:
+                info[vmi_key] = vmi_info[vmi_key]
+
+        if vmi_info is not None:
+            for key in vmi_info['__Output']:
+                info['__Output'][key] = vmi_info['__Output'][key]
+
+        info['disks'] = self.get_ocp_vm_disks_info(vm_info, vmi_info)
+        info['interfaces'] = self.get_ocp_vm_interfaces_info(vm_info, vmi_info)
         info['sriov_enabled'] = self.get_ocp_vm_interfaces_sriov_enabled(
             info['interfaces']
         )
@@ -76,87 +62,16 @@ class OcpVmGetInfo():
             info['interfaces']
         )
 
-        info['services'] = self.get_ocp_vm_services_info(
-            info['special']
+        info['services'] = self.k8s_handler.get_services(
+            object_filter=['special:%s' % (info['special'])]
         )
+
         info['ports'] = []
         if info['services'] is not None:
             for service in info['services']:
                 service['vm_namespace_name'] = info['namespace_name']
-                for port in service['ports']:
+                for port in service['port']:
                     info['ports'].append(port)
-
-        info['nodeName'] = self.get_ocp_vm_node_name(vmi_mo)
-        info['guestOSInfo'] = self.get_ocp_vm_guest_os_info(vmi_mo)
-        info['age'] = self.get_ocp_vm_age(vmi_mo)
-
-        info['vmi_id'] = None
-        info['stateTransitions'] = None
-        if vmi_mo is not None:
-            info['vmi_id'] = vmi_mo['metadata']['uid']
-            info['stateTransitions'] = vmi_mo['status']['phase_transition_timestamps']
-
-        info['state'] = vm_mo['status']['printable_status']
-
-        info['ready'] = False
-        info['readyTick'] = '\u2717'
-        info['__Output']['readyTick'] = 'Red'
-
-        info['liveMigration'] = False
-        info['liveMigrationTick'] = '\u2717'
-        info['__Output']['liveMigrationTick'] = 'Red'
-
-        info['failures'] = []
-        info['failure'] = False
-        info['failureTick'] = ''
-
-        for condition in vm_mo['status']['conditions']:
-            if condition['type'] == 'Ready':
-                if condition['status'] == 'True':
-                    info['ready'] = True
-                    info['readyTick'] = '\u2713'
-                    info['__Output']['readyTick'] = 'Green'
-
-                continue
-
-            if condition['type'] == 'LiveMigratable':
-                if condition['status'] == 'True':
-                    info['ready'] = True
-                    info['liveMigrationTick'] = '\u2713'
-                    info['__Output']['liveMigrationTick'] = 'Green'
-
-                continue
-
-            if condition['type'] == 'Paused':
-                continue
-
-            if condition['type'] == 'AgentConnected':
-                continue
-
-            if condition['type'] == 'Provisioning':
-                continue
-
-            if condition['type'] == 'PodScheduled':
-                if condition['status'] == 'False':
-                    info['failures'].append(
-                        condition['reason']
-                    )
-                    info['failure'] = True
-                    info['failureTick'] = '\u2713'
-                    info['__Output']['failureTick'] = 'Red'
-                    continue
-
-            if condition['type'] == 'Failure':
-                info['failures'].append(condition)
-                info['failure'] = True
-                info['failureTick'] = '\u2713'
-                info['__Output']['failureTick'] = 'Red'
-                continue
-
-            self.log.error(
-                'get_ocp_vm_info',
-                'Unsupported condition type: %s' % (condition)
-            )
 
         return info
 
@@ -164,30 +79,29 @@ class OcpVmGetInfo():
         if cache and self.virtual_machine is not None:
             return self.virtual_machine
 
-        vms_mo = self.get_ocp_vms_mo()
-        if vms_mo is None:
-            return None
-
-        vmis_mo = self.get_ocp_vmis_mo(cache=cache)
-        if vmis_mo is None:
+        vms_info = self.kubevirt_handler.get_virtual_machines(
+            cache_enabled=cache
+        )
+        if vms_info is None:
             return None
 
         self.virtual_machine = []
-        for vm_mo in vms_mo:
-            vmi_mo = self.get_ocp_vmi_mo(
-                vm_mo['metadata']['namespace'],
-                vm_mo['metadata']['name']
+        for vm_info in vms_info:
+            vmi_info = self.kubevirt_handler.get_virtual_machine_instance(
+                vm_info['namespace'],
+                vm_info['name'],
+                cache_enabled=cache
             )
 
-            vm_info = self.get_ocp_vm_info(
-                vm_mo,
-                vmi_mo
+            ocp_vm_info = self.get_ocp_vm_info(
+                vm_info,
+                vmi_info
             )
 
-            self.virtual_machine.append(vm_info)
+            self.virtual_machine.append(ocp_vm_info)
 
         self.log.kubevirt_mo(
-            'vm.info',
+            'ocp.vm.info',
             self.virtual_machine
         )
 
@@ -215,7 +129,7 @@ class OcpVmGetInfo():
 
             if key == 'node':
                 key_found = True
-                if not filter_helper.match_string(value, vm_info['nodeName']):
+                if not filter_helper.match_string(value, vm_info['node_name']):
                     return False
 
             if key == 'sriov':

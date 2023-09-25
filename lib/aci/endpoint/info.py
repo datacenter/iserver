@@ -78,8 +78,9 @@ class EndpointInfo():
             info['flags'] = '%sV' % (info['flags'])
 
         info['encapT'] = info['encap']
+        info['encapVlan'] = info['encap']
         if info['encap'].startswith('vlan-'):
-            info['encapT'] = info['encap'].split('vlan-')[1]
+            info['encapVlan'] = info['encap'].split('vlan-')[1]
 
         # Dn format
         # [0]: uni/tn-{name}/ap-{name}/esg-{name}/cep-{name}
@@ -203,36 +204,45 @@ class EndpointInfo():
         for rule in endpoint_filter:
             key = rule.split(':')[0]
             value = ':'.join(rule.split(':')[1:])
+            key_found = False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, endpoint_info['tenant']):
                     return False
 
             if key == 'bd':
+                key_found = True
                 if not filter_helper.match_tenant_name(value, endpoint_info['bdNameTenant']):
                     return False
 
             if key == 'epg':
-                if not filter_helper.match_string(value, endpoint_info['epgName']):
+                key_found = True
+                if not filter_helper.match_tenant_ap_name(value, endpoint_info['epgNameApTenant']):
                     return False
 
             if key == 'ap':
+                key_found = True
                 if not filter_helper.match_string(value, endpoint_info['apName']):
                     return False
 
             if key == 'vrf':
-                if not filter_helper.match_tenant_name(value, endpoint_info['vrfName']):
+                key_found = True
+                if not filter_helper.match_tenant_name(value, endpoint_info['vrfNameTenant']):
                     return False
 
             if key == 'bdDn':
-                if not filter_helper.match_string(value, endpoint_info['bdDn']):
+                key_found = True
+                if not filter_helper.match(value, endpoint_info['bdDn']):
                     return False
 
             if key == 'vlan':
-                if not filter_helper.match_integer(value, endpoint_info['encapT']):
+                key_found = True
+                if not filter_helper.match_integer(value, endpoint_info['encapVlan']):
                     return False
 
             if key == 'ip':
+                key_found = True
                 found = False
                 for ip_address in endpoint_info['fvIp']:
                     if value == ip_address['addr']:
@@ -243,6 +253,7 @@ class EndpointInfo():
                     return False
 
             if key == 'subnet':
+                key_found = True
                 found = False
                 for ip_address in endpoint_info['fvIp']:
                     if ip_helper.is_ipv4_in_cidr(ip_address['addr'], value):
@@ -253,6 +264,7 @@ class EndpointInfo():
                     return False
 
             if key == 'vm-info':
+                key_found = True
                 if value not in ['enabled']:
                     self.log.error(
                         'match_endpoint',
@@ -264,21 +276,25 @@ class EndpointInfo():
                         return False
 
             if key == 'vmm':
+                key_found = True
                 if 'vm' in endpoint_info:
                     if not filter_helper.match_string(value, endpoint_info['vm']['vmm']):
                         return False
 
             if key == 'hv':
+                key_found = True
                 if 'hv' in endpoint_info:
                     if not filter_helper.match_string(value, endpoint_info['hv']['name']):
                         return False
 
             if key == 'vm':
+                key_found = True
                 if 'vm' in endpoint_info:
                     if not filter_helper.match_string(value, endpoint_info['vm']['name']):
                         return False
 
             if key == 'node':
+                key_found = True
                 nodes = value.split(',')
                 if 'fabric' in endpoint_info:
                     node_match = False
@@ -289,6 +305,12 @@ class EndpointInfo():
 
                     if not node_match:
                         return False
+
+            if not key_found:
+                self.log.error(
+                    'match_endpoint',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

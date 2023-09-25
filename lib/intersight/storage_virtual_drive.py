@@ -153,8 +153,7 @@ class StorageVirtualDrive(IntersightCommon):
     """
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'storage virtualdrive'
-        self.cache_key = 'virtual_drive'
-        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
     def get_virtual_drives(self, compute_id, cache=True):
         if cache:
@@ -183,26 +182,10 @@ class StorageVirtualDrive(IntersightCommon):
 
         return disks
 
-    def get_virtual_drives_count(self, compute_id):
-        disks = self.get_virtual_drives(compute_id)
-        if disks is None:
-            return 0
-        return len(disks)
-
-    def get_virtual_drives_size(self, compute_id):
-        disks = self.get_virtual_drives(compute_id)
-        if disks is None:
-            return 0
-
+    def get_virtual_drives_size(self, virtual_drives_info):
         size = 0
-        for disk in disks:
-            if disk['Size'].endswith(' MB'):
-                size = size + int(disk['Size'].split(' ')[0])
-                continue
-
-            size = size + int(disk['Size'])
-
-        size = size * 1024 * 1024
+        for virtual_drive_info in virtual_drives_info:
+            size = size + virtual_drive_info['SizeBytes']
         return size
 
     def get_disk_size_bytes(self, size):
@@ -239,9 +222,8 @@ class StorageVirtualDrive(IntersightCommon):
 
         return False
 
-    def get_virtual_drives_info(self, compute_id, storage_controllers_info=None):
-        virtual_drives = self.get_virtual_drives(compute_id)
-        if virtual_drives is None:
+    def get_virtual_drives_info(self, virtual_drives_mo, storage_controllers_info=None):
+        if virtual_drives_mo is None:
             return None
 
         virtual_drives_info = []
@@ -262,7 +244,7 @@ class StorageVirtualDrive(IntersightCommon):
             'IoPolicy'
         ]
 
-        for virtual_drive in virtual_drives:
+        for virtual_drive in virtual_drives_mo:
             info = {}
             info['__Output'] = {}
 
@@ -327,15 +309,5 @@ class StorageVirtualDrive(IntersightCommon):
             virtual_drives_info.append(info)
 
         virtual_drives_info = sorted(virtual_drives_info, key=lambda i: i['_VirtualDriveId'])
-
-        for info in virtual_drives_info:
-            info['PhysicalDiskIds'] = []
-            if info['PhysicalDiskCount'] > 0:
-                storage_physical_disk_usage_handler = storage_physical_disk_usage.StoragePhysicalDiskUsage(self.iaccount)
-                storage_physical_disk_usage_handler.set_get_filter("StorageVirtualDrive/Moid eq '%s'" % (info['Moid']))
-                disk_usages = storage_physical_disk_usage_handler.get_all()
-                if disk_usages is not None:
-                    for disk_usage in disk_usages:
-                        info['PhysicalDiskIds'].append(disk_usage['PhysicalDrive'])
 
         return virtual_drives_info

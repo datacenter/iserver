@@ -109,33 +109,25 @@ class EthernetPhysicalPort(IntersightCommon):
         self.iobject = 'ether physicalport'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            physical_port = self.get_cache_moid(moid)
-        else:
-            physical_port = self.get(moid)
-
-        if physical_port is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = physical_port['Moid']
-        info['Dn'] = physical_port['Dn']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
         info['Name'] = '%s/%s' % (
-            physical_port['SlotId'],
-            physical_port['PortId']
+            managed_object['SlotId'],
+            managed_object['PortId']
         )
-        info['AdminState'] = physical_port['AdminState']
-        info['AggregatePortId'] = physical_port['AggregatePortId']
-        info['MacAddress'] = physical_port['MacAddress']
-        info['Mode'] = physical_port['Mode']
-        info['OperSpeed'] = physical_port['OperSpeed']
-        info['OperState'] = physical_port['OperState']
-        info['PortId'] = physical_port['PortId']
-        info['PortChannelId'] = physical_port['PortChannelId']
-        info['Role'] = physical_port['Role']
-        info['SlotId'] = physical_port['SlotId']
-        info['SwitchId'] = physical_port['SwitchId']
-        info['TransceiverType'] = physical_port['TransceiverType']
+        info['AdminState'] = managed_object['AdminState']
+        info['AggregatePortId'] = managed_object['AggregatePortId']
+        info['MacAddress'] = managed_object['MacAddress']
+        info['Mode'] = managed_object['Mode']
+        info['OperSpeed'] = managed_object['OperSpeed']
+        info['OperState'] = managed_object['OperState']
+        info['PortId'] = managed_object['PortId']
+        info['PortChannelId'] = managed_object['PortChannelId']
+        info['Role'] = managed_object['Role']
+        info['SlotId'] = managed_object['SlotId']
+        info['SwitchId'] = managed_object['SwitchId']
+        info['TransceiverType'] = managed_object['TransceiverType']
 
         return info

@@ -340,15 +340,7 @@ class TamSecurityAdvisory(IntersightCommon):
         self.iobject = 'tam securityadvisory'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         keys = [
             'AdvisoryId',
             'BaseScore',
@@ -367,19 +359,19 @@ class TamSecurityAdvisory(IntersightCommon):
 
         info = {}
         for key in keys:
-            info[key] = item[key]
+            info[key] = managed_object[key]
 
         info['Urls'] = []
         info['Urls'].append(
-            item['ExternalUrl']
+            managed_object['ExternalUrl']
         )
-        if item['OtherRefUrls'] is not None:
-            for url in item['OtherRefUrls']:
+        if managed_object['OtherRefUrls'] is not None:
+            for url in managed_object['OtherRefUrls']:
                 info['Urls'].append(url)
 
         info['__Output'] = {}
         info['__Output']['Severity'] = None
-        info['Severity'] = item['Severity']['Level']
+        info['Severity'] = managed_object['Severity']['Level']
         if info['Severity'] == 'high':
             info['__Output']['Severity'] = 'Red'
 

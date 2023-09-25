@@ -373,38 +373,26 @@ class EquipmentIoCard(IntersightCommon):
 
         return False
 
-    def get_all(self, max_errors=3, error_timeout=1):
-        items = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if items is not None:
-            for item in items:
-                item['On'] = self.is_iocard_on(item)
-
-        return items
-
-    def get_info(self, moid, cache=True):
-        if cache:
-            io_module = self.get_cache_moid(moid)
-        else:
-            io_module = self.get(moid)
-
-        if io_module is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = io_module['Moid']
-        info['Dn'] = io_module['Dn']
-        info['Model'] = io_module['Model']
-        info['ConnectionPath'] = io_module['ConnectionPath']
-        info['ConnectionStatus'] = io_module['ConnectionStatus']
-        info['Description'] = io_module['Description']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
+        info['Model'] = managed_object['Model']
+        info['ConnectionPath'] = managed_object['ConnectionPath']
+        info['ConnectionStatus'] = managed_object['ConnectionStatus']
+        info['Description'] = managed_object['Description']
         info['ManagementIp'] = None
         info['ManagementSubnet'] = None
         info['ManagementPrefix'] = None
         info['ManagementCidr'] = None
         info['ManagementGateway'] = None
         info['ManagementVlan'] = None
-        if io_module['InbandIpAddresses'] is not None:
-            for inband in io_module['InbandIpAddresses']:
+        info['On'] = False
+        if managed_object['Presence'] == 'equipped' and managed_object['OperState'] == 'OK':
+            info['On'] = True
+
+        if managed_object['InbandIpAddresses'] is not None:
+            for inband in managed_object['InbandIpAddresses']:
                 if inband['ClassId'] == 'compute.IpAddress':
                     info['ManagementIp'] = inband['Address']
                     info['ManagementSubnet'] = inband['Subnet']
@@ -419,35 +407,34 @@ class EquipmentIoCard(IntersightCommon):
                     info['ManagementVlan'] = inband['KvmVlan']
 
         info['FanMoids'] = []
-        for fan in io_module['FanModules']:
+        for fan in managed_object['FanModules']:
             info['FanMoids'].append(fan['Moid'])
 
         info['HostPorts'] = []
-        for port in io_module['HostPorts']:
+        for port in managed_object['HostPorts']:
             info['HostPorts'].append(port['Moid'])
 
         info['NetworkPorts'] = []
-        for port in io_module['NetworkPorts']:
+        for port in managed_object['NetworkPorts']:
             info['NetworkPorts'].append(port['Moid'])
 
         info['NetworkPortMax'] = None
-        if io_module['Model'] == 'UCSX-I-9108-25G':
+        if managed_object['Model'] == 'UCSX-I-9108-25G':
             info['NetworkPortMax'] = 8
 
         info['Name'] = 'IFM #%s (%s)' % (
-            io_module['ModuleId'],
-            io_module['Side'].lower()
+            managed_object['ModuleId'],
+            managed_object['Side'].lower()
         )
 
-        info['ModuleId'] = io_module['ModuleId']
-        info['On'] = io_module['On']
-        info['OperState'] = io_module['OperState']
-        info['PartNumber'] = io_module['PartNumber'].strip()
-        info['Pid'] = io_module['Pid']
-        info['Presence'] = io_module['Presence']
-        info['ProductName'] = io_module['ProductName']
-        info['Serial'] = io_module['Serial']
-        info['Side'] = io_module['Side']
-        info['Version'] = io_module['Version']
+        info['ModuleId'] = managed_object['ModuleId']
+        info['OperState'] = managed_object['OperState']
+        info['PartNumber'] = managed_object['PartNumber'].strip()
+        info['Pid'] = managed_object['Pid']
+        info['Presence'] = managed_object['Presence']
+        info['ProductName'] = managed_object['ProductName']
+        info['Serial'] = managed_object['Serial']
+        info['Side'] = managed_object['Side']
+        info['Version'] = managed_object['Version']
 
         return info

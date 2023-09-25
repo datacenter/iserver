@@ -164,8 +164,7 @@ class StoragePhysicalDisk(IntersightCommon):
     """
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'storage physicaldisk'
-        self.cache_key = 'physical_disk'
-        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
     def get_compute_disks(self, compute_id, cache=True, disk_type=None):
         if cache:
@@ -197,31 +196,22 @@ class StoragePhysicalDisk(IntersightCommon):
 
         return disks
 
-    def get_compute_disks_count(self, compute_id, disk_type=None):
-        disks = self.get_compute_disks(compute_id, disk_type=disk_type)
-        if disks is None:
-            return 0
-        return len(disks)
-
-    def get_compute_disks_size(self, compute_id, disk_type=None):
-        disks = self.get_compute_disks(compute_id, disk_type=disk_type)
-        if disks is None:
+    def get_compute_disks_size(self, disks_info):
+        if disks_info is None:
             return 0
 
         size = 0
-        for disk in disks:
-            if disk['Size'].endswith(' MB'):
-                size = size + int(disk['Size'].split(' ')[0])
-                continue
+        for disk_info in disks_info:
+            size = size + disk_info['SizeBytes']
 
-            size = size + int(disk['Size'])
-
-        size = size * 1024 * 1024
         return size
 
     def get_disk_size_bytes(self, size):
         if isinstance(size, int):
             return size
+
+        if len(size.strip()) == 0:
+            return 0
 
         factor = 1
         size_bytes = 0
@@ -257,9 +247,8 @@ class StoragePhysicalDisk(IntersightCommon):
 
         return False
 
-    def get_compute_disks_info(self, compute_id, disk_type=None, virtual_drives_info=None, storage_controllers_info=None):
-        compute_disks = self.get_compute_disks(compute_id, disk_type=disk_type)
-        if compute_disks is None:
+    def get_compute_disks_info(self, physical_disks_mo, disk_type=None, virtual_drives_info=None, storage_controllers_info=None):
+        if physical_disks_mo is None:
             return None
 
         compute_disks_info = []
@@ -278,13 +267,17 @@ class StoragePhysicalDisk(IntersightCommon):
             'OperPowerState',
             'Operability',
             'Presence',
+            'Protocol',
             'Serial',
             'Size',
             'Type',
             'Vendor'
         ]
 
-        for compute_disk in compute_disks:
+        for compute_disk in physical_disks_mo:
+            if compute_disk['DriveState'] == 'Absent':
+                continue
+
             info = {}
             info['__Output'] = {}
 

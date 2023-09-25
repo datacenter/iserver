@@ -1,0 +1,16 @@
+#FMC
+{
+    "EULA": "accept",
+    "Hostname": "FMC-Production",
+    "AdminPassword": "Cisco_123",
+    "DNS1": "144.254.71.184",
+    "DNS2": "",
+    "IPv4Mode": "dhcp",
+    "IPv4Addr": "",
+    "IPv4Mask": "",
+    "IPv4Gw": "",
+    "IPv6Mode": "disabled",
+    "IPv6Addr": "",
+    "IPv6Mask": "",
+    "IPv6Gw": ""
+}

@@ -5,7 +5,7 @@ import threading
 import yaml
 import click
 
-from lib.intersight import computes_info
+from lib.intersight import compute_info
 
 from menu import common
 from menu import defaults

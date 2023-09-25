@@ -12,11 +12,8 @@ class IntersightSettings(Settings):
         Settings.__init__(self)
 
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
+        self.log_id = log_id
+        self.my_output = None
 
         self.intersight_settings_filename = os.path.join(
             self.settings_dir,
@@ -37,6 +34,28 @@ class IntersightSettings(Settings):
                     settings['ComputeCacheDirectory'],
                     exist_ok=True
                 )
+
+        settings_changed = False
+        settings = self.get_intersight_settings()
+
+        if 'CacheEnabled' not in settings:
+            settings['CacheEnabled'] = True
+            settings_changed = True
+
+        if 'CacheTtl' not in settings:
+            settings['CacheTtl'] = 600
+            settings_changed = True
+
+        if 'ComputeCacheDirectory' not in settings:
+            settings['ComputeCacheDirectory'] = os.path.join(
+                self.settings_dir,
+                'compute'
+            )
+
+        if settings_changed:
+            self.set_intersight_settings(
+                settings
+            )
 
         return True
 
@@ -68,13 +87,27 @@ class IntersightSettings(Settings):
     def get_intersight_default_settings(self):
         settings = {}
         settings['CacheEnabled'] = True
+        settings['CacheTtl'] = 600
         settings['ComputeCacheDirectory'] = os.path.join(
             self.settings_dir,
             'compute'
         )
         return settings
 
+    def get_intersight_cache_ttl(self):
+        settings = self.get_intersight_settings()
+        if not settings['CacheEnabled']:
+            return None
+        return settings['CacheTtl']
+
     def print_intersight_settings(self):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         settings = self.get_intersight_settings()
         if settings is None:
             self.my_output.error('Intersight settings not found')
@@ -82,11 +115,13 @@ class IntersightSettings(Settings):
 
         order = [
             'CacheEnabled',
+            'CacheTtl',
             'ComputeCacheDirectory'
         ]
 
         headers = [
             'Cache Enabled',
+            'Cache TTL [sec]',
             'Compute Cache Directory'
         ]
 

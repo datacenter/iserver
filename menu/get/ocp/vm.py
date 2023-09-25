@@ -65,6 +65,10 @@ def get_ocp_vm_command(
         if ocp_handler is None:
             raise ErrorExit
 
+        # ctx.busy = False
+        # response = ocp_handler.k8s_handler.get_virtual_machine_instances()
+        # print(response)
+
         vm_filter = []
         namespace_filtered = False
 

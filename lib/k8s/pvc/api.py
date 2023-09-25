@@ -4,77 +4,61 @@ import traceback
 
 class K8sPvcApi():
     def __init__(self):
-        self.pvcs = None
+        self.pvc_mo = None
 
-    def is_pvc(self, namespace, name, cache=True):
-        if self.get_pvc(namespace, name, cache=cache) is None:
-            return False
-        return True
+    def get_pvc_mo(self, cache_enabled=True):
+        if cache_enabled:
+            if self.pvc_mo is not None:
+                return self.pvc_mo
 
-    def get_pvc(self, namespace, name, cache=True):
-        pvcs = self.get_pvcs(cache=cache)
-        if pvcs is None:
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
-
-        for pvc in pvcs:
-            if pvc['metadata']['namespace'] == namespace and pvc['metadata']['name'] == name:
-                return pvc
-
-        return None
-
-    def get_pvcs(self, cache=True):
-        if not self.connect():
-            return None
-
-        if self.pvcs is not None and cache:
-            return self.pvcs
 
         try:
             start_time = int(time.time() * 1000)
-            response = self.api.list_persistent_volume_claim_for_all_namespaces(
+            response = api_handler.list_persistent_volume_claim_for_all_namespaces(
                 timeout_seconds=self.api_timeout_seconds
             )
             self.log.k8s(
                 'get',
-                'pvcs',
+                'pvc',
                 True,
                 int(time.time() * 1000) - start_time
             )
 
         except BaseException:
-            self.log.error('k8s.get_pvcs', traceback.format_exc())
+            self.log.error('k8s.get_pvc', traceback.format_exc())
             self.log.k8s(
                 'get',
-                'pvcs',
+                'pvc',
                 True,
                 int(time.time() * 1000) - start_time
             )
             return None
 
-        self.pvcs = []
+        self.pvc_mo = []
         for item in response.items:
             pvc = self.convert_object(item.to_dict())
-            self.pvcs.append(
+            self.pvc_mo.append(
                 pvc
             )
 
         self.log.k8s_mo(
             'pvc',
-            self.pvcs
+            self.pvc_mo
         )
 
-        return self.pvcs
+        return self.pvc_mo
 
     def delete_namespaced_pvc(self, namespace, name):
-        if not self.connect():
-            return False
-
-        if self.api is None:
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
 
         start_time = int(time.time() * 1000)
         try:
-            api_response = self.api.delete_namespaced_persistent_volume_claim(
+            api_response = api_handler.delete_namespaced_persistent_volume_claim(
                 name,
                 namespace
             )

@@ -43,8 +43,7 @@ class NoResultExit(Exception):
 @click.option("--vmm", "vmm_filter", default='', callback=validations.empty_string_to_none, help="VMM filter")
 @click.option("--hv", "hv_filter", default='', callback=validations.empty_string_to_none, help="Hypevisor filter")
 @click.option("--vm", "vm_filter", default='', callback=validations.empty_string_to_none, help="VM filter")
-@click.option("--xd", "xd_filter", default='', callback=validations.validate_aci_xd, help="Cross domain filter")
-@click.option("--view", "-v", default=['state'], help="[state|vm|fabric|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|vm|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -68,7 +67,6 @@ def get_aci_ep_command(
         vmm_filter,
         hv_filter,
         vm_filter,
-        xd_filter,
         view,
         output,
         no_cache,
@@ -83,7 +81,7 @@ def get_aci_ep_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|vm|fabric|all',
+        'state|vm|all',
         'state',
         []
     )
@@ -105,32 +103,16 @@ def get_aci_ep_command(
         if len(apic_handlers) == 1:
             aci_output_handler.set_apic_off()
 
-        xd_mac, xd_interface = validations.resolve_aci_xd(
-            ctx,
-            xd_filter,
-            output
-        )
-
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
         vm_info = False
         fabric_info = False
+
+        if 'state' in view:
+            fabric_info = True
 
         if 'vm' in view:
             vm_info = True
 
-        if 'fabric' in view:
-            fabric_info = True
-
         endpoint_filter = []
-
-        if xd_mac is not None:
-            for item in xd_mac:
-                endpoint_filter.append(
-                    'mac:%s' % (item)
-                )
 
         if mac_address_filter is not None:
             endpoint_filter.append(
@@ -206,6 +188,15 @@ def get_aci_ep_command(
                 'vm-info:enabled'
             )
 
+        if output not in ['json']:
+            if fabric_info:
+                ctx.my_output.default(
+                    '[INFO] May trigger per policy-group api call'
+                )
+
+            ctx.busy = True
+            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+
         endpoints = []
         ep_context = {}
         ep_context['apic'] = []
@@ -265,17 +256,8 @@ def get_aci_ep_command(
 
         if 'state' in view:
             aci_output_handler.print_endpoints(
-                endpoints
-            )
-
-        if 'vm' in view:
-            aci_output_handler.print_endpoints_vmm(
-                endpoints
-            )
-
-        if 'fabric' in view:
-            aci_output_handler.print_endpoints_fabric(
-                endpoints
+                endpoints,
+                title=True
             )
 
             if len(endpoints) > 0:
@@ -288,6 +270,11 @@ def get_aci_ep_command(
                     ctx.my_output.error('Failed to set interface context')
                 else:
                     ctx.my_output.default('Interface context: ep')
+
+        if 'vm' in view:
+            aci_output_handler.print_endpoints_vmm(
+                endpoints
+            )
 
         if len(endpoints) == 0:
             raise NoResultExit

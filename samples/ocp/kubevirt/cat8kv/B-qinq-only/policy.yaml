@@ -1,0 +1,13 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-${SRIOV_PHY1B_INTERFACE_NAME}-dpdk
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: ${SRIOV_PHY1B_INTERFACE_NAME}dpdk
+  nodeSelector:
+    topology.topolvm.io/node: "${NODE}"
+  numVfs: 16
+  nicSelector:
+    pfNames: ["${SRIOV_PHY1B_INTERFACE_NAME}#${SRIOV_PHY1B_INTERFACE_VFS}"]
+  deviceType: vfio-pci

@@ -167,8 +167,7 @@ class StorageController(IntersightCommon):
     """
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'storage controller'
-        self.cache_key = 'storage_controller'
-        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
     def get_board_storage_controllers(self, board_id, cache=True):
         if cache:
@@ -188,9 +187,8 @@ class StorageController(IntersightCommon):
 
         return controllers
 
-    def get_board_storage_controllers_info(self, board_id, cache=True):
-        controllers = self.get_board_storage_controllers(board_id, cache=cache)
-        if controllers is None:
+    def get_board_storage_controllers_info(self, storage_controllers_mo, physical_disks_mo=None):
+        if storage_controllers_mo is None:
             return None
 
         controllers_info = []
@@ -209,17 +207,34 @@ class StorageController(IntersightCommon):
             'RaidSupport'
         ]
 
-        for controller in controllers:
+        for controller in storage_controllers_mo:
             info = {}
             info['__Output'] = {}
             for key in keys:
                 info[key] = controller[key]
 
             info['Name'] = info['Dn'].split('/')[-1]
-            info['PhysicalDiskCount'] = len(controller['PhysicalDisks'])
-            info['PhysicalDiskIds'] = []
-            for physical_disk in controller['PhysicalDisks']:
-                info['PhysicalDiskIds'].append(physical_disk['Moid'])
+
+            if physical_disks_mo is None:
+                info['PhysicalDiskCount'] = len(controller['PhysicalDisks'])
+                info['PhysicalDiskIds'] = []
+                for physical_disk in controller['PhysicalDisks']:
+                    info['PhysicalDiskIds'].append(physical_disk['Moid'])
+
+            if physical_disks_mo is not None:
+                candidate_moids = []
+                for physical_disk in controller['PhysicalDisks']:
+                    candidate_moids.append(physical_disk['Moid'])
+
+                info['PhysicalDiskCount'] = 0
+                info['PhysicalDiskIds'] = []
+                for physical_disk_mo in physical_disks_mo:
+                    if physical_disk_mo['Moid'] in candidate_moids:
+                        if physical_disk_mo['DiskState'] != '':
+                            info['PhysicalDiskCount'] = info['PhysicalDiskCount'] + 1
+                            info['PhysicalDiskIds'].append(
+                                physical_disk_mo['Moid']
+                            )
 
             info['VirtualDriveCount'] = len(controller['VirtualDrives'])
             info['VirtualDriveIds'] = []
@@ -232,21 +247,6 @@ class StorageController(IntersightCommon):
                 info['__Output']['Presence'] = 'Red'
 
             controllers_info.append(info)
-
-            # "RunningFirmware": [
-            #     {
-            #         "ClassId": "mo.MoRef",
-            #         "Moid": "5fdf9c2c6176752d35e457d8",
-            #         "ObjectType": "firmware.RunningFirmware",
-            #         "link": "https://www.intersight.com/api/v1/firmware/RunningFirmwares/5fdf9c2c6176752d35e457d8"
-            #     },
-            #     {
-            #         "ClassId": "mo.MoRef",
-            #         "Moid": "5fdf9c866176752d35e47722",
-            #         "ObjectType": "firmware.RunningFirmware",
-            #         "link": "https://www.intersight.com/api/v1/firmware/RunningFirmwares/5fdf9c866176752d35e47722"
-            #     }
-            # ],
 
         return controllers_info
 
@@ -274,8 +274,7 @@ class StorageController(IntersightCommon):
 
         return controllers
 
-    def get_blade_storage_controllers_info(self, blade_id, cache=True):
-        controllers = self.get_blade_storage_controllers(blade_id, cache=cache)
+    def get_blade_storage_controllers_info(self, controllers):
         if controllers is None:
             return None
 

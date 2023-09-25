@@ -78,27 +78,9 @@ class EquipmentLed(IntersightCommon):
     """
     def __init__(self, iaccount, get_filter='"OperState eq \'on\'"', log_id=None):
         self.iobject = 'equipment locatorled'
-        self.cache_key = 'locator_led'
-        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def is_locator_led_on(self, item):
-        if item is None:
+    def get_locator_led(self, managed_object):
+        if managed_object['OperState'] == 'off':
             return False
-
-        if item['OperState'] == 'off':
-            return False
-
         return True
-
-    def get_all(self, max_errors=3, error_timeout=1):
-        items = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if items is not None:
-            for item in items:
-                item['On'] = self.is_locator_led_on(item)
-
-        return items
-
-    def get_locator_led(self, moid, cache=True):
-        if not cache:
-            return self.is_locator_led_on(self.get(moid))
-        return self.is_locator_led_on(self.get_cache_moid(moid))

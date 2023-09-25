@@ -1,21 +1,18 @@
 import os
 import json
-import traceback
+import time
 
 from lib import log_helper
-from lib import output_helper
+
 from lib.intersight.settings import IntersightSettings
 
 
 class IntersightCache(IntersightSettings):
-    def __init__(self, log_id=None):
+    def __init__(self, iaccount, log_id=None):
         IntersightSettings.__init__(self, log_id=log_id)
+
+        self.iaccount = iaccount
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
 
         self.intersight_settings = self.get_intersight_settings()
         if self.intersight_settings is None:
@@ -23,31 +20,40 @@ class IntersightCache(IntersightSettings):
 
         self.intersight_cache_enabled = self.is_intersight_cache_enabled()
         self.intersight_cache_directory = None
+        self.intersight_cache_ttl = None
         if self.intersight_cache_enabled:
             self.intersight_cache_directory = self.intersight_settings['ComputeCacheDirectory']
+            self.intersight_cache_ttl = self.intersight_settings['CacheTtl']
+
+    def set_cache_enabled(self, enabled):
+        self.intersight_cache_enabled = enabled
+        if self.intersight_cache_enabled:
+            self.intersight_cache_directory = self.intersight_settings['ComputeCacheDirectory']
+            self.intersight_cache_ttl = self.intersight_settings['CacheTtl']
 
     def is_intersight_cache_enabled(self):
         if 'CacheEnabled' in self.intersight_settings:
             return self.intersight_settings['CacheEnabled']
         return False
 
-    def is_intersight_cache_entry(self, cache_entry_name):
-        if not self.intersight_cache_enabled:
+    def is_intersight_cache(self, cache_entry_name, subdirectory=None, cache_ttl=None):
+        if self.get_intersight_cache_entry(cache_entry_name, subdirectory=subdirectory, cache_ttl=cache_ttl) is None:
             return False
+        return True
 
-        filename = os.path.join(
-            self.intersight_cache_directory,
-            cache_entry_name
-        )
-
-        return os.path.isfile(filename)
-
-    def get_intersight_cache_entry(self, cache_entry_name):
+    def get_intersight_cache_entry(self, cache_entry_name, subdirectory=None, check_ttl=True, cache_ttl=None):
         if not self.intersight_cache_enabled:
             return None
 
+        directory_name = self.intersight_cache_directory
+        if subdirectory is not None:
+            directory_name = os.path.join(
+                directory_name,
+                subdirectory
+            )
+
         filename = os.path.join(
-            self.intersight_cache_directory,
+            directory_name,
             cache_entry_name
         )
 
@@ -59,65 +65,69 @@ class IntersightCache(IntersightSettings):
                 cache_entry = json.loads(file_handler.read())
 
         except BaseException:
-            self.log.error('get_intersight_cache_entry', traceback.format_exc())
+            self.log.error('get_intersight_cache_entry', 'Cache read failed: %s' % (filename))
             return None
 
-        return cache_entry
+        for key in ['data', 'timestamp']:
+            if key not in cache_entry:
+                self.log.error('get_intersight_cache_entry', 'Invalid cache content: %s' % (filename))
+                return None
 
-    def set_intersight_cache_entry(self, cache_entry_name, cache_entry_content):
+        if check_ttl:
+            if cache_ttl is None:
+                if self.intersight_cache_ttl > 0:
+                    entry_ttl = int(time.time()) - cache_entry['timestamp']
+                    if entry_ttl > self.intersight_cache_ttl:
+                        return None
+
+            if cache_ttl is not None:
+                if cache_ttl > 0:
+                    entry_ttl = int(time.time()) - cache_entry['timestamp']
+                    if entry_ttl > cache_ttl:
+                        return None
+
+        return cache_entry['data']
+
+    def set_intersight_cache_entry(self, cache_entry_name, data, subdirectory=None):
         if not self.intersight_cache_enabled:
             return False
 
+        directory_name = self.intersight_cache_directory
+        if subdirectory is not None:
+            directory_name = os.path.join(
+                directory_name,
+                subdirectory
+            )
+
+        if os.path.isfile(directory_name):
+            os.remove(directory_name)
+
+        if not os.path.isdir(directory_name):
+            os.makedirs(
+                directory_name,
+                exist_ok=True
+            )
+
         filename = os.path.join(
-            self.intersight_cache_directory,
+            directory_name,
             cache_entry_name
         )
+
+        content = {}
+        content['timestamp'] = int(time.time())
+        content['data'] = data
 
         try:
             with open(filename, 'w', encoding='utf-8') as file_handler:
                 file_handler.write(
                     json.dumps(
-                        cache_entry_content,
+                        content,
                         indent=4
                     )
                 )
 
         except BaseException:
-            self.log.error('set_intersight_cache_entry', traceback.format_exc())
+            self.log.error('set_intersight_cache_entry', 'Cache set failed: %s' % (filename))
             return False
 
         return True
-
-    def get_intersight_cache_entry_property(self, cache_entry_name, property_name):
-        cache_entry_content = self.get_intersight_cache_entry(
-            cache_entry_name
-        )
-
-        if cache_entry_content is None:
-            return None
-
-        if property_name not in cache_entry_content:
-            return None
-
-        return cache_entry_content[property_name]
-
-    def get_intersight_cache_entry_properties(self, cache_entry_name):
-        cache_entry_content = self.get_intersight_cache_entry(
-            cache_entry_name
-        )
-
-        if cache_entry_content is None:
-            return None
-
-        return cache_entry_content.keys()
-
-    def set_intersight_cache_entry_property(self, cache_entry_name, property_name, property_value):
-        cache_entry_content = self.get_intersight_cache_entry(
-            cache_entry_name
-        )
-
-        if cache_entry_content is None:
-            cache_entry_content = {}
-
-        cache_entry_content[property_name] = property_value
-        return self.set_intersight_cache_entry(cache_entry_name, cache_entry_content)

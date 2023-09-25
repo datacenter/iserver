@@ -295,6 +295,18 @@ class VrfInfo():
                 if not filter_helper.match_integer(value, vrf_info['seg']):
                     return False
 
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not vrf_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_vrf',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
             if not key_found:
                 self.log.error(
                     'match_vrf',

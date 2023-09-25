@@ -11,12 +11,9 @@ class UcsmSettings(Settings):
     def __init__(self, log_id=None):
         Settings.__init__(self, log_id=log_id)
 
-        self.log = log_helper.Log()
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
+        self.log = log_helper.Log(log_id=log_id)
+        self.log_id = log_id
+        self.my_output = None
 
         self.ucsm_settings_filename = os.path.join(
             self.settings_dir,
@@ -122,6 +119,13 @@ class UcsmSettings(Settings):
         return self.set_ucsm_managers(new_managers)
 
     def print_ucsm_managers(self, managers, show_password=True):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         managers = sorted(managers, key=lambda i: i['name'])
         if not show_password:
             for manager in managers:

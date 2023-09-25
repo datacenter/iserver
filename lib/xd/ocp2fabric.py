@@ -22,7 +22,8 @@ def print_ocp_vm_net_fabric_info(interfaces, log_id=None, stream='default'):
     aci_output_handler.my_output.clear_output()
     aci_output_handler.print_endpoints(
         endpoints,
-        stream=stream
+        stream=stream,
+        title=True
     )
 
     return apic_handler.my_output.get_output()

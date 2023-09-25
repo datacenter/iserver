@@ -682,25 +682,6 @@ class Log():
 
         return content
 
-    def set_cache(self, key, cache):
-        try:
-            filename = '%s.%s' % (
-                self.cache_filename,
-                key
-            )
-            success = self.safe_write(
-                filename,
-                json.dumps(
-                    cache,
-                    indent=4
-                )
-            )
-
-        except BaseException:
-            return False
-
-        return success
-
     def wait_for_no_file(self, filename, max_wait_ms=1000, gap=0.1):
         try:
             start = int(time.time() * 1000)

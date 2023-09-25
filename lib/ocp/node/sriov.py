@@ -28,7 +28,7 @@ class OcpNodeSriov():
                 sriov_vf['policyName'] = ''
 
             interface['policy'] = []
-            node_policies = self.get_ocp_sriov_network_node_policy_with_interface(
+            node_policies = self.k8s_handler.get_sriov_network_node_policies_with_interface(
                 interface['name']
             )
 
@@ -66,8 +66,9 @@ class OcpNodeSriov():
                                 if int(start_vf) <= int(sriov_vf['index']) <= int(end_vf):
                                     sriov_vf['policyName'] = node_policy_info['name']
 
-                networks = self.get_ocp_sriov_network_with_resource_name(
-                    node_policy_info['resourceName']
+                networks = self.k8s_handler.get_sriov_network_with_resource_name(
+                    node_policy_info['resourceName'],
+                    return_mo=True
                 )
                 if networks is not None:
                     for network in networks:

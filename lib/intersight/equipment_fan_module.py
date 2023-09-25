@@ -99,52 +99,21 @@ class EquipmentFanModule(IntersightCommon):
     """
     def __init__(self, iaccount, get_filter=None, log_id=None):
         self.iobject = 'equipment fanmodule'
-        self.cache_key = 'fanmodule'
-        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def is_fan_on(self, item):
-        if item is None:
-            return False
-
-        if item['Presence'] == 'equipped' and item['OperState'] == 'operable':
-            return True
-
-        if item['Presence'] == 'equipped' and item['OperState'].lower() == 'ok':
-            return True
-
-        return False
-
-    def get_all(self, max_errors=3, error_timeout=1):
-        items = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if items is not None:
-            for item in items:
-                item['On'] = self.is_fan_on(item)
-
-        return items
-
-    def get_fan_state(self, moid, cache=True):
-        if not cache:
-            return self.is_fan_on(self.get(moid))
-        return self.is_fan_on(self.get_cache_moid(moid))
-
-    def get_fan_info(self, moid, cache=True):
-        if cache:
-            fan_device = self.get_cache_moid(moid)
-        else:
-            fan_device = self.get(moid)
-
-        if fan_device is None:
+    def get_info(self, managed_object):
+        if managed_object is None:
             return None
 
         info = {}
         info['__Output'] = {}
-        for key in ['Moid', 'ModuleId', 'OperState', 'Presence', 'Dn', 'On']:
-            info[key] = fan_device[key]
+        for key in ['Moid', 'ModuleId', 'OperState', 'Presence', 'Dn']:
+            info[key] = managed_object[key]
 
-        info['Name'] = 'Fan Module %s' % (fan_device['ModuleId'])
-        info['FanCount'] = len(fan_device['Fans'])
+        info['Name'] = 'Fan Module %s' % (managed_object['ModuleId'])
+        info['FanCount'] = len(managed_object['Fans'])
         info['FanMoids'] = []
-        for fan in fan_device['Fans']:
+        for fan in managed_object['Fans']:
             info['FanMoids'].append(fan['Moid'])
 
         if info['Presence'].lower() == 'equipped':
@@ -156,6 +125,13 @@ class EquipmentFanModule(IntersightCommon):
             info['__Output']['OperState'] = 'Green'
         else:
             info['__Output']['OperState'] = 'Red'
+
+        info['On'] = False
+        if info['Presence'] == 'equipped' and info['OperState'] == 'operable':
+            info['On'] = True
+
+        if info['Presence'] == 'equipped' and info['OperState'].lower() == 'ok':
+            info['On'] = True
 
         if info['On']:
             info['__Output']['On'] = 'Green'

@@ -7,6 +7,7 @@ from lib.aci import settings
 from lib.aci.api import Api
 from lib.aci.cache import Cache
 from lib.aci.common import Common
+from lib.aci.ws import WebSocket
 
 from lib.aci.ap.main import ApplicationProfile
 from lib.aci.bd.main import BridgeDomain
@@ -49,7 +50,8 @@ class Apic(
         Protocol,
         System,
         Tenant,
-        Vrf
+        Vrf,
+        WebSocket
         ):
     def __init__(self, apic_ip, apic_port, username, password, apic_name=None, verbose=False, debug=False, log_id=None, no_cache=False):
         self.my_output = output_helper.OutputHelper(
@@ -77,6 +79,11 @@ class Apic(
         )
         Cache.__init__(self, self.apic_name, no_cache=no_cache)
         Common.__init__(self)
+        WebSocket.__init__(
+            self,
+            apic_ip,
+            debug=debug
+        )
 
         ApplicationProfile.__init__(self)
         BridgeDomain.__init__(self)

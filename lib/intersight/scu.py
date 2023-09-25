@@ -4,7 +4,6 @@ import yaml
 
 from lib.intersight.intersight_common import IntersightCommon
 from lib import ip_helper
-from lib import output_helper
 from lib.intersight import software_repository_catalog
 from lib.intersight import organization
 
@@ -408,42 +407,3 @@ class SoftwareConfigurationUtility(IntersightCommon):
                 update_attributes = '%s --%s=\'%s\'' % (update_attributes, 'Source', json.dumps(source))
 
         return IntersightCommon.update(self, moid, update_attributes)
-
-    def print(self, scus):
-        """Print software configuration utilities
-
-        +-------------------------+---------------------------+-----------+----------+-------+-------------------------------------------------------------------------+
-        | Organization            | SCU ID                    | SCU Name  | Version  | Type  | Link                                                                    |
-        +-------------------------+---------------------------+-----------+----------+-------+-------------------------------------------------------------------------+
-        | EMEAR-SPDC-Specialists  | 632afedf6567612d300aefe6  | 6.1.3c    | 6.1.3c   | url   | http://10.60.0.252/2-IMAGES/cisco/ucs_c-series/ucs-cxxx-scu-6.1.3c.iso  |
-        | EMEAR-SPDC-Specialists  | 632c227a6567612d30187910  | 6.2.2a    | 6.2.2a   | url   | http://10.60.0.252/2-IMAGES/cisco/ucs_c-series/ucs-scu-6.2.2a.iso       |
-        | EMEAR-SPDC-Specialists  | 63343b416567612d30776c72  | a         | b        | nfs   | 10.1.1.1/folder/file.iso                                                |
-        +-------------------------+---------------------------+-----------+----------+-------+-------------------------------------------------------------------------+
-        """
-
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(log_id=self.log_id)
-
-        order = [
-            'Organization',
-            'Moid',
-            'Name',
-            'Version',
-            'Type',
-            'Link'
-        ]
-        headers = [
-            'Organization',
-            'SCU ID',
-            'SCU Name',
-            'Version',
-            'Type',
-            'Link'
-        ]
-
-        self.my_output.my_table(
-            scus,
-            order=order,
-            headers=headers,
-            table=True
-        )

@@ -3,7 +3,6 @@ from lib.intersight.intersight_common import IntersightCommon
 
 class ComputeRack(IntersightCommon):
     """Class for intersight compute rack objects
-
     {
         "AccountMoid": "5be4b2ce67626c6d661ca38d",
         "Adapters": [

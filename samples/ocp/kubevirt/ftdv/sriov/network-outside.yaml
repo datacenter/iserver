@@ -1,0 +1,19 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: ${NAME}-sriov-outside
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: ${SRIOV_PHY1A_INTERFACE_NAME}dpdk
+  networkNamespace: ${NAMESPACE}
+  vlan: ${SRIOV_OUTSIDE_VLAN}
+  ipam: |-
+    {
+      "type": "static",
+      "addresses": [
+        {
+          "address": "${SRIOV_OUTSIDE_IP}/${SRIOV_OUTSIDE_PREFIX}",
+          "gateway": "${SRIOV_OUTSIDE_GATEWAY}"
+        }
+      ]
+    }

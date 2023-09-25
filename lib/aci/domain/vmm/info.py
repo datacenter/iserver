@@ -188,11 +188,15 @@ class DomainVmmInfo():
 
         for aepg_rule in domain_filter:
             (key, value) = aepg_rule.split(':')
+            key_found = False
+
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_string(value, domain_info['name']):
                     return False
 
             if key == 'aaep':
+                key_found = True
                 found = False
                 for aaep_name in domain_info['aaep_names']:
                     if filter_helper.match_string(value, aaep_name):
@@ -202,10 +206,12 @@ class DomainVmmInfo():
                     return False
 
             if key == 'pool':
+                key_found = True
                 if not filter_helper.match_string(value, domain_info['vlan']):
                     return False
 
             if key == 'vlan':
+                key_found = True
                 if 'vlan_block' in domain_info:
                     found = False
                     for vlan_block in domain_info['vlan_block']:
@@ -216,6 +222,7 @@ class DomainVmmInfo():
                         return False
 
             if key == 'fault':
+                key_found = True
                 if value == 'any':
                     if not domain_info['isAnyFault']:
                         return False
@@ -225,6 +232,12 @@ class DomainVmmInfo():
                         'match_domain_vmm',
                         'Unsupported fault filtering value: %s' % (value)
                     )
+
+            if not key_found:
+                self.log.error(
+                    'match_domain_vmm',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

@@ -4,74 +4,63 @@ import traceback
 
 class K8sServiceApi():
     def __init__(self):
-        self.services = None
+        self.service_mo = None
 
-    def get_service(self, namespace, name, cache=True):
-        services = self.get_services(cache=cache)
-        if services is None:
+    def get_service_mo(self, cache_enabled=True):
+        if cache_enabled:
+            if self.service_mo is not None:
+                return self.service_mo
+
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
-
-        for service in services:
-            if service['metadata']['namespace'] == namespace and service['metadata']['name'] == name:
-                return service
-
-        return None
-
-    def get_services(self, cache=True):
-        if not self.connect():
-            return None
-
-        if self.services is not None and cache:
-            return self.services
 
         try:
             start_time = int(time.time() * 1000)
-            response = self.api.list_service_for_all_namespaces(
+            response = api_handler.list_service_for_all_namespaces(
                 timeout_seconds=self.api_timeout_seconds
             )
             self.log.k8s(
                 'get',
-                'services',
+                'service',
                 True,
                 int(time.time() * 1000) - start_time
             )
 
         except BaseException:
-            self.log.error('k8s.get_services', traceback.format_exc())
+            self.log.error('k8s.get_service_mo', traceback.format_exc())
             self.log.k8s(
                 'get',
-                'services',
+                'service',
                 True,
                 int(time.time() * 1000) - start_time
             )
             return None
 
-        self.services = []
+        self.service_mo = []
         for item in response.items:
             service = self.convert_object(item.to_dict())
-            self.services.append(
+            self.service_mo.append(
                 service
             )
 
         self.log.k8s_mo(
             'service',
-            self.services
+            self.service_mo
         )
 
-        return self.services
+        return self.service_mo
 
     def create_namespaced_service(self, service_definition):
-        if not self.connect():
-            return False
-
-        if self.api is None:
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
 
         start_time = int(time.time() * 1000)
 
         namespace = service_definition['metadata']['namespace']
         try:
-            api_response = self.api.create_namespaced_service(
+            api_response = api_handler.create_namespaced_service(
                 namespace,
                 service_definition
             )
@@ -101,15 +90,13 @@ class K8sServiceApi():
         return True
 
     def delete_namespaced_service(self, namespace, name):
-        if not self.connect():
-            return False
-
-        if self.api is None:
+        api_handler = self.get_api()
+        if api_handler is None:
             return None
 
         start_time = int(time.time() * 1000)
         try:
-            api_response = self.api.delete_namespaced_service(
+            api_response = api_handler.delete_namespaced_service(
                 name,
                 namespace
             )

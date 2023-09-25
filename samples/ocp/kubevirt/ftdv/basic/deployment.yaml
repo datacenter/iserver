@@ -1,0 +1,76 @@
+kind: VirtualMachineDeployment
+deployment:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+  vm: vm.yaml
+  image:
+    enabled: true
+    ip: ${TOOLS_IP}
+    username: ${TOOLS_USERNAME}
+    password: "${TOOLS_PASSWORD}"
+    path: ${IMAGE_PATH}${IMAGE_FILENAME}
+    size: ${IMAGE_SIZE}
+    dv: image.yaml
+  day0:
+    enabled: true
+    filename: day0-config
+    source: day0-config
+    destination: day0.iso
+    size: ${DAY0_SIZE}
+    dv: day0.yaml
+  multus:
+    enabled: true
+    network:
+    - network-diag.yaml
+    - network-inside.yaml
+    - network-outside.yaml
+  service:
+    ssh: ssh.yaml
+variables:
+  NAME: ftdv-basic
+  NAMESPACE: default
+  NODE: ocp-bm2
+  CORES: 8
+  SOCKETS: 1
+  THREADS: 1
+  MEMORY: 16Gi
+  IMAGE_NAME: ftdv-7.2.5-208-image
+  IMAGE_NAMESPACE: default
+  IMAGE_PATH: /home/cisco/image/
+  IMAGE_FILENAME: Cisco_Secure_Firewall_Threat_Defense_Virtual-7.2.5-208.qcow2
+  IMAGE_SIZE: 50Gi
+  DAY0_SIZE: 1Gi
+  MACVLAN_MASTER: eno5
+  NET_DIAG_VM_IP: 192.168.10.20
+  NET_DIAG_BRIDGE_IP: 192.168.10.10
+  NET_DIAG_NETMASK: 255.255.255.0
+  NET_DIAG_PREFIX: 24
+  NET_INSIDE_VM_IP: 192.168.11.20
+  NET_INSIDE_BRIDGE_IP: 192.168.11.10
+  NET_INSIDE_NETMASK: 255.255.255.0
+  NET_INSIDE_PREFIX: 24
+  NET_OUTSIDE_VM_IP: 192.168.12.20
+  NET_OUTSIDE_BRIDGE_IP: 192.168.12.10
+  NET_OUTSIDE_NETMASK: 255.255.255.0
+  NET_OUTSIDE_PREFIX: 24
+  SSH_USERNAME: admin
+  SSH_PASSWORD: Cisco_123
+  DOMAIN_NAME: cisco.com
+  TOOLS_IP: 10.58.28.207
+  TOOLS_USERNAME: cisco
+  TOOLS_PASSWORD: "!Cisc0_123"
+tools:
+  enabled: true
+  ip: ${TOOLS_IP}
+  username: ${TOOLS_USERNAME}
+  password: "${TOOLS_PASSWORD}"
+ssh:
+  enabled: true
+  type: cisco
+  username: ${SSH_USERNAME}
+  password: ${SSH_PASSWORD}
+ready:
+  enabled: true
+  type: ssh
+  timeout: 600
+  sleep: 120

@@ -97,29 +97,21 @@ class AdapterHostEthInterface(IntersightCommon):
         self.iobject = 'adapter hostethinterface'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            adapter_interface = self.get_cache_moid(moid)
-        else:
-            adapter_interface = self.get(moid)
-
-        if adapter_interface is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = adapter_interface['Moid']
+        info['Moid'] = managed_object['Moid']
         info['Type'] = 'HostEth'
-        info['Dn'] = adapter_interface['Dn']
-        info['AdapterUnitId'] = adapter_interface['AdapterUnit']['Moid']
-        info['AdminState'] = adapter_interface['AdminState']
-        info['HostEthInterfaceId'] = adapter_interface['HostEthInterfaceId']
-        info['InterfaceType'] = adapter_interface['InterfaceType']
-        info['MacAddress'] = adapter_interface['MacAddress']
-        info['Name'] = adapter_interface['Name']
-        info['OperState'] = adapter_interface['OperState']
-        info['Operability'] = adapter_interface['Operability']
-        info['PciAddr'] = adapter_interface['PciAddr']
-        info['PeerDn'] = adapter_interface['PeerDn']
-        info['PeerInterface'] = adapter_interface['PeerInterface']
+        info['Dn'] = managed_object['Dn']
+        info['AdapterUnitId'] = managed_object['AdapterUnit']['Moid']
+        info['AdminState'] = managed_object['AdminState']
+        info['HostEthInterfaceId'] = managed_object['HostEthInterfaceId']
+        info['InterfaceType'] = managed_object['InterfaceType']
+        info['MacAddress'] = managed_object['MacAddress']
+        info['Name'] = managed_object['Name']
+        info['OperState'] = managed_object['OperState']
+        info['Operability'] = managed_object['Operability']
+        info['PciAddr'] = managed_object['PciAddr']
+        info['PeerDn'] = managed_object['PeerDn']
+        info['PeerInterface'] = managed_object['PeerInterface']
 
         return info

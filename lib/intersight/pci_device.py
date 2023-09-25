@@ -83,34 +83,16 @@ class PciDevice(IntersightCommon):
     """
     def __init__(self, iaccount, log_id=None):
         self.iobject = 'pci device'
-        self.cache_key = 'pci'
-        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_pci_model(self, moid, cache=True):
-        if cache:
-            pci_device = self.get_cache_moid(moid)
-        else:
-            pci_device = self.get(moid)
+    def get_pci_model(self, managed_obiect):
+        if managed_obiect['Pid'] not in [None, 'N/A', 'UNKNOWN', '']:
+            return managed_obiect['Pid']
+        return managed_obiect['Model']
 
-        if pci_device is None:
-            return None
-
-        if pci_device['Pid'] not in [None, 'N/A', 'UNKNOWN', '']:
-            return pci_device['Pid']
-
-        return pci_device['Model']
-
-    def get_pci_info(self, moid, cache=True):
-        if cache:
-            pci_device = self.get_cache_moid(moid)
-        else:
-            pci_device = self.get(moid)
-
-        if pci_device is None:
-            return None
-
+    def get_pci_info(self, managed_obiect):
         info = {}
         for key in ['Model', 'Pid', 'SlotId', 'Vendor', 'FirmwareVersion', 'Dn', 'Serial']:
-            info[key] = pci_device[key]
+            info[key] = managed_obiect[key]
 
         return info

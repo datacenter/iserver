@@ -89,8 +89,7 @@ class RunningFirmware(IntersightCommon):
     """
     def __init__(self, iaccount, get_filter=None, log_id=None):
         self.iobject = 'firmware runningfirmware'
-        self.cache_key = 'firmware'
-        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id, cache_key=self.cache_key)
+        IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
     def get_firmware_name(self, info):
         if info['Type'] == 'adaptor':
@@ -113,16 +112,7 @@ class RunningFirmware(IntersightCommon):
 
         return ''
 
-    def get_info(self, moid=None, managed_object=None, cache=True):
-        if moid is not None:
-            if cache:
-                managed_object = self.get_cache_moid(moid)
-            else:
-                managed_object = self.get(moid)
-
-        if managed_object is None:
-            return None
-
+    def get_info(self, managed_object):
         keys = [
             'Component',
             'Dn',
@@ -137,20 +127,6 @@ class RunningFirmware(IntersightCommon):
         info['Name'] = self.get_firmware_name(info)
 
         return info
-
-    def add_info(self, managed_objects):
-        objects_info = []
-        for managed_object in managed_objects:
-            objects_info.append(
-                self.get_info(managed_object=managed_object)
-            )
-
-        objects_info = sorted(
-            objects_info,
-            key=lambda i: i['Name']
-        )
-
-        return objects_info
 
     def get_firmware_version(self, managed_objects):
         for managed_object in managed_objects:

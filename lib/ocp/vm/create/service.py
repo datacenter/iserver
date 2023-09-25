@@ -26,7 +26,8 @@ class OcpVmCreateService():
                     service_mo = self.k8s_handler.get_service(
                         namespace,
                         name,
-                        cache=False
+                        cache_enabled=False,
+                        return_mo=True
                     )
                     if service_mo is not None:
                         self.my_output.default('Service already exists')

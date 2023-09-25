@@ -99,26 +99,18 @@ class AdapterHostFcInterface(IntersightCommon):
         self.iobject = 'adapter hostfcinterface'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            adapter_interface = self.get_cache_moid(moid)
-        else:
-            adapter_interface = self.get(moid)
-
-        if adapter_interface is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = adapter_interface['Moid']
+        info['Moid'] = managed_object['Moid']
         info['Type'] = 'HostFc'
-        info['Dn'] = adapter_interface['Dn']
-        info['AdapterUnitId'] = adapter_interface['AdapterUnit']['Moid']
-        info['AdminState'] = adapter_interface['AdminState']
-        info['HostFcInterfaceId'] = adapter_interface['HostFcInterfaceId']
-        info['Name'] = adapter_interface['Name']
-        info['OperState'] = adapter_interface['OperState']
-        info['Operability'] = adapter_interface['Operability']
-        info['Wwnn'] = adapter_interface['Wwnn']
-        info['Wwpn'] = adapter_interface['Wwpn']
+        info['Dn'] = managed_object['Dn']
+        info['AdapterUnitId'] = managed_object['AdapterUnit']['Moid']
+        info['AdminState'] = managed_object['AdminState']
+        info['HostFcInterfaceId'] = managed_object['HostFcInterfaceId']
+        info['Name'] = managed_object['Name']
+        info['OperState'] = managed_object['OperState']
+        info['Operability'] = managed_object['Operability']
+        info['Wwnn'] = managed_object['Wwnn']
+        info['Wwpn'] = managed_object['Wwpn']
 
         return info

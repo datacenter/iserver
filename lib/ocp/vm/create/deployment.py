@@ -17,7 +17,8 @@ class OcpVmCreateDeployment():
                 name
             )
         )
-        if self.is_ocp_vmi_mo(namespace, name):
+
+        if self.k8s_handler.is_virtual_machine_instance(namespace, name, cache_enabled=False):
             self.my_output.default(
                 'Virtual machine already exists'
             )
@@ -39,6 +40,9 @@ class OcpVmCreateDeployment():
                 return False
 
             if not self.create_sriov_network():
+                return False
+
+            if not self.create_multus_network():
                 return False
 
             if not self.create_vm():

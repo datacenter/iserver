@@ -9,7 +9,9 @@ class NodeInfo():
     def get_node_count(self, pod_id=None):
         node_filter = None
         if pod_id is not None:
-            node_filter = ['pod:%s' % (pod_id)]
+            node_filter = ['pod:%s' % (pod_id), 'role:!controller']
+        else:
+            node_filter = ['role:!controller']
 
         nodes = self.get_nodes(
             node_filter=node_filter

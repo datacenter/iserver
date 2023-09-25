@@ -101,6 +101,16 @@ properties:
     type: list_of_str
     check: null
     default: null
+  deployment.multus.enabled:
+    mandatory: False
+    type: bool
+    check: null
+    default: False
+  deployment.multus.network:
+    mandatory: False
+    type: list_of_str
+    check: null
+    default: null
   deployment.service.ssh:
     mandatory: False
     type: str

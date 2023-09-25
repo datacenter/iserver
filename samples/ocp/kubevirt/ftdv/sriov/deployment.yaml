@@ -1,0 +1,85 @@
+kind: VirtualMachineDeployment
+deployment:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+  vm: vm.yaml
+  image:
+    enabled: true
+    ip: ${TOOLS_IP}
+    username: ${TOOLS_USERNAME}
+    password: "${TOOLS_PASSWORD}"
+    path: ${IMAGE_PATH}${IMAGE_FILENAME}
+    size: ${IMAGE_SIZE}
+    dv: image.yaml
+  day0:
+    enabled: true
+    filename: day0-config
+    source: day0-config
+    destination: day0.iso
+    size: ${DAY0_SIZE}
+    dv: day0.yaml
+  multus:
+    enabled: true
+    network:
+    - network-diag.yaml
+  sriov:
+    enabled: true
+    policy:
+    - policy.yaml
+    network:
+    - network-inside.yaml
+    - network-outside.yaml
+  service:
+    ssh: ssh.yaml
+variables:
+  NAME: ftdv-sriov
+  NAMESPACE: default
+  NODE: ocp-bm2
+  CORES: 8
+  SOCKETS: 1
+  THREADS: 1
+  MEMORY: 16Gi
+  IMAGE_NAME: ftdv-7.2.5-208-image
+  IMAGE_NAMESPACE: default
+  IMAGE_PATH: /home/cisco/image/
+  IMAGE_FILENAME: Cisco_Secure_Firewall_Threat_Defense_Virtual-7.2.5-208.qcow2
+  IMAGE_SIZE: 50Gi
+  DAY0_SIZE: 1Gi
+  MACVLAN_MASTER: eno5
+  NET_DIAG_VM_IP: 192.168.10.20
+  NET_DIAG_BRIDGE_IP: 192.168.10.10
+  NET_DIAG_NETMASK: 255.255.255.0
+  NET_DIAG_PREFIX: 24
+  SRIOV_PHY1A_INTERFACE_NAME: ens1f0
+  SRIOV_PHY1A_INTERFACE_VFS: 8-15
+  SRIOV_INSIDE_IP: 15.20.16.15
+  SRIOV_INSIDE_PREFIX: 24
+  SRIOV_INSIDE_NETMASK: 255.255.255.0
+  SRIOV_INSIDE_GATEWAY: 15.20.16.254
+  SRIOV_INSIDE_VLAN: 808
+  SRIOV_OUTSIDE_IP: 15.20.17.15
+  SRIOV_OUTSIDE_PREFIX: 24
+  SRIOV_OUTSIDE_NETMASK: 255.255.255.0
+  SRIOV_OUTSIDE_GATEWAY: 15.20.17.254
+  SRIOV_OUTSIDE_VLAN: 807
+  SSH_USERNAME: admin
+  SSH_PASSWORD: Cisco_123
+  DOMAIN_NAME: cisco.com
+  TOOLS_IP: 10.58.28.207
+  TOOLS_USERNAME: cisco
+  TOOLS_PASSWORD: "!Cisc0_123"
+tools:
+  enabled: true
+  ip: ${TOOLS_IP}
+  username: ${TOOLS_USERNAME}
+  password: "${TOOLS_PASSWORD}"
+ssh:
+  enabled: true
+  type: cisco
+  username: ${SSH_USERNAME}
+  password: ${SSH_PASSWORD}
+ready:
+  enabled: true
+  type: ssh
+  timeout: 600
+  sleep: 120

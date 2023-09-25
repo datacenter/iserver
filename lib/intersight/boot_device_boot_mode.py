@@ -75,18 +75,10 @@ class BootDeviceBootMode(IntersightCommon):
         self.iobject = 'boot devicebootmode'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
 
-        info['ConfiguredBootMode'] = item['ConfiguredBootMode']
-        info['Moid'] = item['Moid']
+        info['ConfiguredBootMode'] = managed_object['ConfiguredBootMode']
+        info['Moid'] = managed_object['Moid']
 
         return info

@@ -72,30 +72,22 @@ class CondAlarm(IntersightCommon):
         self.iobject = 'cond alarm'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
-        info['AffectedType'] = item['AffectedMo']['ObjectType']
-        info['AffectedMoid'] = item['AffectedMo']['Moid']
-        info['AffectedName'] = item['AffectedMoDisplayName']
-        info['AncestorMoId'] = item['AncestorMoId']
-        info['AncestorMoType'] = item['AncestorMoType']
-        info['CreateTime'] = item['CreateTime']
-        info['Description'] = item['Description']
-        info['Moid'] = item['Moid']
-        info['Name'] = item['Name']
-        info['Code'] = item['Code']
+        info['AffectedType'] = managed_object['AffectedMo']['ObjectType']
+        info['AffectedMoid'] = managed_object['AffectedMo']['Moid']
+        info['AffectedName'] = managed_object['AffectedMoDisplayName']
+        info['AncestorMoId'] = managed_object['AncestorMoId']
+        info['AncestorMoType'] = managed_object['AncestorMoType']
+        info['CreateTime'] = managed_object['CreateTime']
+        info['Description'] = managed_object['Description']
+        info['Moid'] = managed_object['Moid']
+        info['Name'] = managed_object['Name']
+        info['Code'] = managed_object['Code']
 
-        info['Severity'] = item['Severity']
+        info['Severity'] = managed_object['Severity']
         if info['Severity'] == 'Critical':
             info['__Output']['Severity'] = 'Red'
 

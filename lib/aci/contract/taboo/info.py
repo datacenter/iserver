@@ -142,12 +142,15 @@ class ContractTabooInfo():
 
         for taboo_rule in taboo_filter:
             (key, value) = taboo_rule.split(':')
+            key_found = False
 
             if key == 'name':
+                key_found = True
                 if not filter_helper.match_tenant_name(value, taboo_info['nameTenant']):
                     return False
 
             if key == 'names':
+                key_found = True
                 found = False
                 for name in value.split(','):
                     if filter_helper.match_tenant_name(name, taboo_info['nameTenant']):
@@ -158,10 +161,12 @@ class ContractTabooInfo():
                     return False
 
             if key == 'tenant':
+                key_found = True
                 if not filter_helper.match_string(value, taboo_info['tenant']):
                     return False
 
             if key == 'filter':
+                key_found = True
                 found = False
                 for filter_info in taboo_info['vzFilter']:
                     if filter_helper.match_tenant_name(value, filter_info['nameTenant']):
@@ -170,6 +175,24 @@ class ContractTabooInfo():
 
                 if not found:
                     return False
+
+            if key == 'fault':
+                key_found = True
+                if value == 'any':
+                    if not taboo_info['isAnyFault']:
+                        return False
+
+                if value not in ['any']:
+                    self.log.error(
+                        'match_taboo_contract',
+                        'Unsupported fault filtering value: %s' % (value)
+                    )
+
+            if not key_found:
+                self.log.error(
+                    'match_taboo_contract',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 

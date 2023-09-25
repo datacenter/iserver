@@ -67,14 +67,15 @@ class OcpVmGetBgp():
                             bgp_filter=bgp_filter
                         )
                         if node_bgp_info is not None:
-                            for bgp_neighbor in node_bgp_info['neighbors']:
-                                if bgp_neighbor['state']['addr'] == ip_address:
-                                    bgp_neighbor_info = self.get_ocp_vm_bgp_neighbor_info(
-                                        fabric_info,
-                                        bgp_neighbor
-                                    )
-                                    vm_info['bgp'].append(
-                                        bgp_neighbor_info
-                                    )
+                            if 'neighbors' in node_bgp_info:
+                                for bgp_neighbor in node_bgp_info['neighbors']:
+                                    if bgp_neighbor['state']['addr'] == ip_address:
+                                        bgp_neighbor_info = self.get_ocp_vm_bgp_neighbor_info(
+                                            fabric_info,
+                                            bgp_neighbor
+                                        )
+                                        vm_info['bgp'].append(
+                                            bgp_neighbor_info
+                                        )
 
         return vm_info

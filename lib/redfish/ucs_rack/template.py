@@ -1,14 +1,23 @@
 from lib.redfish.ucs_rack.identity import RedfishEndpointUcsRackTemplateIdentity
 from lib.redfish.ucs_rack.power import RedfishEndpointUcsRackTemplatePower
+from lib.redfish.ucs_rack.storage import RedfishEndpointUcsRackTemplateStorage
 from lib.redfish.ucs_rack.thermal import RedfishEndpointUcsRackTemplateThermal
 
 
-class RedfishEndpointUcsRackTemplate(RedfishEndpointUcsRackTemplateIdentity, RedfishEndpointUcsRackTemplatePower, RedfishEndpointUcsRackTemplateThermal):
+class RedfishEndpointUcsRackTemplate(
+        RedfishEndpointUcsRackTemplateIdentity,
+        RedfishEndpointUcsRackTemplatePower,
+        RedfishEndpointUcsRackTemplateStorage,
+        RedfishEndpointUcsRackTemplateThermal
+        ):
     def __init__(self):
         RedfishEndpointUcsRackTemplateIdentity.__init__(
             self
         )
         RedfishEndpointUcsRackTemplatePower.__init__(
+            self
+        )
+        RedfishEndpointUcsRackTemplateStorage.__init__(
             self
         )
         RedfishEndpointUcsRackTemplateThermal.__init__(
@@ -19,6 +28,9 @@ class RedfishEndpointUcsRackTemplate(RedfishEndpointUcsRackTemplateIdentity, Red
         if template_name.lower() == 'power':
             return self.get_template_power_properties()
 
+        if template_name.lower() == 'storage':
+            return self.get_template_storage_properties()
+
         if template_name.lower() == 'thermal':
             return self.get_template_thermal_properties()
 
@@ -28,7 +40,7 @@ class RedfishEndpointUcsRackTemplate(RedfishEndpointUcsRackTemplateIdentity, Red
         self.my_output.error('Unsupported template: %s' % (template_name))
         self.my_output.default('Supported templates:')
 
-        templates = ['identity', 'power', 'temp']
+        templates = ['identity', 'power', 'storage', 'temp']
         for template in templates:
             self.my_output.default('- %s' % (template))
 
@@ -40,6 +52,9 @@ class RedfishEndpointUcsRackTemplate(RedfishEndpointUcsRackTemplateIdentity, Red
 
         if template_name.lower() == 'power':
             self.print_template_power_properties(properties)
+
+        if template_name.lower() == 'storage':
+            self.print_template_storage_properties(properties)
 
         if template_name.lower() == 'thermal':
             self.print_template_thermal_properties(properties)

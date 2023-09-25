@@ -12,11 +12,8 @@ class RedfishSettings(Settings):
         Settings.__init__(self)
 
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
+        self.log_id = log_id
+        self.my_output = None
 
         self.redfish_settings_filename = os.path.join(
             self.settings_dir,
@@ -65,6 +62,13 @@ class RedfishSettings(Settings):
         return settings
 
     def print_redfish_settings(self):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         settings = self.get_redfish_settings()
         if settings is None:
             self.my_output.error('Redfish settings not found')

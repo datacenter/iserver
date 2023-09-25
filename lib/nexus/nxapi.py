@@ -8,9 +8,10 @@ from lib import log_helper
 
 from lib.nexus.lldp import Lldp
 from lib.nexus.cache import Cache
+from lib.nexus.ws import WebSocket
 
 
-class NxApi(Cache, Lldp):
+class NxApi(Cache, Lldp, WebSocket):
     def __init__(self, ip_address, username, password, verbose=False, debug=False, log_id=None, cache_enabled=False):
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
@@ -25,12 +26,17 @@ class NxApi(Cache, Lldp):
 
         self.session_handler = None
         self.session_connected = False
+        self.token = None
 
         Lldp.__init__(self)
         Cache.__init__(self, cache_enabled)
+        WebSocket.__init__(self, ip_address, debug=debug)
 
     def __del__(self):
         self.disconnect()
+
+    def get_token(self):
+        return self.token
 
     def connect(self):
         if self.session_handler is not None:
@@ -67,6 +73,8 @@ class NxApi(Cache, Lldp):
             )
             if response.status_code == 200:
                 self.session_connected = True
+                self.token = self.session_handler.cookies.get_dict()['nxapi_auth']
+
         except BaseException:
             self.log.error(
                 'nxapi.connect',
@@ -84,7 +92,10 @@ class NxApi(Cache, Lldp):
 
         return self.session_connected
 
-    def is_connected(self):
+    def is_connected(self, autoconnect=False):
+        if not self.session_connected and autoconnect:
+            return self.connect()
+
         return self.session_connected
 
     def disconnect(self):

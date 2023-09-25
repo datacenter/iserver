@@ -14,7 +14,7 @@ class OcpVmDeletePolicy():
 
                     namespace = content['metadata']['namespace']
                     name = content['metadata']['name']
-                    if not self.is_ocp_sriov_network_node_policy(namespace, name):
+                    if not self.k8s.handler.is_sriov_network_node_policy(name, cache_enabled=False):
                         self.my_output.default(
                             'SRIOV network node policy already deleted: %s/%s' % (
                                 namespace,
@@ -30,7 +30,7 @@ class OcpVmDeletePolicy():
                         )
                     )
 
-                    success = self.delete_ocp_sriov_network_node_policy(
+                    success = self.k8s_handler.delete_sriov_network_node_policy(
                         namespace,
                         name
                     )

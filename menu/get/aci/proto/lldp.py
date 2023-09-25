@@ -36,7 +36,6 @@ class NoResultExit(Exception):
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
 @click.option("--device", default='', callback=validations.empty_string_to_none, help="Filter neighbor by device name")
 @click.option("--mac", default='', callback=validations.empty_string_to_none, help="Filter neighbor by mac address")
-@click.option("--xd", "xd_filter", default='', callback=validations.validate_aci_xd, help="Cross domain filter")
 @click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
 @click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
 @click.option("--view", "-v", default=['nei'], help="[inst|nei|stats|fault|hfault|event|diag|all]", show_default=True, multiple=True)
@@ -55,7 +54,6 @@ def get_aci_node_proto_lldp_command(
         node_role,
         device,
         mac,
-        xd_filter,
         fault_severity,
         fault_when,
         view,
@@ -114,17 +112,6 @@ def get_aci_node_proto_lldp_command(
         adjacency_filter = []
         hfault_filter = []
         event_filter = []
-
-        xd_mac, xd_interface = validations.resolve_aci_xd(
-            ctx,
-            xd_filter,
-            output
-        )
-        if xd_mac is not None:
-            for item in xd_mac:
-                adjacency_filter.append(
-                    'mac:%s' % (item)
-                )
 
         if device is not None:
             adjacency_filter.append(
@@ -245,9 +232,6 @@ def get_aci_node_proto_lldp_command(
 
         ctx.busy = False
 
-        if len(instance) == 0 and len(stats) == 0 and len(adjacency) == 0:
-            raise NoResultExit
-
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -278,13 +262,6 @@ def get_aci_node_proto_lldp_command(
                 title=True
             )
 
-            if xd_interface is not None:
-                aci_output_handler.print_lldp_adjacency_interface_endpoints(
-                    adjacency,
-                    xd_interface,
-                    title=True
-                )
-
         if 'fault' in view:
             aci_output_handler.print_proto_lldp_fault_inst(
                 fault_inst,
@@ -312,6 +289,9 @@ def get_aci_node_proto_lldp_command(
             )
             if success:
                 ctx.my_output.default('Interface context: lldp')
+
+        if len(instance) == 0 and len(stats) == 0 and len(adjacency) == 0:
+            raise NoResultExit
 
     except NoResultExit:
         ctx.busy = False

@@ -89,46 +89,38 @@ class EthernetHostPort(IntersightCommon):
         self.iobject = 'ether hostport'
         IntersightCommon.__init__(self, iaccount, self.iobject, get_filter=get_filter, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            host_port = self.get_cache_moid(moid)
-        else:
-            host_port = self.get(moid)
-
-        if host_port is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = host_port['Moid']
-        info['Dn'] = host_port['Dn']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
         info['Name'] = '%s/%s/%s' % (
-            host_port['ModuleId'],
-            host_port['SlotId'],
-            host_port['PortId']
+            managed_object['ModuleId'],
+            managed_object['SlotId'],
+            managed_object['PortId']
         )
-        info['IoModuleId'] = host_port['EquipmentIoCardBase']['Moid']
-        info['MacAddress'] = host_port['MacAddress']
-        info['Mode'] = host_port['Mode']
-        info['ModuleId'] = host_port['ModuleId']
-        info['OperSpeed'] = host_port['OperSpeed']
-        info['OperState'] = host_port['OperState']
+        info['IoModuleId'] = managed_object['EquipmentIoCardBase']['Moid']
+        info['MacAddress'] = managed_object['MacAddress']
+        info['Mode'] = managed_object['Mode']
+        info['ModuleId'] = managed_object['ModuleId']
+        info['OperSpeed'] = managed_object['OperSpeed']
+        info['OperState'] = managed_object['OperState']
         info['Up'] = False
         if info['OperState'] == 'up':
             info['Up'] = True
-        info['OperStateQual'] = host_port['OperStateQual']
-        info['PeerDn'] = host_port['PeerDn']
+        info['OperStateQual'] = managed_object['OperStateQual']
+        info['PeerDn'] = managed_object['PeerDn']
         info['PeerInterfaceId'] = None
         info['PeerInterfaceType'] = None
-        if host_port['PeerInterface'] is not None:
-            info['PeerInterfaceId'] = host_port['PeerInterface']['Moid']
-            info['PeerInterfaceType'] = host_port['PeerInterface']['ObjectType']
-        info['PortChannelId'] = host_port['PortChannelId']
-        info['PortId'] = host_port['PortId']
-        info['PortType'] = host_port['PortType']
-        info['SlotId'] = host_port['SlotId']
-        info['Speed'] = host_port['Speed']
-        info['SwitchId'] = host_port['SwitchId']
-        info['Role'] = host_port['Role']
-        info['TransceiverType'] = host_port['TransceiverType']
+        if managed_object['PeerInterface'] is not None:
+            info['PeerInterfaceId'] = managed_object['PeerInterface']['Moid']
+            info['PeerInterfaceType'] = managed_object['PeerInterface']['ObjectType']
+        info['PortChannelId'] = managed_object['PortChannelId']
+        info['PortId'] = managed_object['PortId']
+        info['PortType'] = managed_object['PortType']
+        info['SlotId'] = managed_object['SlotId']
+        info['Speed'] = managed_object['Speed']
+        info['SwitchId'] = managed_object['SwitchId']
+        info['Role'] = managed_object['Role']
+        info['TransceiverType'] = managed_object['TransceiverType']
 
         return info

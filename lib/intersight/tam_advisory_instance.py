@@ -67,20 +67,12 @@ class TamAdvisoryInstance(IntersightCommon):
         self.iobject = 'tam advisoryinstance'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['AdvisoryMoid'] = item['Advisory']['Moid']
-        info['AffectedObjectType'] = item['AffectedObjectType']
-        info['AffectedObjectMoid'] = item['AffectedObjectMoid']
-        info['CreateTime'] = item['CreateTime']
-        info['Moid'] = item['Moid']
+        info['AdvisoryMoid'] = managed_object['Advisory']['Moid']
+        info['AffectedObjectType'] = managed_object['AffectedObjectType']
+        info['AffectedObjectMoid'] = managed_object['AffectedObjectMoid']
+        info['CreateTime'] = managed_object['CreateTime']
+        info['Moid'] = managed_object['Moid']
 
         return info

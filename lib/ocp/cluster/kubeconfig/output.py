@@ -5,9 +5,6 @@ class OcpClusterKubeconfigOutput():
     def print_ocp_cluster_kubeconfig(self, info):
         order = [
             'name',
-            'parameters.ocp.installation',
-            'parameters.ocp.release',
-            'parameters.cni.type',
             'kubeconfigFileTick',
             'apiFqdn',
             'apiVip',
@@ -16,9 +13,6 @@ class OcpClusterKubeconfigOutput():
 
         headers = [
             'Name',
-            'Type',
-            'Release',
-            'CNI',
             'Kubeconfig',
             'API FQDN',
             'API VIP',
@@ -42,9 +36,6 @@ class OcpClusterKubeconfigOutput():
     def print_ocp_clusters_kubeconfig(self, clusters):
         order = [
             'name',
-            'installation',
-            'release',
-            'cni',
             'kubeconfigFileTick',
             'apiFqdn',
             'apiVip',
@@ -54,9 +45,6 @@ class OcpClusterKubeconfigOutput():
 
         headers = [
             'Name',
-            'Type',
-            'Release',
-            'CNI',
             'Kubeconfig',
             'API FQDN',
             'API VIP',

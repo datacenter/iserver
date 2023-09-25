@@ -15,12 +15,7 @@ class UcsmEndpointSettings(EndpointSettings):
 
         self.log = log_helper.Log(log_id=log_id)
         self.log_id = log_id
-
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
+        self.my_output = None
 
     def get_ucsm_endpoint_id(self, ucsm_mo):
         return ucsm_mo['serial']
@@ -140,6 +135,13 @@ class UcsmEndpointSettings(EndpointSettings):
         return None
 
     def print_ucsm_endpoint_power_template(self, endpoint_id, data):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         endpoint_settings = self.get_ucsm_endpoint_settings(endpoint_id)
         if endpoint_settings is None:
             return
@@ -164,6 +166,13 @@ class UcsmEndpointSettings(EndpointSettings):
             )
 
     def print_ucsm_endpoint_thermal_template(self, endpoint_id, data):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         endpoint_settings = self.get_ucsm_endpoint_settings(endpoint_id)
         if endpoint_settings is None:
             return
@@ -185,6 +194,13 @@ class UcsmEndpointSettings(EndpointSettings):
             )
 
     def print_ucsm_endpoint_template(self, endpoint_id, template_name, data):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         if template_name == 'power':
             self.print_ucsm_endpoint_power_template(endpoint_id, data)
 

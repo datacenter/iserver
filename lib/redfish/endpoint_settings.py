@@ -16,11 +16,7 @@ class RedfishEndpointSettings(EndpointSettings):
 
         self.log_id = log_id
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
+        self.my_output = None
 
         self.redfish_settings_filename = os.path.join(
             self.settings_dir,
@@ -109,34 +105,37 @@ class RedfishEndpointSettings(EndpointSettings):
 
         return endpoints
 
-    def get_servers_redfish_settings(self, servers, verify=False, bar_enabled=False):
+    def get_servers_redfish_settings(self, servers_mo, verify=False, bar_enabled=False):
         redfish_endpoints_settings = self.get_redfish_endpoints_settings()
         if redfish_endpoints_settings is None:
             return None
 
-        for server in servers:
-            server['redfish_capable'] = server['Redfish']['Capable']
-            server['redfish_enabled'] = False
-            server['redfish_endpoint'] = None
-            server['redfish_verified'] = ''
-            if server['redfish_capable']:
+        for server_mo in servers_mo:
+            server_mo['redfish_capable'] = True
+            if server_mo['ManagementMode'] == 'UCSM':
+                server_mo['redfish_capable'] = False
+            server_mo['redfish_enabled'] = False
+            server_mo['redfish_endpoint'] = None
+            server_mo['redfish_verified'] = ''
+
+            if server_mo['redfish_capable']:
                 for redfish_endpoint in redfish_endpoints_settings:
-                    if server['Serial'] == redfish_endpoint['identity']['SerialNumber']:
-                        server['redfish_enabled'] = True
-                        server['redfish_verified'] = False
-                        server['redfish_endpoint_id'] = redfish_endpoint['endpoint_id']
+                    if server_mo['Serial'] == redfish_endpoint['identity']['SerialNumber']:
+                        server_mo['redfish_enabled'] = True
+                        server_mo['redfish_verified'] = False
+                        server_mo['redfish_endpoint_id'] = redfish_endpoint['endpoint_id']
                         for key in redfish_endpoint['endpoint']:
-                            server['redfish_endpoint_%s' % (key)] = redfish_endpoint['endpoint'][key]
+                            server_mo['redfish_endpoint_%s' % (key)] = redfish_endpoint['endpoint'][key]
 
         if verify:
             if bar_enabled:
-                bar_handler = Bar('Progress', max=len(servers))
+                bar_handler = Bar('Progress', max=len(servers_mo))
                 bar_handler.goto(0)
 
-            for item in servers:
-                if item['redfish_enabled']:
-                    item['redfish_verified'] = self.verify_redfish_endpoint_authentication(
-                        item['redfish_endpoint_id']
+            for server_mo in servers_mo:
+                if server_mo['redfish_enabled']:
+                    server_mo['redfish_verified'] = self.verify_redfish_endpoint_authentication(
+                        server_mo['redfish_endpoint_id']
                     )
                 if bar_enabled:
                     bar_handler.next()
@@ -144,7 +143,7 @@ class RedfishEndpointSettings(EndpointSettings):
             if bar_enabled:
                 bar_handler.finish()
 
-        return servers
+        return servers_mo
 
     def get_servers_redfish_summary(self, servers, verify=False):
         summary = {}
@@ -160,7 +159,7 @@ class RedfishEndpointSettings(EndpointSettings):
         summary['standard'] = 0
 
         for server in servers:
-            if server['Redfish']['Capable']:
+            if server['redfish_capable']:
                 summary['capable'] = summary['capable'] + 1
             if server['redfish_enabled']:
                 summary['enabled'] = summary['enabled'] + 1
@@ -249,6 +248,13 @@ class RedfishEndpointSettings(EndpointSettings):
         )
 
     def print_redfish_endpoint_settings(self, endpoints, verify=False, show_password=True):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         entries = []
         for item in endpoints:
             entry = item['endpoint']
@@ -301,6 +307,13 @@ class RedfishEndpointSettings(EndpointSettings):
         )
 
     def print_servers_redfish(self, servers, verify=False, show_password=True):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         if not show_password:
             for item in servers:
                 if item['redfish_enabled']:
@@ -350,6 +363,13 @@ class RedfishEndpointSettings(EndpointSettings):
         )
 
     def print_servers_redfish_summary(self, summary, verify=False):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(
+                log_id=self.log_id,
+                verbose=False,
+                debug=False
+            )
+
         if verify:
             self.my_output.dictionary(
                 summary,

@@ -104,30 +104,22 @@ class CondHclStatus(IntersightCommon):
         self.iobject = 'cond hclstatus'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            item = self.get_cache_moid(moid)
-        else:
-            item = self.get(moid)
-
-        if item is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
         info['__Output'] = {}
 
-        info['ComponentStatus'] = item['ComponentStatus']
-        info['HardwareStatus'] = item['HardwareStatus']
-        info['HclFirmwareVersion'] = item['HclFirmwareVersion']
-        info['HclModel'] = item['HclModel']
-        info['HclOsVendor'] = item['HclOsVendor']
-        info['HclOsVersion'] = item['HclOsVersion']
-        info['HclProcessor'] = item['HclProcessor']
-        info['Moid'] = item['Moid']
-        info['Reason'] = item['Reason']
-        info['ServerReason'] = item['ServerReason']
-        info['SoftwareStatus'] = item['SoftwareStatus']
-        info['Status'] = item['Status']
+        info['ComponentStatus'] = managed_object['ComponentStatus']
+        info['HardwareStatus'] = managed_object['HardwareStatus']
+        info['HclFirmwareVersion'] = managed_object['HclFirmwareVersion']
+        info['HclModel'] = managed_object['HclModel']
+        info['HclOsVendor'] = managed_object['HclOsVendor']
+        info['HclOsVersion'] = managed_object['HclOsVersion']
+        info['HclProcessor'] = managed_object['HclProcessor']
+        info['Moid'] = managed_object['Moid']
+        info['Reason'] = managed_object['Reason']
+        info['ServerReason'] = managed_object['ServerReason']
+        info['SoftwareStatus'] = managed_object['SoftwareStatus']
+        info['Status'] = managed_object['Status']
 
         for key in ['Status', 'SoftwareStatus', 'HardwareStatus', 'ComponentStatus']:
             if info[key] == 'Incomplete':

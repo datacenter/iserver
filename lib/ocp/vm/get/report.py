@@ -114,7 +114,7 @@ class OcpVmReport():
             if disk['volume']['type'] == 'dataVolume':
                 dv_name = disk['volume']['info']['name']
 
-                if self.is_ocp_dv(self.report_vm_namespace, dv_name):
+                if self.k8s_handler.is_data_volume(self.report_vm_namespace, dv_name):
                     commands[report_name].append(
                         'oc get dvs -n %s %s' % (
                             self.report_vm_namespace,
@@ -469,7 +469,7 @@ class OcpVmReport():
             deployment['files'][filename]
         )
 
-        node_ip, node_port = self.get_ocp_vm_service_ip_port(
+        node_ip, node_port = self.k8s_handler.get_service_node_ip_port(
             service_yaml['metadata']['namespace'],
             service_yaml['metadata']['name']
         )
@@ -530,7 +530,7 @@ class OcpVmReport():
             )
             return False
 
-        node_ip, node_port = self.get_ocp_vm_service_ip_port(
+        node_ip, node_port = self.k8s_handler.get_service_node_ip_port(
             service_yaml['metadata']['namespace'],
             service_yaml['metadata']['name']
         )

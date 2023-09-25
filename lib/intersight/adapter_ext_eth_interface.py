@@ -103,31 +103,23 @@ class AdapterExtEthInterface(IntersightCommon):
         self.iobject = 'adapter extethinterface'
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
 
-    def get_info(self, moid, cache=True):
-        if cache:
-            adapter_interface = self.get_cache_moid(moid)
-        else:
-            adapter_interface = self.get(moid)
-
-        if adapter_interface is None:
-            return None
-
+    def get_info(self, managed_object):
         info = {}
-        info['Moid'] = adapter_interface['Moid']
-        info['Dn'] = adapter_interface['Dn']
-        info['AdapterUnitId'] = adapter_interface['AdapterUnit']['Moid']
-        info['AdminState'] = adapter_interface['AdminState']
-        info['InterfaceId'] = adapter_interface['ExtEthInterfaceId']
-        info['MacAddress'] = adapter_interface['MacAddress'].lower()
-        info['SwitchId'] = adapter_interface['SwitchId']
+        info['Moid'] = managed_object['Moid']
+        info['Dn'] = managed_object['Dn']
+        info['AdapterUnitId'] = managed_object['AdapterUnit']['Moid']
+        info['AdminState'] = managed_object['AdminState']
+        info['InterfaceId'] = managed_object['ExtEthInterfaceId']
+        info['MacAddress'] = managed_object['MacAddress'].lower()
+        info['SwitchId'] = managed_object['SwitchId']
 
         info['PeerHostPortId'] = None
-        if adapter_interface['AcknowledgedPeerInterface'] is not None:
-            if adapter_interface['AcknowledgedPeerInterface']['ObjectType'] == 'ether.HostPort':
-                info['PeerHostPortId'] = adapter_interface['AcknowledgedPeerInterface']['Moid']
-        info['PeerAggrPortId'] = adapter_interface['PeerAggrPortId']
-        info['PeerDn'] = adapter_interface['PeerDn']
-        info['PeerPortId'] = adapter_interface['PeerPortId']
-        info['PeerSlotId'] = adapter_interface['PeerSlotId']
+        if managed_object['AcknowledgedPeerInterface'] is not None:
+            if managed_object['AcknowledgedPeerInterface']['ObjectType'] == 'ether.HostPort':
+                info['PeerHostPortId'] = managed_object['AcknowledgedPeerInterface']['Moid']
+        info['PeerAggrPortId'] = managed_object['PeerAggrPortId']
+        info['PeerDn'] = managed_object['PeerDn']
+        info['PeerPortId'] = managed_object['PeerPortId']
+        info['PeerSlotId'] = managed_object['PeerSlotId']
 
         return info

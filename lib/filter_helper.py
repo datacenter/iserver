@@ -11,6 +11,9 @@ def sanitize_string(value):
 def get_string_chunks(value, length, separator=' ', extra_separator='-'):
     lines = []
 
+    if value is None:
+        return lines
+
     words = []
     for word in value.split(separator):
         if len(word) < length:

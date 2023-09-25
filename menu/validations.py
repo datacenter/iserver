@@ -13,7 +13,9 @@ from lib import iaccount_helper
 from lib import ip_helper
 from lib import my_servers_helper
 
+from lib.intersight import compute
 from lib.intersight import compute_info
+from lib.intersight import compute_output
 from lib.intersight import organization
 from lib.intersight import scu
 from lib.intersight import os_image
@@ -22,6 +24,10 @@ from lib.intersight import hcl_operating_system_vendor
 
 from lib.aci import apic
 from lib.aci import settings as aci_settings
+from lib.k8s import settings as k8s_settings
+from lib.k8s import main as k8s
+from lib.kubevirt import main as kubevirt
+
 from lib.nexus import settings as nexus_settings
 from lib.nexus import nxapi
 from lib.nso import settings as nso_settings
@@ -173,6 +179,16 @@ def validate_file_content(ctx, filename):
 def validate_file(ctx, param, filename):
     if len(filename) == 0:
         raise click.BadParameter('Define filename')
+
+    if not os.path.isfile(filename):
+        raise click.BadParameter('File %s not found' % (filename))
+
+    return filename
+
+
+def validate_optional_file(ctx, param, filename):
+    if len(filename) == 0:
+        return None
 
     if not os.path.isfile(filename):
         raise click.BadParameter('File %s not found' % (filename))
@@ -548,7 +564,7 @@ def validate_apic_any_name(ctx, param, value):
     return selected_controllers
 
 
-def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False):
+def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False, debug=False):
     aci_settings_handler = aci_settings.ApicSettings(log_id=None)
 
     if controller_obj is None and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
@@ -556,7 +572,11 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
         if controller_name is not None:
             controller_obj = aci_settings_handler.get_apic_controller(controller_name)
 
-    if controller_obj is not None:
+    if len(controller_ip) > 0 or len(controller_username) > 0 or len(controller_password) > 0:
+        if len(controller_ip) == 0 or len(controller_username) == 0 or len(controller_password) == 0:
+            ctx.my_output.error('Define controller name or ip/username/password')
+            return None
+    else:
         controller_ip = controller_obj['ip']
         controller_port = controller_obj['port']
         controller_username = controller_obj['username']
@@ -572,11 +592,6 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
                 )
             )
 
-    if controller_obj is None:
-        if len(controller_ip) == 0 or len(controller_username) == 0 or len(controller_password) == 0:
-            ctx.my_output.error('Define controller name or ip/username/password')
-            return None
-
     apic_handler = apic.Apic(
         controller_ip,
         controller_port,
@@ -584,7 +599,8 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
         controller_password,
         apic_name=controller_obj['name'],
         log_id=ctx.run_id,
-        no_cache=no_cache
+        no_cache=no_cache,
+        debug=debug
     )
 
     if auto_connect:
@@ -803,7 +819,10 @@ def validate_apic_node_names(ctx, apic_handler, node_names, node_role, pod_id=No
         node_names = [node_name]
 
     node_filter = []
+    role_filter = True
+
     if pod_id is not None:
+        role_filter = False
         node_filter.append(
             'pod:%s' % (pod_id)
         )
@@ -813,11 +832,13 @@ def validate_apic_node_names(ctx, apic_handler, node_names, node_role, pod_id=No
             'role:%s' % (node_role)
         )
     else:
+        role_filter = False
         node_filter.append(
             'role:!controller'
         )
 
     if 'any' not in node_names and len(node_names) > 0:
+        role_filter = False
         new_node_names = []
         for node_name in node_names:
             new_node_names.append(
@@ -838,7 +859,7 @@ def validate_apic_node_names(ctx, apic_handler, node_names, node_role, pod_id=No
         )
         return None
 
-    if nodes_info is None or len(nodes_info) == 0:
+    if len(nodes_info) == 0:
         ctx.my_output.error(
             'No node name match'
         )
@@ -867,12 +888,26 @@ def validate_apic_node_names(ctx, apic_handler, node_names, node_role, pod_id=No
 
     if len(nodes_info) > 1:
         if ctx.output == 'default':
+            nodes_count = apic_handler.get_node_count()
             ctx.my_output.default(
                 aci_settings_handler.get_apic_controller_label(
                     apic_handler.get_apic_name()
                 )
             )
             ctx.my_output.default('Pod: %s' % (nodes_info[0]['podId']))
+            if len(nodes_info) == nodes_count:
+                ctx.my_output.default('Node: all (#%s)' % (nodes_count))
+                return nodes_info
+
+            if role_filter:
+                if node_role == 'spine':
+                    ctx.my_output.default('Node: all spines (#%s)' % (len(nodes_info)))
+                    return nodes_info
+
+                if node_role == 'leaf':
+                    ctx.my_output.default('Node: all leaves (#%s)' % (len(nodes_info)))
+                    return nodes_info
+
             for node_info in nodes_info:
                 ctx.my_output.default('- node: %s' % (node_info['name']))
 
@@ -923,122 +958,6 @@ def validate_apic_tenant_ap_name(ctx, param, value):
     raise click.BadParameter('Invalid name syntax')
 
 
-def validate_aci_xd(ctx, param, value):
-    if len(value) == 0:
-        return None
-
-    if len(value.split(':')) == 1:
-        raise click.BadParameter('Invalid xd syntax')
-
-    xd_type = value.split(':')[0]
-    if xd_type not in ['server']:
-        raise click.BadParameter('Unsupported xd type: %s' % (xd_type))
-
-    xd_filter = {}
-    xd_filter['mac'] = []
-    xd_filter['ip'] = []
-    xd_filter['type'] = None
-
-    if xd_type == 'server':
-        xd_filter['type'] = 'server'
-
-        if len(value.split(':')) == 2:
-            xd_filter['iaccount'] = ctx.obj.defaults['iaccount']
-            xd_filter['server_ip'] = value.split(':')[1]
-        else:
-            xd_filter['iaccount'] = value.split(':')[1]
-            xd_filter['server_ip'] = value.split(':')[2]
-
-        if not ip_helper.is_valid_ipv4_address(xd_filter['server_ip']):
-            raise click.BadParameter('Invalid server IP: %s' % (xd_filter['server_ip']))
-
-    return xd_filter
-
-
-def resolve_aci_xd_server(ctx, xd_filter, output):
-    if output != 'json':
-        ctx.my_output.default('Resolve xd server...')
-
-    xd_filter['server'] = common.get_selected_server(
-        ctx,
-        xd_filter['iaccount'],
-        '',
-        xd_filter['server_ip'],
-        '',
-        workflow=None,
-        action=False,
-        include_object=True,
-        cache_enabled=False
-    )
-    if xd_filter['server'] is None:
-        ctx.my_output.error(
-            'Server not found: %s' % (xd_filter['server_ip'])
-        )
-        return None, None
-
-    settings = common.get_server_selection_settings(
-        xd_filter['iaccount'],
-        workflow=None,
-        action=False,
-        registration=False
-    )
-    settings['mac'] = True
-
-    compute_handler = compute_info.ComputeInfo(xd_filter['iaccount'], settings=settings, log_id=getattr(ctx, 'run_id', None))
-    xd_filter['server_info'] = compute_handler.get_server_info(
-        xd_filter['server']['IntersightObject'],
-        state_enabled=False,
-        cache_enabled=True
-    )
-
-    for mac_info in xd_filter['server_info']['MacAddressInfo']:
-        xd_filter['mac'].append(
-            mac_info['MacAddress']
-        )
-
-    if output not in ['json']:
-        compute_handler.print_summary_table(
-            xd_filter['server_info']
-        )
-
-    mac = xd_filter['mac']
-    interface = []
-    for interface_info in xd_filter['server_info']['MacAddressInfo']:
-        xd_interface_info = {}
-        xd_interface_info['host'] = xd_filter['server_ip']
-        xd_interface_info['mac'] = interface_info['MacAddress']
-        xd_interface_info['pci'] = interface_info['AdapterPciSlot']
-        xd_interface_info['interface'] = interface_info['InterfaceName']
-        xd_interface_info['model'] = interface_info['AdapterModel']
-        interface.append(
-            xd_interface_info
-        )
-
-    interface = sorted(
-        interface,
-        key=lambda i: (
-            i['host'],
-            i['pci'],
-            i['interface'],
-            i['mac']
-        )
-    )
-    return mac, interface
-
-
-def resolve_aci_xd(ctx, xd_filter, output):
-    if xd_filter is None:
-        return None, None
-
-    if xd_filter['type'] is None:
-        return None, None
-
-    if xd_filter['type'] == 'server':
-        return resolve_aci_xd_server(ctx, xd_filter, output)
-
-    return None, None
-
-
 def validate_context(ctx, param, value):
     if len(value) == 0:
         return None
@@ -1068,7 +987,7 @@ def validate_nexus_name(ctx, param, value):
     return nexus_switch
 
 
-def validate_nexus_switch(ctx, switch_obj, switch_ip, switch_username, switch_password):
+def validate_nexus_switch(ctx, switch_obj, switch_ip, switch_username, switch_password, debug=False):
     nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
 
     if switch_obj is None and len(switch_ip) == 0 and len(switch_username) == 0 and len(switch_password) == 0:
@@ -1096,10 +1015,11 @@ def validate_nexus_switch(ctx, switch_obj, switch_ip, switch_username, switch_pa
         switch_ip,
         switch_username,
         switch_password,
-        log_id=ctx.run_id
+        log_id=ctx.run_id,
+        debug=debug
     )
 
-    if not nexus_handler.is_connected():
+    if not nexus_handler.is_connected(autoconnect=True):
         ctx.my_output.error('Failed to connect to switch')
         return None
 
@@ -1313,7 +1233,11 @@ def validate_ocp_namespace_name(ctx, param, value):
 def validate_ocp_vm_namespace(ctx, ocp_handler, namespace, vm_name):
     if namespace == '':
         vm_filter = ['name:%s' % (vm_name)]
-        vms_mo = ocp_handler.get_ocp_vms_mo(vm_filter=vm_filter)
+        vms_mo = ocp_handler.k8s_handler.get_virtual_machines(
+            object_filter=vm_filter,
+            return_mo=True,
+            cache_enabled=False
+        )
         if vms_mo is None or len(vms_mo) == 0:
             ctx.busy = False
             ctx.my_output.error(
@@ -1334,7 +1258,7 @@ def validate_ocp_vm_namespace(ctx, ocp_handler, namespace, vm_name):
 
         namespace = vms_mo[0]['metadata']['namespace']
     else:
-        if not ocp_handler.is_ocp_vm_mo(namespace, vm_name):
+        if not ocp_handler.k8s_handler.is_virtual_machine(namespace, vm_name, cache_enabled=False):
             ctx.busy = False
             ctx.my_output.error(
                 'Virtual machine %s/%s not found' % (
@@ -1544,6 +1468,7 @@ def validate_timestamp_filter(ctx, param, value):
     click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
     return None
 
+
 def validate_view(ctx, user_input, all_views, default, resolve):
     views = []
 
@@ -1589,3 +1514,89 @@ def validate_view(ctx, user_input, all_views, default, resolve):
             )
 
     return views
+
+
+def validate_kubernetes_name(ctx, value, cluster_type=None):
+    k8s_settings_handler = k8s_settings.K8sSettings(log_id=None)
+    if len(value) == 0:
+        default_cluster_name = k8s_settings_handler.get_default_cluster()
+        if default_cluster_name is not None:
+            ctx.my_output.default(
+                'Cluster: %s (type: %s)' % (
+                    default_cluster_name,
+                    k8s_settings_handler.get_k8s_cluster(default_cluster_name)['type']
+                )
+            )
+            kubeconfig = k8s_settings_handler.get_k8s_cluster(default_cluster_name)['kubeconfig']
+
+            cluster = k8s_settings_handler.get_k8s_cluster(default_cluster_name)
+            if cluster_type is not None:
+                if cluster['type'] != cluster_type:
+                    ctx.my_output.error(
+                        'Required cluster type: %s' % (cluster_type)
+                    )
+                    return None
+
+            return k8s.K8s(kubeconfig_filename=kubeconfig, cluster_type=cluster['type'], log_id=ctx.run_id)
+
+    if len(value) > 0:
+        cluster = k8s_settings_handler.get_k8s_cluster(value, strict_match=False)
+        if cluster is not None:
+            if cluster_type is not None:
+                if cluster['type'] != cluster_type:
+                    ctx.my_output.error(
+                        'Required cluster type: %s' % (cluster_type)
+                    )
+                    return None
+
+            ctx.my_output.default(
+                'Cluster: %s (type: %s)' % (cluster['name'], cluster['type'])
+            )
+            success = k8s_settings_handler.set_default_cluster(cluster['name'])
+            if not success:
+                ctx.my_output.default(
+                    '[Warning] Default k8s cluster name set failed'
+                )
+
+            return k8s.K8s(kubeconfig_filename=cluster['kubeconfig'], cluster_type=cluster['type'], log_id=ctx.run_id)
+
+    clusters = k8s_settings_handler.get_k8s_clusters()
+    if len(clusters) == 0:
+        ctx.my_output.error('No cluster defined')
+    else:
+        ctx.my_output.error('Define cluster name')
+        for cluster in clusters:
+            ctx.my_output.default('- %s (type: %s)' % (cluster['name'], cluster['type']))
+
+    return None
+
+
+def validate_kubevirt_name(ctx, value):
+    k8s_settings_handler = k8s_settings.K8sSettings(log_id=None)
+    if len(value) == 0:
+        default_cluster_name = k8s_settings_handler.get_default_cluster()
+        if default_cluster_name is not None:
+            ctx.my_output.default(
+                'Cluster: %s' % (default_cluster_name)
+            )
+            kubeconfig = k8s_settings_handler.get_k8s_cluster(default_cluster_name)['kubeconfig']
+            return kubevirt.Kubevirt(kubeconfig_filename=kubeconfig)
+
+    if len(value) > 0:
+        cluster = k8s_settings_handler.get_k8s_cluster(value)
+        if cluster is not None:
+            ctx.my_output.default(
+                'Cluster: %s' % (cluster['name'])
+            )
+            k8s_settings_handler.set_default_cluster(cluster['name'])
+            return kubevirt.Kubevirt(kubeconfig_filename=cluster['kubeconfig'])
+
+    cluster_names = k8s_settings_handler.get_k8s_cluster_names()
+    if len(cluster_names) == 0:
+        ctx.my_output.error('No cluster defined')
+    else:
+        ctx.my_output.error('Define cluster name')
+        for cluster_name in cluster_names:
+            ctx.my_output.default('- %s' % (cluster_name))
+
+    return None

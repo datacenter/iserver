@@ -1,4 +1,4 @@
-import copy
+import time
 import json
 
 from lib import filter_helper
@@ -11,45 +11,620 @@ class K8sPodInfo():
     def get_pod_networks_info(self, pod_mo):
         networks = []
 
-        if 'annotations' in pod_mo['metadata'] and pod_mo['metadata']['annotations'] is not None:
-            for annotation in pod_mo['metadata']['annotations']:
-                if annotation == 'k8s.v1.cni.cncf.io/networks-status':
-                    try:
-                        networks = json.loads(
-                            pod_mo['metadata']['annotations'][annotation]
-                        )
-                    except BaseException:
-                        pass
+        annotations = self.get(pod_mo, 'metadata:annotations', on_error={}, on_none={})
+        if 'k8s.v1.cni.cncf.io/networks-status' in annotations:
+            networks_mo = json.loads(
+                annotations['k8s.v1.cni.cncf.io/networks-status']
+            )
+            for network_mo in networks_mo:
+                network_info = {}
+                network_info['name'] = network_mo['name']
+                network_info['interface'] = network_mo['interface']
+                network_info['mac'] = self.get(network_mo, 'mac')
+                network_info['ips'] = self.get(network_mo, 'ips', on_error=[], on_none=[])
+                network_info['default'] = self.get(network_mo, 'default', on_error=False, on_none=False)
+                network_info['device-info'] = self.get(network_mo, 'device-info', on_error={}, on_none={})
+                network_info['pci'] = self.get(network_mo, 'device-info:pci:pci-address')
+                network_info['dns'] = self.get(network_mo, 'dns', on_error={}, on_none={})
+                networks.append(
+                    network_info
+                )
 
         return networks
 
-    def get_pod_info(self, pod_mo):
-        info = copy.deepcopy(pod_mo)
-        info['networks'] = self.get_pod_networks_info(
-            pod_mo
-        )
+    def get_pod_container_res_info(self, res_mo):
+        info = {}
+
+        keys = ['cpu', 'memory', 'hugepages-2Mi', 'hugepages-1Gi']
+        for key in keys:
+            info[key] = None
+            if key in res_mo:
+                info[key] = res_mo[key]
+
+            if info[key] is not None:
+                info['%sT' % (key)] = info[key]
+            if info[key] is None:
+                info['%sT' % (key)] = '--'
+
+        info['hpT'] = '--'
+        if info['hugepages-2Mi'] is not None:
+            info['hpT'] = '%s (2Mi)' % (
+                info['hugepages-2Mi']
+            )
+        if info['hugepages-1Gi'] is not None:
+            info['hpT'] = '%s (1Gi)' % (
+                info['hugepages-1Gi']
+            )
+
+        info['custom'] = {}
+        info['customT'] = []
+        for key in res_mo:
+            if key not in keys:
+                info['custom'][key] = res_mo[key]
+                info['customT'].append(
+                    '%s: %s' % (key, res_mo[key])
+                )
+
+        if len(info['customT']) == 0:
+            info['customT'].append('--')
+
         return info
 
-    def get_pods_info(self, cache=True):
-        if cache and self.pod is not None:
-            return self.pod
+    def get_pod_container_port_info(self, ports_mo):
+        info = []
 
-        pods_mo = self.get_pods_mo(cache=cache)
-        if pods_mo is None:
+        for port_mo in ports_mo:
+            port_info = {}
+            for key in ['container_port', 'host_ip', 'host_port', 'name', 'protocol']:
+                port_info[key] = None
+                if key in port_mo:
+                    port_info[key] = port_mo[key]
+
+            port_info['portT'] = '%s/%s' % (
+                port_info['container_port'],
+                port_info['protocol']
+            )
+            if port_info['name'] is not None:
+                port_info['portT'] = '%s [%s]' % (
+                    port_info['portT'],
+                    port_info['name']
+                )
+
+            if port_info['host_ip'] is None and port_info['host_port'] is None:
+                port_info['hostT'] = '--'
+
+            if port_info['host_ip'] is None and port_info['host_port'] is not None:
+                port_info['hostT'] = port_info['host_port']
+
+            if port_info['host_ip'] is not None and port_info['host_port'] is not None:
+                port_info['hostT'] = '%s:%s' % (
+                    port_info['host_ip'],
+                    port_info['host_port']
+                )
+
+            info.append(
+                port_info
+            )
+
+        return info
+
+    def get_pod_container_info(self, pod_namespace, container_spec_mo, container_status_mo, volumes_info):
+        info = {}
+        info['__Output'] = {}
+        now = int(time.time())
+
+        info['name'] = self.get(container_spec_mo, 'name')
+        info['image'] = self.get(container_spec_mo, 'image')
+        info['image_id'] = self.get(container_status_mo, 'image_id')
+        info['container_id'] = self.get(container_status_mo, 'container_id')
+        info['command'] = self.get(container_spec_mo, 'command', on_error=[], on_none=[])
+
+        info['volume_mount'] = []
+        mounts_mo = self.get(container_spec_mo, 'volume_mounts', on_error=[], on_none=[])
+        for mount_mo in mounts_mo:
+            mount_info = {}
+            mount_info['name'] = self.get(mount_mo, 'name')
+            mount_info['path'] = self.get(mount_mo, 'mount_path')
+            mount_info['sub_path'] = self.get(mount_mo, 'sub_path')
+            mount_info['read_only'] = self.get(mount_mo, 'read_only')
+            for volume_info in volumes_info:
+                if volume_info['name'] == mount_info['name']:
+                    mount_info['type'] = volume_info['type']
+                    mount_info['mo'] = volume_info['mo']
+
+            info['volume_mount'].append(
+                mount_info
+            )
+
+        info['volume_mount'] = sorted(
+            info['volume_mount'],
+            key=lambda i: i['name']
+        )
+
+        envs_mo = self.get(container_spec_mo, 'env', on_error=[], on_none=[])
+        info['env'] = []
+        for env_mo in envs_mo:
+            env_info = {}
+            env_info['name'] = self.get(env_mo, 'name')
+            env_info['value'] = self.get(env_mo, 'value')
+            env_info['config_map_key_ref'] = self.get(env_mo, 'value_from:config_map_key_ref')
+            env_info['field_ref'] = self.get(env_mo, 'value_from:field_ref')
+            env_info['resource_field_ref'] = self.get(env_mo, 'value_from:resource_field_ref')
+            env_info['secret_key_ref'] = self.get(env_mo, 'value_from:secret_key_ref')
+
+            env_info['source_type'] = '--'
+            env_info['source_value'] = '--'
+
+            if env_info['value'] is not None:
+                env_info['source_type'] = 'value'
+                env_info['source_value'] = env_info['value']
+
+            if env_info['config_map_key_ref'] is not None:
+                env_info['source_type'] = 'cm'
+                cm_name = self.get(env_mo, 'value_from:config_map_key_ref:name')
+                cm_key = self.get(env_mo, 'value_from:config_map_key_ref:key')
+                if cm_name is not None and cm_key is not None:
+                    env_info['source_value'] = '%s:%s' % (
+                        cm_name,
+                        cm_key
+                    )
+
+            if env_info['resource_field_ref'] is not None:
+                env_info['source_type'] = 'res'
+
+            if env_info['field_ref'] is not None:
+                env_info['source_type'] = 'field'
+                field_path = self.get(env_mo, 'value_from:field_ref:field_path')
+                if field_path is not None:
+                    env_info['source_value'] = field_path
+
+            if env_info['secret_key_ref'] is not None:
+                env_info['source_type'] = 'secret'
+                secret_name = self.get(env_mo, 'value_from:secret_key_ref:name')
+                secret_key = self.get(env_mo, 'value_from:secret_key_ref:key')
+                if secret_name is not None and secret_key is not None:
+                    env_info['source_value'] = '%s:%s' % (
+                        secret_name,
+                        secret_key
+                    )
+
+            info['env'].append(
+                env_info
+            )
+
+        info['cm'] = []
+        for env_info in info['env']:
+            if env_info['config_map_key_ref'] is not None:
+                cm_info = {}
+                cm_info['namespace'] = pod_namespace
+                cm_info['name'] = env_info['config_map_key_ref']['name']
+                info['cm'].append(
+                    cm_info
+                )
+
+        info['requests'] = self.get_pod_container_res_info(
+            self.get(container_spec_mo, 'resources:requests', on_error={}, on_none={})
+        )
+        info['limits'] = self.get_pod_container_res_info(
+            self.get(container_spec_mo, 'resources:limits', on_error={}, on_none={})
+        )
+
+        info['port'] = self.get_pod_container_port_info(
+            self.get(container_spec_mo, 'ports', on_error=[], on_none=[])
+        )
+
+        info['started_at'] = None
+        info['finished_at'] = None
+        info['age'] = '--'
+
+        info['started'] = self.get(container_status_mo, 'started', on_error=False, on_none=False)
+        info['ready'] = self.get(container_status_mo, 'ready', on_error=False, on_none=False)
+        info['restart_count'] = self.get(container_status_mo, 'restart_count', on_error=0)
+        info['restart_countT'] = info['restart_count']
+
+        container_state_mo = self.get(container_status_mo, 'state', on_error={})
+        container_state_running_mo = self.get(container_state_mo, 'running')
+        container_state_terminated_mo = self.get(container_state_mo, 'terminated')
+        container_state_waiting_mo = self.get(container_state_mo, 'waiting')
+
+        # ContainerState holds a possible state of container. Only one of its members may be specified. If none of them is specified, the default one is ContainerStateWaiting.
+        info['stateT'] = 'Waiting'
+        info['__Output']['stateT'] = 'Yellow'
+        info['state_waiting'] = True
+        info['state_running'] = False
+        info['state_terminated'] = False
+
+        if container_state_running_mo is not None:
+            info['stateT'] = 'Running'
+            info['__Output']['stateT'] = 'Green'
+            info['state_waiting'] = False
+            info['state_running'] = True
+            info['state_terminated'] = False
+            info['started_at'] = self.get(container_state_running_mo, 'started_at')
+            info['started_at_epoch'] = self.convert_timestamp(
+                info['started_at']
+            )
+            info['age'] = self.convert_timestamp_to_age(
+                info['started_at'],
+                on_error='--'
+            )
+
+            if info['restart_count'] > 0:
+                info['restart_countT'] = '%s (%s ago)' % (
+                    info['restart_countT'],
+                    self.convert_age(now - info['started_at_epoch'])
+                )
+
+        if container_state_terminated_mo is not None:
+            info['stateT'] = 'Terminated'
+            info['state_waiting'] = False
+            info['state_running'] = False
+            info['state_terminated'] = True
+            info['started_at'] = self.get(container_state_terminated_mo, 'started_at')
+            info['finished_at'] = self.get(container_state_terminated_mo, 'finished_at')
+            info['terminated_exit_code'] = self.get(container_state_terminated_mo, 'exit_code')
+            if info['terminated_exit_code'] is None:
+                info['__Output']['stateT'] = 'Red'
+                info['stateT'] = 'Terminated (code: --)'
+            else:
+                info['stateT'] = 'Terminated (code: %s)' % (
+                    info['terminated_exit_code']
+                )
+                if info['terminated_exit_code'] > 0:
+                    info['__Output']['stateT'] = 'Red'
+                else:
+                    info['__Output']['stateT'] = 'Green'
+
+            info['terminate_message'] = self.get(container_state_terminated_mo, 'message')
+            info['terminate_reason'] = self.get(container_state_terminated_mo, 'reason')
+            info['terminate_signal'] = self.get(container_state_terminated_mo, 'signal')
+
+        if container_state_waiting_mo is not None:
+            info['waiting_message'] = self.get(container_state_waiting_mo, 'message')
+            info['waiting_reason'] = self.get(container_state_waiting_mo, 'reason')
+
+        return info
+
+    def get_pod_volume_info(self, volume_mo):
+        info = {}
+        info['name'] = volume_mo['name']
+        info['type'] = None
+        info['mo'] = None
+
+        unsupported = [
+            'aws_elastic_block_store',
+            'azure_disk',
+            'azure_file',
+            'cephfs',
+            'cinder',
+            'csi',
+            'flex_volume',
+            'flocker',
+            'gce_persistent_disk',
+            'git_repo',
+            'glusterfs',
+            'iscsi',
+            'photon_persistent_disk',
+            'quobyte',
+            'rbd',
+            'scale_io',
+            'storageos',
+            'vsphere_volume'
+        ]
+        for key in unsupported:
+            if self.get(volume_mo, key) is not None:
+                info['type'] = 'Unsupported'
+                self.log.error(
+                    'get_pod_volume_info',
+                    'Unsupported volume defined: %s' % (key)
+                )
+
+        config_map = self.get(volume_mo, 'config_map')
+        if config_map is not None:
+            info['type'] = 'config_map'
+            info['mo'] = config_map
+
+        downward_api = self.get(volume_mo, 'downward_api')
+        if downward_api is not None:
+            info['type'] = 'downward_api'
+            info['mo'] = downward_api
+
+        empty_dir = self.get(volume_mo, 'empty_dir')
+        if empty_dir is not None:
+            info['type'] = 'empty_dir'
+            info['mo'] = empty_dir
+
+        ephemeral = self.get(volume_mo, 'ephemeral')
+        if ephemeral is not None:
+            info['type'] = 'ephemeral'
+            info['mo'] = ephemeral
+
+        fc_mo = self.get(volume_mo, 'fc')
+        if fc_mo is not None:
+            info['type'] = 'fc'
+            info['mo'] = fc_mo
+
+        host_path = self.get(volume_mo, 'host_path')
+        if host_path is not None:
+            info['type'] = 'host_path'
+            info['mo'] = host_path
+
+        nfs = self.get(volume_mo, 'nfs')
+        if nfs is not None:
+            info['type'] = 'nfs'
+            info['mo'] = nfs
+
+        pvc = self.get(volume_mo, 'persistent_volume_claim')
+        if pvc is not None:
+            info['type'] = 'persistent_volume_claim'
+            info['mo'] = pvc
+
+        portworx_volume = self.get(volume_mo, 'portworx_volume')
+        if portworx_volume is not None:
+            info['type'] = 'portworx_volume'
+            info['mo'] = portworx_volume
+
+        secret = self.get(volume_mo, 'secret')
+        if secret is not None:
+            info['type'] = 'secret'
+            info['mo'] = secret
+
+        projected = self.get(volume_mo, 'projected')
+        if projected is not None:
+            info['type'] = 'projected'
+            info['mo'] = []
+            for item_mo in self.get(volume_mo, 'projected:sources', on_error=[], on_none=[]):
+                config_map = self.get(item_mo, 'config_map')
+                if config_map is not None:
+                    projected_info = {}
+                    projected_info['name'] = info['name']
+                    projected_info['type'] = 'config_map'
+                    projected_info['mo'] = config_map
+                    info['mo'].append(
+                        projected_info
+                    )
+
+                secret = self.get(item_mo, 'secret')
+                if secret is not None:
+                    projected_info = {}
+                    projected_info['name'] = info['name']
+                    projected_info['type'] = 'secret'
+                    projected_info['mo'] = secret
+                    info['mo'].append(
+                        projected_info
+                    )
+
+                downward_api = self.get(item_mo, 'downward_api')
+                if downward_api is not None:
+                    projected_info = {}
+                    projected_info['name'] = info['name']
+                    projected_info['type'] = 'downward_api'
+                    projected_info['mo'] = downward_api
+                    info['mo'].append(
+                        projected_info
+                    )
+
+                service_account_token = self.get(item_mo, 'service_account_token')
+                if service_account_token is not None:
+                    projected_info = {}
+                    projected_info['name'] = info['name']
+                    projected_info['type'] = 'service_account_token'
+                    projected_info['mo'] = service_account_token
+                    info['mo'].append(
+                        projected_info
+                    )
+        return info
+
+    def get_pod_info(self, pod_mo):
+        if pod_mo is None:
             return None
 
-        self.pod = []
-        for pod_mo in pods_mo:
-            self.pod.append(
-                self.get_pod_info(
-                    pod_mo
+        now = int(time.time())
+
+        info = {}
+        info['__Output'] = {}
+
+        info['namespace'] = self.get(pod_mo, 'metadata:namespace')
+        info['name'] = self.get(pod_mo, 'metadata:name')
+
+        info['label'] = self.get(pod_mo, 'metadata:labels', on_error={}, on_none={})
+        info['labelT'] = []
+        for key in info['label']:
+            info['labelT'].append(
+                '%s:%s' % (
+                    key,
+                    info['label'][key]
                 )
             )
 
-        self.log.k8s_mo(
-            'pod.info',
-            self.pod
+        owner = self.get_owner(
+            pod_mo,
+            'metadata:owner_references'
         )
+        info.update(owner)
+
+        info['volume'] = []
+        for volume_mo in self.get(pod_mo, 'spec:volumes'):
+            info['volume'].append(
+                self.get_pod_volume_info(
+                    volume_mo
+                )
+            )
+
+        info['volume'] = sorted(
+            info['volume'],
+            key=lambda i: i['name']
+        )
+
+        info['container'] = []
+        info['container_count'] = 0
+        info['container_ready'] = 0
+        info['container_restart_count'] = 0
+        last_container_started_at_epoch = None
+
+        container_specs = self.get(pod_mo, 'spec:containers', on_error=[], on_none=[])
+        container_statuses = self.get(pod_mo, 'status:container_statuses', on_error=[], on_none=[])
+        for container_spec in container_specs:
+            container_spec_name = self.get(container_spec, 'name')
+            if container_spec_name is None:
+                self.log.error(
+                    'k8s.get_pod_info',
+                    'Unexpected container spec: %s' % (container_spec)
+                )
+                continue
+
+            container_info = None
+            for container_status in container_statuses:
+                container_status_name = self.get(container_status, 'name')
+                if container_status_name is None:
+                    self.log.error(
+                        'k8s.get_pod_info',
+                        'Unexpected container status: %s' % (container_status)
+                    )
+                    continue
+
+                if container_spec_name == container_status_name:
+                    container_info = self.get_pod_container_info(
+                        info['namespace'],
+                        container_spec,
+                        container_status,
+                        info['volume']
+                    )
+                    break
+
+            if container_info is None:
+                self.log.error(
+                    'k8s.get_pod_info',
+                    'Unexpected lack of container status: %s' % (container_spec)
+                )
+                container_info = self.get_pod_container_info(
+                    info['namespace'],
+                    container_spec,
+                    None,
+                    info['volume']
+                )
+
+            info['container_count'] = info['container_count'] + 1
+            info['container_restart_count'] = info['container_restart_count'] + container_info['restart_count']
+            if container_info['ready']:
+                info['container_ready'] = info['container_ready'] + 1
+
+            if container_info['state_running']:
+                if container_info['started_at_epoch'] is not None:
+                    if last_container_started_at_epoch is None:
+                        last_container_started_at_epoch = container_info['started_at_epoch']
+
+                    if last_container_started_at_epoch < container_info['started_at_epoch']:
+                        last_container_started_at_epoch = container_info['started_at_epoch']
+
+            info['container'].append(
+                container_info
+            )
+
+        info['container'] = sorted(
+            info['container'],
+            key=lambda i: i['name']
+        )
+
+        info['container_restart_countT'] = info['container_restart_count']
+        if info['container_restart_count'] > 0:
+            if last_container_started_at_epoch is not None:
+                info['container_restart_countT'] = '%s (%s ago)' % (
+                    info['container_restart_count'],
+                    self.convert_age(now - last_container_started_at_epoch)
+                )
+
+        info['container_state_summary'] = '%s/%s' % (
+            info['container_ready'],
+            info['container_count']
+        )
+
+        # Condition: Initialized, PodScheduled, ContainersReady, Ready
+        info['condition'] = []
+        for condition_type in ['Initialized', 'PodScheduled', 'ContainersReady', 'Ready']:
+            condition_info = {}
+            condition_info['__Output'] = {}
+            condition_info['type'] = condition_type
+            condition_info['status'] = 'Unknown'
+            for condition_mo in self.get(pod_mo, 'status:conditions', on_error=[], on_none=[]):
+                condition_mo_type = self.get(condition_mo, 'type')
+                if condition_mo_type is not None and condition_mo_type == condition_type:
+                    condition_info['status'] = self.get(condition_mo, 'status', on_error='Unknown', on_none='Unknown')
+
+            if condition_info['status'] == 'True':
+                condition_info['typeT'] = '%s: \u2713' % (
+                    condition_info['type']
+                )
+
+            if condition_info['status'] in ['False', 'Unknown']:
+                condition_info['typeT'] = '%s: \u2717' % (
+                    condition_info['type']
+                )
+
+            info['condition'].append(
+                condition_info
+            )
+
+        # Phase: Pending, Running, Succeeded (Completed), Failed, Unknown
+        info['phase'] = self.get(pod_mo, 'status:phase', on_error='Unknown', on_none='Unknown')
+        info['phaseT'] = info['phase']
+        if info['phaseT'] == 'Succeeded':
+            info['phaseT'] = 'Completed'
+
+        if info['phaseT'] in ['Running', 'Completed']:
+            info['__Output']['phaseT'] = 'Green'
+
+        if info['phaseT'] in ['Failed', 'Unknown']:
+            info['__Output']['phaseT'] = 'Red'
+
+        if info['phaseT'] in ['Pending}']:
+            info['__Output']['phaseT'] = 'Yellow'
+
+        info['running'] = False
+        if info['phase'] == 'Running':
+            info['running'] = True
+
+        info['pod_ip'] = self.get(pod_mo, 'status:pod_ip', on_error='--', on_none='--')
+        info['host_ip'] = self.get(pod_mo, 'status:host_ip', on_error='--', on_none='--')
+
+        info['host_name'] = info['host_ip']
+        node_info = self.get_node_with_ip(
+            info['host_ip']
+        )
+        if node_info is not None:
+            info['host_name'] = node_info['name']
+
+        info['host_network'] = self.get(pod_mo, 'spec:host_network', on_error=False, on_none=False)
+        info['network'] = self.get_pod_networks_info(
+            pod_mo
+        )
+
+        info['age'] = self.convert_timestamp_to_age(
+            self.get(pod_mo, 'metadata:creation_timestamp'),
+            on_error='--'
+        )
+
+        return info
+
+    def get_pods_info(self, cache_enabled=True):
+        if cache_enabled:
+            if self.pod is not None:
+                return self.pod
+
+        managed_objects = self.get_pod_mo(cache_enabled=cache_enabled)
+        if managed_objects is None:
+            return None
+
+        self.pod = []
+        for managed_object in managed_objects:
+            pod_info = {}
+            pod_info['info'] = self.get_pod_info(
+                managed_object
+            )
+            pod_info['mo'] = managed_object
+            self.pod.append(
+                pod_info
+            )
 
         return self.pod
 
@@ -61,64 +636,133 @@ class K8sPodInfo():
             key = ap_rule.split(':')[0]
             value = ':'.join(ap_rule.split(':')[1:])
 
+            key_found = False
+
             if key == 'namespace':
-                if not filter_helper.match_string(value, pod_info['metadata']['namespace']):
+                key_found = True
+                if not filter_helper.match_string(value, pod_info['namespace']):
                     return False
 
             if key == 'name':
-                if not filter_helper.match_string(value, pod_info['metadata']['name']):
+                key_found = True
+                if not filter_helper.match_string(value, pod_info['name']):
                     return False
 
             if key == 'label':
-                if 'labels' not in pod_info['metadata']:
-                    return False
-
-                if pod_info['metadata']['labels'] is None:
-                    return False
-
+                key_found = True
                 found = False
-                for label in pod_info['metadata']['labels']:
-                    if filter_helper.match_string(value.split(':', maxsplit=1)[0], label):
-                        if filter_helper.match_string(value.split(':')[1], pod_info['metadata']['labels'][label]):
+                for label_name in pod_info['label']:
+                    if filter_helper.match_string(value.split(':', maxsplit=1)[0], label_name):
+                        if filter_helper.match_string(value.split(':')[1], pod_info['label'][label_name]):
                             found = True
 
                 if not found:
                     return False
 
-            if key == 'mac':
+            if key == 'cm':
+                key_found = True
                 found = False
-                for network in pod_info['networks']:
-                    if 'mac' in network:
-                        if filter_helper.match_string(value, network['mac']):
-                            found = True
+
+                if len(value.split(':')) > 2:
+                    self.log.error(
+                        'match_pod',
+                        'Unsupported cm-name value: %s' % (value)
+                    )
+                    return False
+
+                if len(value.split(':')) == 1:
+                    cm_namespace = None
+                    cm_name = value
+
+                if len(value.split(':')) == 2:
+                    (cm_namespace, cm_name) = value.split(':')
+
+                for container_info in pod_info['container']:
+                    for cm_info in container_info['cm']:
+                        if cm_namespace is None:
+                            if filter_helper.match_string(cm_name, cm_info['name']):
+                                found = True
+                                break
+
+                        if cm_namespace is not None:
+                            if filter_helper.match_string(cm_namespace, cm_info['namespace']):
+                                if filter_helper.match_string(cm_name, cm_info['name']):
+                                    found = True
+                                    break
 
                 if not found:
                     return False
 
-            if key == 'network':
-                found = False
-                for network in pod_info['networks']:
-                    if 'mac' in network:
-                        if filter_helper.match_string(value, network['name']):
-                            found = True
+            # if key == 'mac':
+            #     key_found = True
+            #     found = False
+            #     for network in pod_info['networks']:
+            #         if 'mac' in network:
+            #             if filter_helper.match_string(value, network['mac']):
+            #                 found = True
 
-                if not found:
-                    return False
+            #     if not found:
+            #         return False
+
+            # if key == 'network':
+            #     key_found = True
+            #     found = False
+            #     for network in pod_info['networks']:
+            #         if 'mac' in network:
+            #             if filter_helper.match_string(value, network['name']):
+            #                 found = True
+
+            #     if not found:
+            #         return False
+
+            if not key_found:
+                self.log.error(
+                    'match_pod',
+                    'Unsupported key: %s' % (key)
+                )
 
         return True
 
-    def get_pods(self, pod_filter=None, cache=True):
-        all_pods = self.get_pods_info(cache=cache)
+    def get_pods(self, object_filter=None, service_info=False, log_info=False, return_mo=False, cache_enabled=True):
+        all_pods = self.get_pods_info(cache_enabled=cache_enabled)
         if all_pods is None:
             return None
 
         pods = []
+
         for pod_info in all_pods:
-            if not self.match_pod(pod_info, pod_filter):
+            if not self.match_pod(pod_info['info'], object_filter):
                 continue
 
+            if return_mo:
+                pods.append(
+                    pod_info['mo']
+                )
+                continue
+
+            if service_info:
+                pod_info['info']['service'] = []
+                for label_key in pod_info['info']['label']:
+                    service_filter = [
+                        'selector:%s:%s' % (
+                            label_key,
+                            pod_info['info']['label'][label_key]
+                        )
+                    ]
+                    services = self.get_services(
+                        object_filter=service_filter
+                    )
+                    if services is not None:
+                        pod_info['info']['service'] = pod_info['info']['service'] + services
+
+            if log_info:
+                pod_info['info']['log'] = self.get_pod_log_mo(
+                    pod_info['info']['namespace'],
+                    pod_info['info']['name']
+                )
+
             pods.append(
-                pod_info
+                pod_info['info']
             )
 
         return pods

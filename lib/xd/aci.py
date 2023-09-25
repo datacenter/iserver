@@ -138,7 +138,7 @@ def get_aci_lldp_info(log_id=None):
                     node['id'],
                     instance_info=False,
                     stats_info=False,
-                    adjacenty_info=True
+                    adjacency_info=True
                 )
                 node_lldp_info['apic'] = aci_controller['name']
                 aci_lldp_info.append(
