@@ -140,6 +140,9 @@ def get_k8s_node_command(
                 title=True
             )
 
+        ctx.my_output.default('Filter: name, label', before_newline=True)
+        ctx.my_output.default('View:   state (def), ver, cap, label, all')
+
     except NoResultExit:
         ctx.busy = False
         sys.exit(666)

@@ -6,21 +6,28 @@ import requests
 
 from lib import info_helper
 from lib import log_helper
-from lib import output_helper
 
 # mypy: ignore-errors
 requests.packages.urllib3.disable_warnings()
 
 
 class RedfishEndpointCommon():
-    def __init__(self, endpoint_handler, endpoint_ip, endpoint_port, redfish_username, redfish_password, cache_filename=None, auto_connect=True, get_timeout=10, ssl_verify=False, deep_search_exlusions=True, log_id=None, verbose=False, debug=False):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            system_id=None,
+            cache_filename=None,
+            auto_connect=True,
+            get_timeout=10,
+            ssl_verify=False,
+            deep_search_exlusions=True,
+            log_id=None
+            ):
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
-        )
-
         self.endpoint_handler = endpoint_handler
         self.endpoint_ip = endpoint_ip
         self.endpoint_port = endpoint_port
@@ -29,7 +36,7 @@ class RedfishEndpointCommon():
         self.ssl_verify = ssl_verify
         self.auto_connect = auto_connect
 
-        self.system_id = None
+        self.system_id = system_id
         self.get_timeout = get_timeout
 
         self.session_handler = None
@@ -87,6 +94,9 @@ class RedfishEndpointCommon():
     def is_connected(self):
         if self.is_cache_enabled():
             return True
+
+        if not self.auto_connect:
+            self.connect()
 
         if self.session_id is not None and self.session_token is not None:
             return True
@@ -314,7 +324,10 @@ class RedfishEndpointCommon():
         )
 
         if properties is None or len(properties) == 0:
-            self.my_output.info('Redfish get %s in %s ms' % (path, duration_ms))
+            self.log.debug(
+                'get_properties',
+                'Redfish get %s in %s ms' % (path, duration_ms)
+            )
             self.log.odata(
                 path,
                 all_properties
@@ -325,7 +338,10 @@ class RedfishEndpointCommon():
             all_properties,
             properties
         )
-        self.my_output.info('Redfish get %s in %s ms' % (path, duration_ms))
+        self.log.debug(
+            'get_properties',
+            'Redfish get %s in %s ms' % (path, duration_ms)
+        )
         self.log.odata(
             path,
             selected_properties
@@ -524,12 +540,19 @@ class RedfishEndpointCommon():
     def clear_system_id(self):
         self.system_id = None
 
+    def set_system_id(self, system_id):
+        self.system_id = system_id
+
     def get_system_id(self):
         if self.system_id is not None:
             return self.system_id
 
         value = self.get_properties('Systems')
         if value is None:
+            self.log.error(
+                'get_system_id',
+                'Failed to get Systems'
+            )
             return None
 
         try:

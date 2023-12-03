@@ -12,6 +12,21 @@ class K8sReplicaSetInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            replica_set_mo
+        )
+        info.update(metadata_info)
+
+        keys = [
+            'fullyLabeledReplicas',
+            'replicas',
+            'readyReplicas',
+            'availableReplicas',
+            'observedGeneration'
+        ]
+        for key in keys:
+            info[key] = self.get(replica_set_mo, 'status:%s' % (key))
+
         return info
 
     def get_replica_sets_info(self, cache_enabled=True):
@@ -45,6 +60,16 @@ class K8sReplicaSetInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             key_found = False
+
+            if key == 'namespace':
+                key_found = True
+                if not filter_helper.match_string(value, replica_set_info['namespace']):
+                    return False
+
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (replica_set_info['namespace'], replica_set_info['name'])):
+                    return False
 
             if not key_found:
                 self.log.error(

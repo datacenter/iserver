@@ -4,6 +4,7 @@ import traceback
 import click
 
 from lib.redfish import settings
+from lib.redfish import output as redfish_output
 
 
 class Failure(Exception):
@@ -25,6 +26,7 @@ def set_redfish_settings_command(ctx, cache_directory, cache_enable, cache_disab
     # iserver get redfish settings
 
     try:
+        output_handler = redfish_output.RedfishOutput(log_id=ctx.run_id)
         settings_handler = settings.RedfishSettings()
 
         redfish_settings = settings_handler.get_redfish_settings()
@@ -52,7 +54,8 @@ def set_redfish_settings_command(ctx, cache_directory, cache_enable, cache_disab
             ctx.my_output.error('Settings set failed')
             raise ErrorExit
 
-        settings_handler.print_redfish_settings()
+        redfish_settings = settings_handler.get_redfish_settings()
+        output_handler.print_redfish_settings(redfish_settings)
 
     except ErrorExit:
         sys.exit(1)

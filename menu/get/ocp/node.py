@@ -151,7 +151,7 @@ def get_ocp_node_command(
         ctx.my_output.json_output(nodes)
 
         if view in ['default', 'all']:
-            ocp_output_handler.print_ocp_nodes_list(nodes)
+            ocp_output_handler.print_ocp_nodes_list(nodes, title=True)
 
         if view in ['version', 'all']:
             ocp_output_handler.print_ocp_nodes_version(nodes, title=True)

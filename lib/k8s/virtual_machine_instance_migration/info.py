@@ -12,6 +12,11 @@ class K8sVirtualMachineInstanceMigrationInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            virtual_machine_instance_migration_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_virtual_machine_instance_migrations_info(self, cache_enabled=True):

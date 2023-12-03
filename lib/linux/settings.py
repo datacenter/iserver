@@ -1,9 +1,11 @@
 import os
 import json
+from datetime import timedelta
+import shutil
+import uuid
 import traceback
 
 from lib import log_helper
-from lib import output_helper
 from lib.settings_helper import Settings
 
 
@@ -13,7 +15,6 @@ class LinuxSettings(Settings):
 
         self.log_id = log_id
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = None
 
         self.linux_settings_dir = os.path.join(
             self.settings_dir,
@@ -29,8 +30,16 @@ class LinuxSettings(Settings):
 
     def get_linux_default_settings(self):
         settings = {}
-        settings['Default'] = None
-        settings['Servers'] = []
+        settings['defaults'] = None
+        settings['servers'] = []
+        return settings
+
+    def get_linux_default_cache_settings(self):
+        settings = {}
+        settings['enabled'] = True
+        settings['ttl'] = 600
+        settings['ttlT'] = '{}'.format(str(timedelta(seconds=settings['ttl'])))
+        settings['object'] = []
         return settings
 
     def initialize_linux_settings(self):
@@ -75,7 +84,7 @@ class LinuxSettings(Settings):
             return None
 
         try:
-            default_server_name = settings['Default']
+            default_server_name = settings['defaults']
         except BaseException:
             default_server_name = None
 
@@ -86,10 +95,10 @@ class LinuxSettings(Settings):
         if settings is None:
             return False
 
-        if 'Default' not in settings:
-            settings['Default'] = None
+        if 'defaults' not in settings:
+            settings['defaults'] = None
 
-        settings['Default'] = name
+        settings['defaults'] = name
         return self.set_linux_settings(settings)
 
     def get_linux_servers(self):
@@ -97,7 +106,7 @@ class LinuxSettings(Settings):
         if settings is None:
             return None
 
-        servers = settings['Servers']
+        servers = settings['servers']
         servers = sorted(
             servers,
             key=lambda i: i['name']
@@ -129,7 +138,7 @@ class LinuxSettings(Settings):
         if settings is None:
             return False
 
-        settings['Servers'] = servers
+        settings['servers'] = servers
         return self.set_linux_settings(settings)
 
     def set_linux_server(self, linux_name, linux_ip, username, password=None, key_filename=None):
@@ -138,7 +147,10 @@ class LinuxSettings(Settings):
             return False
 
         new_servers = []
+        previous = None
         for server in servers:
+            if server['name'] == linux_name:
+                previous = server
             if server['name'] != linux_name:
                 new_servers.append(server)
 
@@ -148,6 +160,21 @@ class LinuxSettings(Settings):
         new_server['username'] = username
         new_server['password'] = password
         new_server['key'] = key_filename
+        if previous is None:
+            new_server['id'] = str(uuid.uuid4())
+            new_server['cache'] = self.get_linux_default_cache_settings()
+            server_directory = os.path.join(
+                self.linux_settings_dir,
+                new_server['id']
+            )
+            if not os.path.isdir(server_directory):
+                os.makedirs(server_directory, exist_ok=True)
+            new_server['cache']['directory'] = server_directory
+
+        if previous is not None:
+            new_server['id'] = previous['id']
+            new_server['cache'] = previous['cache']
+
         new_servers.append(new_server)
 
         return self.set_linux_servers(new_servers)
@@ -162,52 +189,19 @@ class LinuxSettings(Settings):
             self.set_default_server(None)
 
         new_servers = []
+        server_id = None
         for server in servers:
+            if server['name'] == linux_name:
+                server_id = server['id']
             if server['name'] != linux_name:
                 new_servers.append(server)
 
-        return self.set_linux_servers(new_servers)
-
-    def print_linux_servers(self, servers, show_password=True):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(
-                log_id=self.log_id,
-                verbose=False,
-                debug=False
+        if server_id is not None:
+            server_directory = os.path.join(
+                self.linux_settings_dir,
+                server_id
             )
+            if os.path.isdir(server_directory):
+                shutil.rmtree(server_directory)
 
-        servers = sorted(servers, key=lambda i: i['name'])
-        if not show_password:
-            for server in servers:
-                if server['password'] is not None:
-                    server['password'] = '******'
-
-        for server in servers:
-            if server['password'] is None:
-                server['password'] = '--'
-
-            if server['key'] is None:
-                server['key'] = '--'
-
-        order = [
-            'name',
-            'address',
-            'username',
-            'password',
-            'key'
-        ]
-
-        headers = [
-            'Name',
-            'IP',
-            'Username',
-            'Password',
-            'Key'
-        ]
-
-        self.my_output.my_table(
-            servers,
-            order=order,
-            headers=headers,
-            table=True
-        )
+        return self.set_linux_servers(new_servers)

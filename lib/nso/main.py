@@ -1,35 +1,64 @@
 from lib import log_helper
-from lib import output_helper
 
-from lib.nso.api import main as nso_api
-from lib.nso.nfvo.main import Nfvo
+from lib.nso.cnfm.main import NsoCnfm
+from lib.nso.common import NsoCommon
+from lib.nso.device.main import NsoDevice
+from lib.nso.api import rest
+from lib.nso.nfvo import main as nfvo_library
 
 
-class Nso(Nfvo):
-    def __init__(self, protocol, ip_address, port, username=None, password=None, restconf_enabled=True, nfvo_version='4.x', nfvo_etsi=False, log_id=None, verbose=False, debug=False):
+class Nso(NsoCnfm, NsoCommon, NsoDevice):
+    def __init__(
+            self,
+            protocol,
+            ip_address,
+            port,
+            username=None,
+            password=None,
+            restconf_enabled=True,
+            nfvo=None,
+            log_id=None
+            ):
+
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
-        )
 
-        self.nfvo_version = nfvo_version
-        self.nfvo_etsi = nfvo_etsi
-        self.restconf_enabled = restconf_enabled
-
-        self.api_handler = nso_api.Api(
-            protocol=protocol,
-            ip_address=ip_address,
-            port=port,
-            username=username,
-            password=password,
+        self.rest_handler = rest.Rest(
+            protocol,
+            ip_address,
+            port,
+            username,
+            password,
             restconf_enabled=restconf_enabled,
-            nfvo_version=nfvo_version,
             log_id=log_id
         )
 
-        Nfvo.__init__(self)
+        NsoCnfm.__init__(self)
+        NsoCommon.__init__(self)
+        NsoDevice.__init__(self)
+
+        self.nfvo_handler = None
+        if nfvo is not None:
+            if 'etsi:' in nfvo:
+                nfvo_etsi = True
+                nfvo_version = nfvo.split(':')[1]
+            else:
+                nfvo_etsi = False
+                nfvo_version = nfvo
+
+            self.nfvo_handler = nfvo_library.Nfvo(
+                self.rest_handler,
+                nfvo_etsi=nfvo_etsi,
+                nfvo_version=nfvo_version,
+                log_id=log_id
+            )
 
     def is_connected(self):
-        return self.api_handler.is_rest_api()
+        success, content = self.rest_handler.get_rest(
+            'json',
+            None,
+            'Accept',
+            'application/yang-data',
+            'data',
+            'depth=1'
+        )
+        return success

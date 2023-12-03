@@ -1,33 +1,32 @@
 from lib import log_helper
 from lib.intersight import cache as intersight_cache
-from lib.intersight import equipment_fan_module
-from lib.intersight import equipment_fan
-from lib.intersight import equipment_fan_control
-from lib.intersight import equipment_psu
-from lib.intersight import equipment_psu_control
-from lib.intersight import power_control_state
-from lib.intersight import equipment_iocard
-from lib.intersight import ethernet_host_port
-from lib.intersight import ethernet_network_port
-from lib.intersight import ethernet_physical_port
-from lib.intersight import compute_blade
-from lib.intersight import adapter_unit
-from lib.intersight import adapter_ext_eth_interface
-from lib.intersight import cond_alarm
-from lib.intersight import tam_advisory_instance
-from lib.intersight import asset_device_contract_information
-from lib.intersight import chassis_profile
-from lib.intersight import network_element_summary
+from lib.intersight.adapter_unit import main as adapter_unit
+from lib.intersight.adapter_ext_eth_interface import main as adapter_ext_eth_interface
+from lib.intersight.asset_device_contract_information import main as asset_device_contract_information
+from lib.intersight.chassis_profile import main as chassis_profile
+from lib.intersight.compute_blade import main as compute_blade
+from lib.intersight.cond_alarm import main as cond_alarm
+from lib.intersight.equipment_expander_module import main as equipment_expander_module
+from lib.intersight.equipment_fan_module import main as equipment_fan_module
+from lib.intersight.equipment_fan import main as equipment_fan
+from lib.intersight.equipment_fan_control import main as equipment_fan_control
+from lib.intersight.equipment_iocard import main as equipment_iocard
+from lib.intersight.equipment_psu import main as equipment_psu
+from lib.intersight.equipment_psu_control import main as equipment_psu_control
+from lib.intersight.ethernet_host_port import main as ethernet_host_port
+from lib.intersight.ethernet_network_port import main as ethernet_network_port
+from lib.intersight.ethernet_physical_port import main as ethernet_physical_port
+from lib.intersight.network_element_summary import main as network_element_summary
+from lib.intersight.power_control_state import main as power_control_state
+from lib.intersight.tam_advisory_instance import main as tam_advisory_instance
 
 
 class ChassisExtraAttributes():
     """Class for chassis object extra attributes
     """
     def __init__(self, iaccount, log_id=None):
-        self.chassis = None
         self.chassis_info = {}
         self.chassis_helper = {}
-        self.settings = None
 
         self.log_handler = log_helper.Log(log_id=log_id)
 
@@ -37,6 +36,7 @@ class ChassisExtraAttributes():
         )
 
         self.iocard_handler = equipment_iocard.EquipmentIoCard(iaccount, log_id=log_id)
+        self.expander_module_handler = equipment_expander_module.EquipmentExpanderModule(iaccount, log_id=log_id)
         self.ether_host_port_handler = ethernet_host_port.EthernetHostPort(iaccount, log_id=log_id)
         self.ether_network_port_handler = ethernet_network_port.EthernetNetworkPort(iaccount, log_id=log_id)
         self.ether_physical_port_handler = ethernet_physical_port.EthernetPhysicalPort(iaccount, log_id=log_id)
@@ -57,7 +57,7 @@ class ChassisExtraAttributes():
         self.chassis_profile_handler = chassis_profile.ChassisProfile(iaccount, log_id=log_id)
         self.network_element_summary_handler = network_element_summary.NetworkElementSummary(iaccount, log_id=log_id)
 
-    def add_common_attributes(self):
+    def add_common_attributes(self, chassis_mo):
         keys = [
             'ConnectionPath',
             'ConnectionStatus',
@@ -77,45 +77,77 @@ class ChassisExtraAttributes():
         ]
 
         for key in keys:
-            if isinstance(self.chassis[key], str):
-                self.chassis_info[key] = self.chassis[key].strip()
+            if isinstance(chassis_mo[key], str):
+                self.chassis_info[key] = chassis_mo[key].strip()
                 continue
 
-            self.chassis_info[key] = self.chassis[key]
+            self.chassis_info[key] = chassis_mo[key]
 
-        if self.chassis['AlarmSummary']['Warning'] == 0 and self.chassis['AlarmSummary']['Critical'] == 0:
-            self.chassis_info['Health'] = 'Healthy'
-            self.chassis_info['HealthSummary'] = 'Healthy'
-        if self.chassis['AlarmSummary']['Warning'] > 0 and self.chassis['AlarmSummary']['Critical'] == 0:
-            self.chassis_info['Health'] = 'Warnings'
-            self.chassis_info['HealthSummary'] = 'Warnings (%s)' % (self.chassis['AlarmSummary']['Warning'])
-        if self.chassis['AlarmSummary']['Critical'] > 0:
-            self.chassis_info['Health'] = 'Critical'
-            self.chassis_info['HealthSummary'] = 'Critical (%s)' % (self.chassis['AlarmSummary']['Critical'])
+        self.chassis_info['AlarmSummary'] = {}
+        self.chassis_info['AlarmSummary']['__Output'] = {}
+        self.chassis_info['AlarmSummary']['__Output']['Critical'] = 'Red'
+        self.chassis_info['AlarmSummary']['__Output']['Warning'] = 'Yellow'
+        self.chassis_info['AlarmSummary']['__Output']['Info'] = 'Blue'
+        self.chassis_info['AlarmSummary']['__Output']['Cleared'] = 'Green'
 
-        self.chassis_info['AlarmWarning'] = self.chassis['AlarmSummary']['Warning']
-        self.chassis_info['AlarmCritical'] = self.chassis['AlarmSummary']['Critical']
+        for key in ['Critical', 'Warning', 'Info', 'Cleared']:
+            if key in chassis_mo['AlarmSummary']:
+                self.chassis_info['AlarmSummary'][key] = chassis_mo['AlarmSummary'][key]
 
-        self.chassis_info['ConnectionSummary'] = '%s / %s' % (
-            self.chassis_info['ConnectionPath'],
-            self.chassis_info['ConnectionStatus']
+        self.chassis_info['Health'] = 'Healthy'
+        self.chassis_info['__Output']['Health'] = 'Green'
+
+        if self.chassis_info['AlarmSummary']['Warning'] == 0 and self.chassis_info['AlarmSummary']['Critical'] == 0:
+            if 'Info' in self.chassis_info['AlarmSummary'] and self.chassis_info['AlarmSummary']['Info'] > 0:
+                self.chassis_info['Health'] = 'Healthy (%s)' % (
+                    self.chassis_info['AlarmSummary']['Info']
+                )
+                self.chassis_info['__Output']['Health'] = 'Blue'
+
+        if self.chassis_info['AlarmSummary']['Warning'] > 0 and self.chassis_info['AlarmSummary']['Critical'] == 0:
+            self.chassis_info['Health'] = 'Warnings (%s)' % (
+                self.chassis_info['AlarmSummary']['Warning']
+            )
+            self.chassis_info['__Output']['Health'] = 'Yellow'
+
+        if self.chassis_info['AlarmSummary']['Critical'] > 0:
+            self.chassis_info['Health'] = 'Critical (%s)' % (
+                self.chassis_info['AlarmSummary']['Critical']
+            )
+            self.chassis_info['__Output']['Health'] = 'Red'
+
+        if self.chassis_info['OperState'] == '':
+            self.chassis_info['OperStateTick'] = '--'
+        else:
+            if self.chassis_info['OperState'].lower() in ['ok', 'operable']:
+                self.chassis_info['OperStateTick'] = '\u2713'
+                self.chassis_info['__Output']['OperStateTick'] = 'Green'
+            else:
+                self.chassis_info['OperStateTick'] = '\u2717'
+                self.chassis_info['__Output']['OperStateTick'] = 'Red'
+
+        self.chassis_info['NodeCount'] = len(
+            chassis_mo['Blades']
         )
 
-        self.chassis_info['NodeMax'] = None
-        self.chassis_info['IfmMax'] = None
-        self.chassis_info['FanModuleMax'] = None
-        self.chassis_info['FanMax'] = None
-        self.chassis_info['PsuMax'] = None
+        self.chassis_info['FanModuleCount'] = len(
+            chassis_mo['Fanmodules']
+        )
 
-        if self.chassis_info['Model'] == 'UCSX-9508':
-            self.chassis_info['NodeMax'] = 8
-            self.chassis_info['IfmMax'] = 2
-            self.chassis_info['FanModuleMax'] = 4
-            self.chassis_info['FanMax'] = 8
-            self.chassis_info['PsuMax'] = 6
+        self.chassis_info['IoCount'] = len(
+            chassis_mo['Ioms']
+        )
 
-    def add_chassis_alarms_attributes(self):
-        self.chassis_info['Alarms'] = []
+        self.chassis_info['ExpanderModuleCount'] = len(
+            chassis_mo['ExpanderModules']
+        )
+
+        self.chassis_info['PsuCount'] = len(
+            chassis_mo['Psus']
+        )
+
+    def add_alarm_info(self, include_cleared=False, include_acknowledged=False):
+        self.chassis_info['AlarmInfo'] = []
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
             'alarm',
@@ -124,19 +156,61 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_chassis_alarms_attributes',
+                'add_alarm_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
-        else:
-            for managed_object in managed_objects:
-                self.chassis_info['Alarms'].append(
-                    self.cond_alarm_handler.get_info(
-                        managed_object
-                    )
-                )
+            return
 
-    def add_chassis_advisory_attributes(self):
-        self.chassis_info['Advisory'] = []
+        critical_count = 0
+        warning_count = 0
+        info_count = 0
+
+        for managed_object in managed_objects:
+            alarm_info = self.cond_alarm_handler.get_info(
+                managed_object
+            )
+            if alarm_info['Severity'] == 'Cleared' and not include_cleared:
+                continue
+
+            if alarm_info['Acknowledge'] == 'Acknowledge' and not include_acknowledged:
+                continue
+
+            if alarm_info['AncestorMoId'] != self.chassis_info['Moid']:
+                continue
+
+            if alarm_info['Severity'] == 'Critical':
+                critical_count = critical_count + 1
+
+            if alarm_info['Severity'] == 'Warning':
+                warning_count = warning_count + 1
+
+            if alarm_info['Severity'] == 'Info':
+                info_count = info_count + 1
+
+            self.chassis_info['AlarmInfo'].append(
+                alarm_info
+            )
+
+        if critical_count != self.chassis_info['AlarmSummary']['Critical']:
+            self.log.error(
+                'add_alarm_info',
+                'Critical alarms do not match count: %s' % (self.chassis_info['Moid'])
+            )
+
+        if warning_count != self.chassis_info['AlarmSummary']['Warning']:
+            self.log.error(
+                'add_alarm_info',
+                'Warning alarms do not match count: %s' % (self.chassis_info['Moid'])
+            )
+
+        if info_count != self.chassis_info['AlarmSummary']['Info']:
+            self.log.error(
+                'add_alarm_info',
+                'Info alarms do not match count: %s' % (self.chassis_info['Moid'])
+            )
+
+    def add_advisory_info(self):
+        self.chassis_info['AdvisoryInfo'] = []
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
             'advisory',
@@ -145,23 +219,19 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_chassis_advisory_attributes',
+                'add_advisory_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
             for managed_object in managed_objects:
-                self.chassis_info['Advisory'].append(
+                self.chassis_info['AdvisoryInfo'].append(
                     self.tam_advisory_instance_handler.get_info(
                         managed_object
                     )
                 )
 
-        self.chassis_info['AdvisoryCount'] = len(
-            self.chassis_info['Advisory']
-        )
-
-    def add_chassis_contract_attributes(self):
-        self.chassis_info['Contract'] = None
+    def add_contract_info(self):
+        self.chassis_info['ContractInfo'] = None
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
             'contract',
@@ -170,7 +240,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_chassis_contract_attributes',
+                'add_contract_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
             return
@@ -180,17 +250,17 @@ class ChassisExtraAttributes():
 
         if len(managed_objects) > 1:
             self.log_handler.error(
-                'add_chassis_contract_attributes',
+                'add_contract_info',
                 'Unexpected contract count: %s' % (self.chassis['Moid'])
             )
             return
 
-        self.chassis_info['Contract'] = self.asset_device_contract_information_handler.get_info(
+        self.chassis_info['ContractInfo'] = self.asset_device_contract_information_handler.get_info(
             managed_objects[0]
         )
 
-    def add_chassis_profile_attributes(self):
-        self.chassis_info['Profile'] = None
+    def add_profile_info(self):
+        self.chassis_info['ProfileInfo'] = None
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
             'profile',
@@ -199,7 +269,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_chassis_profile_attributes',
+                'add_profile_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
             return
@@ -209,18 +279,18 @@ class ChassisExtraAttributes():
 
         if len(managed_objects) > 1:
             self.log_handler.error(
-                'add_chassis_profile_attributes',
+                'add_profile_info',
                 'Unexpected profile count: %s' % (self.chassis['Moid'])
             )
             return
 
-        self.chassis_info['Profile'] = self.chassis_profile_handler.get_info(
+        self.chassis_info['ProfileInfo'] = self.chassis_profile_handler.get_info(
             managed_objects[0]
         )
 
-    def add_chassis_domain_attributes(self):
+    def add_domain_info(self, chassis_mo):
         self.chassis_info['Domain'] = {}
-        self.chassis_info['Domain']['Name'] = self.chassis['RegisteredDevice']['DeviceHostname'][0]
+        self.chassis_info['Domain']['Name'] = chassis_mo['RegisteredDevice']['DeviceHostname'][0]
 
         self.chassis_info['Domain']['Switch'] = []
 
@@ -231,7 +301,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_chassis_domain_attributes',
+                'add_domain_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
@@ -247,7 +317,7 @@ class ChassisExtraAttributes():
             key=lambda k: (k['Name'])
         )
 
-    def add_node_attributes(self):
+    def add_node_info(self):
         self.chassis_info['NodeInfo'] = []
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
@@ -257,7 +327,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_node_attributes',
+                'add_node_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
@@ -271,31 +341,33 @@ class ChassisExtraAttributes():
         # Sort for nice display
         self.chassis_info['NodeInfo'] = sorted(
             self.chassis_info['NodeInfo'],
-            key=lambda k: (k['SlotId'])
+            key=lambda i: (
+                i['SlotId']
+            )
         )
 
-        # Summaries
+        for node_info in self.chassis_info['NodeInfo']:
+            if node_info['Presence'] == 'equipped':
+                inventory_info = {}
+                inventory_info['Order'] = 2
+                inventory_info['SubOrder'] = node_info['SlotId']
+                inventory_info['Type'] = 'Node'
+                inventory_info['Name'] = node_info['ServerName']
+                for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                    inventory_info[key] = ''
+                    if key in node_info:
+                        inventory_info[key] = node_info[key]
+                        if inventory_info[key] is None:
+                                inventory_info[key] = ''
 
-        self.chassis_info['NodePowerOn'] = 0
-        for blade_info in self.chassis_info['NodeInfo']:
-            if blade_info['PowerOn']:
-                self.chassis_info['NodePowerOn'] = self.chassis_info['NodePowerOn'] + 1
+                inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+                inventory_info['ServerType'] = 'N/A'
+                inventory_info['ServerPid'] = 'N/A'
+                inventory_info['ServerSerial'] = 'N/A'
 
-        self.chassis_info['NodeCount'] = len(
-            self.chassis_info['NodeInfo']
-        )
-
-        if self.chassis_info['NodeMax'] is None:
-            self.chassis_info['NodeSummary'] = '%s/%s' % (
-                self.chassis_info['NodePowerOn'],
-                self.chassis_info['NodeCount']
-            )
-        else:
-            self.chassis_info['NodeSummary'] = '%s/%s/%s' % (
-                self.chassis_info['NodePowerOn'],
-                self.chassis_info['NodeCount'],
-                self.chassis_info['NodeMax']
-            )
+                self.chassis_info['Inventory'].append(
+                    inventory_info
+                )
 
     def add_adapter_unit_attributes(self):
         self.chassis_helper['AdapterUnitIds'] = []
@@ -325,6 +397,8 @@ class ChassisExtraAttributes():
                 adapter_unit_info
             )
 
+            adapter_unit_info['ComputeNodeId'] = None
+            adapter_unit_info['ComputeNodePowerOn'] = None
             for node_info in self.chassis_info['NodeInfo']:
                 if adapter_unit_info['ComputeNodeMoid'] == node_info['Moid']:
                     adapter_unit_info['ComputeNodeId'] = node_info['SlotId']
@@ -390,7 +464,7 @@ class ChassisExtraAttributes():
                             host_port['PeerNodeId'] = ext_eth_interface_info['ComputeNodeId']
                             host_port['PeerInfo'] = ext_eth_interface_info['PeerInfo']
 
-    def add_io_module_attributes(self):
+    def add_io_info(self):
         self.chassis_info['IfmInfo'] = []
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
@@ -400,7 +474,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_io_module_attributes',
+                'add_io_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
@@ -413,31 +487,88 @@ class ChassisExtraAttributes():
 
         self.chassis_info['IfmInfo'] = sorted(
             self.chassis_info['IfmInfo'],
-            key=lambda k: (k['ModuleId'])
+            key=lambda i: (
+                i['ModuleId']
+            )
         )
 
-        # Summaries
+        # Inventory
 
-        self.chassis_info['IfmOn'] = 0
-        for io_module in self.chassis_info['IfmInfo']:
-            if io_module['On']:
-                self.chassis_info['IfmOn'] = self.chassis_info['IfmOn'] + 1
+        for ifm_info in self.chassis_info['IfmInfo']:
+            if ifm_info['Presence'] == 'equipped':
+                inventory_info = {}
+                inventory_info['Order'] = 3
+                inventory_info['SubOrder'] = ifm_info['ModuleId']
+                inventory_info['Type'] = 'IO'
+                inventory_info['Name'] = ifm_info['Name']
+                for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                    inventory_info[key] = ''
+                    if key in ifm_info:
+                        inventory_info[key] = ifm_info[key]
+                        if inventory_info[key] is None:
+                                inventory_info[key] = ''
 
-        self.chassis_info['IfmCount'] = len(
-            self.chassis_info['IfmInfo']
+                inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+                inventory_info['ServerType'] = 'N/A'
+                inventory_info['ServerPid'] = 'N/A'
+                inventory_info['ServerSerial'] = 'N/A'
+
+                self.chassis_info['Inventory'].append(
+                    inventory_info
+                )
+
+    def add_expander_module_info(self):
+        self.chassis_info['ExpanderModuleInfo'] = []
+
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'expander_module',
+            subdirectory=self.chassis_info['Moid'],
+            check_ttl=False
         )
-
-        if self.chassis_info['IfmMax'] is None:
-            self.chassis_info['IfmSummary'] = '%s/%s' % (
-                self.chassis_info['IfmOn'],
-                self.chassis_info['IfmCount']
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_expander_module_info',
+                'No cache:%s' % (self.chassis['Moid'])
             )
         else:
-            self.chassis_info['IfmSummary'] = '%s/%s/%s' % (
-                self.chassis_info['IfmOn'],
-                self.chassis_info['IfmCount'],
-                self.chassis_info['IfmMax']
+            for managed_object in managed_objects:
+                self.chassis_info['ExpanderModuleInfo'].append(
+                    self.expander_module_handler.get_info(
+                        managed_object
+                    )
+                )
+
+        self.chassis_info['ExpanderModuleInfo'] = sorted(
+            self.chassis_info['ExpanderModuleInfo'],
+            key=lambda i: (
+                i['ModuleId']
             )
+        )
+
+        # Inventory
+
+        for expander_info in self.chassis_info['ExpanderModuleInfo']:
+            if expander_info['Presence'] == 'equipped':
+                inventory_info = {}
+                inventory_info['Order'] = 4
+                inventory_info['SubOrder'] = expander_info['ModuleId']
+                inventory_info['Type'] = 'Expander'
+                inventory_info['Name'] = expander_info['Name']
+                for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                    inventory_info[key] = ''
+                    if key in expander_info:
+                        inventory_info[key] = expander_info[key]
+                        if inventory_info[key] is None:
+                                inventory_info[key] = ''
+
+                inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+                inventory_info['ServerType'] = 'N/A'
+                inventory_info['ServerPid'] = 'N/A'
+                inventory_info['ServerSerial'] = 'N/A'
+
+                self.chassis_info['Inventory'].append(
+                    inventory_info
+                )
 
     def add_host_port_attributes(self):
         self.chassis_info['HostPortInfo'] = []
@@ -478,39 +609,6 @@ class ChassisExtraAttributes():
                 k['SlotId'],
                 k['PortId']
             )
-        )
-
-        # Module Host Port Summaries
-
-        for io_module_info in self.chassis_info['IfmInfo']:
-            io_module_info['HostPortCount'] = len(
-                io_module_info['HostPorts']
-            )
-
-            io_module_info['HostPortUp'] = 0
-            for host_port_moid in io_module_info['HostPorts']:
-                for host_port_info in self.chassis_info['HostPortInfo']:
-                    if host_port_moid == host_port_info['Moid']:
-                        if host_port_info['Up']:
-                            io_module_info['HostPortUp'] = io_module_info['HostPortUp'] + 1
-
-            io_module_info['HostPortSummary'] = '%s/%s' % (
-                io_module_info['HostPortUp'],
-                io_module_info['HostPortCount']
-            )
-
-        # Global Summaries
-
-        self.chassis_info['HostPortCount'] = 0
-        self.chassis_info['HostPortUp'] = 0
-
-        for io_module_info in self.chassis_info['IfmInfo']:
-            self.chassis_info['HostPortCount'] = self.chassis_info['HostPortCount'] + io_module_info['HostPortCount']
-            self.chassis_info['HostPortUp'] = self.chassis_info['HostPortUp'] + io_module_info['HostPortUp']
-
-        self.chassis_info['HostPortSummary'] = '%s/%s' % (
-            self.chassis_info['HostPortUp'],
-            self.chassis_info['HostPortCount']
         )
 
     def add_network_port_attributes(self):
@@ -560,57 +658,6 @@ class ChassisExtraAttributes():
             )
         )
 
-        # Module Host Port Summaries
-
-        for io_module_info in self.chassis_info['IfmInfo']:
-            io_module_info['NetworkPortCount'] = len(
-                io_module_info['NetworkPorts']
-            )
-
-            io_module_info['NetworkPortUp'] = 0
-            for network_port_moid in io_module_info['NetworkPorts']:
-                for network_port_info in self.chassis_info['NetworkPortInfo']:
-                    if network_port_moid == network_port_info['Moid']:
-                        if network_port_info['Up']:
-                            io_module_info['NetworkPortUp'] = io_module_info['NetworkPortUp'] + 1
-
-            if io_module_info['NetworkPortMax'] is None:
-                io_module_info['NetworkPortSummary'] = '%s/%s' % (
-                    io_module_info['NetworkPortUp'],
-                    io_module_info['NetworkPortCount']
-                )
-            else:
-                io_module_info['NetworkPortSummary'] = '%s/%s/%s' % (
-                    io_module_info['NetworkPortUp'],
-                    io_module_info['NetworkPortCount'],
-                    io_module_info['NetworkPortMax']
-                )
-
-        # Global Summaries
-
-        self.chassis_info['NetworkPortUp'] = 0
-        self.chassis_info['NetworkPortCount'] = 0
-        self.chassis_info['NetworkPortMax'] = 0
-
-        for io_module_info in self.chassis_info['IfmInfo']:
-            if io_module_info['NetworkPortMax'] is not None:
-                self.chassis_info['NetworkPortMax'] = self.chassis_info['NetworkPortMax'] + io_module_info['NetworkPortMax']
-
-            self.chassis_info['NetworkPortCount'] = self.chassis_info['NetworkPortCount'] + io_module_info['NetworkPortCount']
-            self.chassis_info['NetworkPortUp'] = self.chassis_info['NetworkPortUp'] + io_module_info['NetworkPortUp']
-
-        if self.chassis_info['NetworkPortMax'] == 0:
-            self.chassis_info['NetworkPortSummary'] = '%s/%s' % (
-                self.chassis_info['NetworkPortUp'],
-                self.chassis_info['NetworkPortCount']
-            )
-        else:
-            self.chassis_info['NetworkPortSummary'] = '%s/%s/%s' % (
-                self.chassis_info['NetworkPortUp'],
-                self.chassis_info['NetworkPortCount'],
-                self.chassis_info['NetworkPortMax']
-            )
-
     def add_physical_port_attributes(self):
         self.chassis_info['PhysicalPortInfo'] = []
 
@@ -643,7 +690,7 @@ class ChassisExtraAttributes():
                             network_port['PeerPortTransceiverType'] = physical_port_info['TransceiverType']
                             network_port['PeerOperSpeed'] = physical_port_info['OperSpeed']
 
-    def add_fan_control_attributes(self):
+    def add_fan_control_info(self):
         self.chassis_info['FanControlInfo'] = None
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
@@ -653,7 +700,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_fan_control_attributes',
+                'add_fan_control_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
             return
@@ -663,7 +710,7 @@ class ChassisExtraAttributes():
 
         if len(managed_objects) > 1:
             self.log_handler.error(
-                'add_fan_control_attributes',
+                'add_fan_control_info',
                 'Unexpected fan control count: %s' % (self.chassis['Moid'])
             )
             return
@@ -672,7 +719,7 @@ class ChassisExtraAttributes():
             managed_objects[0]
         )
 
-    def add_fan_module_attributes(self):
+    def add_fan_module_info(self):
         self.chassis_helper['FanModuleIds'] = []
         self.chassis_info['FanModuleInfo'] = []
 
@@ -683,7 +730,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_fan_module_attributes',
+                'add_fan_module_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
@@ -700,28 +747,7 @@ class ChassisExtraAttributes():
             key=lambda i: i['ModuleId']
         )
 
-        # Summaries
-
-        self.chassis_info['FanModulesOn'] = 0
-        for fan_module in self.chassis_info['FanModuleInfo']:
-            if fan_module['On']:
-                self.chassis_info['FanModulesOn'] = self.chassis_info['FanModulesOn'] + 1
-
-        self.chassis_info['FanModuleCount'] = len(self.chassis_info['FanModuleInfo'])
-
-        if self.chassis_info['FanModuleMax'] is None:
-            self.chassis_info['FanModuleSummary'] = '%s/%s' % (
-                self.chassis_info['FanModulesOn'],
-                self.chassis_info['FanModuleCount']
-            )
-        else:
-            self.chassis_info['FanModuleSummary'] = '%s/%s/%s' % (
-                self.chassis_info['FanModulesOn'],
-                self.chassis_info['FanModuleCount'],
-                self.chassis_info['FanModuleMax']
-            )
-
-    def add_fan_attributes(self):
+    def add_fan_info(self):
         self.chassis_info['FanInfo'] = []
 
         managed_objects = self.cache_handler.get_intersight_cache_entry(
@@ -731,7 +757,7 @@ class ChassisExtraAttributes():
         )
         if managed_objects is None:
             self.log_handler.error(
-                'add_fan_attributes',
+                'add_fan_info',
                 'No cache:%s' % (self.chassis['Moid'])
             )
         else:
@@ -745,31 +771,36 @@ class ChassisExtraAttributes():
         # Sort for nice display
         self.chassis_info['FanInfo'] = sorted(
             self.chassis_info['FanInfo'],
-            key=lambda i: i['ModuleId']
+            key=lambda i: (
+                i['FanModuleId'],
+                i['FanId']
+            )
         )
 
-        # Summaries
+        # Inventory
 
-        self.chassis_info['FanOn'] = 0
-        for fan in self.chassis_info['FanInfo']:
-            if fan['On']:
-                self.chassis_info['FanOn'] = self.chassis_info['FanOn'] + 1
+        for fan_info in self.chassis_info['FanInfo']:
+            if fan_info['Presence'] == 'equipped':
+                inventory_info = {}
+                inventory_info['Order'] = 5
+                inventory_info['SubOrder'] = (fan_info['FanModuleId'] + 1) * 10 + fan_info['FanId']
+                inventory_info['Type'] = 'Fan'
+                inventory_info['Name'] = fan_info['Name']
+                for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                    inventory_info[key] = ''
+                    if key in fan_info:
+                        inventory_info[key] = fan_info[key]
+                        if inventory_info[key] is None:
+                            inventory_info[key] = ''
 
-        self.chassis_info['FanCount'] = len(
-            self.chassis_info['FanInfo']
-        )
+                inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+                inventory_info['ServerType'] = 'N/A'
+                inventory_info['ServerPid'] = 'N/A'
+                inventory_info['ServerSerial'] = 'N/A'
 
-        if self.chassis_info['FanMax'] is None:
-            self.chassis_info['FanSummary'] = '%s/%s' % (
-                self.chassis_info['FanOn'],
-                self.chassis_info['FanCount']
-            )
-        else:
-            self.chassis_info['FanSummary'] = '%s/%s/%s' % (
-                self.chassis_info['FanOn'],
-                self.chassis_info['FanCount'],
-                self.chassis_info['FanMax']
-            )
+                self.chassis_info['Inventory'].append(
+                    inventory_info
+                )
 
     def add_psu_control_attributes(self):
         self.chassis_info['PsuControlStateInfo'] = None
@@ -856,58 +887,120 @@ class ChassisExtraAttributes():
             key=lambda i: i['Dn']
         )
 
-        # Summaries
+        # Inventory
 
-        self.chassis_info['PsuCount'] = len(
-            self.chassis_info['PsuInfo']
-        )
-
-        self.chassis_info['PsuOn'] = 0
         for psu_info in self.chassis_info['PsuInfo']:
-            if psu_info['On']:
-                self.chassis_info['PsuOn'] = self.chassis_info['PsuOn'] + 1
+            inventory_info = {}
+            inventory_info['Order'] = 6
+            inventory_info['SubOrder'] = psu_info['Id']
+            inventory_info['Type'] = 'PSU'
+            inventory_info['Id'] = psu_info['Id']
+            inventory_info['Name'] = 'PSU #%s' % (psu_info['Id'])
+            for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                inventory_info[key] = ''
+                if key in psu_info:
+                    inventory_info[key] = psu_info[key]
+                    if inventory_info[key] is None:
+                        inventory_info[key] = ''
 
-        if self.chassis_info['PsuMax'] is None:
-            self.chassis_info['PsuSummary'] = '%s/%s' % (
-                self.chassis_info['PsuOn'],
-                self.chassis_info['PsuCount']
-            )
-        else:
-            self.chassis_info['PsuSummary'] = '%s/%s/%s' % (
-                self.chassis_info['PsuOn'],
-                self.chassis_info['PsuCount'],
-                self.chassis_info['PsuMax']
+            inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+            inventory_info['ServerType'] = 'N/A'
+            inventory_info['ServerPid'] = 'N/A'
+            inventory_info['ServerSerial'] = 'N/A'
+
+            self.chassis_info['Inventory'].append(
+                inventory_info
             )
 
     def add_chassis_attributes(self, chassis_mo, settings):
-        self.chassis = chassis_mo
         self.chassis_info = {}
-        self.settings = settings
+        self.chassis_info['__Output'] = {}
 
-        self.add_common_attributes()
-        self.add_node_attributes()
+        self.add_common_attributes(chassis_mo)
 
-        self.add_io_module_attributes()
-        self.add_host_port_attributes()
-        self.add_network_port_attributes()
-        self.add_physical_port_attributes()
+        self.chassis_info['Inventory'] = []
+        inventory_info = {}
+        inventory_info['Order'] = 1
+        inventory_info['SubOrder'] = 1
+        inventory_info['Type'] = 'Chassis'
+        inventory_info['Name'] = self.chassis_info['Name']
+        for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+            inventory_info[key] = ''
+            if key in self.chassis_info:
+                inventory_info[key] = self.chassis_info[key]
+                if inventory_info[key] is None:
+                    inventory_info[key] = ''
 
-        self.add_adapter_unit_attributes()
-        self.add_adapter_ext_eth_interface_attributes()
+        if len(inventory_info['Pid']) == 0:
+            inventory_info['Pid'] = inventory_info['Model']
 
-        self.add_chassis_domain_attributes()
-        self.add_chassis_alarms_attributes()
-        self.add_chassis_advisory_attributes()
-        self.add_chassis_contract_attributes()
-        self.add_chassis_profile_attributes()
+        inventory_info['ChassisMoid'] = self.chassis_info['Moid']
+        self.chassis_info['ChassisPid'] = inventory_info['Pid']
+        self.chassis_info['ChassisSerial'] = inventory_info['Serial']
 
-        self.add_fan_control_attributes()
-        self.add_fan_module_attributes()
-        self.add_fan_attributes()
+        inventory_info['ServerType'] = 'N/A'
+        inventory_info['ServerPid'] = 'N/A'
+        inventory_info['ServerSerial'] = 'N/A'
 
-        self.add_power_control_attributes()
-        self.add_psu_control_attributes()
-        self.add_psu_attributes()
+        self.chassis_info['Inventory'].append(
+            inventory_info
+        )
+
+        if 'alarm' in settings and settings['alarm']:
+            self.add_alarm_info()
+
+        if 'advisory' in settings and settings['advisory']:
+            self.add_advisory_info()
+
+        if 'contract' in settings and settings['contract']:
+            self.add_contract_info()
+
+        if 'profile' in settings and settings['profile']:
+            self.add_profile_info()
+
+        if 'node' in settings and settings['node']:
+            self.add_node_info()
+
+        if 'io' in settings and settings['io']:
+            self.add_io_info()
+
+        if 'expander_module' in settings and settings['expander_module']:
+            self.add_expander_module_info()
+
+        if 'eth' in settings and settings['eth']:
+            self.add_adapter_unit_attributes()
+
+        if 'port' in settings and settings['port']:
+            self.add_adapter_unit_attributes()
+            self.add_host_port_attributes()
+            self.add_network_port_attributes()
+            self.add_physical_port_attributes()
+            self.add_adapter_ext_eth_interface_attributes()
+
+        if 'fi' in settings and settings['fi']:
+            self.add_domain_info(chassis_mo)
+
+        if 'fan' in settings and settings['fan']:
+            self.add_fan_module_info()
+            self.add_fan_info()
+
+        if 'fan_control' in settings and settings['fan_control']:
+            self.add_fan_control_info()
+
+        if 'psu_control' in settings and settings['psu_control']:
+            self.add_power_control_attributes()
+            self.add_psu_control_attributes()
+
+        if 'psu' in settings and settings['psu']:
+            self.add_psu_attributes()
+
+        self.chassis_info['Inventory'] = sorted(
+            self.chassis_info['Inventory'],
+            key=lambda i: (
+                i['Order'],
+                i['SubOrder']
+            )
+        )
 
         self.log_handler.set_log(
             'chassis_info.%s' % (chassis_mo['Moid']),

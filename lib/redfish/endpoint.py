@@ -1,7 +1,7 @@
 import json
 
-from lib import output_helper
 from lib.redfish.cache import RedfishCache
+from lib.redfish import endpoint_settings
 from lib.redfish.ucs_rack import endpoint as ucs_rack_endpoint
 from lib.redfish.standard import endpoint as standard_endpoint
 from lib.redfish.fi import endpoint as fi_endpoint
@@ -18,24 +18,19 @@ class RedfishEndpoint(RedfishCache):
         endpoint_port,
         redfish_username,
         redfish_password,
+        system_id=None,
         cache_name=None,
         get_timeout=10,
         auto_connect=True,
         ssl_verify=False,
         deep_search_exlusions=True,
         tree_max_execution_time=0,
-        log_id=None,
-        verbose=False,
-        debug=False
+        log_id=None
         ):
 
         RedfishCache.__init__(self, log_id=log_id)
 
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
-        )
+        self.endpoint_settings_handler = endpoint_settings.RedfishEndpointSettings(log_id=log_id)
 
         self.tree_max_execution_time = tree_max_execution_time
         self.endpoint_handler = None
@@ -68,9 +63,7 @@ class RedfishEndpoint(RedfishCache):
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
-                log_id=log_id,
-                verbose=verbose,
-                debug=debug
+                log_id=log_id
             )
 
         if endpoint_type == 'ucsc':
@@ -80,14 +73,13 @@ class RedfishEndpoint(RedfishCache):
                 endpoint_port,
                 redfish_username,
                 redfish_password,
+                system_id=system_id,
                 cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
-                log_id=log_id,
-                verbose=verbose,
-                debug=debug
+                log_id=log_id
             )
 
         if endpoint_type == 'fi':
@@ -102,9 +94,7 @@ class RedfishEndpoint(RedfishCache):
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
-                log_id=log_id,
-                verbose=verbose,
-                debug=debug
+                log_id=log_id
             )
 
             if endpoint_cache_entry is not None:
@@ -125,9 +115,7 @@ class RedfishEndpoint(RedfishCache):
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
-                log_id=log_id,
-                verbose=verbose,
-                debug=debug
+                log_id=log_id
             )
 
         if endpoint_type == 'hpe':
@@ -142,15 +130,20 @@ class RedfishEndpoint(RedfishCache):
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
-                log_id=log_id,
-                verbose=verbose,
-                debug=debug
+                log_id=log_id
             )
 
         if self.endpoint_handler is None:
             raise ValueError('Unsupported endpoint type: %s' % (endpoint_type))
 
         self.tree_handler = tree.RedfishTree(self.endpoint_handler)
+
+    def __del__(self):
+        if self.endpoint_handler is not None:
+            del self.endpoint_handler
+
+    def connect(self):
+        return self.endpoint_handler.connect()
 
     def is_connected(self):
         return self.endpoint_handler.is_connected()
@@ -166,7 +159,10 @@ class RedfishEndpoint(RedfishCache):
         )
         success = self.tree_handler.get_tree()
         if not success:
-            self.my_output.error('Max path walk time reached: %s seconds' % (self.tree_max_execution_time))
+            self.log.error(
+                'get_tree',
+                'Max path walk time reached: %s seconds' % (self.tree_max_execution_time)
+            )
             return None
 
         my_tree = json.loads(
@@ -177,35 +173,6 @@ class RedfishEndpoint(RedfishCache):
         )
 
         return my_tree
-
-    def print_tree(self, data, output):
-        if data is None:
-            return
-
-        if output == 'json':
-            self.my_output.default(
-                json.dumps(
-                    data,
-                    indent=4
-                )
-            )
-
-        if output == 'default':
-            self.my_output.default('')
-            for uri in data:
-                self.my_output.default(uri, underline=True)
-                if data[uri] is None:
-                    self.my_output.default('No properties')
-                    continue
-
-                self.my_output.default(
-                    json.dumps(
-                        data[uri],
-                        indent=4
-                    )
-                )
-
-                self.my_output.default('')
 
     def filter_key(self, rules, path=None, data=None):
         if path is None and data is None:
@@ -320,26 +287,13 @@ class RedfishEndpoint(RedfishCache):
         )
         success = self.tree_handler.get_tree()
         if not success:
-            self.my_output.error('Max path walk time reached: %s' % (self.tree_max_execution_time))
+            self.log.error(
+                'get_children',
+                'Max path walk time reached: %s' % (self.tree_max_execution_time)
+            )
             return None
 
         return sorted(self.tree_handler.tree.keys())
-
-    def print_children(self, path, children, deep, output):
-        if output == 'default':
-            path = self.endpoint_handler.path_fixup(path)
-            self.my_output.default('')
-            if deep:
-                self.my_output.default('Redfish resource references (recursively): %s' % (path), underline=True)
-            else:
-                self.my_output.default('Redfish resource references: %s' % (path), underline=True)
-
-            for child in children:
-                if child != path:
-                    self.my_output.default(child)
-
-        if output == 'json':
-            self.my_output.default(json.dumps(children, indent=4))
 
     def get_descriptions(self, path, deep):
         redfish_properties = [

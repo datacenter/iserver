@@ -475,6 +475,9 @@ def get_aci_epg_command(
                     epg
                 )
 
+        ctx.my_output.default('Filter: tenant, ap, name, pctag, bd, subnet, address, contract, node, domain, member, pg, fault, severity, when', before_newline=True)
+        ctx.my_output.default('View:   state (def), prop, bd, contract, ep, node, stport, domain, member, fault, hfault, event, audit, diag, all, verbose')
+
         if epgs is None or len(epgs) == 0:
             raise NoResultExit
 

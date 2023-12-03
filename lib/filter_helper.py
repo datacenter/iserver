@@ -2,6 +2,16 @@ import re
 import time
 
 
+def format_subtring_match(value):
+    if not value.startswith('*'):
+        value = '*%s' % (value)
+
+    if not value.endswith('*'):
+        value = '%s*' % (value)
+
+    return value
+
+
 def sanitize_string(value):
     value = value.strip()
     value = re.sub(' +', ' ', value)
@@ -495,3 +505,57 @@ def match_timestamp(key, value):
         return True
 
     return False
+
+
+def get_namespace_name(value, delimiter='/'):
+    if len(value.split(delimiter)) == 1:
+        return (None, value)
+
+    if len(value.split(delimiter)) == 2:
+        return value.split(delimiter)
+
+    return None, None
+
+
+def match_namespace_name(key, value, strict=False, delimiter='/'):
+    if key is None and value is None:
+        return True
+
+    if key is None and value is not None:
+        return False
+
+    if key is not None and value is None:
+        return False
+
+    if not isinstance(key, str):
+        return False
+
+    if not isinstance(value, str):
+        return False
+
+    if len(key) == 0:
+        return True
+
+    if len(value) == 0:
+        return False
+
+    if len(value.split(delimiter)) != 2:
+        return False
+
+    if len(key.split(delimiter)) > 2:
+        return False
+
+    (key_namespace, key_name) = get_namespace_name(key, delimiter=delimiter)
+    (value_namespace, value_name) = get_namespace_name(value, delimiter=delimiter)
+
+    if key_namespace is not None:
+        if not match_string(key_namespace, value_namespace):
+            return False
+        if not match_string(key_name, value_name):
+            return False
+
+    if key_namespace is None:
+        if not match_string(key_name, value_name):
+            return False
+
+    return True

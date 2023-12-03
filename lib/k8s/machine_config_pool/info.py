@@ -78,12 +78,58 @@ class K8sMachineConfigPoolInfo():
 
         info['source'] = self.get(machine_config_pool_mo, 'status:configuration:source', on_error=[], on_none=[])
 
+        info['machine_config_selector'] = self.get(machine_config_pool_mo, 'spec:machineConfigSelector', on_error={}, on_none={})
+        info['node_selector'] = self.get(machine_config_pool_mo, 'spec:nodeSelector', on_error={}, on_none={})
+
         info['age'] = self.convert_timestamp_to_age(
             self.get(machine_config_pool_mo, 'metadata:creationTimestamp'),
             on_error='--'
         )
 
         return info
+
+    def add_machine_config_pool_selector_info(self, machine_config_pool_info):
+        machine_config_pool_info['candidate_machine_configs'] = []
+        if 'matchLabels' in machine_config_pool_info['machine_config_selector']:
+            machine_config_filter = []
+            for machine_config_match_label in machine_config_pool_info['machine_config_selector']['matchLabels']:
+                machine_config_filter.append(
+                    'label:%s:%s' % (
+                        machine_config_match_label,
+                        machine_config_pool_info['machine_config_selector']['matchLabels'][machine_config_match_label]
+                    )
+                )
+
+            machine_configs = self.get_machine_configs(
+                object_filter=machine_config_filter
+            )
+            if machine_configs is not None:
+                for machine_config in machine_configs:
+                    machine_config_pool_info['candidate_machine_configs'].append(
+                        machine_config['name']
+                    )
+
+        machine_config_pool_info['candidate_nodes'] = []
+        if 'matchLabels' in machine_config_pool_info['node_selector']:
+            node_filter = []
+            for node_match_label in machine_config_pool_info['node_selector']['matchLabels']:
+                node_filter.append(
+                    'label:%s:%s' % (
+                        node_match_label,
+                        machine_config_pool_info['node_selector']['matchLabels'][node_match_label]
+                    )
+                )
+
+            nodes = self.get_nodes(
+                object_filter=node_filter
+            )
+            if nodes is not None:
+                for node in nodes:
+                    machine_config_pool_info['candidate_nodes'].append(
+                        node['name']
+                    )
+
+        return machine_config_pool_info
 
     def get_machine_config_pools_info(self, cache_enabled=True):
         if cache_enabled:
@@ -129,7 +175,7 @@ class K8sMachineConfigPoolInfo():
 
         return True
 
-    def get_machine_config_pools(self, object_filter=None, return_mo=False, cache_enabled=True):
+    def get_machine_config_pools(self, object_filter=None, return_mo=False, cache_enabled=True, selector_info=False):
         all_machine_config_pools = self.get_machine_config_pools_info(cache_enabled=cache_enabled)
         if all_machine_config_pools is None:
             return None
@@ -145,6 +191,11 @@ class K8sMachineConfigPoolInfo():
                     machine_config_pool_info['mo']
                 )
                 continue
+
+            if selector_info:
+                machine_config_pool_info['info'] = self.add_machine_config_pool_selector_info(
+                    machine_config_pool_info['info']
+                )
 
             machine_config_pools.append(
                 machine_config_pool_info['info']

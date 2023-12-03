@@ -46,7 +46,7 @@ class OcpVmGetNetwork():
                         interface['info'] = interface['ip_address']
                 continue
 
-            if interface['ip_address'] is not None:
+            if 'ip_address' in interface and interface['ip_address'] is not None:
                 if interface['sriov'] is not None:
                     interface['info'] = '%s (sriov)' % (interface['ip_address'])
                 else:

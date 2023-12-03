@@ -5,6 +5,7 @@ import click
 from menu import validations
 
 from lib.linux import settings
+from lib.linux import output as linux_output
 
 
 class Failure(Exception):
@@ -60,6 +61,7 @@ def set_linux_server_command(
             ctx.my_output.error('Define password or public key')
             raise ErrorExit
 
+        linux_output_handler = linux_output.LinuxOutput(log_id=ctx.run_id)
         settings_handler = settings.LinuxSettings(log_id=ctx.run_id)
 
         if not settings_handler.set_linux_server(name, linux_ip, username, password=password, key_filename=key):
@@ -67,7 +69,7 @@ def set_linux_server_command(
             raise ErrorExit
 
         servers = settings_handler.get_linux_servers()
-        settings_handler.print_linux_servers(
+        linux_output_handler.print_linux_servers(
             servers,
             show_password=False
         )

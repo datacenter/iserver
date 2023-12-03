@@ -25,6 +25,8 @@ class Log():
         self.odata_filename = os.path.join(self.logs_directory, 'odata.debug')
         self.ucsm_filename = os.path.join(self.logs_directory, 'ucsm.debug')
         self.k8s_filename = os.path.join(self.logs_directory, 'k8s.debug')
+        self.osp_filename = os.path.join(self.logs_directory, 'osp.debug')
+        self.nso_filename = os.path.join(self.logs_directory, 'nso.debug')
         self.ocapi_filename = os.path.join(self.logs_directory, 'ocapi.debug')
         self.ocp_filename = os.path.join(self.logs_directory, 'ocp.debug')
         self.kubevirt_filename = os.path.join(self.logs_directory, 'kubevirt.debug')
@@ -49,6 +51,8 @@ class Log():
         self.mapping['redfish'] = self.redfish_filename
         self.mapping['ucsm'] = self.ucsm_filename
         self.mapping['k8s'] = self.k8s_filename
+        self.mapping['osp'] = self.osp_filename
+        self.mapping['nso'] = self.nso_filename
         self.mapping['ocapi'] = self.ocapi_filename
         self.mapping['ocp'] = self.ocp_filename
         self.mapping['kubevirt'] = self.kubevirt_filename
@@ -280,6 +284,64 @@ class Log():
         for line in content.split('\n'):
             if len(line) > 0:
                 (when, success, duration, scope, command) = line.split('\t')
+                if success == 'True':
+                    result['success'] = result['success'] + 1
+                else:
+                    result['failed'] = result['failed'] + 1
+
+                result['total_time'] = result['total_time'] + int(duration)
+
+                result['mo'] = result['mo'] + 1
+                result['mo_time'] = result['mo_time'] + int(duration)
+
+        return result
+
+    def analyze_osp(self):
+        result = {}
+        result['read'] = False
+        result['success'] = 0
+        result['failed'] = 0
+        result['mo'] = 0
+        result['mo_time'] = 0
+        result['total_time'] = 0
+
+        content = self.get_file(self.osp_filename)
+        if content is None:
+            return result
+
+        result['read'] = True
+        for line in content.split('\n'):
+            if len(line) > 0:
+                (when, success, duration, scope, command) = line.split('\t')
+                if success == 'True':
+                    result['success'] = result['success'] + 1
+                else:
+                    result['failed'] = result['failed'] + 1
+
+                result['total_time'] = result['total_time'] + int(duration)
+
+                result['mo'] = result['mo'] + 1
+                result['mo_time'] = result['mo_time'] + int(duration)
+
+        return result
+
+    def analyze_nso(self):
+        result = {}
+        result['read'] = False
+        result['success'] = 0
+        result['failed'] = 0
+        result['mo'] = 0
+        result['mo_time'] = 0
+        result['total_time'] = 0
+
+        content = self.get_file(self.nso_filename)
+        if content is None:
+            return result
+
+        result['read'] = True
+        for line in content.split('\n'):
+            if len(line) > 0:
+                (when, success, duration, command, scope) = line.split('\t')
                 if success == 'True':
                     result['success'] = result['success'] + 1
                 else:
@@ -533,6 +595,14 @@ class Log():
         if info['read']:
             result['k8s'] = info
 
+        info = self.analyze_osp()
+        if info['read']:
+            result['osp'] = info
+
+        info = self.analyze_nso()
+        if info['read']:
+            result['nso'] = info
+
         info = self.analyze_ocp()
         if info['read']:
             result['ocp'] = info
@@ -623,7 +693,7 @@ class Log():
 
     def get_logs(self, files=None):
         if files is None:
-            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'iwo']
+            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'osp', 'nso', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'iwo']
 
         content = {}
         for filename in files:
@@ -964,6 +1034,88 @@ class Log():
             )
             if not success:
                 print('K8s log failed...')
+
+        except BaseException:
+            pass
+
+    def osp_mo(self, name, managed_object):
+        try:
+            filename = os.path.join(
+                self.logs_directory,
+                'osp.mo.%s' % (name)
+            )
+
+            if not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            pass
+
+    def osp(self, command, scope, success, duration):
+        try:
+            current_time = datetime.datetime.now()
+
+            msg = "%s\t%s\t%s\t%s\t%s\n" % (
+                current_time,
+                success,
+                duration,
+                command,
+                scope
+            )
+
+            success = self.safe_append(
+                self.osp_filename,
+                msg
+            )
+            if not success:
+                print('Osp log failed...')
+
+        except BaseException:
+            pass
+
+    def nso_mo(self, name, managed_object):
+        try:
+            filename = os.path.join(
+                self.logs_directory,
+                'nso.mo.%s' % (name)
+            )
+
+            if not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            pass
+
+    def nso(self, command, scope, success, duration):
+        try:
+            current_time = datetime.datetime.now()
+
+            msg = "%s\t%s\t%s\t%s\t%s\n" % (
+                current_time,
+                success,
+                duration,
+                command,
+                scope
+            )
+
+            success = self.safe_append(
+                self.nso_filename,
+                msg
+            )
+            if not success:
+                print('NSO log failed...')
 
         except BaseException:
             pass

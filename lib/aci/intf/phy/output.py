@@ -30,7 +30,53 @@ class InterfacePhyOutput():
             'adminSt',
             'switchingSt',
             'stats.operSt',
-            'stats.operStQual',
+            'stats.operStQual'
+        ]
+
+        headers = []
+        if self.is_apic:
+            headers = ['Apic']
+
+        headers = headers + [
+            'Node',
+            'Health',
+            'Faults',
+            'Interface',
+            'Admin',
+            'Switching',
+            'Oper',
+            'Reason'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_interfaces_phy_l2(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Interface Phy - Layer2 [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+            return
+
+        order = []
+        if self.is_apic:
+            order = ['apic']
+
+        order = order + [
+            'pod_node_name',
+            'portName',
             'portT',
             'layerT',
             'stats.bundleIndex',
@@ -48,13 +94,7 @@ class InterfacePhyOutput():
 
         headers = headers + [
             'Node',
-            'Health',
-            'Faults',
             'Interface',
-            'Admin',
-            'Switching',
-            'Oper',
-            'Reason',
             'Type',
             'Layer',
             'PC',
@@ -220,7 +260,6 @@ class InterfacePhyOutput():
             'pod_node_name',
             'portName',
             'stats.operSt',
-            'fc_stats.isFcotPresent',
             'fc_stats.state',
             'fc_stats.type',
             'fc_stats.guiName',
@@ -239,7 +278,6 @@ class InterfacePhyOutput():
             'Interface',
             'Oper',
             'Present',
-            'State',
             'Optics',
             'Name',
             'Type',
@@ -922,7 +960,7 @@ class InterfacePhyOutput():
             'stats.operSt',
             'portT',
             'policy_selector.policy_group_name',
-            'policy_selector.policy_group_info.aaep_name',
+            'policy_selector.policy_group_info.aaep.name',
             'infraRsDomP.domainType',
             'infraRsDomP.domainName'
         ]

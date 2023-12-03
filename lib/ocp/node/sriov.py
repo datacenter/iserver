@@ -66,7 +66,7 @@ class OcpNodeSriov():
                                 if int(start_vf) <= int(sriov_vf['index']) <= int(end_vf):
                                     sriov_vf['policyName'] = node_policy_info['name']
 
-                networks = self.k8s_handler.get_sriov_network_with_resource_name(
+                networks = self.k8s_handler.get_sriov_networks_with_resource_name(
                     node_policy_info['resourceName'],
                     return_mo=True
                 )

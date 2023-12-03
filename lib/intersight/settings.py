@@ -84,6 +84,29 @@ class IntersightSettings(Settings):
 
         return True
 
+    def set_cache_enabled(self):
+        settings = self.get_intersight_settings()
+        settings['CacheEnabled'] = True
+        return self.set_intersight_settings(settings)
+
+    def set_cache_disabled(self):
+        settings = self.get_intersight_settings()
+        settings['CacheEnabled'] = False
+        return self.set_intersight_settings(settings)
+
+    def set_cache_ttl(self, ttl):
+        if not isinstance(ttl, int):
+            self.log.error('set_cache_ttl', 'ttl must be integer')
+            return False
+
+        if ttl <= 0:
+            self.log.error('set_cache_ttl', 'ttl must be integer gt 0')
+            return False
+
+        settings = self.get_intersight_settings()
+        settings['CacheTtl'] = ttl
+        return self.set_intersight_settings(settings)
+
     def get_intersight_default_settings(self):
         settings = {}
         settings['CacheEnabled'] = True

@@ -128,6 +128,8 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         if validated_data['deployment']['day0']['filename'] is not None:
             filename = validated_data['deployment']['day0']['filename']
@@ -142,6 +144,8 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         if validated_data['deployment']['day0']['dv'] is not None:
             filename = validated_data['deployment']['day0']['dv']
@@ -156,6 +160,8 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         if validated_data['deployment']['sriov']['policy'] is not None:
             for filename in validated_data['deployment']['sriov']['policy']:
@@ -170,6 +176,8 @@ class OcpDeploymentValidate():
                     yaml_check=True,
                     yaml_conversion=False
                 )
+                if validated_data['files'][filename] is None:
+                    return None
 
         if validated_data['deployment']['sriov']['network'] is not None:
             for filename in validated_data['deployment']['sriov']['network']:
@@ -184,6 +192,8 @@ class OcpDeploymentValidate():
                     yaml_check=True,
                     yaml_conversion=False
                 )
+                if validated_data['files'][filename] is None:
+                    return None
 
         if validated_data['deployment']['multus']['network'] is not None:
             for filename in validated_data['deployment']['multus']['network']:
@@ -198,6 +208,8 @@ class OcpDeploymentValidate():
                     yaml_check=True,
                     yaml_conversion=False
                 )
+                if validated_data['files'][filename] is None:
+                    return None
 
         if validated_data['deployment']['service']['ssh'] is not None:
             filename = validated_data['deployment']['service']['ssh']
@@ -212,6 +224,8 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         if validated_data['deployment']['service']['snmp'] is not None:
             filename = validated_data['deployment']['service']['snmp']
@@ -226,6 +240,8 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         if validated_data['deployment']['service']['netconf'] is not None:
             filename = validated_data['deployment']['service']['netconf']
@@ -240,5 +256,7 @@ class OcpDeploymentValidate():
                 yaml_check=True,
                 yaml_conversion=False
             )
+            if validated_data['files'][filename] is None:
+                return None
 
         return validated_data

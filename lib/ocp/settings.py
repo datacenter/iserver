@@ -54,6 +54,18 @@ class OcpSettings(Settings):
                 exist_ok=True
             )
 
+        fixup = False
+
+        settings = self.get_ocp_settings()
+        for cluster in settings['Clusters']:
+            for key in ['helm', 'virtctl', 'tools']:
+                if key not in cluster:
+                    fixup = True
+                    cluster[key] = None
+
+        if fixup:
+            return self.set_ocp_settings(settings)
+
         return True
 
     def get_ocp_settings(self):
@@ -161,40 +173,48 @@ class OcpSettings(Settings):
 
         return clusters
 
-    def get_ocp_clusters_iwo(self):
-        settings = self.get_ocp_settings()
-        if settings is None:
-            return None
+    # def get_ocp_clusters_iwo(self):
+    #     settings = self.get_ocp_settings()
+    #     if settings is None:
+    #         return None
 
-        clusters = settings['Clusters']
-        iwo_clusters = []
-        for cluster in clusters:
-            iwo_cluster = {}
-            iwo_cluster['__Output'] = {}
-            iwo_cluster['name'] = cluster['parameters']['ocp']['name']
-            iwo_cluster['installation'] = cluster['parameters']['ocp']['installation']
-            iwo_cluster['release'] = cluster['parameters']['ocp']['release']
-            iwo_cluster['iwo'] = None
-            if 'iwo' in cluster:
-                iwo_cluster['iwo'] = cluster['iwo']
+    #     clusters = settings['Clusters']
+    #     iwo_clusters = []
+    #     for cluster in clusters:
+    #         iwo_cluster = {}
+    #         iwo_cluster['__Output'] = {}
+    #         iwo_cluster['name'] = cluster['parameters']['ocp']['name']
+    #         iwo_cluster['installation'] = cluster['parameters']['ocp']['installation']
+    #         iwo_cluster['release'] = cluster['parameters']['ocp']['release']
+    #         iwo_cluster['iwo'] = None
+    #         if 'iwo' in cluster:
+    #             iwo_cluster['iwo'] = cluster['iwo']
 
-            iwo_clusters.append(iwo_cluster)
+    #         iwo_clusters.append(iwo_cluster)
 
-        iwo_clusters = sorted(
-            iwo_clusters,
-            key=lambda i: i['name']
-        )
+    #     iwo_clusters = sorted(
+    #         iwo_clusters,
+    #         key=lambda i: i['name']
+    #     )
 
-        return iwo_clusters
+    #     return iwo_clusters
 
-    def get_ocp_cluster(self, ocp_name):
+    def get_ocp_cluster(self, ocp_name, strict_match=True):
         clusters = self.get_ocp_clusters()
         if clusters is None:
             return None
 
+        candidates = []
         for cluster in clusters:
             if cluster['name'] == ocp_name:
                 return cluster
+
+            if not strict_match:
+                if ocp_name.lower() in cluster['name'].lower():
+                    candidates.append(cluster)
+
+        if not strict_match and len(candidates) == 1:
+            return candidates[0]
 
         return None
 
@@ -275,22 +295,77 @@ class OcpSettings(Settings):
 
         return target_filename
 
-    def set_ocp_cluster(self, ocp_name, kubeconfig_filename, installation_parameters):
-        if not os.path.isfile(kubeconfig_filename):
-            self.log.error(
-                'set_ocp_cluster',
-                'Kubeconfig file not found: %s' % (kubeconfig_filename)
-            )
-            return False
+    def create_ocp_cluster(self, name, kubeconfig):
+        new_cluster = {}
+        new_cluster['name'] = name
+        new_cluster['kubeconfig'] = self.get_ocp_cluster_kubeconfig_filename(name)
+        for key in ['virtcl', 'helm', 'tools']:
+            new_cluster[key] = None
 
         clusters = self.get_ocp_clusters()
         if clusters is None:
+            self.log.error(
+                'create_ocp_cluster',
+                'Failed to get clusters'
+            )
+            return False
+
+        clusters.append(new_cluster)
+        if not self.set_ocp_clusters(clusters):
+            self.log.error(
+                'create_ocp_cluster',
+                'Failed to set clusters'
+            )
+            return False
+
+        return self.set_ocp_cluster_kubeconfig(name, kubeconfig)
+
+    def set_ocp_cluster(self, cluster_settings):
+        clusters = self.get_ocp_clusters()
+        if clusters is None:
+            self.log.error(
+                'set_ocp_cluster',
+                'Failed to get clusters'
+            )
             return False
 
         new_clusters = []
         for cluster in clusters:
-            if cluster['name'] != ocp_name:
-                new_clusters.append(cluster)
+            if cluster['name'] == cluster_settings['name']:
+                new_clusters.append(
+                    cluster_settings
+                )
+                continue
+
+            new_clusters.append(
+                cluster
+            )
+
+        return self.set_ocp_clusters(new_clusters)
+
+    def get_ocp_cluster_kubeconfig_filename(self, ocp_name):
+        cluster_directory = self.get_ocp_cluster_directory(ocp_name)
+        target_kubeconfig_filename = os.path.join(
+            cluster_directory,
+            'kubeconfig'
+        )
+        return target_kubeconfig_filename
+
+    def set_ocp_cluster_kubeconfig(self, ocp_name, kubeconfig_filename):
+        if not os.path.isfile(kubeconfig_filename):
+            self.log.error(
+                'set_ocp_cluster_kubeconfig',
+                'Kubeconfig file not found: %s' % (kubeconfig_filename)
+            )
+            return False
+
+        cluster = self.get_ocp_cluster(ocp_name)
+        if cluster is None:
+            self.log.error(
+                'set_ocp_cluster_kubeconfig',
+                'Cluster not found: %s' % (ocp_name)
+            )
+            return False
 
         cluster_directory = self.get_ocp_cluster_directory(ocp_name)
         if not os.path.isdir(cluster_directory):
@@ -310,18 +385,12 @@ class OcpSettings(Settings):
         )
         if not os.path.isfile(target_kubeconfig_filename):
             self.log.error(
-                'set_ocp_cluster',
+                'set_ocp_cluster_kubeconfig',
                 'Kubeconfig file copy failed: %s => %s' % (kubeconfig_filename, target_kubeconfig_filename)
             )
             return False
 
-        new_cluster = {}
-        new_cluster['name'] = ocp_name
-        new_cluster['kubeconfig'] = target_kubeconfig_filename
-        new_cluster['parameters'] = installation_parameters
-        new_clusters.append(new_cluster)
-
-        return self.set_ocp_clusters(new_clusters)
+        return self.set_ocp_cluster(cluster)
 
     def delete_ocp_cluster(self, ocp_name):
         clusters = self.get_ocp_clusters()

@@ -1,4 +1,4 @@
-class VnfiDelete():
+class NfvoVnfiDelete():
     def __init__(self):
         pass
 

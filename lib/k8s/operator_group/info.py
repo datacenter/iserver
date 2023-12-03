@@ -11,19 +11,11 @@ class K8sOperatorGroupInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(operator_group_mo, 'metadata:namespace')
-        info['name'] = self.get(operator_group_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            operator_group_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         actual_namespaces = self.get(operator_group_mo, 'status:namespaces', on_error=[], on_none=[])
         info['ns'] = []
@@ -43,11 +35,6 @@ class K8sOperatorGroupInfo():
             key=lambda i: i['name']
         )
         info['nsCount'] = len(info['ns'])
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(operator_group_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
 
         return info
 
@@ -89,7 +76,7 @@ class K8sOperatorGroupInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, operator_group_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (operator_group_info['namespace'], operator_group_info['name'])):
                     return False
 
             if not key_found:

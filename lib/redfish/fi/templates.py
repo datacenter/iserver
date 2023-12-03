@@ -44,33 +44,31 @@ class RedfishEndpointFabricInterconnectTemplates(
         return None
 
     def get_template_properties(self, template_name):
-        if template_name.lower() == 'identity':
+        if template_name == 'identity':
             if self.inventory_type == 'Chassis':
                 return self.get_template_identity_chassis_properties()
 
             if self.inventory_type == 'Server':
                 return self.get_template_identity_server_properties()
 
-        if template_name.lower() == 'power':
+        if template_name == 'power':
             if self.inventory_type == 'Chassis':
                 return self.get_template_power_chassis_properties()
 
             if self.inventory_type == 'Server':
                 return self.get_template_power_server_properties()
 
-        if template_name.lower() == 'thermal':
+        if template_name == 'thermal':
             if self.inventory_type == 'Chassis':
                 return self.get_template_thermal_chassis_properties()
 
             if self.inventory_type == 'Server':
                 return self.get_template_thermal_server_properties()
 
-        self.my_output.error('Unsupported template: %s for inventory type %s' % (template_name, self.inventory_type))
-        self.my_output.default('Supported templates:')
-
-        templates = ['identity', 'power', 'temp']
-        for template in templates:
-            self.my_output.default('- %s' % (template))
+        self.log.error(
+            'get_template_properties',
+            'Unsupported template: %s for inventory type %s' % (template_name, self.inventory_type)
+        )
 
         return None
 

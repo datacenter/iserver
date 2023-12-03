@@ -1,15 +1,76 @@
 import time
 
+from lib.imc import endpoint as imc_endpoint
+from lib.redfish import endpoint as redfish_endpoint
+
 
 class ComputeCache():
     def __init__(self):
-        pass
+        self.memory_array_moids = {}
+
+    def get_redfish_endpoint_template(self, endpoint_id, template_name):
+        endpoint_settings = self.redfish_endpoint_settings_handler.get_redfish_endpoint_settings(endpoint_id)
+        if endpoint_settings is None:
+            return None
+
+        redfish_handler = redfish_endpoint.RedfishEndpoint(
+            endpoint_settings['endpoint']['type'],
+            endpoint_settings['endpoint']['ip'],
+            endpoint_settings['endpoint']['port'],
+            endpoint_settings['endpoint']['username'],
+            endpoint_settings['endpoint']['password'],
+            log_id=self.log_id
+        )
+
+        if not redfish_handler.is_connected():
+            return None
+
+        if endpoint_settings['endpoint']['type'] == 'fi':
+            redfish_handler.endpoint_handler.set_inventory(
+                endpoint_settings['endpoint']['inventory_type'],
+                endpoint_settings['endpoint']['inventory_id']
+            )
+
+        return redfish_handler.endpoint_handler.get_template_properties(template_name)
+
+    def get_imc_endpoint_template(self, endpoint_id, template_name):
+        endpoint_settings = self.redfish_endpoint_settings_handler.get_redfish_endpoint_settings(endpoint_id)
+        if endpoint_settings is None:
+            return None
+
+        imc_handler = imc_endpoint.ImcEndpoint(
+            endpoint_settings['endpoint']['ip'],
+            22,
+            endpoint_settings['endpoint']['username'],
+            endpoint_settings['endpoint']['password'],
+            log_id=self.log_id
+        )
+
+        if template_name == 'psu':
+            return imc_handler.get_psu()
+
+        return None
 
     def set_redfish_cache(self, key, server_moids, server_serial, cache_ttl=None):
+        if key == 'psu-imc':
+            for server_moid in server_moids:
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('psu-imc', subdirectory=server_moid, cache_ttl=cache_ttl):
+                    psu_info = self.get_imc_endpoint_template(
+                        server_serial[server_moid],
+                        'psu'
+                    )
+
+                    if psu_info is not None:
+                        self.cache_handler.set_intersight_cache_entry(
+                            'psu-imc',
+                            psu_info,
+                            subdirectory=server_moid
+                        )
+
         if key == 'power':
             for server_moid in server_moids:
                 if cache_ttl is None or not self.cache_handler.is_intersight_cache('power', subdirectory=server_moid, cache_ttl=cache_ttl):
-                    power_info = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
+                    power_info = self.get_redfish_endpoint_template(
                         server_serial[server_moid],
                         'power'
                     )
@@ -39,7 +100,7 @@ class ComputeCache():
         if key == 'thermal':
             for server_moid in server_moids:
                 if cache_ttl is None or not self.cache_handler.is_intersight_cache('thermal', subdirectory=server_moid, cache_ttl=cache_ttl):
-                    power_info = self.redfish_endpoint_settings_handler.get_redfish_endpoint_template(
+                    power_info = self.get_redfish_endpoint_template(
                         server_serial[server_moid],
                         'thermal'
                     )
@@ -66,7 +127,7 @@ class ComputeCache():
                             subdirectory=server_moid
                         )
 
-    def set_intersight_cache(self, key, server_moids, rack_moids, blade_moids, registration_moids, board_moids, adapter_moids, boot_moids, serial, workflow_seconds, filter_length_threshold=20, cache_ttl=None):
+    def set_intersight_cache(self, key, expand, server_moids, rack_moids, blade_moids, registration_moids, board_moids, adapter_moids, boot_moids, serial, workflow_seconds, filter_length_threshold=20, cache_ttl=None):
         if key == 'adapter':
             cache_hits = []
             target_moids = []
@@ -95,9 +156,34 @@ class ComputeCache():
             if len(target_moids) == 0:
                 return
 
-            if len(target_moids) < filter_length_threshold:
+            if 'adapter' in expand and len(expand['adapter']) > 0:
+                self.adapter_unit_handler.set_get_expand(
+                    ','.join(expand['adapter'])
+                )
+
+            server_managed_objects = {}
+            for target_moid in target_server_moids:
+                server_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
                 moids_list = []
-                for moid in target_moids:
+                for moid in chunk_target_moids:
                     moids_list.append('\'%s\'' % (moid))
                 moids_filter = ', '.join(moids_list)
 
@@ -107,35 +193,81 @@ class ComputeCache():
 
                 self.log_handler.debug(
                     'compute_info.set_intersight_cache',
-                    'adapter miss w/filter: %s' % (target_moids)
-                )
-            else:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'adapter miss wout filter'
+                    'adapter miss w/filter: %s' % (chunk_target_moids)
                 )
 
-            managed_objects = self.adapter_unit_handler.get_all()
-            if managed_objects is None:
-                self.log_handler.error(
-                    'compute.set_intersight_cache',
-                    'adapter failed'
-                )
-                return
+                managed_objects = self.adapter_unit_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'compute.set_intersight_cache',
+                        'adapter failed'
+                    )
+                    return
 
-            for server_moid in target_server_moids:
-                server_managed_objects = []
-                for managed_object in managed_objects:
-                    if managed_object['Moid'] in adapter_moids[server_moid]:
-                        server_managed_objects.append(
-                            managed_object
-                        )
+                for server_moid in target_server_moids:
+                    for managed_object in managed_objects:
+                        if managed_object['Moid'] in adapter_moids[server_moid]:
+                            server_managed_objects[server_moid].append(
+                                managed_object
+                            )
 
+            for target_moid in target_server_moids:
                 self.cache_handler.set_intersight_cache_entry(
                     'adapter',
-                    server_managed_objects,
-                    subdirectory=server_moid
+                    server_managed_objects[target_moid],
+                    subdirectory=target_moid
                 )
+
+                if 'adapter' in expand:
+                    for expanded_item in expand['adapter']:
+                        if expanded_item not in ['ExtEthIfs', 'HostEthIfs', 'HostFcIfs']:
+                            self.log_handler.error(
+                                'compute.set_intersight_cache',
+                                'unsupported adapter expand: %s' % (expanded_item)
+                            )
+                            continue
+
+                        if expanded_item == 'ExtEthIfs':
+                            server_expanded_managed_objects = []
+                            for server_managed_object in server_managed_objects[target_moid]:
+                                for server_expanded_managed_object in server_managed_object['ExtEthIfs']:
+                                    server_expanded_managed_objects.append(
+                                        server_expanded_managed_object
+                                    )
+
+                            self.cache_handler.set_intersight_cache_entry(
+                                'adapter_ext_eth_interface',
+                                server_expanded_managed_objects,
+                                subdirectory=target_moid
+                            )
+
+                        if expanded_item == 'HostEthIfs':
+                            server_expanded_managed_objects = []
+                            for server_managed_object in server_managed_objects[target_moid]:
+                                for server_expanded_managed_object in server_managed_object['HostEthIfs']:
+                                    server_expanded_managed_objects.append(
+                                        server_expanded_managed_object
+                                    )
+
+                            self.cache_handler.set_intersight_cache_entry(
+                                'adapter_host_eth_interface',
+                                server_expanded_managed_objects,
+                                subdirectory=target_moid
+                            )
+
+                        if expanded_item == 'HostFcIfs':
+                            server_expanded_managed_objects = []
+                            for server_managed_object in server_managed_objects[target_moid]:
+                                for server_expanded_managed_object in server_managed_object['HostFcIfs']:
+                                    server_expanded_managed_objects.append(
+                                        server_expanded_managed_object
+                                    )
+
+                            self.cache_handler.set_intersight_cache_entry(
+                                'adapter_host_fc_interface',
+                                server_expanded_managed_objects,
+                                subdirectory=target_moid
+                            )
 
             return
 
@@ -554,6 +686,24 @@ class ComputeCache():
                         server_moid
                     )
                 else:
+                    server_boards_mo = self.cache_handler.get_intersight_cache_entry(
+                        'board',
+                        subdirectory=server_moid,
+                        cache_ttl=cache_ttl
+                    )
+                    if server_boards_mo is None:
+                        self.log_handler.error(
+                            'set_intersight_cache',
+                            'board cache read failed: %s' % (server_moid)
+                        )
+                    else:
+                        self.memory_array_moids[server_moid] = []
+                        for server_board_mo in server_boards_mo:
+                            for memory_array_mo in server_board_mo['MemoryArrays']:
+                                self.memory_array_moids[server_moid].append(
+                                    memory_array_mo['Moid']
+                                )
+
                     cache_hits.append(
                         server_moid
                     )
@@ -567,10 +717,36 @@ class ComputeCache():
             if len(target_moids) == 0:
                 return
 
+            if 'board' in expand and len(expand['board']) > 0:
+                self.compute_board_handler.set_get_expand(
+                    ','.join(expand['board'])
+                )
+
+            server_managed_objects = {}
+            for target_moid in target_moids:
+                server_managed_objects[target_moid] = []
+                self.memory_array_moids[target_moid] = []
+
             if len(target_rack_moids) > 0:
-                if len(target_rack_moids) < filter_length_threshold:
+                chunk_id = 0
+                while True:
+                    if chunk_id >= len(target_rack_moids):
+                        break
+
+                    chunk_target_moids = []
+                    index = 0
+                    for target_moid in target_rack_moids:
+                        if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                            chunk_target_moids.append(
+                                target_moid
+                            )
+
+                        index = index + 1
+
+                    chunk_id = chunk_id + len(chunk_target_moids)
+
                     moids_list = []
-                    for moid in target_rack_moids:
+                    for moid in chunk_target_moids:
                         moids_list.append('\'%s\'' % (moid))
                     moids_filter = ', '.join(moids_list)
 
@@ -580,41 +756,80 @@ class ComputeCache():
 
                     self.log_handler.debug(
                         'compute_info.set_intersight_cache',
-                        'board cache miss w/filter: %s' % (target_rack_moids)
-                    )
-                else:
-                    self.log_handler.debug(
-                        'compute_info.set_intersight_cache',
-                        'board cache miss wout filter'
+                        'board cache miss w/filter: %s' % (chunk_target_moids)
                     )
 
-                managed_objects = self.compute_board_handler.get_all()
-                if managed_objects is None:
-                    self.log_handler.error(
-                        'compute.set_intersight_cache',
-                        'board failed'
-                    )
-                    return
+                    managed_objects = self.compute_board_handler.get_all()
+                    if managed_objects is None:
+                        self.log_handler.error(
+                            'compute.set_intersight_cache',
+                            'board failed'
+                        )
+                        return
+
+                    for server_moid in target_rack_moids:
+                        for managed_object in managed_objects:
+                            if 'Parent' in managed_object and managed_object['Parent'] is not None:
+                                if server_moid == managed_object['Parent']['Moid']:
+                                    server_managed_objects[server_moid].append(
+                                        managed_object
+                                    )
+
+                                    for memory_array_mo in managed_object['MemoryArrays']:
+                                        self.memory_array_moids[server_moid].append(
+                                            memory_array_mo['Moid']
+                                        )
 
                 for server_moid in target_rack_moids:
-                    server_managed_objects = []
-                    for managed_object in managed_objects:
-                        if 'Parent' in managed_object and managed_object['Parent'] is not None:
-                            if server_moid == managed_object['Parent']['Moid']:
-                                server_managed_objects.append(
-                                    managed_object
-                                )
-
                     self.cache_handler.set_intersight_cache_entry(
                         'board',
-                        server_managed_objects,
+                        server_managed_objects[server_moid],
                         subdirectory=server_moid
                     )
 
+                    if 'board' in expand:
+                        for expanded_item in expand['board']:
+                            if expanded_item not in ['Processors']:
+                                self.log_handler.error(
+                                    'compute.set_intersight_cache',
+                                    'unsupported board expand: %s' % (expanded_item)
+                                )
+                                continue
+
+                            if expanded_item == 'Processors':
+                                server_cpu_managed_objects = []
+                                for server_managed_object in server_managed_objects[server_moid]:
+                                    for server_cpu_managed_object in server_managed_object['Processors']:
+                                        server_cpu_managed_objects.append(
+                                            server_cpu_managed_object
+                                        )
+
+                                self.cache_handler.set_intersight_cache_entry(
+                                    'cpu',
+                                    server_cpu_managed_objects,
+                                    subdirectory=server_moid
+                                )
+
             if len(target_blade_moids) > 0:
-                if len(target_blade_moids) < filter_length_threshold:
+                chunk_id = 0
+                while True:
+                    if chunk_id >= len(target_blade_moids):
+                        break
+
+                    chunk_target_moids = []
+                    index = 0
+                    for target_moid in target_blade_moids:
+                        if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                            chunk_target_moids.append(
+                                target_moid
+                            )
+
+                        index = index + 1
+
+                    chunk_id = chunk_id + len(chunk_target_moids)
+
                     moids_list = []
-                    for moid in target_moids:
+                    for moid in chunk_target_moids:
                         moids_list.append('\'%s\'' % (moid))
                     moids_filter = ', '.join(moids_list)
 
@@ -626,34 +841,57 @@ class ComputeCache():
                         'compute_info.set_intersight_cache',
                         'board cache miss w/filter: %s' % (target_blade_moids)
                     )
-                else:
-                    self.log_handler.debug(
-                        'compute_info.set_intersight_cache',
-                        'board cache miss wout filter'
-                    )
 
-                managed_objects = self.compute_board_handler.get_all()
-                if managed_objects is None:
-                    self.log_handler.error(
-                        'compute.set_intersight_cache',
-                        'board failed'
-                    )
-                    return
+                    managed_objects = self.compute_board_handler.get_all()
+                    if managed_objects is None:
+                        self.log_handler.error(
+                            'compute.set_intersight_cache',
+                            'board failed'
+                        )
+                        return
+
+                    for server_moid in target_blade_moids:
+                        for managed_object in managed_objects:
+                            if 'Parent' in managed_object and managed_object['Parent'] is not None:
+                                if server_moid == managed_object['Parent']['Moid']:
+                                    server_managed_objects[server_moid].append(
+                                        managed_object
+                                    )
+
+                                    for memory_array_mo in managed_object['MemoryArrays']:
+                                        self.memory_array_moids[server_moid].append(
+                                            memory_array_mo['Moid']
+                                        )
 
                 for server_moid in target_blade_moids:
-                    server_managed_objects = []
-                    for managed_object in managed_objects:
-                        if 'Parent' in managed_object and managed_object['Parent'] is not None:
-                            if server_moid == managed_object['Parent']['Moid']:
-                                server_managed_objects.append(
-                                    managed_object
-                                )
-
                     self.cache_handler.set_intersight_cache_entry(
                         'board',
-                        server_managed_objects,
+                        server_managed_objects[server_moid],
                         subdirectory=server_moid
                     )
+
+                    if 'board' in expand:
+                        for expanded_item in expand['board']:
+                            if expanded_item not in ['Processors']:
+                                self.log_handler.error(
+                                    'compute.set_intersight_cache',
+                                    'unsupported board expand: %s' % (expanded_item)
+                                )
+                                continue
+
+                            if expanded_item == 'Processors':
+                                server_cpu_managed_objects = []
+                                for server_managed_object in server_managed_objects[server_moid]:
+                                    for server_cpu_managed_object in server_managed_object['Processors']:
+                                        server_cpu_managed_objects.append(
+                                            server_cpu_managed_object
+                                        )
+
+                                self.cache_handler.set_intersight_cache_entry(
+                                    'cpu',
+                                    server_cpu_managed_objects,
+                                    subdirectory=server_moid
+                                )
 
             return
 
@@ -2012,11 +2250,98 @@ class ComputeCache():
             return
 
         if key == 'fanmodule':
+            # Server rack only
             cache_hits = []
             target_moids = []
             target_server_moids = []
-            for server_moid in server_moids:
+            for server_moid in rack_moids:
                 if cache_ttl is None or not self.cache_handler.is_intersight_cache('fanmodule', subdirectory=server_moid, cache_ttl=cache_ttl):
+                    target_moids.append(
+                        server_moid
+                    )
+                    target_server_moids.append(
+                        server_moid
+                    )
+                else:
+                    cache_hits.append(
+                        server_moid
+                    )
+
+            if len(cache_hits) > 0:
+                self.log_handler.debug(
+                    'compute_info.set_intersight_cache',
+                    'fan module cache hit: %s' % (cache_hits)
+                )
+
+            if len(target_moids) == 0:
+                return
+
+            server_managed_objects = {}
+            for target_moid in target_moids:
+                server_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
+                moids_list = []
+                for moid in chunk_target_moids:
+                    moids_list.append('\'%s\'' % (moid))
+                moids_filter = ', '.join(moids_list)
+
+                self.fan_module_handler.set_get_filter(
+                    "Parent/Moid in (%s)" % (moids_filter)
+                )
+
+                self.log_handler.debug(
+                    'compute_info.set_intersight_cache',
+                    'fan module cache miss w/filter: %s' % (chunk_target_moids)
+                )
+
+                managed_objects = self.fan_module_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'compute.set_intersight_cache',
+                        'Fanmodule failed'
+                    )
+                    return
+
+                for server_moid in target_server_moids:
+                    for managed_object in managed_objects:
+                        if 'Parent' in managed_object and managed_object['Parent'] is not None:
+                            if server_moid == managed_object['Parent']['Moid']:
+                                server_managed_objects[server_moid].append(
+                                    managed_object
+                                )
+
+            for target_moid in target_moids:
+                self.cache_handler.set_intersight_cache_entry(
+                    'fanmodule',
+                    server_managed_objects[target_moid],
+                    subdirectory=target_moid
+                )
+
+            return
+
+        if key == 'fan':
+            cache_hits = []
+            target_moids = []
+            target_server_moids = []
+            for server_moid in rack_moids:
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('fan', subdirectory=server_moid, cache_ttl=cache_ttl):
                     target_moids.append(
                         server_moid
                     )
@@ -2037,9 +2362,54 @@ class ComputeCache():
             if len(target_moids) == 0:
                 return
 
-            if len(target_moids) < filter_length_threshold:
+            detail_moids = []
+            server_detail_moids = {}
+
+            for server_moid in target_server_moids:
+                server_detail_moids[server_moid] = []
+                fan_module_mos = self.cache_handler.get_intersight_cache_entry(
+                    'fanmodule',
+                    subdirectory=server_moid
+                )
+                if fan_module_mos is None:
+                    self.log_handler.error(
+                        'compute_info.set_intersight_cache',
+                        'fan module cache miss: %s' % (server_moid)
+                    )
+                    return
+
+                for fan_module_mo in fan_module_mos:
+                    server_detail_moids[server_moid].append(
+                        fan_module_mo['Moid']
+                    )
+                    if fan_module_mo['Moid'] not in detail_moids:
+                        detail_moids.append(
+                            fan_module_mo['Moid']
+                        )
+
+            server_managed_objects = {}
+            for target_moid in target_moids:
+                server_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(detail_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in detail_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
                 moids_list = []
-                for moid in target_moids:
+                for moid in chunk_target_moids:
                     moids_list.append('\'%s\'' % (moid))
                 moids_filter = ', '.join(moids_list)
 
@@ -2049,35 +2419,31 @@ class ComputeCache():
 
                 self.log_handler.debug(
                     'compute_info.set_intersight_cache',
-                    'fan cache miss w/filter: %s' % (target_moids)
-                )
-            else:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'fan cache miss wout filter'
+                    'fan cache miss w/filter: %s' % (chunk_target_moids)
                 )
 
-            managed_objects = self.fan_handler.get_all()
-            if managed_objects is None:
-                self.log_handler.error(
-                    'compute.set_intersight_cache',
-                    'Fanmodule failed'
-                )
-                return
+                managed_objects = self.fan_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'compute.set_intersight_cache',
+                        'Fan failed'
+                    )
+                    return
 
-            for server_moid in target_server_moids:
-                server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'Parent' in managed_object and managed_object['Parent'] is not None:
-                        if server_moid == managed_object['Parent']['Moid']:
-                            server_managed_objects.append(
-                                managed_object
-                            )
+                for server_moid in target_server_moids:
+                    for managed_object in managed_objects:
+                        if 'Parent' in managed_object and managed_object['Parent'] is not None:
+                            for module_id in server_detail_moids[server_moid]:
+                                if module_id == managed_object['Parent']['Moid']:
+                                    server_managed_objects[server_moid].append(
+                                        managed_object
+                                    )
 
+            for target_moid in target_moids:
                 self.cache_handler.set_intersight_cache_entry(
-                    'fanmodule',
-                    server_managed_objects,
-                    subdirectory=server_moid
+                    'fan',
+                    server_managed_objects[target_moid],
+                    subdirectory=target_moid
                 )
 
             return
@@ -2304,77 +2670,6 @@ class ComputeCache():
 
             return
 
-        if key == 'locator':
-            cache_hits = []
-            target_moids = []
-            target_server_moids = []
-            for server_moid in registration_moids:
-                if cache_ttl is None or not self.cache_handler.is_intersight_cache('locator', subdirectory=server_moid, cache_ttl=cache_ttl):
-                    target_moids.append(
-                        registration_moids[server_moid]
-                    )
-                    target_server_moids.append(
-                        server_moid
-                    )
-                else:
-                    cache_hits.append(
-                        server_moid
-                    )
-
-            if len(cache_hits) > 0:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'locator cache hit: %s' % (cache_hits)
-                )
-
-            if len(target_moids) == 0:
-                return
-
-            if len(target_moids) < filter_length_threshold:
-                moids_list = []
-                for moid in target_moids:
-                    moids_list.append('\'%s\'' % (moid))
-                moids_filter = ', '.join(moids_list)
-
-                self.locator_handler.set_get_filter(
-                    "RegisteredDevice/Moid in (%s)" % (moids_filter)
-                )
-
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'locator cache miss w/filter: %s' % (target_moids)
-                )
-            else:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'locator cache miss wout filter'
-                )
-
-            managed_objects = self.locator_handler.get_all()
-            if managed_objects is None:
-                self.log_handler.error(
-                    'compute.set_intersight_cache',
-                    'locator failed'
-                )
-                return
-
-            for server_moid in target_server_moids:
-                server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
-                        if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
-                            server_managed_objects.append(
-                                managed_object
-                            )
-
-                self.cache_handler.set_intersight_cache_entry(
-                    'locator',
-                    server_managed_objects,
-                    subdirectory=server_moid
-                )
-
-            return
-
         if key == 'memory':
             cache_hits = []
             target_moids = []
@@ -2382,7 +2677,7 @@ class ComputeCache():
             for server_moid in registration_moids:
                 if cache_ttl is None or not self.cache_handler.is_intersight_cache('memory', subdirectory=server_moid, cache_ttl=cache_ttl):
                     target_moids.append(
-                        registration_moids[server_moid]
+                        server_moid
                     )
                     target_server_moids.append(
                         server_moid
@@ -2401,47 +2696,62 @@ class ComputeCache():
             if len(target_moids) == 0:
                 return
 
-            if len(target_moids) < filter_length_threshold:
+            server_managed_objects = {}
+            for target_moid in target_moids:
+                server_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
                 moids_list = []
-                for moid in target_moids:
-                    moids_list.append('\'%s\'' % (moid))
+                for target_server_moid in chunk_target_moids:
+                    for moid in self.memory_array_moids[target_server_moid]:
+                        moids_list.append('\'%s\'' % (moid))
                 moids_filter = ', '.join(moids_list)
 
                 self.memory_unit_handler.set_get_filter(
-                    "RegisteredDevice/Moid in (%s)" % (moids_filter)
+                    "MemoryArray/Moid in (%s)" % (moids_filter)
                 )
 
                 self.log_handler.debug(
                     'compute_info.set_intersight_cache',
-                    'memory cache miss w/filter: %s' % (target_moids)
-                )
-            else:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'memory cache miss wout filter'
+                    'memory cache miss w/filter for memory array: %s' % (moids_filter)
                 )
 
-            managed_objects = self.memory_unit_handler.get_all()
-            if managed_objects is None:
-                self.log_handler.error(
-                    'compute.set_intersight_cache',
-                    'memory failed'
-                )
-                return
+                managed_objects = self.memory_unit_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'compute.set_intersight_cache',
+                        'memory failed'
+                    )
+                    return
 
-            for server_moid in target_server_moids:
-                server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
-                        if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
-                            server_managed_objects.append(
+                for server_moid in target_server_moids:
+                    for managed_object in managed_objects:
+                        if managed_object['MemoryArray']['Moid'] in self.memory_array_moids[server_moid]:
+                            server_managed_objects[server_moid].append(
                                 managed_object
                             )
 
+            for target_moid in target_moids:
                 self.cache_handler.set_intersight_cache_entry(
                     'memory',
-                    server_managed_objects,
-                    subdirectory=server_moid
+                    server_managed_objects[target_moid],
+                    subdirectory=target_moid
                 )
 
             return
@@ -2573,12 +2883,21 @@ class ComputeCache():
 
             for server_moid in target_server_moids:
                 server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
-                        if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
-                            server_managed_objects.append(
-                                managed_object
-                            )
+                if server_moid in rack_moids:
+                    for managed_object in managed_objects:
+                        if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
+                            if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
+                                server_managed_objects.append(
+                                    managed_object
+                                )
+
+                if server_moid in blade_moids:
+                    for managed_object in managed_objects:
+                        for ancestor_mo in managed_object['Ancestors']:
+                            if ancestor_mo['ObjectType'] == 'compute.Blade' and ancestor_mo['Moid'] == server_moid:
+                                server_managed_objects.append(
+                                    managed_object
+                                )
 
                 self.cache_handler.set_intersight_cache_entry(
                     'physical_disk',
@@ -2738,10 +3057,11 @@ class ComputeCache():
             return
 
         if key == 'psu':
+            # Rack servers only
             cache_hits = []
             target_moids = []
             target_server_moids = []
-            for server_moid in server_moids:
+            for server_moid in rack_moids:
                 if cache_ttl is None or not self.cache_handler.is_intersight_cache('psu', subdirectory=server_moid, cache_ttl=cache_ttl):
                     target_moids.append(
                         server_moid
@@ -2834,9 +3154,34 @@ class ComputeCache():
             if len(target_moids) == 0:
                 return
 
-            if len(target_moids) < filter_length_threshold:
+            if 'storage' in expand and len(expand['storage']) > 0:
+                self.storage_controller_handler.set_get_expand(
+                    ','.join(expand['storage'])
+                )
+
+            server_managed_objects = {}
+            for target_moid in target_server_moids:
+                server_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
                 moids_list = []
-                for moid in target_moids:
+                for moid in chunk_target_moids:
                     moids_list.append('\'%s\'' % (moid))
                 moids_filter = ', '.join(moids_list)
 
@@ -2846,36 +3191,68 @@ class ComputeCache():
 
                 self.log_handler.debug(
                     'compute_info.set_intersight_cache',
-                    'cpu cache miss w/filter: %s' % (target_moids)
-                )
-            else:
-                self.log_handler.debug(
-                    'compute_info.set_intersight_cache',
-                    'cpu cache miss wout filter'
+                    'storage controller cache miss w/filter: %s' % (chunk_target_moids)
                 )
 
-            managed_objects = self.storage_controller_handler.get_all()
-            if managed_objects is None:
-                self.log_handler.error(
-                    'compute.set_intersight_cache',
-                    'cpu failed'
-                )
-                return
+                managed_objects = self.storage_controller_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'compute.set_intersight_cache',
+                        'cpu failed'
+                    )
+                    return
 
-            for server_moid in target_server_moids:
-                server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'Parent' in managed_object and managed_object['Parent'] is not None:
-                        if board_moids[server_moid] == managed_object['Parent']['Moid']:
-                            server_managed_objects.append(
-                                managed_object
-                            )
+                for server_moid in target_server_moids:
+                    for managed_object in managed_objects:
+                        if 'Parent' in managed_object and managed_object['Parent'] is not None:
+                            if board_moids[server_moid] == managed_object['Parent']['Moid']:
+                                server_managed_objects[server_moid].append(
+                                    managed_object
+                                )
 
+            for target_moid in target_server_moids:
                 self.cache_handler.set_intersight_cache_entry(
                     'storage_controller',
-                    server_managed_objects,
-                    subdirectory=server_moid
+                    server_managed_objects[target_moid],
+                    subdirectory=target_moid
                 )
+
+                if 'storage' in expand:
+                    for expanded_item in expand['storage']:
+                        if expanded_item not in ['PhysicalDisks', 'VirtualDrives']:
+                            self.log_handler.error(
+                                'compute.set_intersight_cache',
+                                'unsupported storage controller expand: %s' % (expanded_item)
+                            )
+                            continue
+
+                        if expanded_item == 'PhysicalDisks':
+                            server_expanded_managed_objects = []
+                            for server_managed_object in server_managed_objects[target_moid]:
+                                for server_expanded_managed_object in server_managed_object['PhysicalDisks']:
+                                    server_expanded_managed_objects.append(
+                                        server_expanded_managed_object
+                                    )
+
+                            self.cache_handler.set_intersight_cache_entry(
+                                'physical_disk',
+                                server_expanded_managed_objects,
+                                subdirectory=target_moid
+                            )
+
+                        if expanded_item == 'VirtualDrives':
+                            server_expanded_managed_objects = []
+                            for server_managed_object in server_managed_objects[target_moid]:
+                                for server_expanded_managed_object in server_managed_object['VirtualDrives']:
+                                    server_expanded_managed_objects.append(
+                                        server_expanded_managed_object
+                                    )
+
+                            self.cache_handler.set_intersight_cache_entry(
+                                'virtual_drive',
+                                server_expanded_managed_objects,
+                                subdirectory=target_moid
+                            )
 
             return
 
@@ -2926,6 +3303,9 @@ class ComputeCache():
                             tpm_mo['Moid']
                         )
                         tpm_server_map[tpm_mo['Moid']] = server_moid
+
+            if len(tpm_moids) == 0:
+                return
 
             if len(tpm_moids) > 0:
                 if len(tpm_moids) < filter_length_threshold:
@@ -3018,12 +3398,21 @@ class ComputeCache():
 
             for server_moid in target_server_moids:
                 server_managed_objects = []
-                for managed_object in managed_objects:
-                    if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
-                        if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
-                            server_managed_objects.append(
-                                managed_object
-                            )
+                if server_moid in rack_moids:
+                    for managed_object in managed_objects:
+                        if 'RegisteredDevice' in managed_object and managed_object['RegisteredDevice'] is not None:
+                            if registration_moids[server_moid] == managed_object['RegisteredDevice']['Moid']:
+                                server_managed_objects.append(
+                                    managed_object
+                                )
+
+                if server_moid in blade_moids:
+                    for managed_object in managed_objects:
+                        for ancestor_mo in managed_object['Ancestors']:
+                            if ancestor_mo['ObjectType'] == 'compute.Blade' and ancestor_mo['Moid'] == server_moid:
+                                server_managed_objects.append(
+                                    managed_object
+                                )
 
                 self.cache_handler.set_intersight_cache_entry(
                     'virtual_drive',
@@ -3115,12 +3504,84 @@ class ComputeCache():
         )
         return
 
-    def set_cache(self, servers_mo, cache_settings, cache_ttl, parallel=False):
+    def set_cache(self, servers_mo, cache_settings, cache_ttl, ctx=None):
         start_time = int(time.time() * 1000)
         self.log_handler.debug(
             'compute.set_cache',
             'Start cache population'
         )
+
+        # Expanded data in servers_mo is always 'fresh'
+
+        expanded = []
+        for server_mo in servers_mo:
+            if 'PciDevices' in server_mo:
+                if len(server_mo['PciDevices']) == 0:
+                    self.cache_handler.set_intersight_cache_entry(
+                        'pci',
+                        [],
+                        subdirectory=server_mo['Moid']
+                    )
+
+                if len(server_mo['PciDevices']) > 0:
+                    if 'link' not in server_mo['PciDevices']:
+                        if 'pci' not in expanded:
+                            expanded.append('pci')
+
+                        self.cache_handler.set_intersight_cache_entry(
+                            'pci',
+                            server_mo['PciDevices'],
+                            subdirectory=server_mo['Moid']
+                        )
+
+            if 'Fanmodules' in server_mo:
+                if len(server_mo['Fanmodules']) == 0:
+                    self.cache_handler.set_intersight_cache_entry(
+                        'fanmodule',
+                        [],
+                        subdirectory=server_mo['Moid']
+                    )
+
+                if len(server_mo['Fanmodules']) > 0:
+                    if 'link' not in server_mo['Fanmodules']:
+                        if 'fanmodule' not in expanded:
+                            expanded.append('fanmodule')
+
+                        self.cache_handler.set_intersight_cache_entry(
+                            'fanmodule',
+                            server_mo['Fanmodules'],
+                            subdirectory=server_mo['Moid']
+                        )
+
+            if 'Psus' in server_mo:
+                if len(server_mo['Psus']) == 0:
+                    self.cache_handler.set_intersight_cache_entry(
+                        'psu',
+                        [],
+                        subdirectory=server_mo['Moid']
+                    )
+
+                if len(server_mo['Psus']) > 0:
+                    if 'link' not in server_mo['Psus']:
+                        if 'psu' not in expanded:
+                            expanded.append('psu')
+
+                        self.cache_handler.set_intersight_cache_entry(
+                            'psu',
+                            server_mo['Psus'],
+                            subdirectory=server_mo['Moid']
+                        )
+
+            if 'RegisteredDevice' in server_mo:
+                if 'link' not in server_mo['RegisteredDevice']:
+                    expanded.append('connector')
+                    self.cache_handler.set_intersight_cache_entry(
+                        'connector',
+                        [server_mo['RegisteredDevice']],
+                        subdirectory=server_mo['Moid']
+                    )
+
+        # Collect identifiers
 
         moids = []
         rack = []
@@ -3221,39 +3682,63 @@ class ComputeCache():
                     item['Moid']
                 )
 
+        # Set cache keys and expansion rules
+
         keys = []
+        expand = {}
 
         if 'board' in cache_settings and cache_settings['board']:
             keys.append('board')
+            expand['board'] = []
 
         if 'cpu' in cache_settings and cache_settings['cpu']:
-            keys.append('cpu')
+            if 'board' in keys:
+                expand['board'].append('Processors')
+            else:
+                keys.append('cpu')
 
         if 'gpu' in cache_settings and cache_settings['gpu']:
             keys.append('gpu')
 
         if 'fan' in cache_settings and cache_settings['fan']:
-            keys.append('fanmodule')
+            if 'fanmodule' not in expanded:
+                keys.append('fanmodule')
+            keys.append('fan')
 
         if 'memory' in cache_settings and cache_settings['memory']:
+            if 'board' not in keys:
+                keys.append('board')
             keys.append('memory')
 
-        if 'pci' in cache_settings and cache_settings['pci']:
+        if 'pci' in cache_settings and cache_settings['pci'] and 'pci' not in expanded:
             keys.append('pci')
 
         if 'net' in cache_settings and cache_settings['net']:
             keys.append('adapter')
-            keys.append('adapter_ext_eth_interface')
-            keys.append('adapter_host_eth_interface')
-            keys.append('adapter_host_fc_interface')
+            expand['adapter'] = []
+            expand['adapter'].append(
+                'ExtEthIfs'
+            )
+            expand['adapter'].append(
+                'HostEthIfs'
+            )
+            expand['adapter'].append(
+                'HostFcIfs'
+            )
 
-        if 'psu' in cache_settings and cache_settings['psu']:
+        if 'psu' in cache_settings and cache_settings['psu'] and 'psu' not in expanded:
             keys.append('psu')
 
         if 'storage' in cache_settings and cache_settings['storage']:
             keys.append('storage_controller')
-            keys.append('virtual_drive')
-            keys.append('physical_disk')
+            expand['storage'] = []
+            expand['storage'].append(
+                'PhysicalDisks'
+            )
+            expand['storage'].append(
+                'VirtualDrives'
+            )
+            keys.append('physical_disk_usage')
 
         if 'fw' in cache_settings and cache_settings['fw']:
             keys.append('firmware')
@@ -3274,25 +3759,13 @@ class ComputeCache():
             keys.append('boot_vmedia')
 
         if 'advisory' in cache_settings and cache_settings['advisory']:
+            keys.append('advisories')
             keys.append('advisory')
-            self.set_intersight_cache(
-                'advisories',
-                moids,
-                rack,
-                blade,
-                registration_moids,
-                board_moids,
-                adapter_moids,
-                boot_moids,
-                serial,
-                cache_settings['workflow'],
-                cache_ttl=cache_ttl
-            )
 
         if 'alarm' in cache_settings and cache_settings['alarm']:
             keys.append('alarm')
 
-        if 'connector' in cache_settings and cache_settings['connector']:
+        if 'connector' in cache_settings and cache_settings['connector'] and 'connector' not in expanded:
             keys.append('connector')
 
         if 'contract' in cache_settings and cache_settings['contract']:
@@ -3300,36 +3773,31 @@ class ComputeCache():
 
         if 'hcl' in cache_settings and cache_settings['hcl']:
             keys.append('hcl')
+            keys.append('hcl_detail')
 
         if 'profile' in cache_settings and cache_settings['profile']:
             keys.append('profile')
-
-        if 'locator' in cache_settings and cache_settings['locator']:
-            keys.append('locator')
 
         if 'workflow' not in cache_settings:
             cache_settings['workflow'] = None
 
         if cache_settings['workflow'] is not None:
+            keys.append('workflows')
             keys.append('workflow')
-            self.set_intersight_cache(
-                'workflows',
-                moids,
-                rack,
-                blade,
-                registration_moids,
-                board_moids,
-                adapter_moids,
-                boot_moids,
-                serial,
-                cache_settings['workflow'],
-                cache_ttl=cache_ttl
-            )
+
+        if 'tpm' in cache_settings and cache_settings['tpm']:
+            keys.append('tpm')
+
+        # Collect cache data
 
         if len(keys) > 0:
             for key in keys:
+                if ctx is not None:
+                    ctx.my_output.debug('- %s' % (key))
+
                 self.set_intersight_cache(
                     key,
+                    expand,
                     moids,
                     rack,
                     blade,
@@ -3342,53 +3810,11 @@ class ComputeCache():
                     cache_ttl=cache_ttl
                 )
 
-        if 'hcl' in cache_settings and cache_settings['hcl']:
-            self.set_intersight_cache(
-                'hcl_detail',
-                moids,
-                rack,
-                blade,
-                registration_moids,
-                board_moids,
-                adapter_moids,
-                boot_moids,
-                serial,
-                cache_settings['workflow'],
-                cache_ttl=cache_ttl
-            )
+        if 'power' in cache_settings and cache_settings['power']:
+            if ctx is not None:
+                ctx.my_output.debug('- power')
 
-        if 'storage' in cache_settings and cache_settings['storage']:
-            self.set_intersight_cache(
-                'physical_disk_usage',
-                moids,
-                rack,
-                blade,
-                registration_moids,
-                board_moids,
-                adapter_moids,
-                boot_moids,
-                serial,
-                cache_settings['workflow'],
-                cache_ttl=cache_ttl
-            )
-
-        if 'tpm' in cache_settings and cache_settings['tpm']:
-            self.set_intersight_cache(
-                'tpm',
-                moids,
-                rack,
-                blade,
-                registration_moids,
-                board_moids,
-                adapter_moids,
-                boot_moids,
-                serial,
-                cache_settings['workflow'],
-                cache_ttl=cache_ttl
-            )
-
-        for server_mo in servers_mo:
-            if 'power' in cache_settings and cache_settings['power']:
+            for server_mo in servers_mo:
                 if server_mo['ManagementMode'] == 'UCSM':
                     if self.ucsm_endpoint_settings_handler.is_ucsm_endpoint(server_mo['Serial']):
                         server_serial = {}
@@ -3398,6 +3824,11 @@ class ComputeCache():
                             [server_mo['Moid']],
                             server_serial,
                             cache_ttl=cache_ttl
+                        )
+                    else:
+                        self.log_handler.error(
+                            'set_cache',
+                            'Server in ucsm mode is not ucsm-enabled endpoint: %s' % (server_mo['Moid'])
                         )
 
                 if server_mo['ManagementMode'] != 'UCSM':
@@ -3410,8 +3841,17 @@ class ComputeCache():
                             server_serial,
                             cache_ttl=cache_ttl
                         )
+                    else:
+                        self.log_handler.error(
+                            'set_cache',
+                            'Server in IMM mode is not redfish-enabled endpoint: %s' % (server_mo['Moid'])
+                        )
 
-            if 'thermal' in cache_settings and cache_settings['thermal']:
+        if 'thermal' in cache_settings and cache_settings['thermal']:
+            if ctx is not None:
+                ctx.my_output.debug('- thermal')
+
+            for server_mo in servers_mo:
                 if server_mo['OperPowerState'] == 'on':
                     if server_mo['ManagementMode'] == 'UCSM':
                         if self.ucsm_endpoint_settings_handler.is_ucsm_endpoint(server_mo['Serial']):
@@ -3423,6 +3863,11 @@ class ComputeCache():
                                 server_serial,
                                 cache_ttl=cache_ttl
                             )
+                        else:
+                            self.log_handler.error(
+                                'set_cache',
+                                'Server in ucsm mode is not ucsm-enabled endpoint: %s' % (server_mo['Moid'])
+                            )
 
                     if server_mo['ManagementMode'] != 'UCSM':
                         if self.redfish_endpoint_settings_handler.is_redfish_endpoint(server_mo['Serial']):
@@ -3433,6 +3878,11 @@ class ComputeCache():
                                 [server_mo['Moid']],
                                 server_serial,
                                 cache_ttl=cache_ttl
+                            )
+                        else:
+                            self.log_handler.error(
+                                'set_cache',
+                                'Server in IMM mode is not redfish-enabled endpoint: %s' % (server_mo['Moid'])
                             )
 
         duration = int(time.time() * 1000) - start_time

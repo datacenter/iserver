@@ -3,6 +3,7 @@ from lib import output_helper
 from lib.k8s.alert_manager.output import K8sAlertManagerOutput
 from lib.k8s.alert_manager_config.output import K8sAlertManagerConfigOutput
 from lib.k8s.cluster_quota.output import K8sClusterQuotaOutput
+from lib.k8s.cluster_role_binding.output import K8sClusterRoleBindingOutput
 from lib.k8s.cluster_service_version.output import K8sClusterServiceVersionOutput
 from lib.k8s.cni.output import K8sCniOutput
 from lib.k8s.config_map.output import K8sConfigMapOutput
@@ -23,6 +24,9 @@ from lib.k8s.machine_config_pool.output import K8sMachineConfigPoolOutput
 from lib.k8s.namespace.output import K8sNamespaceOutput
 from lib.k8s.network_attachment_definition.output import K8sNetworkAttachmentDefinitionOutput
 from lib.k8s.node.output import K8sNodeOutput
+from lib.k8s.node_network_configuration_enactment.output import K8sNodeNetworkConfigurationEnactmentOutput
+from lib.k8s.node_network_configuration_policy.output import K8sNodeNetworkConfigurationPolicyOutput
+from lib.k8s.node_network_state.output import K8sNodeNetworkStateOutput
 from lib.k8s.operator_group.output import K8sOperatorGroupOutput
 from lib.k8s.performance_profile.output import K8sPerformanceProfileOutput
 from lib.k8s.pod.output import K8sPodOutput
@@ -37,8 +41,10 @@ from lib.k8s.pvc.output import K8sPvcOutput
 from lib.k8s.replica_set.output import K8sReplicaSetOutput
 from lib.k8s.replication_controller.output import K8sReplicationControllerOutput
 from lib.k8s.resource_quota.output import K8sResourceQuotaOutput
+from lib.k8s.role_binding.output import K8sRoleBindingOutput
 from lib.k8s.route.output import K8sRouteOutput
 from lib.k8s.secret.output import K8sSecretOutput
+from lib.k8s.security_context_constraint.output import K8sSecurityContextConstraintOutput
 from lib.k8s.service.output import K8sServiceOutput
 from lib.k8s.service_account.output import K8sServiceAccountOutput
 from lib.k8s.service_monitor.output import K8sServiceMonitorOutput
@@ -74,6 +80,7 @@ class K8sOutput(
     K8sAlertManagerOutput,
     K8sAlertManagerConfigOutput,
     K8sClusterQuotaOutput,
+    K8sClusterRoleBindingOutput,
     K8sClusterServiceVersionOutput,
     K8sCniOutput,
     K8sConfigMapOutput,
@@ -94,6 +101,9 @@ class K8sOutput(
     K8sNamespaceOutput,
     K8sNetworkAttachmentDefinitionOutput,
     K8sNodeOutput,
+    K8sNodeNetworkConfigurationEnactmentOutput,
+    K8sNodeNetworkConfigurationPolicyOutput,
+    K8sNodeNetworkStateOutput,
     K8sOperatorGroupOutput,
     K8sPerformanceProfileOutput,
     K8sPodOutput,
@@ -108,8 +118,10 @@ class K8sOutput(
     K8sReplicaSetOutput,
     K8sReplicationControllerOutput,
     K8sResourceQuotaOutput,
+    K8sRoleBindingOutput,
     K8sRouteOutput,
     K8sSecretOutput,
+    K8sSecurityContextConstraintOutput,
     K8sServiceOutput,
     K8sServiceAccountOutput,
     K8sServiceMonitorOutput,
@@ -150,6 +162,7 @@ class K8sOutput(
         K8sAlertManagerOutput.__init__(self)
         K8sAlertManagerConfigOutput.__init__(self)
         K8sClusterQuotaOutput.__init__(self)
+        K8sClusterRoleBindingOutput.__init__(self)
         K8sClusterServiceVersionOutput.__init__(self)
         K8sCniOutput.__init__(self)
         K8sConfigMapOutput.__init__(self)
@@ -170,6 +183,9 @@ class K8sOutput(
         K8sNamespaceOutput.__init__(self)
         K8sNetworkAttachmentDefinitionOutput.__init__(self)
         K8sNodeOutput.__init__(self)
+        K8sNodeNetworkConfigurationEnactmentOutput.__init__(self)
+        K8sNodeNetworkConfigurationPolicyOutput.__init__(self)
+        K8sNodeNetworkStateOutput.__init__(self)
         K8sOperatorGroupOutput.__init__(self)
         K8sPerformanceProfileOutput.__init__(self)
         K8sPodOutput.__init__(self)
@@ -184,8 +200,10 @@ class K8sOutput(
         K8sReplicaSetOutput.__init__(self)
         K8sReplicationControllerOutput.__init__(self)
         K8sResourceQuotaOutput.__init__(self)
+        K8sRoleBindingOutput.__init__(self)
         K8sRouteOutput.__init__(self)
         K8sSecretOutput.__init__(self)
+        K8sSecurityContextConstraintOutput.__init__(self)
         K8sServiceOutput.__init__(self)
         K8sServiceMonitorOutput.__init__(self)
         K8sServiceMonitorOutput.__init__(self)
@@ -215,3 +233,21 @@ class K8sOutput(
         K8sVolumeSnapshotOutput.__init__(self)
         K8sVolumeSnapshotClassOutput.__init__(self)
         K8sVolumeSnapshotContentOutput.__init__(self)
+
+    def get_namespace_name(self, namespace, name):
+        namespace_nameT = []
+        namespace_nameT.append(
+            namespace
+        )
+        namespace_nameT.append(
+            name
+        )
+        return namespace_nameT
+
+    def add_namespace_name(self, values):
+        for value in values:
+            value['namespace_nameT'] = self.get_namespace_name(
+                value['namespace'],
+                value['name']
+            )
+        return values

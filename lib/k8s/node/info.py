@@ -327,10 +327,11 @@ class K8sNodeInfo():
                 node_info['info']
             )
 
-        nodes = sorted(
-            nodes,
-            key=lambda i: i['name']
-        )
+        if not return_mo:
+            nodes = sorted(
+                nodes,
+                key=lambda i: i['name']
+            )
 
         return nodes
 

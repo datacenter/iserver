@@ -1,4 +1,5 @@
 import time
+import json
 import traceback
 
 
@@ -50,6 +51,48 @@ class K8sPvcApi():
         )
 
         return self.pvc_mo
+
+    def create_namespaced_pvc(self, pvc_definition):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return None
+
+        start_time = int(time.time() * 1000)
+        namespace = pvc_definition['metadata']['namespace']
+
+        try:
+            api_response = api_handler.create_namespaced_persistent_volume_claim(
+                namespace,
+                pvc_definition
+            )
+        except BaseException:
+            api_response = None
+            self.log.error(
+                'k8s.create_namespaced_pvc',
+                'PVC create failed: %s' % (json.dumps(pvc_definition, indent=4))
+            )
+            self.log.error(
+                'k8s.create_namespaced_pvc',
+                traceback.format_exc()
+            )
+
+        if api_response is None:
+            self.log.k8s(
+                'create',
+                'pvc',
+                False,
+                int(time.time() * 1000) - start_time
+            )
+            return False
+
+        self.log.k8s(
+            'create',
+            'pvc',
+            True,
+            int(time.time() * 1000) - start_time
+        )
+
+        return True
 
     def delete_namespaced_pvc(self, namespace, name):
         api_handler = self.get_api()

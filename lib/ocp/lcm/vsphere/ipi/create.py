@@ -15,7 +15,8 @@ class OcpVsphereIpiCreate():
         ssh_handler = ssh.Ssh(
             self.installer_parameters['vm']['ssh']['ip'],
             self.installer_parameters['vm']['ssh']['username'],
-            password=self.installer_parameters['vm']['ssh']['password']
+            password=self.installer_parameters['vm']['ssh']['password'],
+            log_id=self.log_id
         )
         filename = '/root/install/.openshift_install_state.json'
         return ssh_handler.is_file(filename)
@@ -276,7 +277,8 @@ class OcpVsphereIpiCreate():
         ssh_handler = ssh.Ssh(
             self.installer_parameters['vm']['ssh']['ip'],
             self.installer_parameters['vm']['ssh']['username'],
-            password=self.installer_parameters['vm']['ssh']['password']
+            password=self.installer_parameters['vm']['ssh']['password'],
+            log_id=self.log_id
         )
         filename = '/root/.post_install_finished'
         return ssh_handler.is_file(filename)
@@ -285,7 +287,8 @@ class OcpVsphereIpiCreate():
         ssh_handler = ssh.Ssh(
             self.installer_parameters['vm']['ssh']['ip'],
             self.installer_parameters['vm']['ssh']['username'],
-            password=self.installer_parameters['vm']['ssh']['password']
+            password=self.installer_parameters['vm']['ssh']['password'],
+            log_id=self.log_id
         )
         filename = '/root/.post_install_finished'
         if not ssh_handler.touch_file(filename):
@@ -361,7 +364,8 @@ class OcpVsphereIpiCreate():
         ssh_handler = ssh.Ssh(
             self.installer_parameters['vm']['ssh']['ip'],
             self.installer_parameters['vm']['ssh']['username'],
-            password=self.installer_parameters['vm']['ssh']['password']
+            password=self.installer_parameters['vm']['ssh']['password'],
+            log_id=self.log_id
         )
         filename = '/root/.ocp_parameters.json'
         return ssh_handler.is_file(filename)

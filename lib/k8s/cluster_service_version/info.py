@@ -11,19 +11,11 @@ class K8sClusterServiceVersionInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(cluster_service_version_mo, 'metadata:namespace')
-        info['name'] = self.get(cluster_service_version_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            cluster_service_version_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['phase'] = self.get(cluster_service_version_mo, 'status:phase')
         if info['phase'] is not None and info['phase'] == 'Succeeded':
@@ -39,11 +31,6 @@ class K8sClusterServiceVersionInfo():
             info['maturityT'] = '--'
         info['replaces'] = self.get(cluster_service_version_mo, 'spec:replaces')
         info['version'] = self.get(cluster_service_version_mo, 'spec:version')
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(cluster_service_version_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
 
         return info
 
@@ -85,7 +72,7 @@ class K8sClusterServiceVersionInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, cluster_service_version_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (cluster_service_version_info['namespace'], cluster_service_version_info['name'])):
                     return False
 
             if not key_found:

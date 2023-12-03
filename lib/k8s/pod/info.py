@@ -424,24 +424,10 @@ class K8sPodInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(pod_mo, 'metadata:namespace')
-        info['name'] = self.get(pod_mo, 'metadata:name')
-
-        info['label'] = self.get(pod_mo, 'metadata:labels', on_error={}, on_none={})
-        info['labelT'] = []
-        for key in info['label']:
-            info['labelT'].append(
-                '%s:%s' % (
-                    key,
-                    info['label'][key]
-                )
-            )
-
-        owner = self.get_owner(
-            pod_mo,
-            'metadata:owner_references'
+        metadata_info = self.get_metadata_info(
+            pod_mo
         )
-        info.update(owner)
+        info.update(metadata_info)
 
         info['volume'] = []
         for volume_mo in self.get(pod_mo, 'spec:volumes'):
@@ -577,7 +563,7 @@ class K8sPodInfo():
         if info['phaseT'] in ['Failed', 'Unknown']:
             info['__Output']['phaseT'] = 'Red'
 
-        if info['phaseT'] in ['Pending}']:
+        if info['phaseT'] in ['Pending']:
             info['__Output']['phaseT'] = 'Yellow'
 
         info['running'] = False
@@ -597,11 +583,6 @@ class K8sPodInfo():
         info['host_network'] = self.get(pod_mo, 'spec:host_network', on_error=False, on_none=False)
         info['network'] = self.get_pod_networks_info(
             pod_mo
-        )
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(pod_mo, 'metadata:creation_timestamp'),
-            on_error='--'
         )
 
         return info
@@ -645,7 +626,7 @@ class K8sPodInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, pod_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (pod_info['namespace'], pod_info['name'])):
                     return False
 
             if key == 'label':
@@ -689,6 +670,18 @@ class K8sPodInfo():
                                 if filter_helper.match_string(cm_name, cm_info['name']):
                                     found = True
                                     break
+
+                if not found:
+                    return False
+
+            if key == 'pvc':
+                key_found = True
+                found = False
+                for volume_info in pod_info['volume']:
+                    if volume_info['type'] == 'persistent_volume_claim':
+                        if filter_helper.match_namespace_name(value, '%s/%s' % (pod_info['namespace'], volume_info['mo']['claim_name'])):
+                            found = True
+                            break
 
                 if not found:
                     return False
@@ -742,6 +735,7 @@ class K8sPodInfo():
 
             if service_info:
                 pod_info['info']['service'] = []
+                pod_services = []
                 for label_key in pod_info['info']['label']:
                     service_filter = [
                         'selector:%s:%s' % (
@@ -753,7 +747,25 @@ class K8sPodInfo():
                         object_filter=service_filter
                     )
                     if services is not None:
-                        pod_info['info']['service'] = pod_info['info']['service'] + services
+                        for pod_service_info in services:
+                            service_match = True
+                            for key in pod_service_info['selector']:
+                                if key not in pod_info['info']['label']:
+                                    service_match = False
+                                    break
+
+                                if pod_info['info']['label'][key] != pod_service_info['selector'][key]:
+                                    service_match = False
+                                    break
+
+                            if service_match:
+                                if pod_service_info['namespace_name'] not in pod_services:
+                                    pod_info['info']['service'].append(
+                                        pod_service_info
+                                    )
+                                    pod_services.append(
+                                        pod_service_info['namespace_name']
+                                    )
 
             if log_info:
                 pod_info['info']['log'] = self.get_pod_log_mo(

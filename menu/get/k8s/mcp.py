@@ -26,7 +26,7 @@ class NoResultExit(Exception):
 @click.pass_obj
 @click.option("--cluster", default='', help="Kubernetes cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|selector|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_mcp_command(
@@ -46,7 +46,7 @@ def get_k8s_mcp_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state',
+        'state|selector|all',
         'state',
         []
     )
@@ -64,6 +64,10 @@ def get_k8s_mcp_command(
             object_filter.append(
                 'name:%s' % (name)
             )
+
+        selector_info = False
+        if 'selector' in view:
+            selector_info = True
 
         if output not in ['json', 'mo']:
             ctx.busy = True
@@ -90,7 +94,8 @@ def get_k8s_mcp_command(
             return
 
         machine_config_pools = k8s_handlers.get_machine_config_pools(
-            object_filter=object_filter
+            object_filter=object_filter,
+            selector_info=selector_info
         )
 
         ctx.busy = False
@@ -109,6 +114,16 @@ def get_k8s_mcp_command(
                 machine_config_pools,
                 title=True
             )
+
+        if 'selector' in view:
+            k8s_output_handler.print_machine_config_pools_selector(
+                machine_config_pools,
+                title=True
+            )
+
+        ctx.my_output.default('Filter: name', before_newline=True)
+        ctx.my_output.default('View:   state (def), selector, all')
+
 
     except NoResultExit:
         ctx.busy = False

@@ -1,9 +1,10 @@
 import sys
 import os
+import json
 import platform
 import uuid
-import traceback
 import yaml
+import hashlib
 
 
 def get_main_dir():
@@ -37,6 +38,34 @@ def get_file(filename):
             content.replace(b'\r\n', b'\n')
 
         content = content.decode('utf-8')
+
+    except BaseException:
+        return None
+
+    return content
+
+
+def get_file_text(filename):
+    if not os.path.isfile(filename):
+        return None
+
+    try:
+        with open(filename, 'r', encoding='utf-8') as file_handler:
+            content = file_handler.read()
+
+    except BaseException:
+        return None
+
+    return content
+
+
+def get_file_json(filename):
+    if not os.path.isfile(filename):
+        return None
+
+    try:
+        with open(filename, 'r', encoding='utf-8') as file_handler:
+            content = json.loads(file_handler.read())
 
     except BaseException:
         return None
@@ -135,3 +164,17 @@ def decode_ascii(content):
         content = content.replace('%%%s' % (char_key), char_map[char_key])
 
     return content
+
+
+def get_md5(filename):
+    if not os.path.isfile(filename):
+        return None
+    hasher = hashlib.md5()
+    blocksize = 65536
+    with open(filename, 'rb') as file_handler:
+        buf = file_handler.read(blocksize)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = file_handler.read(blocksize)
+    md5 = hasher.hexdigest()
+    return md5

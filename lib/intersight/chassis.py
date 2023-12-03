@@ -1,32 +1,29 @@
-import time
-
-from lib import ip_helper
 from lib import log_helper
 
-from lib.intersight import compute_blade
-from lib.intersight import equipment_chassis
 from lib.intersight import cache as intersight_cache
 from lib.intersight.chassis_mo import ChassisMo
 from lib.intersight.chassis_info import ChassisInfo
 
-from lib.intersight import equipment_fan_module
-from lib.intersight import equipment_fan
-from lib.intersight import equipment_fan_control
-from lib.intersight import equipment_psu
-from lib.intersight import equipment_psu_control
-from lib.intersight import power_control_state
-from lib.intersight import equipment_iocard
-from lib.intersight import ethernet_host_port
-from lib.intersight import ethernet_network_port
-from lib.intersight import ethernet_physical_port
-from lib.intersight import compute_blade
-from lib.intersight import adapter_unit
-from lib.intersight import adapter_ext_eth_interface
-from lib.intersight import cond_alarm
-from lib.intersight import tam_advisory_instance
-from lib.intersight import asset_device_contract_information
-from lib.intersight import chassis_profile
-from lib.intersight import network_element_summary
+from lib.intersight.adapter_unit import main as adapter_unit
+from lib.intersight.adapter_ext_eth_interface import main as adapter_ext_eth_interface
+from lib.intersight.asset_device_contract_information import main as asset_device_contract_information
+from lib.intersight.chassis_profile import main as chassis_profile
+from lib.intersight.compute_blade import main as compute_blade
+from lib.intersight.cond_alarm import main as cond_alarm
+from lib.intersight.equipment_chassis import main as equipment_chassis
+from lib.intersight.equipment_expander_module import main as equipment_expander_module
+from lib.intersight.equipment_fan_module import main as equipment_fan_module
+from lib.intersight.equipment_fan import main as equipment_fan
+from lib.intersight.equipment_fan_control import main as equipment_fan_control
+from lib.intersight.equipment_iocard import main as equipment_iocard
+from lib.intersight.equipment_psu import main as equipment_psu
+from lib.intersight.equipment_psu_control import main as equipment_psu_control
+from lib.intersight.ethernet_host_port import main as ethernet_host_port
+from lib.intersight.ethernet_network_port import main as ethernet_network_port
+from lib.intersight.ethernet_physical_port import main as ethernet_physical_port
+from lib.intersight.network_element_summary import main as network_element_summary
+from lib.intersight.power_control_state import main as power_control_state
+from lib.intersight.tam_advisory_instance import main as tam_advisory_instance
 
 
 class Chassis(ChassisMo, ChassisInfo):
@@ -53,6 +50,7 @@ class Chassis(ChassisMo, ChassisInfo):
         )
 
         self.iocard_handler = equipment_iocard.EquipmentIoCard(iaccount, log_id=log_id)
+        self.expander_module_handler = equipment_expander_module.EquipmentExpanderModule(iaccount, log_id=log_id)
         self.ether_host_port_handler = ethernet_host_port.EthernetHostPort(iaccount, log_id=log_id)
         self.ether_network_port_handler = ethernet_network_port.EthernetNetworkPort(iaccount, log_id=log_id)
         self.ether_physical_port_handler = ethernet_physical_port.EthernetPhysicalPort(iaccount, log_id=log_id)

@@ -25,6 +25,7 @@ class NoResultExit(Exception):
 @click.command("dv")
 @click.pass_obj
 @click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -32,6 +33,7 @@ class NoResultExit(Exception):
 def get_k8s_dv_command(
         ctx,
         cluster,
+        namespace,
         name,
         view,
         output,
@@ -60,6 +62,12 @@ def get_k8s_dv_command(
             raise ErrorExit
 
         object_filter = []
+
+        if namespace is not None:
+            object_filter.append(
+                'namespace:%s' % (namespace)
+            )
+
         if name is not None:
             object_filter.append(
                 'name:%s' % (name)
@@ -108,6 +116,9 @@ def get_k8s_dv_command(
             dvs,
             title=True
         )
+
+        ctx.my_output.default('Filter: namespace, name', before_newline=True)
+        ctx.my_output.default('View:   state (def)')
 
     except NoResultExit:
         ctx.busy = False

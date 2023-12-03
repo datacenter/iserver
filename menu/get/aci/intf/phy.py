@@ -54,7 +54,7 @@ class NoResultExit(Exception):
 @click.option("--fault", "fault", is_flag=True, show_default=True, default=False, help="Filter with faults")
 @click.option("--severity", "fault_severity", type=click.Choice(['any', 'critical', 'major', 'minor', 'warning'], case_sensitive=False), default='any', show_default=True, help="Filter faults by severity")
 @click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
-@click.option("--view", "-v", default=['state'], help="[state|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|l2|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose]", show_default=True, multiple=True)
 @click.option("--pivot", is_flag=True, show_default=True, default=False, help="Pivot view")
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -104,7 +104,7 @@ def get_aci_node_intf_phy_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose',
+        'state|l2|trans|vlan|epg|load|eee|nei|cdp|lldp|pg|pol|aaep|ether|err|qos|fault|hfault|event|audit|diag|all|verbose',
         'state',
         [
             'diag:fault,hfault,event,audit'
@@ -211,18 +211,68 @@ def get_aci_node_intf_phy_command(
         if len(interface_ids) > 0:
             ids = []
             for interface_id in interface_ids:
-                if interface_id.startswith('eth'):
-                    ids.append(
-                        interface_id
-                    )
-                else:
-                    ids.append(
-                        'eth%s' % (interface_id)
-                    )
+                if len(interface_id.split('-')) == 2:
+                    (start_id, end_id) = interface_id.split('-')
+                    if len(start_id.split('/')) != len(end_id.split('/')):
+                        ctx.my_output.error(
+                            'Unsupported port range'
+                        )
+                        raise ErrorExit
 
-            interface_filter.append(
-                'ids:%s' % (','.join(ids))
-            )
+                    if len(start_id.split('/')) not in [2, 3]:
+                        ctx.my_output.error(
+                            'Unsupported port range'
+                        )
+                        raise ErrorExit
+
+                    if '*' in start_id.split('/') or '*' in end_id.split('/'):
+                        ctx.my_output.error(
+                            'Unsupported port range'
+                        )
+                        raise ErrorExit
+
+                    module_id = '/'.join(start_id.split('/')[:-1])
+                    start_port_id = start_id.split('/')[-1]
+                    end_port_id = end_id.split('/')[-1]
+
+                    if int(start_port_id) > int(end_port_id):
+                        ctx.my_output.error(
+                            'Unsupported port range'
+                        )
+                        raise ErrorExit
+
+                    port_id = int(start_port_id)
+                    while True:
+                        range_id = '%s/%s' % (
+                            module_id,
+                            port_id
+                        )
+                        if range_id.startswith('eth'):
+                            ids.append(
+                                range_id
+                            )
+                        else:
+                            ids.append(
+                                'eth%s' % (range_id)
+                            )
+
+                        port_id = port_id + 1
+                        if port_id > int(end_port_id):
+                            break
+
+                if len(interface_id.split('-')) == 1:
+                    if interface_id.startswith('eth'):
+                        ids.append(
+                            interface_id
+                        )
+                    else:
+                        ids.append(
+                            'eth%s' % (interface_id)
+                        )
+
+                interface_filter.append(
+                    'ids:%s' % (','.join(ids))
+                )
 
         if switching != 'any':
             interface_filter.append(
@@ -519,6 +569,12 @@ def get_aci_node_intf_phy_command(
                 title=True
             )
 
+        if 'l2' in view:
+            aci_output_handler.print_interfaces_phy_l2(
+                interfaces,
+                title=True
+            )
+
         if 'trans' in view:
             aci_output_handler.print_interfaces_phy_trans(
                 interfaces
@@ -526,7 +582,8 @@ def get_aci_node_intf_phy_command(
 
         if 'epg' in view:
             aci_output_handler.print_interfaces_phy_epg(
-                interfaces
+                interfaces,
+                title=True
             )
 
         if 'vlan' in view:

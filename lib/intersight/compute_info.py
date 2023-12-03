@@ -84,7 +84,7 @@ class ComputeInfo(ComputeCache, ComputeFilter, ComputesWorkflow):
 
         return servers_info
 
-    def get_sequential(self, servers_mo, settings):
+    def get_sequential(self, servers_mo, settings, bar_handler=None):
         start_time = int(time.time() * 1000)
         servers_info = []
 
@@ -118,6 +118,9 @@ class ComputeInfo(ComputeCache, ComputeFilter, ComputesWorkflow):
                 )
             )
 
+            if bar_handler is not None:
+                bar_handler.next()
+
         duration = int(time.time() * 1000) - start_time
         self.log_handler.debug(
             'computes_info.get_sequential',
@@ -126,8 +129,9 @@ class ComputeInfo(ComputeCache, ComputeFilter, ComputesWorkflow):
 
         return servers_info
 
-    def get_info(self, servers_mo, settings, match_rules, cache_ttl, parallel=False):
-        self.set_cache(servers_mo, settings, cache_ttl, parallel=parallel)
+    def get_info(self, servers_mo, settings, match_rules, cache_ttl, prepare_cache=True, parallel=False, bar_handler=None):
+        if prepare_cache:
+            self.set_cache(servers_mo, settings, cache_ttl)
 
         start_time = int(time.time() * 1000)
 
@@ -140,20 +144,34 @@ class ComputeInfo(ComputeCache, ComputeFilter, ComputesWorkflow):
         if not parallel:
             all_servers_info = self.get_sequential(
                 servers_mo,
-                settings
+                settings,
+                bar_handler=bar_handler
             )
+
+        self.log_handler.debug(
+            'compute_info.get_info',
+            'Match rules: %s' % (match_rules)
+        )
 
         servers_info = []
         for server_info in all_servers_info:
-            if self.match_server(server_info, match_rules):
-                servers_info.append(server_info)
+            matching_server_info = self.match_server(server_info, match_rules)
+            if matching_server_info is not None:
+                servers_info.append(
+                    matching_server_info
+                )
+
+        servers_info = sorted(
+            servers_info,
+            key=lambda i: i['Name'].lower()
+        )
 
         end_time = int(time.time() * 1000)
         duration = end_time - start_time
 
         self.log_handler.debug(
             'compute_info.get_info',
-            'Selected %s servers with requested details in %s ms' % (len(servers_mo), duration)
+            'Selected %s/%s/%s servers in %s ms' % (len(servers_info), len(all_servers_info), len(servers_mo), duration)
         )
 
         return servers_info

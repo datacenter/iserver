@@ -21,7 +21,7 @@ from menu.get.aci.proto.main import get_aci_node_proto_menu
 from menu.get.aci.system.main import get_aci_system_menu
 from menu.get.aci.tenant import get_aci_tenant_command
 from menu.get.aci.vrf import get_aci_vrf_command
-from menu.get.aci.xd.main import get_aci_xd_menu
+from menu.get.aci.server import get_aci_server_command
 
 
 class Failure(Exception):
@@ -55,4 +55,4 @@ get_aci_menu.add_command(get_aci_node_proto_menu)
 get_aci_menu.add_command(get_aci_system_menu)
 get_aci_menu.add_command(get_aci_tenant_command)
 get_aci_menu.add_command(get_aci_vrf_command)
-get_aci_menu.add_command(get_aci_xd_menu)
+get_aci_menu.add_command(get_aci_server_command)

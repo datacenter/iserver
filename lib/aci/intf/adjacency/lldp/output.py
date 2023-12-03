@@ -1,3 +1,4 @@
+from lib import filter_helper
 from lib import ip_helper
 
 
@@ -18,6 +19,12 @@ class InterfaceAdjacencyLldpOutput():
                 self.my_output.default('None')
             return
 
+        for item in info:
+            item['portDescT'] = filter_helper.get_string_chunks(
+                item['portDesc'],
+                30
+            )
+
         order = [
             'pod_node_name',
             'health',
@@ -28,7 +35,7 @@ class InterfaceAdjacencyLldpOutput():
             'mac',
             'portId',
             'portVlan',
-            'portDesc',
+            'portDescT',
             'capability'
         ]
 
@@ -36,21 +43,26 @@ class InterfaceAdjacencyLldpOutput():
             'Node',
             'Health',
             'Faults',
-            'Interface ID',
-            'Hold Time',
-            'Neighbor Device',
+            'Intf',
+            'Hold',
+            'Neighbor',
             'MAC',
             'Port',
             'VLAN',
-            'Port Description',
-            'Capabilities'
+            'Description',
+            'Cap'
         ]
 
         self.my_output.my_table(
-            info,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['portDescT']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
+            row_separator=True,
             underline=True,
             table=True
         )

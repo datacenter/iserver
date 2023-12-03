@@ -13,19 +13,11 @@ class K8sSriovNetworkInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(sriov_network_mo, 'metadata:namespace')
-        info['name'] = self.get(sriov_network_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            sriov_network_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['network_namespace'] = self.get(sriov_network_mo, 'spec:networkNamespace')
         info['resource_name'] = self.get(sriov_network_mo, 'spec:resourceName')
@@ -34,15 +26,26 @@ class K8sSriovNetworkInfo():
         if info['vlan'] is None:
             info['vlanT'] = '--'
 
+        info['spoof'] = self.get(sriov_network_mo, 'spec:spoofChk', on_none="on (*)", on_error=None)
+        info['trust'] = self.get(sriov_network_mo, 'spec:trust', on_none="off (*)", on_error=None)
+
+        info['capabilities'] = self.get(sriov_network_mo, 'spec:capabilities', on_none=None, on_error=None)
+        info['capabilitiesT'] = ['--']
+        if info['capabilities'] is not None:
+            info['capabilitiesT'] = []
+            capabilities = json.loads(info['capabilities'])
+            for key in capabilities:
+                info['capabilitiesT'].append(
+                    '%s: %s' % (
+                        key,
+                        capabilities[key]
+                    )
+                )
+
         info['ipam'] = self.get(sriov_network_mo, 'spec:ipam')
         info['ipamT'] = ['--']
         if info['ipam'] is not None:
             info['ipamT'] = json.dumps(json.loads(info['ipam']), indent=4).split('\n')
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(sriov_network_mo, 'metadata:creation_timestamp'),
-            on_error='--'
-        )
 
         return info
 
@@ -84,7 +87,7 @@ class K8sSriovNetworkInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, sriov_network_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (sriov_network_info['namespace'], sriov_network_info['name'])):
                     return False
 
             if key == 'resource':
@@ -149,7 +152,7 @@ class K8sSriovNetworkInfo():
 
         return None
 
-    def get_sriov_network_with_resource_name(self, resource_name, return_mo=False, cache_enabled=True):
+    def get_sriov_networks_with_resource_name(self, resource_name, return_mo=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'resource:%s' % (resource_name)
@@ -159,10 +162,4 @@ class K8sSriovNetworkInfo():
             return_mo=return_mo,
             cache_enabled=cache_enabled
         )
-        if sriov_networks is None:
-            return None
-
-        if len(sriov_networks) == 1:
-            return sriov_networks[0]
-
-        return None
+        return sriov_networks

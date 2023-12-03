@@ -75,7 +75,7 @@ def get_k8s_ns_command(
                 'Connection to kubernetes cluster failed'
             )
             raise ErrorExit
-        
+
         if output == 'mo':
             namespaces = k8s_handlers.get_namespaces(
                 object_filter=object_filter,
@@ -108,6 +108,9 @@ def get_k8s_ns_command(
             namespaces,
             title=True
         )
+
+        ctx.my_output.default('Filter: name', before_newline=True)
+        ctx.my_output.default('View:   state (def)')
 
     except NoResultExit:
         ctx.busy = False

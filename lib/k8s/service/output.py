@@ -31,7 +31,6 @@ class K8sServiceOutput():
             'cluster_ipT',
             'external_ipT',
             'port.descr',
-            'specialT',
             'age'
         ]
 
@@ -42,7 +41,6 @@ class K8sServiceOutput():
             'Cluster IP',
             'External IP',
             'Port',
-            'Special',
             'Age'
         ]
 
@@ -51,6 +49,58 @@ class K8sServiceOutput():
                 info,
                 order,
                 ['cluster_ipT', 'external_ipT', 'port']
+            ),
+            order=order,
+            headers=headers,
+            row_separator=True,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_services_label(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Service Label and Selectors [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        for item in info:
+            if len(item['cluster_ipT']) == 0:
+                item['cluster_ipT'].append('--')
+
+            if len(item['external_ipT']) == 0:
+                item['external_ipT'].append('--')
+
+            if len(item['port']) == 0:
+                item['port'].append(dict(descr='--'))
+
+        order = [
+            'namespace',
+            'name',
+            'labelT',
+            'selectorT',
+            'specialT'
+        ]
+
+        headers = [
+            'Namespace',
+            'Name',
+            'Label',
+            'Selector',
+            'Special'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['labelT', 'selectorT']
             ),
             order=order,
             headers=headers,

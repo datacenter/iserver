@@ -61,6 +61,7 @@ def set_nx_switch_command(
             nexus_ip,
             nexus_username,
             nexus_password,
+            name=nexus_name,
             log_id=ctx.run_id
         )
 

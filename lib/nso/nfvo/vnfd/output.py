@@ -1,4 +1,4 @@
-class VnfdOutput():
+class NfvoVnfdOutput():
     def __init__(self):
         pass
 

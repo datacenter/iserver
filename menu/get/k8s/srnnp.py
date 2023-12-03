@@ -26,13 +26,17 @@ class NoResultExit(Exception):
 @click.pass_obj
 @click.option("--cluster", default='', help="Kubernetes cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+@click.option("--resource", default='', callback=validations.empty_string_to_none, help="Filter by resource")
+@click.option("--type", "device_type", type=click.Choice(['vfio', 'net', 'any'], case_sensitive=False), default='any', help="Device type")
+@click.option("--view", "-v", default=['state'], help="[state|srn|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_srnnp_command(
         ctx,
         cluster,
         name,
+        resource,
+        device_type,
         view,
         output,
         devel
@@ -46,7 +50,7 @@ def get_k8s_srnnp_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state',
+        'state|srn|all',
         'state',
         []
     )
@@ -59,10 +63,23 @@ def get_k8s_srnnp_command(
         if k8s_handlers is None:
             raise ErrorExit
 
+        sriov_network_info = True
+
         object_filter = []
+
         if name is not None:
             object_filter.append(
                 'name:%s' % (name)
+            )
+
+        if resource is not None:
+            object_filter.append(
+                'resource:%s' % (resource)
+            )
+
+        if device_type != 'any':
+            object_filter.append(
+                'device_type:%s*' % (device_type)
             )
 
         if output not in ['json', 'mo']:
@@ -90,7 +107,8 @@ def get_k8s_srnnp_command(
             return
 
         sriov_network_node_policies = k8s_handlers.get_sriov_network_node_policies(
-            object_filter=object_filter
+            object_filter=object_filter,
+            sriov_network_info=sriov_network_info
         )
 
         ctx.busy = False
@@ -104,10 +122,20 @@ def get_k8s_srnnp_command(
             )
             return
 
-        k8s_output_handler.print_sriov_network_node_policies(
-            sriov_network_node_policies,
-            title=True
-        )
+        if 'state' in view:
+            k8s_output_handler.print_sriov_network_node_policies(
+                sriov_network_node_policies,
+                title=True
+            )
+
+        if 'srn' in view:
+            k8s_output_handler.print_sriov_network_node_policies_srn(
+                sriov_network_node_policies,
+                title=True
+            )
+
+        ctx.my_output.default('Filter: name, resource, type', before_newline=True)
+        ctx.my_output.default('View:   state (def), srn, all')
 
     except NoResultExit:
         ctx.busy = False

@@ -12,7 +12,20 @@ requests.packages.urllib3.disable_warnings()
 
 
 class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFabricInterconnectInventory, RedfishEndpointFabricInterconnectTemplates):
-    def __init__(self, endpoint_handler, endpoint_ip, endpoint_port, redfish_username, redfish_password, cache_filename=None, auto_connect=True, get_timeout=10, ssl_verify=False, deep_search_exlusions=True, log_id=None, verbose=False, debug=False):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            cache_filename=None,
+            auto_connect=True,
+            get_timeout=10,
+            ssl_verify=False,
+            deep_search_exlusions=True,
+            log_id=None
+            ):
         self.session_connected = False
 
         RedfishEndpointCommon.__init__(
@@ -27,9 +40,7 @@ class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFa
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
             deep_search_exlusions=deep_search_exlusions,
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
+            log_id=log_id
         )
         RedfishEndpointFabricInterconnectInventory.__init__(
             self
@@ -172,7 +183,10 @@ class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFa
         )
 
         if properties is None or len(properties) == 0:
-            self.my_output.info('Redfish get %s in %s ms' % (path, duration_ms))
+            self.log.debug(
+                'get_properties',
+                'Redfish get %s in %s ms' % (path, duration_ms)
+            )
             self.log.odata(
                 path,
                 all_properties
@@ -184,7 +198,10 @@ class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFa
             if key in all_properties:
                 selected_properties[key] = all_properties[key]
 
-        self.my_output.info('Redfish get %s in %s ms' % (path, duration_ms))
+        self.log.debug(
+            'get_properties',
+            'Redfish get %s in %s ms' % (path, duration_ms)
+        )
         self.log.odata(
             path,
             selected_properties
@@ -265,7 +282,10 @@ class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFa
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
-        self.my_output.debug('Redfish connected to %s in %s ms' % (self.endpoint_ip, duration_ms))
+        self.log.debug(
+            'get_properties',
+            'Redfish connected to %s in %s ms' % (self.endpoint_ip, duration_ms)
+        )
         self.log.redfish(
             'connect %s' % (self.endpoint_ip),
             True,
@@ -357,7 +377,10 @@ class RedfishEndpointFabricInterconnect(RedfishEndpointCommon, RedfishEndpointFa
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
-        self.my_output.info('Redfish disconnected from %s in %s ms' % (self.endpoint_ip, duration_ms))
+        self.log.debug(
+            'get_properties',
+            'Redfish disconnected from %s in %s ms' % (self.endpoint_ip, duration_ms)
+        )
         self.log.redfish(
             'disconnect %s' % (self.endpoint_ip),
             True,

@@ -80,12 +80,12 @@ def delete_k8s_dv_command(
             ctx.my_output.default('No object found')
             return
 
-        if not no_confirm:
-            k8s_output_handler.print_data_volumes(
-                dvs,
-                title=True
-            )
+        k8s_output_handler.print_data_volumes(
+            dvs,
+            title=True
+        )
 
+        if not no_confirm:
             value = input('Confirm (Y/N) ')
             if value.lower() != 'y':
                 return

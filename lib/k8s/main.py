@@ -6,6 +6,7 @@ from lib.k8s.common import K8sCommon
 from lib.k8s.alert_manager.main import K8sAlertManager
 from lib.k8s.alert_manager_config.main import K8sAlertManagerConfig
 from lib.k8s.cluster_quota.main import K8sClusterQuota
+from lib.k8s.cluster_role_binding.main import K8sClusterRoleBinding
 from lib.k8s.cluster_service_version.main import K8sClusterServiceVersion
 from lib.k8s.cni.main import K8sCni
 from lib.k8s.config_map.main import K8sConfigMap
@@ -26,6 +27,9 @@ from lib.k8s.machine_config_pool.main import K8sMachineConfigPool
 from lib.k8s.namespace.main import K8sNamespace
 from lib.k8s.network_attachment_definition.main import K8sNetworkAttachmentDefinition
 from lib.k8s.node.main import K8sNode
+from lib.k8s.node_network_configuration_enactment.main import K8sNodeNetworkConfigurationEnactment
+from lib.k8s.node_network_configuration_policy.main import K8sNodeNetworkConfigurationPolicy
+from lib.k8s.node_network_state.main import K8sNodeNetworkState
 from lib.k8s.operator_group.main import K8sOperatorGroup
 from lib.k8s.performance_profile.main import K8sPerformanceProfile
 from lib.k8s.pod.main import K8sPod
@@ -40,8 +44,10 @@ from lib.k8s.pvc.main import K8sPvc
 from lib.k8s.replication_controller.main import K8sReplicationController
 from lib.k8s.replica_set.main import K8sReplicaSet
 from lib.k8s.resource_quota.main import K8sResourceQuota
+from lib.k8s.role_binding.main import K8sRoleBinding
 from lib.k8s.route.main import K8sRoute
 from lib.k8s.secret.main import K8sSecret
+from lib.k8s.security_context_constraint.main import K8sSecurityContextConstraint
 from lib.k8s.service.main import K8sService
 from lib.k8s.service_account.main import K8sServiceAccount
 from lib.k8s.service_monitor.main import K8sServiceMonitor
@@ -79,6 +85,7 @@ class K8s(
         K8sAlertManager,
         K8sAlertManagerConfig,
         K8sClusterQuota,
+        K8sClusterRoleBinding,
         K8sClusterServiceVersion,
         K8sCni,
         K8sConfigMap,
@@ -99,6 +106,9 @@ class K8s(
         K8sNamespace,
         K8sNetworkAttachmentDefinition,
         K8sNode,
+        K8sNodeNetworkConfigurationEnactment,
+        K8sNodeNetworkConfigurationPolicy,
+        K8sNodeNetworkState,
         K8sOperatorGroup,
         K8sPerformanceProfile,
         K8sPod,
@@ -113,8 +123,10 @@ class K8s(
         K8sReplicaSet,
         K8sReplicationController,
         K8sResourceQuota,
+        K8sRoleBinding,
         K8sRoute,
         K8sSecret,
+        K8sSecurityContextConstraint,
         K8sService,
         K8sServiceAccount,
         K8sServiceMonitor,
@@ -153,6 +165,7 @@ class K8s(
         K8sCommon.__init__(self)
         K8sAlertManager.__init__(self)
         K8sAlertManagerConfig.__init__(self)
+        K8sClusterRoleBinding.__init__(self)
         K8sConfigMap.__init__(self)
         K8sCustomResourceDefinition.__init__(self)
         K8sDaemonSet.__init__(self)
@@ -171,6 +184,9 @@ class K8s(
         K8sNamespace.__init__(self)
         K8sNetworkAttachmentDefinition.__init__(self)
         K8sNode.__init__(self)
+        K8sNodeNetworkConfigurationEnactment.__init__(self)
+        K8sNodeNetworkConfigurationPolicy.__init__(self)
+        K8sNodeNetworkState.__init__(self)
         K8sOperatorGroup.__init__(self)
         K8sPerformanceProfile.__init__(self)
         K8sPod.__init__(self)
@@ -185,8 +201,10 @@ class K8s(
         K8sReplicaSet.__init__(self)
         K8sReplicationController.__init__(self)
         K8sResourceQuota.__init__(self)
+        K8sRoleBinding.__init__(self)
         K8sRoute.__init__(self)
         K8sSecret.__init__(self)
+        K8sSecurityContextConstraint.__init__(self)
         K8sService.__init__(self)
         K8sServiceAccount.__init__(self)
         K8sServiceMonitor.__init__(self)

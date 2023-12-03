@@ -38,7 +38,8 @@ class OcpClusterVcenter():
             self.ocp_cluster_settings['parameters']['installer']['vm']['ip'],
             self.ocp_cluster_settings['parameters']['installer']['vm']['username'],
             password=self.ocp_cluster_settings['parameters']['installer']['vm']['password'],
-            key_filename=key_filename
+            key_filename=key_filename,
+            log_id=self.log_id
         )
         if ssh_handler is None:
             self.log.error(

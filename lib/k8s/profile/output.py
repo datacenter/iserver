@@ -17,6 +17,11 @@ class K8sProfileOutput():
             self.my_output.default('None')
             return
 
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
         order = [
             'namespace',
             'name',
@@ -113,7 +118,7 @@ class K8sProfileOutput():
 
         for item in info:
             item['errorT'] = []
-            if len(item['error']) > 0:
+            if item['error'] is not None and len(item['error']) > 0:
                 item['errorT'] = filter_helper.get_string_chunks(
                     item['error'],
                     80

@@ -1,12 +1,12 @@
-from lib.nso.nfvo.vnfd.create import VnfdCreate
-from lib.nso.nfvo.vnfd.delete import VnfdDelete
-from lib.nso.nfvo.vnfd.get import VnfdGet
-from lib.nso.nfvo.vnfd.output import VnfdOutput
+from lib.nso.nfvo.vnfd.create import NfvoVnfdCreate
+from lib.nso.nfvo.vnfd.delete import NfvoVnfdDelete
+from lib.nso.nfvo.vnfd.get import NfvoVnfdGet
+from lib.nso.nfvo.vnfd.output import NfvoVnfdOutput
 
 
-class Vnfd(VnfdCreate, VnfdDelete, VnfdGet, VnfdOutput):
+class NfvoVnfd(NfvoVnfdCreate, NfvoVnfdDelete, NfvoVnfdGet, NfvoVnfdOutput):
     def __init__(self):
-        VnfdCreate.__init__(self)
-        VnfdDelete.__init__(self)
-        VnfdGet.__init__(self)
-        VnfdOutput.__init__(self)
+        NfvoVnfdCreate.__init__(self)
+        NfvoVnfdDelete.__init__(self)
+        NfvoVnfdGet.__init__(self)
+        NfvoVnfdOutput.__init__(self)

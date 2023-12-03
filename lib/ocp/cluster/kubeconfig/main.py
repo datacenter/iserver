@@ -2,6 +2,7 @@ import os
 import socket
 
 from lib import file_helper
+from lib.k8s import main as k8s
 from lib import ssh
 
 
@@ -13,7 +14,8 @@ class OcpClusterKubeconfig():
         ssh_handler = ssh.Ssh(
             installer_ip,
             installer_username,
-            password=installer_password
+            password=installer_password,
+            log_id=self.log_id
         )
         source = './install/auth/kubeconfig'
         destination = '/tmp/kubeconfig'
@@ -99,19 +101,18 @@ class OcpClusterKubeconfig():
         info['__Output'] = {}
 
         info['name'] = self.ocp_cluster_settings['name']
-        info['installation'] = self.ocp_cluster_settings['parameters']['ocp']['installation']
-        info['release'] = self.ocp_cluster_settings['parameters']['ocp']['release']
-        info['cni'] = self.ocp_cluster_settings['parameters']['cni']['type']
-
+        info['kubeconfigFilename'] = self.ocp_cluster_settings['kubeconfig']
         info['kubeconfigFile'] = os.path.isfile(
             self.ocp_cluster_settings['kubeconfig']
         )
         if info['kubeconfigFile']:
             info['kubeconfigFileTick'] = '\u2713'
             info['__Output']['kubeconfigFileTick'] = 'Green'
+            info['__Output']['kubeconfigFilename'] = 'Green'
         else:
             info['kubeconfigFileTick'] = '\u2717'
             info['__Output']['kubeconfigFileTick'] = 'Red'
+            info['__Output']['kubeconfigFilename'] = 'Red'
 
         info['apiFqdn'] = ''
         info['apiVip'] = ''
@@ -140,29 +141,21 @@ class OcpClusterKubeconfig():
         if info['apiFqdn'] is None:
             return info
 
-        info['apiVip'] = self.ocp_cluster_settings['parameters']['ocp']['cluster']['api_vip']
-
         try:
-            info['apiDns'] = socket.gethostbyname(info['apiFqdn'])
+            info['apiVip'] = socket.gethostbyname(info['apiFqdn'])
         except BaseException:
-            info['apiDns'] = 'not-resolved'
-            info['__Output']['apiDns'] = 'Red'
-            return info
-
-        if info['apiVip'] != info['apiDns']:
-            info['__Output']['apiVip'] = 'Red'
+            info['apiVip'] = 'not-resolved'
             info['__Output']['apiDns'] = 'Red'
             return info
 
         info['__Output']['apiFqdn'] = 'Green'
         info['__Output']['apiVip'] = 'Green'
-        info['__Output']['apiDns'] = 'Green'
 
         if validate:
-            if self.k8s_handler.connect():
-                info['kubeApi'] = self.k8s_handler.is_connected()
-                if info['kubeApi']:
-                    info['kubeApiTick'] = '\u2713'
-                    info['__Output']['kubeApiTick'] = 'Green'
+            k8s_handler = k8s.K8s(info['kubeconfigFilename'])
+            if k8s_handler.get_api() is not None:
+                info['kubeApi'] = True
+                info['kubeApiTick'] = '\u2713'
+                info['__Output']['kubeApiTick'] = 'Green'
 
         return info

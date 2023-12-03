@@ -1,9 +1,28 @@
 from lib.redfish.standard.endpoint import RedfishEndpointStandard
-from lib.redfish.ucs_rack.template import RedfishEndpointUcsRackTemplate
+from lib.redfish.ucs_rack.account.main import RedfishEndpointUcsRackAccount
+from lib.redfish.ucs_rack.template.main import RedfishEndpointUcsRackTemplate
 
 
-class RedfishEndpointUcsRack(RedfishEndpointStandard, RedfishEndpointUcsRackTemplate):
-    def __init__(self, endpoint_handler, endpoint_ip, endpoint_port, redfish_username, redfish_password, cache_filename=None, auto_connect=True, get_timeout=10, ssl_verify=False, deep_search_exlusions=True, log_id=None, verbose=False, debug=False):
+class RedfishEndpointUcsRack(
+        RedfishEndpointStandard,
+        RedfishEndpointUcsRackAccount,
+        RedfishEndpointUcsRackTemplate
+        ):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            system_id=None,
+            cache_filename=None,
+            auto_connect=True,
+            get_timeout=10,
+            ssl_verify=False,
+            deep_search_exlusions=True,
+            log_id=None
+            ):
         RedfishEndpointStandard.__init__(
             self,
             endpoint_handler,
@@ -11,22 +30,26 @@ class RedfishEndpointUcsRack(RedfishEndpointStandard, RedfishEndpointUcsRackTemp
             endpoint_port,
             redfish_username,
             redfish_password,
+            system_id=system_id,
             cache_filename=cache_filename,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
             deep_search_exlusions=deep_search_exlusions,
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
+            log_id=log_id
         )
+        RedfishEndpointUcsRackAccount.__init__(self)
         RedfishEndpointUcsRackTemplate.__init__(
-            self
+            self,
+            endpoint_handler
         )
 
         self.endpoint_type = 'ucsc'
         self.default_chassis_uri = '/redfish/v1/Chassis/1'
         self.chassis_uri = None
+
+    def __del__(self):
+        self.disconnect()
 
     def get_chassis_uri(self):
         if self.chassis_uri is not None:

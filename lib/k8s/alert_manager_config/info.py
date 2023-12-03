@@ -12,6 +12,11 @@ class K8sAlertManagerConfigInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            alert_manager_config_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_alert_manager_configs_info(self, cache_enabled=True):

@@ -11,7 +11,11 @@ class K8sPerformanceProfileInfo():
 
         info = {}
         info['__Output'] = {}
-        info['name'] = self.get(performance_profile_mo, 'metadata:name')
+
+        metadata_info = self.get_metadata_info(
+            performance_profile_mo
+        )
+        info.update(metadata_info)
 
         conditions_mo = self.get(performance_profile_mo, 'status:conditions', on_error=[], on_none=[])
 
@@ -124,11 +128,6 @@ class K8sPerformanceProfileInfo():
 
         info['runtime_class'] = self.get(performance_profile_mo, 'status:runtimeClass', on_error=None, on_none=None)
         info['tuned'] = self.get(performance_profile_mo, 'status:tuned', on_error=None, on_none=None)
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(performance_profile_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
 
         return info
 

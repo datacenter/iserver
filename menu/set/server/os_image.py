@@ -22,7 +22,7 @@ class ErrorExit(Exception):
 @click.command("os-image")
 @click.pass_obj
 @click.option("--iaccount", is_flag=False, show_default=True, cls=defaults.default_from_context('iaccount'), callback=validations.validate_iaccount, type=click.STRING, help="Intersight account")
-@click.option("--filename", is_flag=False, show_default=False, default='', type=click.STRING, help="Input yaml file")
+@click.option("--file", "filename", is_flag=False, show_default=False, default='', type=click.STRING, help="Input yaml file")
 @click.option("--id", "moid", is_flag=False, show_default=False, default='', type=click.STRING, help="SCU Id")
 @click.option("--name", is_flag=False, show_default=False, default='', type=click.STRING, help="OS Name")
 @click.option("--vendor", is_flag=False, show_default=False, default='', type=click.STRING, help="OS Vendor")

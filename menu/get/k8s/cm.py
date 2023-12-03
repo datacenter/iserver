@@ -155,6 +155,9 @@ def get_k8s_cm_command(
                 title=True
             )
 
+        ctx.my_output.default('Filter: namespace, name, cname, cdata', before_newline=True)
+        ctx.my_output.default('View:   state (def), name, data, pod, all')
+
     except NoResultExit:
         ctx.busy = False
         sys.exit(666)

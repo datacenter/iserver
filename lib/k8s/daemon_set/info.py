@@ -12,21 +12,10 @@ class K8sDaemonSetInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(
-            daemon_set_mo,
-            'metadata:namespace'
+        metadata_info = self.get_metadata_info(
+            daemon_set_mo
         )
-
-        info['name'] = self.get(
-            daemon_set_mo,
-            'metadata:name'
-        )
-
-        owner = self.get_owner(
-            daemon_set_mo,
-            'metadata:ownerReferences'
-        )
-        info.update(owner)
+        info.update(metadata_info)
 
         keys = [
             'currentNumberScheduled',
@@ -70,11 +59,6 @@ class K8sDaemonSetInfo():
             on_none={}
         )
 
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(daemon_set_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
-
         return info
 
     def get_daemon_sets_info(self, cache_enabled=True):
@@ -116,7 +100,7 @@ class K8sDaemonSetInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, daemon_set_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (daemon_set_info['namespace'], daemon_set_info['name'])):
                     return False
 
             if not key_found:

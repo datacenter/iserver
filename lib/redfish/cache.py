@@ -3,7 +3,6 @@ import json
 import traceback
 
 from lib import log_helper
-from lib import output_helper
 from lib.redfish.settings import RedfishSettings
 
 
@@ -11,11 +10,6 @@ class RedfishCache(RedfishSettings):
     def __init__(self, log_id=None):
         RedfishSettings.__init__(self, log_id=log_id)
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = output_helper.OutputHelper(
-            log_id=log_id,
-            verbose=False,
-            debug=False
-        )
 
         self.redfish_settings = self.get_redfish_settings()
         if self.redfish_settings is None:
@@ -143,7 +137,10 @@ class RedfishCache(RedfishSettings):
             cache_name = custom_cache_name
 
         if not self.add_redfish_cache_entry(cache_name, identity):
-            self.my_output.error('Failed to set redfish cache')
+            self.log.error(
+                'set_redfish_cache_endpoint',
+                'Failed to set redfish cache: %s' % (cache_name)
+            )
             return None
 
         try:
@@ -172,47 +169,3 @@ class RedfishCache(RedfishSettings):
             if not self.set_redfish_cache_list([]):
                 return False
         return True
-
-    def print_redfish_cache(self):
-        if not self.is_cache_enabled():
-            self.my_output.default('Redfish cache is not enabled')
-            return
-
-        self.my_output.default('Redfish cache is enabled: %s\n' % (self.redfish_cache_directory))
-
-        cache_list = self.get_redfish_cache_list()
-        if cache_list is None:
-            self.my_output.error('Cache list not found')
-            return
-
-        order = [
-            'CacheName',
-            'Product',
-            'SerialNumber',
-            'Firmware',
-            'PowerState',
-            'EndpointType',
-            'EndpointIp',
-            'EndpointInventoryType',
-            'EndpointInventoryId'
-        ]
-
-        headers = [
-            'Cache Name',
-            'Product',
-            'S/N',
-            'Firmware',
-            'Power',
-            'Type',
-            'IP',
-            'Inventory',
-            'Id'
-        ]
-
-        self.my_output.my_table(
-            cache_list,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )

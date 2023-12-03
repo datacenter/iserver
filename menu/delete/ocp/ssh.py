@@ -67,7 +67,7 @@ def delete_ocp_ssh_command(
             ctx.my_output.default('Completed (no change)')
 
         if len(machine_configs) > 0:
-            ctx.my_output.default('Completed with machine configs modifed')
+            ctx.my_output.default('Completed with machine configs modified')
             for machine_config in machine_configs:
                 ctx.my_output.default('- %s' % (machine_config))
 

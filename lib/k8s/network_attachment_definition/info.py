@@ -13,28 +13,15 @@ class K8sNetworkAttachmentDefinitionInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(nad_mo, 'metadata:namespace')
-        info['name'] = self.get(nad_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            nad_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['resource_name'] = self.get(nad_mo, 'metadata:annotations:k8s.v1.cni.cncf.io/resourceName')
         info['config'] = json.loads(
             self.get(nad_mo, 'spec:config')
-        )
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(nad_mo, 'metadata:creationTimestamp'),
-            on_error='--'
         )
 
         return info
@@ -77,7 +64,7 @@ class K8sNetworkAttachmentDefinitionInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, nad_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (nad_info['namespace'], nad_info['name'])):
                     return False
 
             if key == 'resource':

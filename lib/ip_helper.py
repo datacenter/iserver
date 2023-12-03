@@ -345,3 +345,11 @@ def get_file_md5(filename):
             buf = file_handler.read(blocksize)
     md5 = hasher.hexdigest()
     return md5
+
+
+def get_ip(name):
+    try:
+        ip_address = socket.gethostbyname(name)
+    except BaseException:
+        return None
+    return ip_address

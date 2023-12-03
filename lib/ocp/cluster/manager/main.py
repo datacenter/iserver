@@ -9,7 +9,8 @@ class OcpClusterManager():
         ssh_handler = ssh.Ssh(
             self.ocp_cluster_settings['parameters']['installer']['vm']['ip'],
             self.ocp_cluster_settings['parameters']['installer']['vm']['username'],
-            password=self.ocp_cluster_settings['parameters']['installer']['vm']['password']
+            password=self.ocp_cluster_settings['parameters']['installer']['vm']['password'],
+            log_id=self.log_id
         )
         return ssh_handler.get_file(filename)
 
@@ -32,7 +33,8 @@ class OcpClusterManager():
             ssh_handler = ssh.Ssh(
                 info['ssh']['ip'],
                 info['ssh']['username'],
-                password=info['ssh']['password']
+                password=info['ssh']['password'],
+                log_id=self.log_id
             )
             info['ssh']['validated'] = ssh_handler.is_ssh()
             if info['ssh']['validated']:

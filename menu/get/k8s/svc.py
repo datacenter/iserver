@@ -33,7 +33,7 @@ class NoResultExit(Exception):
 @click.option("--external-ip", default='', callback=validations.empty_string_to_none, help="Filter by external IP")
 @click.option("--port", default='', callback=validations.validate_int_oper, help="Filter by port")
 @click.option("--special", default='', callback=validations.empty_string_to_none, help="Filter by special selector")
-@click.option("--view", "-v", default=['state'], help="[state|pod|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|label|pod|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_svc_command(
@@ -59,7 +59,7 @@ def get_k8s_svc_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|pod|all',
+        'state|label|pod|all',
         'state',
         []
     )
@@ -179,11 +179,19 @@ def get_k8s_svc_command(
                 title=True
             )
 
+        if 'label' in view:
+            k8s_output_handler.print_services_label(
+                services,
+                title=True
+            )
+
         if 'pod' in view:
             k8s_output_handler.print_services_pod(
                 services,
                 title=True
             )
+        ctx.my_output.default('Filter: namespace, name, type, cluster-ip, external-ip, port, special', before_newline=True)
+        ctx.my_output.default('View:   state (def), label, pod, all')
 
     except NoResultExit:
         ctx.busy = False

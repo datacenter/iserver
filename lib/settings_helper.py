@@ -72,7 +72,7 @@ class Settings():
 
     def get_default_settings(self):
         settings = {}
-        settings['iaccount'] = 'isctl'
+        settings['iaccount'] = None
 
         return settings
 

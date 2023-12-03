@@ -12,6 +12,11 @@ class K8sRouteInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            route_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_routes_info(self, cache_enabled=True):

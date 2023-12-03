@@ -12,6 +12,11 @@ class K8sEgressIpInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            egress_ip_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_egress_ips_info(self, cache_enabled=True):

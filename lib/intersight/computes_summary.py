@@ -1,4 +1,5 @@
 from lib import info_helper
+from lib import output_helper
 
 
 class ComputesSummary():
@@ -6,6 +7,7 @@ class ComputesSummary():
     """
     def __init__(self, settings, log_id=None):
         self.info_handler = info_helper.InfoHelper(log_id=log_id)
+        self.my_output = output_helper.OutputHelper(log_id=log_id)
         self.settings = settings
 
     def get_type_summary(self, summary, servers):
@@ -218,13 +220,17 @@ class ComputesSummary():
         locator_dict['On'] = 0
         locator_dict['Off'] = 0
 
+        supported = False
         for server in servers:
-            if server['LocatorLedOn']:
-                locator_dict['On'] = locator_dict['On'] + 1
-            else:
-                locator_dict['Off'] = locator_dict['Off'] + 1
+            if 'LocatorLedOn' in server:
+                supported = True
+                if server['LocatorLedOn']:
+                    locator_dict['On'] = locator_dict['On'] + 1
+                else:
+                    locator_dict['Off'] = locator_dict['Off'] + 1
 
-        summary['locator'] = locator_dict
+        if supported:
+            summary['locator'] = locator_dict
 
         return summary
 
@@ -469,6 +475,43 @@ class ComputesSummary():
                 start=''
             )
 
+    def get_tags_summary(self, summary, servers):
+        tags = {}
+
+        for server in servers:
+            for tag in server['Tags']:
+                if tag['Key'] == 'Intersight.LicenseTier':
+                    continue
+
+                tag_kv = '%s:%s' % (
+                    tag['Key'],
+                    tag['Value']
+                )
+
+                if tag_kv not in tags:
+                    tags[tag_kv] = {}
+                    tags[tag_kv]['count'] = 0
+                    tags[tag_kv]['server'] = []
+
+                tags[tag_kv]['count'] = tags[tag_kv]['count'] + 1
+                tags[tag_kv]['server'].append(server['Name'])
+
+        summary['tags'] = tags
+        return summary
+
+    def print_tags_summary(self, summary):
+        self.my_output.default(
+            'Tag',
+            before_newline=True
+        )
+        for tag in summary['tags']:
+            self.my_output.default(
+                '- %s: %s' % (
+                    tag,
+                    summary['tags'][tag]['count']
+                )
+            )
+
     def get_summary(self, servers):
         summary = {}
 
@@ -485,6 +528,7 @@ class ComputesSummary():
         summary = self.get_pci_summary(summary, servers)
         summary = self.get_fw_summary(summary, servers)
         summary = self.get_workflow_summary(summary, servers)
+        summary = self.get_tags_summary(summary, servers)
 
         return summary
 
@@ -502,3 +546,4 @@ class ComputesSummary():
         self.print_pci_summary(summary)
         self.print_fw_summary(summary)
         self.print_workflow_summary(summary)
+        self.print_tags_summary(summary)

@@ -12,6 +12,11 @@ class K8sVirtualMachineInstanceReplicaSetInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            virtual_machine_instance_replica_set_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_virtual_machine_instance_replica_sets_info(self, cache_enabled=True):

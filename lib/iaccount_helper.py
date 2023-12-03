@@ -56,42 +56,6 @@ class IntersightAccount(Settings):
                 iaccounts.append(iaccount)
         return iaccounts
 
-    def get_isctl_configuration(self, filename=None):
-        '''
-            keyfile: /root/intersight.pem
-            keyid: lalala
-            output: default
-            server: intersight.com
-        '''
-        if filename is None:
-            filename = self.isctl_configuration_filename
-
-        content = file_helper.get_file_yaml(
-            filename
-        )
-        if content is None:
-            self.log.error(
-                'iaccount_helper.get_isctl_configuration',
-                'Yaml load failed: %s' % (filename)
-            )
-
-        return content
-
-    def verify_isctl_configuration(self, filename=None):
-        configuration = self.get_isctl_configuration(filename=filename)
-        if configuration is None:
-            return False
-
-        for key in ['keyfile', 'keyid', 'output', 'server']:
-            if key not in configuration:
-                self.log.error('iaccount_helper.verify_isctl_configuration', 'Key %s not found' % (key))
-                return False
-
-        return True
-
-    def is_isctl_configured(self):
-        return self.verify_isctl_configuration()
-
     def get_iaccount_configuration_filename(self, iaccount):
         directory = os.path.join(self.iaccount_dir, iaccount)
         return os.path.join(directory, 'iaccount.yaml')
@@ -163,15 +127,6 @@ class IntersightAccount(Settings):
 
         return True
 
-    def initialize_iaccount(self):
-        if not self.is_iaccount_valid('isctl'):
-            isctl_configuration = self.get_isctl_configuration()
-            if isctl_configuration is None:
-                return False
-
-            return self.create_iaccount('isctl', isctl_configuration)
-        return True
-
     def create_iaccount(self, iaccount, configuration):
         directory = os.path.join(self.iaccount_dir, iaccount)
         if not os.path.isdir(directory):
@@ -181,15 +136,12 @@ class IntersightAccount(Settings):
 
     def delete_iaccount(self, iaccount):
         try:
-            if iaccount == 'isctl':
-                return False, 'This account cannot be deleted'
-
             directory = os.path.join(self.iaccount_dir, iaccount)
             if not os.path.isdir(directory):
                 return False, 'Account does not exist'
 
             if self.is_default_account(iaccount):
-                if not self.set_default_iaccount('isctl'):
+                if not self.clear_default_iaccount():
                     return False, 'Default iaccount change failed'
 
             shutil.rmtree(directory)
@@ -205,6 +157,9 @@ class IntersightAccount(Settings):
         if default_iacccount_name == iaccount_name:
             return True
         return False
+
+    def clear_default_iaccount(self):
+        return self.set_setting('iaccount', None)
 
     def set_default_iaccount(self, iaccount):
         if self.is_iaccount_valid(iaccount):

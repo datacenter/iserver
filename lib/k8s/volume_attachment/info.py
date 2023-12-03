@@ -12,6 +12,11 @@ class K8sVolumeAttachmentInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            volume_attachment_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_volume_attachments_info(self, cache_enabled=True):

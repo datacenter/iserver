@@ -13,19 +13,10 @@ class K8sServiceInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(service_mo, 'metadata:namespace')
-        info['name'] = self.get(service_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+        metadata_info = self.get_metadata_info(
+            service_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         # ExternalName, ClusterIP, NodePort, and LoadBalancer
         info['type'] = self.get(service_mo, 'spec:type')
@@ -115,11 +106,6 @@ class K8sServiceInfo():
                 info['special'] = info['selector'][key]
                 info['specialT'] = info['selector'][key]
 
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(service_mo, 'metadata:creation_timestamp'),
-            on_error='--'
-        )
-
         return info
 
     def get_services_info(self, cache_enabled=True):
@@ -161,7 +147,7 @@ class K8sServiceInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, service_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (service_info['namespace'], service_info['name'])):
                     return False
 
             if key == 'type':

@@ -1,5 +1,4 @@
 from lib import filter_helper
-from lib import ip_helper
 
 
 class K8sEndpointInfo():
@@ -13,13 +12,10 @@ class K8sEndpointInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(endpoint_mo, 'metadata:namespace')
-        info['name'] = self.get(endpoint_mo, 'metadata:name')
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(endpoint_mo, 'metadata:creation_timestamp'),
-            on_error='--'
+        metadata_info = self.get_metadata_info(
+            endpoint_mo
         )
+        info.update(metadata_info)
 
         return info
 
@@ -62,7 +58,7 @@ class K8sEndpointInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, endpoint_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (endpoint_info['namespace'], endpoint_info['name'])):
                     return False
 
             if not key_found:

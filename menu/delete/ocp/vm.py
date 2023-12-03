@@ -20,9 +20,7 @@ class ErrorExit(Exception):
 @click.command("vm")
 @click.pass_obj
 @click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', type=click.STRING, help="Cluster Name")
-@click.option("--namespace", is_flag=False, show_default=False, default='default', type=click.STRING, help="VM Namespace")
-@click.option("--name", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Name")
-@click.option("--yaml", "vm_filename", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Definition YAML")
+@click.option("--file", "vm_filename", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Definition YAML")
 @click.option("--sriov", "include_sriov_policy", is_flag=True, show_default=True, default=False, help="Delete sriov policy")
 @click.option("--image", "include_image", is_flag=True, show_default=True, default=False, help="Delete image")
 @click.option("--verbose", is_flag=True, show_default=True, default=False, help="Verbose mode")
@@ -30,8 +28,6 @@ class ErrorExit(Exception):
 def delete_ocp_vm_command(
         ctx,
         cluster_name,
-        namespace,
-        name,
         vm_filename,
         include_sriov_policy,
         include_image,
@@ -46,20 +42,6 @@ def delete_ocp_vm_command(
         if debug:
             verbose = True
         ctx.my_output.set_flags(False, verbose, debug)
-
-        if len(vm_filename) == 0 and len(name) == 0:
-            ctx.my_output.error('Define virtual machine using yaml or namespace/name')
-            raise ErrorExit
-
-        if len(vm_filename) == 0:
-            deployment = 'kind: VirtualMachine'
-            deployment = '%s\nmetadata:' % (deployment)
-            deployment = '%s\n  name: %s' % (deployment, name)
-            deployment = '%s\n  namespace: %s' % (deployment, namespace)
-            vm_filename = file_helper.set_tmp_file(deployment)
-            if vm_filename is None:
-                ctx.my_output.error('Failed to prepare virtual machine file')
-                raise ErrorExit
 
         ctx.busy = True
         threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()

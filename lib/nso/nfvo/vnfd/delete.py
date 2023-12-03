@@ -1,7 +1,7 @@
 import time
 
 
-class VnfdDelete():
+class NfvoVnfdDelete():
     def __init__(self):
         pass
 

@@ -12,21 +12,10 @@ class K8sProfileInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(
-            profile_mo,
-            'metadata:namespace'
+        metadata_info = self.get_metadata_info(
+            profile_mo
         )
-
-        info['name'] = self.get(
-            profile_mo,
-            'metadata:name'
-        )
-
-        owner = self.get_owner(
-            profile_mo,
-            'metadata:ownerReferences'
-        )
-        info.update(owner)
+        info.update(metadata_info)
 
         info['uid'] = self.get(
             profile_mo,
@@ -91,11 +80,6 @@ class K8sProfileInfo():
         else:
             info['errorTick'] = '--'
 
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(profile_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
-
         return info
 
     def get_profiles_info(self, cache_enabled=True):
@@ -137,7 +121,7 @@ class K8sProfileInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, profile_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (profile_info['namespace'], profile_info['name'])):
                     return False
 
             if not key_found:

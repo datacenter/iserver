@@ -115,7 +115,7 @@ class NsoSettings(Settings):
         settings['Ncs'] = ncss
         return self.set_nso_settings(settings)
 
-    def set_nso_ncs(self, nso_name, rest_protocol, nso_ip, nso_port, nso_username, nso_password, restconf_enabled, nfvo_version, nfvo_etsi):
+    def set_nso_ncs(self, nso_name, rest_protocol, nso_ip, nso_port, nso_username, nso_password, restconf_enabled, nfvo):
         ncss = self.get_nso_ncss()
         if ncss is None:
             return False
@@ -133,8 +133,7 @@ class NsoSettings(Settings):
         new_ncs['username'] = nso_username
         new_ncs['password'] = nso_password
         new_ncs['restconf_enabled'] = restconf_enabled
-        new_ncs['nfvo_version'] = nfvo_version
-        new_ncs['nfvo_etsi'] = nfvo_etsi
+        new_ncs['nfvo'] = nfvo
         new_ncss.append(new_ncs)
 
         return self.set_nso_ncss(new_ncss)
@@ -165,8 +164,7 @@ class NsoSettings(Settings):
             'username',
             'password',
             'restconf_enabled',
-            'nfvo_version',
-            'nfvo_etsi'
+            'nfvo'
         ]
 
         headers = [
@@ -177,8 +175,7 @@ class NsoSettings(Settings):
             'Username',
             'Password',
             'RESTCONF',
-            'NFVO Version',
-            'NFVO ETSI'
+            'NFVO'
         ]
 
         self.my_output.my_table(

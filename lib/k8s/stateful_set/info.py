@@ -12,6 +12,11 @@ class K8sStatefulSetInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            stateful_set_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_stateful_sets_info(self, cache_enabled=True):

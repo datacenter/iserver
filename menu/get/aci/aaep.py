@@ -254,6 +254,9 @@ def get_aci_aaep_command(
                 title=True
             )
 
+        ctx.my_output.default('Filter: name, fault, severity, when', before_newline=True)
+        ctx.my_output.default('View:   state (def), epg, node, intf, pol, fault, hfault, event, audit, diag, all')
+
         if aae is None or len(aae) == 0:
             raise NoResultExit
 

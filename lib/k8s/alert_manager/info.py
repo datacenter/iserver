@@ -12,15 +12,10 @@ class K8sAlertManagerInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(
-            alert_manager_mo,
-            'metadata:namespace'
+        metadata_info = self.get_metadata_info(
+            alert_manager_mo
         )
-
-        info['name'] = self.get(
-            alert_manager_mo,
-            'metadata:name'
-        )
+        info.update(metadata_info)
 
         info['version'] = self.get(
             alert_manager_mo,
@@ -30,11 +25,6 @@ class K8sAlertManagerInfo():
         info['replicas'] = self.get(
             alert_manager_mo,
             'spec:replicas'
-        )
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(alert_manager_mo, 'metadata:creationTimestamp'),
-            on_error='--'
         )
 
         return info

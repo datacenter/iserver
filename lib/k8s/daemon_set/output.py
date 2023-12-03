@@ -24,6 +24,11 @@ class K8sDaemonSetOutput():
                     )
                 )
 
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
         order = [
             'namespace',
             'name',

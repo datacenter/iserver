@@ -18,6 +18,15 @@ class OcpTaskOutput():
             'Machine Config'
         ]
 
+        for item in info:
+            (key_type, key_pub, hostname) = item['key'].split(' ')
+            if len(key_pub) > 68:
+                item['key'] = '%s %s... %s' % (
+                    key_type,
+                    key_pub[:69],
+                    hostname
+                )
+
         self.my_output.my_table(
             self.my_output.expand_lists(
                 info,

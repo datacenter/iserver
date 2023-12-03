@@ -46,3 +46,36 @@ class K8sVirtualMachineInstanceApi():
         )
 
         return self.virtual_machine_instance_mo
+
+    def create_virtual_machine_instance_mo(self, body, cache_enabled=True):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+            response = api_handler.resources.get(
+                api_version='kubevirt.io/v1',
+                kind='VirtualMachineInstance'
+            )
+            response.create(body=body, namespace=body['metadata']['namespace'])
+
+            self.log.k8s(
+                'create',
+                'virtual_machine_instance',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+
+        except BaseException:
+            self.log.error('k8s.create_virtual_machine_instance_mo', traceback.format_exc())
+            self.log.k8s(
+                'create',
+                'virtual_machine_instance',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True

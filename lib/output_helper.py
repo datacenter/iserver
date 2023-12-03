@@ -109,6 +109,10 @@ class OutputHelper():
 
         self.stream = 'default'
 
+    def set_debug(self):
+        self.flags['debug'] = True
+        self.set_stream()
+
     def set_flags(self, silent, verbose, debug):
         self.flags['silent'] = silent
         self.flags['verbose'] = verbose
@@ -428,7 +432,7 @@ class OutputHelper():
             for value_key in value_ref:
                 if value_key in empty:
                     if isinstance(value_ref[value_key], list):
-                        if len(item[value_key]) == 0:
+                        if len(value_ref[value_key]) == 0:
                             item[value_key] = [empty_char]
                             continue
 

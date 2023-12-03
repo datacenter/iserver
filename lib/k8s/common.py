@@ -1,6 +1,7 @@
 import time
 import datetime
-import traceback
+
+from lib import filter_helper
 
 
 class K8sCommon():
@@ -136,7 +137,116 @@ class K8sCommon():
 
         return self.convert_age(int(time.time()) - timestamp)
 
-    def get_owner(self, managed_object, property_name):
+    def get_metadata_info(self, managed_object, exclude_labels=[], exclude_annotations=[]):
+        info = {}
+
+        if 'metadata' not in managed_object:
+            return info
+
+        info['name'] = self.get(managed_object, 'metadata:name')
+        namespace = self.get(managed_object, 'metadata:namespace')
+        if namespace is not None:
+            info['namespace'] = namespace
+            info['namespace_name'] = '%s/%s' % (
+                info['namespace'],
+                info['name']
+            )
+
+        labels = self.get_metadata_label_info(
+            managed_object,
+            'metadata:labels',
+            exclude_labels=exclude_labels
+        )
+        info.update(labels)
+
+        annotations = self.get_metadata_annotation_info(
+            managed_object,
+            'metadata:annotations',
+            exclude_annotations=exclude_annotations
+        )
+        info.update(annotations)
+
+        owner_property_name = 'owner_references'
+        if owner_property_name not in managed_object['metadata']:
+            owner_property_name = 'ownerReferences'
+
+        owner_references = self.get_metadata_owner_info(
+            managed_object,
+            'metadata:%s' % (owner_property_name)
+        )
+        info.update(owner_references)
+
+        timestamp_name = 'creation_timestamp'
+        if timestamp_name not in managed_object['metadata']:
+            timestamp_name = 'creationTimestamp'
+
+        info['age'] = self.convert_timestamp_to_age(
+            self.get(
+                managed_object,
+                'metadata:%s' % (timestamp_name)
+            ),
+            on_error='--'
+        )
+
+        return info
+
+    def get_metadata_label_info(self, managed_object, property_name, exclude_labels=[], chunk=80):
+        info = {}
+        info['label'] = self.get(managed_object, property_name, on_error={}, on_none={})
+        info['labelT'] = []
+        for key in info['label']:
+            if key in exclude_labels:
+                continue
+
+            line = '%s = %s' % (
+                key,
+                info['label'][key]
+            )
+
+            if chunk is not None:
+                lines = filter_helper.get_string_chunks(
+                    line,
+                    chunk
+                )
+                info['labelT'] = info['labelT'] + lines
+            else:
+                info['labelT'].append(
+                    line
+                )
+
+        return info
+
+    def get_metadata_annotation_info(self, managed_object, property_name, exclude_annotations=[], chunk=80):
+        info = {}
+        info['annotation'] = self.get(managed_object, property_name, on_error={}, on_none={})
+        info['annotationT'] = []
+
+        exclude_annotations.append(
+            'kubectl.kubernetes.io/last-applied-configuration'
+        )
+        for key in info['annotation']:
+            if key in exclude_annotations:
+                continue
+
+            line = '%s = %s' % (
+                key,
+                info['annotation'][key]
+            )
+
+            if chunk is not None:
+                lines = filter_helper.get_string_chunks(
+                    line,
+                    chunk
+                )
+                info['annotationT'] = info['annotationT'] + lines
+            else:
+                info['annotationT'].append(
+                    line
+                )
+
+        return info
+
+    def get_metadata_owner_info(self, managed_object, property_name):
         owner_kind = None
         owner_name = None
 
@@ -159,7 +269,7 @@ class K8sCommon():
             )
 
         if owner_kind is None or owner_name is None:
-            owner = '--'
+            owner = None
         else:
             owner = '%s/%s' % (
                 owner_kind,

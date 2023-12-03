@@ -2,7 +2,7 @@ import time
 from lib import xmltodict
 
 
-class VnfiCreate():
+class NfvoVnfiCreate():
     def __init__(self):
         pass
 

@@ -1,4 +1,5 @@
 from lib import ip_helper
+from lib import filter_helper
 
 
 class ComputeFilter():
@@ -56,31 +57,47 @@ class ComputeFilter():
         return False
 
     def locator_filter_match(self, server, locator_filter):
-        if not locator_filter:
+        if locator_filter == 'any':
             return True
 
-        if server['LocatorLedOn']:
+        if locator_filter == 'on' and server['LocatorLedOn']:
             return True
 
-        return False
-
-    def power_off_filter_match(self, server, power_off):
-        if not power_off:
-            return True
-
-        if server['OperPowerState'] != 'on':
+        if locator_filter == 'off' and not server['LocatorLedOn']:
             return True
 
         return False
 
-    def alarms_filter_match(self, server, alarms):
-        if not alarms:
+    def power_filter_match(self, server, power_filter):
+        if power_filter == 'any':
             return True
 
-        if server['AlarmSummary']['Warning'] == 0 and server['AlarmSummary']['Critical'] == 0:
-            return False
+        if power_filter == 'on' and server['OperPowerState'] == 'on':
+            return True
 
-        return True
+        if power_filter == 'off' and server['OperPowerState'] != 'on':
+            return True
+
+        return False
+
+    def alarms_filter_match(self, server, alarm_severity):
+        # ['any', 'info', 'warn', 'crit']
+        if alarm_severity == 'any':
+            return True
+
+        if alarm_severity == 'info':
+            if server['AlarmSummary']['Critical'] > 0 or server['AlarmSummary']['Warning'] > 0 or server['AlarmSummary']['Info'] > 0:
+                return True
+
+        if alarm_severity == 'warn':
+            if server['AlarmSummary']['Critical'] > 0 or server['AlarmSummary']['Warning'] > 0:
+                return True
+
+        if alarm_severity == 'crit':
+            if server['AlarmSummary']['Critical'] > 0:
+                return True
+
+        return False
 
     def ucsm_filter_match(self, server, ucsm):
         if not ucsm:
@@ -140,30 +157,101 @@ class ComputeFilter():
         if not fan:
             return True
 
+        if 'FanHealthy' not in server:
+            return False
+
         if not server['FanHealthy']:
             return True
 
         return False
 
-    def psu_filter_match(self, server, psu):
-        if not psu:
+    def psu_filter_match(self, server_info, psu_filters):
+        if len(psu_filters) == 0:
             return True
 
-        if not server['PsuHealthy']:
-            return True
+        if 'PsuInfo' not in server_info:
+            return False
 
-        return False
+        for psu_filter in psu_filters:
+            if len(psu_filter.split(':')) != 2:
+                self.log_handler.error(
+                    'psu_filter_match',
+                    'Unsupported psu filter: %s' % (psu_filter)
+                )
+                return False
+
+            (key, value) = psu_filter.split(':')
+
+            if key not in ['state', 'model', 'serial']:
+                self.log_handler.error(
+                    'psu_filter_match',
+                    'Unsupported psu filter key: %s' % (key)
+                )
+                return False
+
+        any_psu_match = False
+        for psu_info in server_info['PsuInfo']:
+            psu_match = True
+
+            for psu_filter in psu_filters:
+                (key, value) = psu_filter.split(':')
+
+                if key == 'state':
+                    if value not in ['on', 'off']:
+                        self.log_handler.error(
+                            'psu_filter_match',
+                            'Unsupported psu state filter value: %s' % (value)
+                        )
+                        return False
+
+                    if value == 'on' and not psu_info['On']:
+                        psu_match = False
+
+                    if value == 'off' and psu_info['On']:
+                        psu_match = False
+
+                if key == 'model':
+                    if not filter_helper.match_string(value, psu_info['Model']):
+                        psu_match = False
+
+                if key == 'serial':
+                    if not filter_helper.match_string(value, psu_info['Serial']):
+                        psu_match = False
+
+            any_psu_match = any_psu_match or psu_match
+
+        return any_psu_match
 
     def pci_filter_match(self, server, pci_filter):
         if pci_filter == '':
             return True
 
         for item in pci_filter.split(','):
-            for model in server['PciModels']:
+            for model in server['PciSearch']:
                 if item.lower() in model.lower():
                     return True
 
         return False
+
+    def pci_match(self, server, pci_filter):
+        if pci_filter == '':
+            return server
+
+        devices_info = []
+        for device_info in server['PciDevicesInfo']:
+            if device_info['Model'] is not None and len(device_info['Model']) > 0:
+                if filter_helper.match_string(filter_helper.format_subtring_match(pci_filter), device_info['Model']):
+                    devices_info.append(device_info)
+                    continue
+
+            if device_info['Pid'] is not None and len(device_info['Pid']) > 0:
+                if device_info['Pid'].lower() not in ['unknown', 'n/a']:
+                    if filter_helper.match_string(filter_helper.format_subtring_match(pci_filter), device_info['Pid']):
+                        devices_info.append(device_info)
+                        continue
+
+        server['PciDevicesInfo'] = devices_info
+        return server
 
     def mac_filter_match(self, server, mac_filter):
         if mac_filter == '':
@@ -296,159 +384,162 @@ class ComputeFilter():
 
         return False
 
-    def match_server(self, server, rules, base_match=False, debug_logs=False):
+    def match_server(self, server, rules, base_match=False, debug_logs=True):
         if rules is None:
-            return True
+            return server
 
         if 'ancestor' in rules:
             if not self.ancestor_filter_match(server, rules['ancestor']):
                 if debug_logs:
-                    self.log.debug(
+                    self.log_handler.debug(
                         'compute_filter.match_server',
                         'Server %s match fails on ancestor %s' % (
                             server['Moid'],
                             rules['ancestor']
                         )
                     )
-                return False
+                return None
 
         # If match is based on the base server attributes, exit early
         if base_match:
-            return True
+            return server
 
         if not self.locator_filter_match(server, rules['locator']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on locator %s' % (
                         server['Moid'],
                         rules['locator']
                     )
                 )
-            return False
+            return None
 
-        if not self.power_off_filter_match(server, rules['power_off']):
+        if not self.power_filter_match(server, rules['power']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on power off %s' % (
                         server['Moid'],
-                        rules['power_off']
+                        rules['power']
                     )
                 )
-            return False
+            return None
 
         if not self.alarms_filter_match(server, rules['alarms']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on alarms %s' % (
                         server['Moid'],
                         rules['alarms']
                     )
                 )
-            return False
+            return None
 
         if not self.ucsm_filter_match(server, rules['ucsm']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on ucsm %s' % (
                         server['Moid'],
                         rules['ucsm']
                     )
                 )
-            return False
+            return None
 
         if not self.disconnected_filter_match(server, rules['disconnected']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on disconnected %s' % (
                         server['Moid'],
                         rules['disconnected']
                     )
                 )
-            return False
+            return None
 
         if not self.standalone_filter_match(server, rules['standalone']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on standalone %s' % (
                         server['Moid'],
                         rules['standalone']
                     )
                 )
-            return False
+            return None
 
         if not self.fan_filter_match(server, rules['fan']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on fan %s' % (
                         server['Moid'],
                         rules['fan']
                     )
                 )
-            return False
+            return None
 
         if not self.psu_filter_match(server, rules['psu']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on psu %s' % (
                         server['Moid'],
                         rules['psu']
                     )
                 )
-            return False
+            return None
 
-        if not self.pci_filter_match(server, rules['pci']):
+        pci_match = self.pci_filter_match(server, rules['pci'])
+        if not pci_match:
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on pci %s' % (
                         server['Moid'],
                         rules['pci']
                     )
                 )
-            return False
+            return None
+
+        server = self.pci_match(server, rules['pci'])
 
         if not self.mac_filter_match(server, rules['mac']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on mac %s' % (
                         server['Moid'],
                         rules['mac']
                     )
                 )
-            return False
+            return None
 
         if not self.cpu_filter_match(server, rules['cpu']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on cpu %s' % (
                         server['Moid'],
                         rules['cpu']
                     )
                 )
-            return False
+            return None
 
         if not self.memory_filter_match(server, rules['memory']):
             if debug_logs:
-                self.log.debug(
+                self.log_handler.debug(
                     'compute_filter.match_server',
                     'Server %s match fails on memory %s' % (
                         server['Moid'],
                         rules['memory']
                     )
                 )
-            return False
+            return None
 
-        return True
+        return server
 
     def ip_filter_match_mo(self, server_mo, ip_filter):
         if server_mo['ManagementIp'] is None:
@@ -467,19 +558,32 @@ class ComputeFilter():
 
     def name_filter_match_mo(self, server_mo, name_filter):
         for item in name_filter:
-            if item.lower() in server_mo['Name'].lower():
-                return True
+            if '*' in item:
+                if filter_helper.match_string(item, server_mo['Name']):
+                    return True
+            if '*' not in item:
+                if item.lower() in server_mo['Name'].lower():
+                    return True
         return False
 
-    def model_filter_match_mo(self, server, model_filter):
+    def model_filter_match_mo(self, server_mo, model_filter):
         for item in model_filter:
-            if item.lower() in server['Model'].lower():
-                return True
+            if '*' in item:
+                if filter_helper.match_string(item, server_mo['Model']):
+                    return True
+            if '*' not in model_filter:
+                if item.lower() in server_mo['Model'].lower():
+                    return True
         return False
 
-    def serial_filter_match_mo(self, server, serials):
-        if server['Serial'] in serials:
-            return True
+    def serial_filter_match_mo(self, server_mo, serials):
+        for item in serials:
+            if '*' in item:
+                if filter_helper.match_string(item, server_mo['Serial']):
+                    return True
+            if '*' not in item:
+                if server_mo['Serial'] == item:
+                    return True
         return False
 
     def match_server_mo(self, server_mo, match_rules):
@@ -531,18 +635,31 @@ class ComputeFilter():
                     )
                     continue
 
+                ip_address = ip_helper.get_ip(ip_filter_entry)
+                if ip_address is not None:
+                    match_rules['ip'].append(
+                        dict(
+                            type='address',
+                            value=ip_address
+                        )
+                    )
+                    continue
+
                 self.log_handler.error(
                     'get_mo_match_rules',
                     'Invalid ip entry: %s' % (ip_filter_entry)
                 )
 
         if name_filter is not None and len(name_filter) > 0:
-            match_rules['name'] = name_filter
+            for item in name_filter:
+                match_rules['name'].append(item)
 
         if serial_filter is not None and len(serial_filter) > 0:
-            match_rules['serial'] = serial_filter
+            for item in serial_filter:
+                match_rules['serial'].append(item)
 
         if model_filter is not None and len(model_filter) > 0:
-            match_rules['model'] = model_filter
+            for item in model_filter:
+                match_rules['model'].append(item)
 
         return match_rules

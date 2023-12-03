@@ -53,6 +53,8 @@ def get_ocp_cluster_command(
 
         cluster_filter = []
         if cluster_name is not None:
+            if '*' not in cluster_name:
+                cluster_name = '*%s*' % (cluster_name)
             cluster_filter.append(
                 'name:%s' % (cluster_name)
             )
@@ -61,8 +63,12 @@ def get_ocp_cluster_command(
             cluster_filter=cluster_filter
         )
 
-        if clusters is None or len(clusters) == 0:
+        if clusters is None:
             ctx.busy = False
+            raise ErrorExit
+
+        if len(clusters) == 0:
+            ctx.my_output.error('No cluster matching filtering critera')
             raise ErrorExit
 
         if view == 'default':
@@ -170,7 +176,8 @@ def get_ocp_cluster_command(
             ctx.my_output.json_output(kubeconfigs_info)
 
             ocp_output_handler.print_ocp_clusters_kubeconfig(
-                kubeconfigs_info
+                kubeconfigs_info,
+                title=True
             )
 
         if view == 'vcenter':

@@ -11,19 +11,11 @@ class K8sDataVolumeInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(data_volume_mo, 'metadata:namespace')
-        info['name'] = self.get(data_volume_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            data_volume_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['access_modes'] = self.get(data_volume_mo, 'spec:pvc:accessModes', on_error=[], on_none=[])
         info['storage'] = self.get(data_volume_mo, 'spec:pvc:resources:requests:storage')
@@ -72,11 +64,6 @@ class K8sDataVolumeInfo():
             info['boundTick'] = '\u2717'
             info['__Output']['boundTick'] = 'Red'
 
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(data_volume_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
-
         return info
 
     def get_data_volumes_info(self, cache_enabled=True):
@@ -117,7 +104,7 @@ class K8sDataVolumeInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, data_volume_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (data_volume_info['namespace'], data_volume_info['name'])):
                     return False
 
             if not key_found:

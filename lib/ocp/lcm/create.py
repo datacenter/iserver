@@ -40,10 +40,9 @@ class OcpCreate():
             return False
         self.my_output.default('Kubeconfig downloaded')
 
-        success = self.ocp_settings_handler.set_ocp_cluster(
+        success = self.ocp_settings_handler.set_ocp_cluster_kubeconfig(
             ocp_parameters['ocp']['name'],
-            kubeconfig_filename,
-            ocp_parameters
+            kubeconfig_filename
         )
         if not success:
             return False

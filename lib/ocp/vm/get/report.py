@@ -37,7 +37,8 @@ class OcpVmReport():
             self.ocp_cluster_settings['parameters']['installer']['vm']['ip'],
             self.ocp_cluster_settings['parameters']['installer']['vm']['username'],
             password=self.ocp_cluster_settings['parameters']['installer']['vm']['password'],
-            key_filename=self.ocp_cluster_settings['parameters']['installer']['vm']['key_filename']
+            key_filename=self.ocp_cluster_settings['parameters']['installer']['vm']['key_filename'],
+            log_id=self.log_id
         )
 
         for key in commands:
@@ -454,14 +455,16 @@ class OcpVmReport():
                 deployment['tools']['ip'],
                 deployment['tools']['username'],
                 password=deployment['tools']['password'],
-                key_filename=deployment['tools']['key_filename']
+                key_filename=deployment['tools']['key_filename'],
+                log_id=self.log_id
             )
         else:
             ssh_handler = ssh.Ssh(
                 self.ocp_cluster_settings['parameters']['installer']['vm']['ip'],
                 self.ocp_cluster_settings['parameters']['installer']['vm']['username'],
                 password=self.ocp_cluster_settings['parameters']['installer']['vm']['password'],
-                key_filename=self.ocp_cluster_settings['parameters']['installer']['vm']['key_filename']
+                key_filename=self.ocp_cluster_settings['parameters']['installer']['vm']['key_filename'],
+                log_id=self.log_id
             )
 
         filename = deployment['deployment']['service']['snmp']

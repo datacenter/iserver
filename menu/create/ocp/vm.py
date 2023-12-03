@@ -18,7 +18,7 @@ class ErrorExit(Exception):
 @click.command("vm")
 @click.pass_obj
 @click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', type=click.STRING, help="Cluster Name")
-@click.option("--yaml", "vm_filename", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Definition YAML")
+@click.option("--file", "vm_filename", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Definition YAML")
 @click.option("--report", is_flag=True, show_default=True, default=False, help="Enable report")
 @click.option("--verbose", is_flag=True, show_default=True, default=False, help="Verbose mode")
 @click.option("--debug", is_flag=True, show_default=True, default=False, help="Debug mode")
@@ -41,6 +41,18 @@ def create_ocp_vm_command(
 
         if len(vm_filename) == 0:
             ctx.my_output.error('Define VM definition yaml location')
+            raise ErrorExit
+
+        settings = validations.validate_ocp_cluster_settings(ctx, cluster_name, silent=True)
+        if settings is None:
+            raise ErrorExit
+
+        if settings['tools'] is None:
+            ctx.my_output.error('Tools not defined for cluster %s' % (settings['name']))
+            raise ErrorExit
+
+        if settings['virtctl'] is None:
+            ctx.my_output.error('Virtctl not defined for cluster %s' % (settings['name']))
             raise ErrorExit
 
         ctx.my_output.default('Validate vm deployment file')

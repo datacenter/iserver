@@ -1,10 +1,29 @@
+import csv
+
 from lib import filter_helper
 from lib import output_helper
 
+from lib.intersight.compute_aci_output import ComputeAciOutput
+from lib.intersight.cond_alarm.output import ComputeCondAlarmOutput
+from lib.intersight.compute_nx_output import ComputeNxOutput
+from lib.intersight.equipment_psu.output import ComputePsuOutput
+from lib.intersight.tam_advisory_instance.output import TamAdvisoryInstanceOutput
 
-class ComputeOutput():
+
+class ComputeOutput(
+        ComputeAciOutput,
+        ComputeCondAlarmOutput,
+        ComputeNxOutput,
+        ComputePsuOutput,
+        TamAdvisoryInstanceOutput
+        ):
     def __init__(self, log_id=None):
         self.my_output = output_helper.OutputHelper(log_id=log_id)
+        ComputeAciOutput.__init__(self)
+        ComputeCondAlarmOutput.__init__(self)
+        ComputeNxOutput.__init__(self)
+        ComputePsuOutput.__init__(self)
+        TamAdvisoryInstanceOutput.__init__(self)
 
     def print_summary_table(self, servers, legend_on=False, title=False):
         if title:
@@ -24,23 +43,44 @@ class ComputeOutput():
         if servers[0]['StateEnabled']:
             order = order + [
                 'FlagState',
-                'FlagManagement',
-                'FlagWorkflow'
+                'FlagManagement'
             ]
 
             headers = headers + [
                 'SF',
-                'MF',
-                'WF (%sd)' % (servers[0]['Workflow']['Days'])
+                'MF'
             ]
 
+            if 'Workflow' in servers[0]:
+                order = order + [
+                    'FlagWorkflow'
+                ]
+
+                headers = headers + [
+                    'WF (%sd)' % (servers[0]['Workflow']['Days'])
+                ]
+
             for server in servers:
-                if len(server['FlagWorkflow']) == 0:
-                    server['FlagWorkflow'] = '--'
+                if 'Workflow' in server:
+                    if len(server['FlagWorkflow']) == 0:
+                        server['FlagWorkflow'] = '--'
+
+        row_separator = False
+        for server in servers:
+            server['TagT'] = []
+            for item in server['Tags']:
+                server['TagT'].append(
+                    '%s:%s' % (
+                        item['Key'],
+                        item['Value']
+                    )
+                )
+            if len(server['TagT']) > 1:
+                row_separator = True
 
         order = order + [
             'Name',
-            'Moid',
+            'TagT',
             'TypeModel',
             'Serial',
             'ManagementIp',
@@ -50,7 +90,7 @@ class ComputeOutput():
 
         headers = headers + [
             'Name',
-            'Moid',
+            'Tag',
             'Model',
             'Serial',
             'IP',
@@ -59,9 +99,14 @@ class ComputeOutput():
         ]
 
         self.my_output.my_table(
-            servers,
+            self.my_output.expand_lists(
+                servers,
+                order,
+                ['TagT']
+            ),
             order=order,
             headers=headers,
+            row_separator=row_separator,
             table=True
         )
 
@@ -262,291 +307,15 @@ class ComputeOutput():
                 ]
             )
 
-    def print_advisory(self, servers, title=False):
-        info = []
-        for server in servers:
-            item = server['AdvisorySummary']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
-
-        if title:
-            self.my_output.default(
-                'Advisory Summary [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            if title:
-                self.my_output.default('None')
-                return
-
-        order = [
-            'ServerName',
-            'High',
-            'Info'
-        ]
-
-        headers = [
-            'Server',
-            'High',
-            'Info'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-        info = []
-        for server in servers:
-            for item in server['AdvisoryInfo']:
-                item['ServerName'] = server['Name']
-                item['NameT'] = filter_helper.get_string_chunks(
-                    item['Name'],
-                    40,
-                    separator=' '
-                )
-                item['DescriptionT'] = filter_helper.get_string_chunks(
-                    item['Description'],
-                    40,
-                    separator=' '
-                )
-                info.append(
-                    item
-                )
-
-        if len(info) > 0:
-            if title:
-                self.my_output.default(
-                    'Advisory [#%s]' % (len(info)),
-                    underline=True,
-                    before_newline=True
-                )
-
-            order = [
-                'ServerName',
-                'Severity',
-                'BaseScore',
-                'NameT',
-                'DescriptionT',
-                'CveIds',
-                'DatePublished',
-                'DateUpdated'
-            ]
-
-            headers = [
-                'Server',
-                'Severity',
-                'Score',
-                'Name',
-                'Description',
-                'CveIds',
-                'DatePublished',
-                'DateUpdated'
-            ]
-
-            self.my_output.my_table(
-                self.my_output.expand_lists(
-                    info,
-                    order,
-                    ['DescriptionT', 'NameT', 'CveIds']
-                ),
-                order=order,
-                headers=headers,
-                remove_empty_columns=True,
-                allow_order_subkeys=True,
-                row_separator=True,
-                underline=True,
-                table=True
-            )
-
-        if len(info) > 0:
-            if title:
-                self.my_output.default(
-                    'Advisory Url [#%s]' % (len(info)),
-                    underline=True,
-                    before_newline=True
-                )
-
-            order = [
-                'ServerName',
-                'NameT',
-                'Urls'
-            ]
-
-            headers = [
-                'Server',
-                'Name',
-                'Urls'
-            ]
-
-            self.my_output.my_table(
-                self.my_output.expand_lists(
-                    info,
-                    order,
-                    ['NameT', 'Urls']
-                ),
-                order=order,
-                headers=headers,
-                remove_empty_columns=True,
-                allow_order_subkeys=True,
-                row_separator=True,
-                underline=True,
-                table=True
-            )
-
-        # for advisory in server['AdvisoryInfo']:
-        #     keys = [
-        #         'Severity',
-        #         'BaseScore',
-        #         'Name',
-        #         'Description',
-        #         'CveIds',
-        #         'DatePublished',
-        #         'DateUpdated',
-        #         'Urls',
-        #         'Recommendation',
-        #         'Workaround'
-        #     ]
-
-        #     headers = [
-        #         'Severity',
-        #         'Base Score',
-        #         'Name',
-        #         'Description',
-        #         'Cve Ids',
-        #         'Date Published',
-        #         'Date Updated',
-        #         'Details',
-        #         'Recommendation',
-        #         'Workaround'
-        #     ]
-
-        #     if len(advisory['Workaround']) == 0:
-        #         keys.remove('Workaround')
-        #         headers.remove('Workaround')
-
-        #     self.my_output.dictionary(
-        #         advisory,
-        #         title='Advisory %s' % (advisory['AdvisoryId']),
-        #         underline=True,
-        #         prefix="- ",
-        #         justify=True,
-        #         keys=keys,
-        #         title_keys=headers
-        #     )
-
-    def print_alarm(self, servers, title=False):
-        info = []
-        for server in servers:
-            item = server['AlarmSummary']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
-
-        if title:
-            self.my_output.default(
-                'Alarm Summary [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            if title:
-                self.my_output.default('None')
-                return
-
-        order = [
-            'ServerName',
-            'Critical',
-            'Warning',
-            'Info'
-        ]
-
-        headers = [
-            'Server',
-            'Critical',
-            'Warning',
-            'Info'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-        info = []
-        for server in servers:
-            for item in server['AlarmInfo']:
-                item['ServerName'] = server['Name']
-                item['DescriptionT'] = filter_helper.get_string_chunks(
-                    item['Description'],
-                    40,
-                    separator=' '
-                )
-                info.append(
-                    item
-                )
-
-        if len(info) > 0:
-            if title:
-                self.my_output.default(
-                    'Alarm [#%s]' % (len(info)),
-                    underline=True,
-                    before_newline=True
-                )
-
-            order = [
-                'ServerName',
-                'Severity',
-                'DescriptionT',
-                'CreateTime',
-                'AffectedType',
-                'AffectedName'
-            ]
-
-            headers = [
-                'Server',
-                'Severity',
-                'Description',
-                'Create Time',
-                'Affected Type',
-                'Affected Name'
-            ]
-
-            self.my_output.my_table(
-                self.my_output.expand_lists(
-                    info,
-                    order,
-                    ['DescriptionT']
-                ),
-                order=order,
-                headers=headers,
-                remove_empty_columns=True,
-                allow_order_subkeys=True,
-                row_separator=True,
-                underline=True,
-                table=True
-            )
-
     def print_board(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['BoardInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'BoardInfo' in server:
+                item = server['BoardInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -603,11 +372,12 @@ class ComputeOutput():
     def print_boot(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['BootInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'BootInfo' in server:
+                item = server['BootInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -690,11 +460,12 @@ class ComputeOutput():
     def print_connector(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['ConnectorInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'ConnectorInfo' in server:
+                item = server['ConnectorInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -742,11 +513,12 @@ class ComputeOutput():
     def print_contract(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['ContractInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'ContractInfo' in server:
+                item = server['ContractInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -800,11 +572,12 @@ class ComputeOutput():
     def print_cpu(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['CpuInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'CpuInfo' in server:
+                for item in server['CpuInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -863,14 +636,61 @@ class ComputeOutput():
             table=True
         )
 
+    def print_fan_module(self, servers, title=False):
+        info = []
+        for server in servers:
+            if 'FanModuleInfo' in server:
+                for item in server['FanModuleInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
+
+        if title:
+            self.my_output.default(
+                'Fan Module [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+                return
+
+        order = [
+            'ServerName',
+            'StateTick',
+            'Name',
+            'OperState',
+            'Presence'
+        ]
+
+        headers = [
+            'Server',
+            'State',
+            'Fan Module',
+            'OperState',
+            'Presence'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            underline=True,
+            table=True
+        )
+
     def print_fan(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['FanInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'FanInfo' in server:
+                for item in server['FanInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -887,16 +707,15 @@ class ComputeOutput():
         order = [
             'ServerName',
             'StateTick',
-            'ModuleId',
+            'Name',
             'OperState',
-            'Presence',
-            'Dn'
+            'Presence'
         ]
 
         headers = [
             'Server',
             'State',
-            'Fan Module Id',
+            'Fan',
             'OperState',
             'Presence',
             'Dn'
@@ -913,11 +732,12 @@ class ComputeOutput():
     def print_firmware(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['FirmwarewComponents']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'FirmwarewComponents' in server:
+                for item in server['FirmwarewComponents']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -963,11 +783,12 @@ class ComputeOutput():
     def print_gpu(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['GpuInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'GpuInfo' in server:
+                for item in server['GpuInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1015,11 +836,12 @@ class ComputeOutput():
     def print_hcl_summary(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['HclInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'HclInfo' in server:
+                item = server['HclInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1054,11 +876,12 @@ class ComputeOutput():
     def print_hcl_hardware(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['HclInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'HclInfo' in server:
+                item = server['HclInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1099,11 +922,12 @@ class ComputeOutput():
     def print_hcl_software(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['HclInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'HclInfo' in server:
+                item = server['HclInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1144,11 +968,12 @@ class ComputeOutput():
     def print_hcl_component(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['HclInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'HclInfo' in server:
+                item = server['HclInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1245,11 +1070,12 @@ class ComputeOutput():
     def print_memory(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['MemoryInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'MemoryInfo' in server:
+                for item in server['MemoryInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1312,11 +1138,12 @@ class ComputeOutput():
     def print_adapters(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['AdaptersInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'AdapterInfo' in server:
+                for item in server['AdaptersInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1365,11 +1192,12 @@ class ComputeOutput():
     def print_ext_eth(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['ExtEthInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'ExtEthInfo' in server:
+                for item in server['ExtEthInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1408,11 +1236,12 @@ class ComputeOutput():
     def print_host_eth(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['HostEthInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'HostEthInfo' in server:
+                for item in server['HostEthInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1451,11 +1280,12 @@ class ComputeOutput():
     def print_host_fc(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['HostFcInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'HostFcInfo' in server:
+                for item in server['HostFcInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1496,11 +1326,12 @@ class ComputeOutput():
     def print_kvm(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['KvmInfo']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'KvmInfo' in server:
+                item = server['KvmInfo']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1662,74 +1493,15 @@ class ComputeOutput():
                 table=True
             )
 
-    def print_mac_lldp_adjacency(self, server, title=False):
-        if title:
-            self.my_output.default(
-                'Interface LLDP adjacency [#%s]' % (len(server['MacAddressInfo'])),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(server['MacAddressInfo']) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in server['MacAddressInfo']:
-            if item['adjacency'] is None:
-                item['adjacency'] = {}
-                item['adjacency']['pod_node_name'] = '--'
-                item['adjacency']['interface_id'] = '--'
-                item['adjacency']['health'] = '--'
-                item['adjacency']['faults'] = '--'
-
-        server['MacAddressInfo'] = sorted(
-            server['MacAddressInfo'],
-            key=lambda i: (
-                i['AdapterModel'],
-                i['InterfaceName'],
-            )
-        )
-
-        order = [
-            'MacAddress',
-            'InterfaceName',
-            'AdapterModel',
-            'AdapterPciSlot',
-            'adjacency.pod_node_name',
-            'adjacency.interface_id',
-            'adjacency.health',
-            'adjacency.faults',
-        ]
-
-        headers = [
-            'MAC Address',
-            'Interface',
-            'Adapter',
-            'Pci Slot',
-            'ACI Node',
-            'Interface',
-            'Nei Health',
-            'Nei Faults'
-        ]
-
-        self.my_output.my_table(
-            server['MacAddressInfo'],
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True,
-            merge=True
-        )
-
     def print_pci(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['PciDevicesInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'PciDevicesInfo' in server:
+                for item in server['PciDevicesInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1743,15 +1515,20 @@ class ComputeOutput():
                 self.my_output.default('None')
                 return
 
+        for item in info:
+            item['ModelT'] = filter_helper.get_string_chunks(
+                item['Model'],
+                40
+            )
+
         order = [
             'ServerName',
-            'Model',
+            'ModelT',
             'Pid',
             'Serial',
             'SlotId',
             'Vendor',
-            'FirmwareVersion',
-            'Dn'
+            'FirmwareVersion'
         ]
 
         headers = [
@@ -1761,15 +1538,19 @@ class ComputeOutput():
             'Serial',
             'SlotId',
             'Vendor',
-            'Firmware',
-            'Dn'
+            'Firmware'
         ]
 
         self.my_output.my_table(
-            info,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['ModelT']
+            ),
             order=order,
             headers=headers,
             remove_empty_columns=True,
+            row_separator=True,
             underline=True,
             table=True
         )
@@ -1777,11 +1558,12 @@ class ComputeOutput():
     def print_power_consumption(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['Power']['Data']['PowerControl']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'Power' in server and server['Power'] is not None:
+                item = server['Power']['Data']['PowerControl']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -1825,11 +1607,12 @@ class ComputeOutput():
     def print_power_voltage(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['Power']['Data']['Voltage']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'Power' in server and server['Power'] is not None:
+                for item in server['Power']['Data']['Voltage']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1873,11 +1656,12 @@ class ComputeOutput():
     def print_power_supply(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['Power']['Data']['PowerSupply']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'Power' in server and server['Power'] is not None:
+                for item in server['Power']['Data']['PowerSupply']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1938,12 +1722,13 @@ class ComputeOutput():
     def print_profile(self, servers, title=False):
         info = []
         for server in servers:
-            if server['ProfileInfo'] is not None:
-                item = server['ProfileInfo']
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'ProfileInfo' in server:
+                if server['ProfileInfo'] is not None:
+                    item = server['ProfileInfo']
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -1997,66 +1782,15 @@ class ComputeOutput():
             row_separator=True
         )
 
-    def print_psu(self, servers, title=False):
-        info = []
-        for server in servers:
-            for item in server['PsuInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
-
-        if title:
-            self.my_output.default(
-                'PSU [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            if title:
-                self.my_output.default('None')
-                return
-
-        order = [
-            'ServerName',
-            'StateTick',
-            'Dn',
-            'Model',
-            'Serial',
-            'Vendor',
-            'On',
-            'Voltage'
-        ]
-
-        headers = [
-            'Server',
-            'State',
-            'Dn',
-            'PSU Model',
-            'Serial',
-            'Vendor',
-            'On',
-            'Voltage'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
-        )
-
     def print_storage_controllers(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['StorageControllersInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'StorageControllersInfo' in server:
+                for item in server['StorageControllersInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -2070,10 +1804,21 @@ class ComputeOutput():
                 self.my_output.default('None')
                 return
 
-        order = [
-            'ServerName',
+        for item in info:
+            item['ModelT'] = filter_helper.get_string_chunks(
+                item['Model'],
+                30
+            )
+
+        order = []
+        headers = []
+        if len(servers) > 1:
+            order = ['ServerName']
+            headers = ['Server']
+
+        order = order + [
             'ControllerId',
-            'Model',
+            'ModelT',
             'Vendor',
             'Serial',
             'Presence',
@@ -2083,8 +1828,7 @@ class ComputeOutput():
             'VirtualDriveCount'
         ]
 
-        headers = [
-            'Server',
+        headers = headers + [
             'Controller',
             'Model',
             'Vendor',
@@ -2097,26 +1841,32 @@ class ComputeOutput():
         ]
 
         self.my_output.my_table(
-            info,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['ModelT']
+            ),
             order=order,
             headers=headers,
             remove_empty_columns=False,
+            row_separator=True,
             underline=True,
             table=True
         )
 
-    def print_physical_disks(self, servers, title=False):
+    def print_physical_disks_state(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['PhysicalDisks']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'PhysicalDisks' in server:
+                for item in server['PhysicalDisks']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
-                'Physical Disk [#%s]' % (len(info)),
+                'Physical Disk - State [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -2126,8 +1876,13 @@ class ComputeOutput():
                 self.my_output.default('None')
                 return
 
-        order = [
-            'ServerName',
+        order = []
+        headers = []
+        if len(servers) > 1:
+            order = ['ServerName']
+            headers = ['Server']
+
+        order = order + [
             'StateTick',
             'StorageControllerId',
             'DiskId',
@@ -2137,17 +1892,12 @@ class ComputeOutput():
             'Protocol',
             'BootableTick',
             'LinkSpeed',
-            'Pid',
-            'Model',
-            'Vendor',
             'DriveFirmware',
-            'Serial',
             'DiskState',
             'Presence'
         ]
 
-        headers = [
-            'Server',
+        headers = headers + [
             'State',
             'Controller',
             'Disk Id',
@@ -2157,11 +1907,7 @@ class ComputeOutput():
             'Protocol',
             'Bootable',
             'Link Speed',
-            'Pid',
-            'Model',
-            'Vendor',
             'Fw',
-            'Serial',
             'State',
             'Presence'
         ]
@@ -2175,14 +1921,72 @@ class ComputeOutput():
             table=True
         )
 
+    def print_physical_disks_inventory(self, servers, title=False):
+        info = []
+        for server in servers:
+            if 'PhysicalDisks' in server:
+                for item in server['PhysicalDisks']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
+
+        if title:
+            self.my_output.default(
+                'Physical Disk - Inventory [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+                return
+
+        order = []
+        headers = []
+        if len(servers) > 1:
+            order = ['ServerName']
+            headers = ['Server']
+
+        order = order + [
+            'DiskId',
+            'Pid',
+            'Model',
+            'Vendor',
+            'Serial'
+        ]
+
+        headers = headers + [
+            'Disk Id',
+            'Pid',
+            'Model',
+            'Vendor',
+            'Serial'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            remove_empty_columns=False,
+            underline=True,
+            table=True
+        )
+
+    def print_physical_disks(self, servers, title=False):
+        self.print_physical_disks_state(servers, title=title)
+        self.print_physical_disks_inventory(servers, title=title)
+
     def print_virtual_drives(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['VirtualDisks']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'VirtualDisks' in server:
+                for item in server['VirtualDisks']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -2196,8 +2000,13 @@ class ComputeOutput():
                 self.my_output.default('None')
                 return
 
-        order = [
-            'ServerName',
+        order = []
+        headers = []
+        if len(servers) > 1:
+            order = ['ServerName']
+            headers = ['Server']
+
+        order = order + [
             'StateTick',
             'StorageControllerId',
             'VirtualDriveId',
@@ -2210,8 +2019,7 @@ class ComputeOutput():
             'DriveState'
         ]
 
-        headers = [
-            'Server',
+        headers = headers + [
             'State',
             'Controller',
             'Drive Id',
@@ -2236,11 +2044,12 @@ class ComputeOutput():
     def print_thermal_summary(self, servers, title=False):
         info = []
         for server in servers:
-            item = server['Thermal']['Summary']
-            item['ServerName'] = server['Name']
-            info.append(
-                item
-            )
+            if 'Thermal' in server:
+                item = server['Thermal']['Summary']
+                item['ServerName'] = server['Name']
+                info.append(
+                    item
+                )
 
         if title:
             self.my_output.default(
@@ -2284,11 +2093,12 @@ class ComputeOutput():
     def print_thermal_sensor(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['Thermal']['Data']['Temperature']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'Thermal' in server:
+                for item in server['Thermal']['Data']['Temperature']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -2334,11 +2144,12 @@ class ComputeOutput():
     def print_thermal_fan(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['Thermal']['Data']['Fan']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'Thermal' in server:
+                for item in server['Thermal']['Data']['Fan']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -2385,11 +2196,12 @@ class ComputeOutput():
     def print_tpm(self, servers, title=False):
         info = []
         for server in servers:
-            for item in server['TpmInfo']:
-                item['ServerName'] = server['Name']
-                info.append(
-                    item
-                )
+            if 'TpmInfo' in server:
+                for item in server['TpmInfo']:
+                    item['ServerName'] = server['Name']
+                    info.append(
+                        item
+                    )
 
         if title:
             self.my_output.default(
@@ -2439,11 +2251,12 @@ class ComputeOutput():
     def print_workflows(self, servers, workflow_count=10, title=False):
         info = []
         for server in servers:
-            workflows = server['Workflow']['Last'][:workflow_count]
-            for workflow in workflows:
-                item = workflow
-                item['ServerName'] = server['Name']
-                info.append(item)
+            if 'Workflow' in server:
+                workflows = server['Workflow']['Last'][:workflow_count]
+                for workflow in workflows:
+                    item = workflow
+                    item['ServerName'] = server['Name']
+                    info.append(item)
 
         if title:
             self.my_output.default(
@@ -2481,3 +2294,235 @@ class ComputeOutput():
             underline=True,
             table=True
         )
+
+    def print_inventory_rack(self, server_info, title=False):
+        if title:
+            self.my_output.default(
+                'Server Inventory (R): %s' % (server_info['Name']),
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        headers = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        self.my_output.my_table(
+            server_info['Inventory'],
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_inventory_chassis(self, chassis_info, title=False):
+        if title:
+            self.my_output.default(
+                'Chassis Inventory: %s' % (chassis_info['Name']),
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        headers = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        self.my_output.my_table(
+            chassis_info['Inventory'],
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_inventory_blade(self, server_info, title=False):
+        if title:
+            self.my_output.default(
+                'Server Inventory (B): %s' % (server_info['Name']),
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        headers = [
+            'Type',
+            'Name',
+            'Model',
+            'Vendor',
+            'Serial',
+            'Pid'
+        ]
+
+        self.my_output.my_table(
+            server_info['Inventory'],
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_inventory(self, servers, chassiz_info, title=False):
+        for server in servers:
+            if server['Type'] == 'Rack':
+                self.print_inventory_rack(
+                    server,
+                    title=title
+                )
+
+        chassis_moid = []
+        for server in servers:
+            if server['Type'] == 'Blade':
+                if server['ChassisMoid'] not in chassis_moid:
+                    chassis_moid.append(
+                        server['ChassisMoid']
+                    )
+
+        for chassis_info in chassiz_info:
+            if chassis_info['Moid'] in chassis_moid:
+                self.print_inventory_chassis(
+                    chassis_info,
+                    title=title
+                )
+
+                for server in servers:
+                    if server['Type'] == 'Blade':
+                        if server['ChassisMoid'] == chassis_info['Moid']:
+                            self.print_inventory_blade(
+                                server,
+                                title=title
+                            )
+
+    def print_inventory_csv(self, servers_info, chassiz_info, inventory_filename):
+        fields = [
+            'Inventory Type',
+            'Inventory Name',
+            'Inventory Model',
+            'Inventory Vendor',
+            'Inventory Serial',
+            'Inventory PID',
+            'Top Owner',
+            'Chassis Serial',
+            'Chassis PID',
+            'Chassis Name',
+            'Server Serial',
+            'Server PID',
+            'Server Name'
+        ]
+        rows = []
+
+        for server_info in servers_info:
+            if server_info['Type'] == 'Rack':
+                for inventory_info in server_info['Inventory']:
+                    row = []
+                    row.append(inventory_info['Type'])
+                    row.append(inventory_info['Name'])
+                    row.append(inventory_info['Model'])
+                    row.append(inventory_info['Vendor'])
+                    row.append(inventory_info['Serial'])
+                    row.append(inventory_info['Pid'])
+                    row.append('Server')
+                    row.append('N/A')
+                    row.append('N/A')
+                    row.append('N/A')
+                    row.append(inventory_info['ServerSerial'])
+                    row.append(inventory_info['ServerPid'])
+                    row.append(server_info['Name'])
+                    rows.append(
+                        row
+                    )
+
+        chassis_moid = []
+        for server_info in servers_info:
+            if server_info['Type'] == 'Blade':
+                if server_info['ChassisMoid'] not in chassis_moid:
+                    chassis_moid.append(
+                        server_info['ChassisMoid']
+                    )
+
+        for chassis_info in chassiz_info:
+            if chassis_info['Moid'] in chassis_moid:
+                for inventory_info in chassis_info['Inventory']:
+                    row = []
+                    row.append(inventory_info['Type'])
+                    row.append(inventory_info['Name'])
+                    row.append(inventory_info['Model'])
+                    row.append(inventory_info['Vendor'])
+                    row.append(inventory_info['Serial'])
+                    row.append(inventory_info['Pid'])
+                    row.append('Chassis')
+                    row.append(chassis_info['ChassisSerial'])
+                    row.append(chassis_info['ChassisPid'])
+                    row.append(chassis_info['Name'])
+                    row.append('N/A')
+                    row.append('N/A')
+                    row.append('N/A')
+                    rows.append(
+                        row
+                    )
+
+                for server_info in servers_info:
+                    if server_info['Type'] == 'Blade':
+                        if server_info['ChassisMoid'] == chassis_info['Moid']:
+                            for inventory_info in server_info['Inventory']:
+                                row = []
+                                row.append(inventory_info['Type'])
+                                row.append(inventory_info['Name'])
+                                row.append(inventory_info['Model'])
+                                row.append(inventory_info['Vendor'])
+                                row.append(inventory_info['Serial'])
+                                row.append(inventory_info['Pid'])
+                                row.append('Chassis')
+                                row.append(chassis_info['ChassisSerial'])
+                                row.append(chassis_info['ChassisPid'])
+                                row.append(chassis_info['Name'])
+                                row.append(inventory_info['ServerSerial'])
+                                row.append(inventory_info['ServerPid'])
+                                row.append(server_info['Name'])
+                                rows.append(
+                                    row
+                                )
+
+        with open(inventory_filename, 'w', newline='') as file_handler:
+            write = csv.writer(file_handler)
+            write.writerow(fields)
+            for row in rows:
+                write.writerow(row)

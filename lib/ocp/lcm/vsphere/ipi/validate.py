@@ -42,7 +42,8 @@ class OcpVsphereIpiValidate():
             ssh_handler = ssh.Ssh(
                 ocp_parameters['jump']['ip'],
                 ocp_parameters['jump']['username'],
-                password=ocp_parameters['jump']['password']
+                password=ocp_parameters['jump']['password'],
+                log_id=self.log_id
             )
             if not ssh_handler.is_ssh():
                 self.my_output.error('Jump ssh access fails')

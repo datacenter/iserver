@@ -24,8 +24,10 @@ class K8sMachineConfigOutput():
                     )
                 )
 
-            if len(item['labelT']) == 0:
-                item['labelT'].append('--')
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner', 'labelT']
+        )
 
         order = [
             'name',

@@ -15,11 +15,21 @@ class K8sDeploymentOutput():
             return
 
         order = [
-            'tbd'
+            'namespace',
+            'name',
+            'readyT',
+            'updatedReplicas',
+            'availableReplicas',
+            'age'
         ]
 
         headers = [
-            'tbd'
+            'Namespace',
+            'Name',
+            'Ready',
+            'Up-To-Date',
+            'Available',
+            'Age'
         ]
 
         self.my_output.my_table(
@@ -29,5 +39,59 @@ class K8sDeploymentOutput():
             allow_order_subkeys=True,
             underline=True,
             row_separator=False,
+            table=True
+        )
+
+    def print_deployments_metadata(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Deployment - Metadata [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        for item in info:
+            item['namespace_nameT'] = []
+            item['namespace_nameT'].append(
+                item['namespace']
+            )
+            item['namespace_nameT'].append(
+                item['name']
+            )
+
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
+        order = [
+            'namespace_nameT',
+            'owner',
+            'labelT',
+            'annotationT'
+        ]
+
+        headers = [
+            'Pod',
+            'Owner',
+            'Label',
+            'Annotation'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['namespace_nameT', 'labelT', 'annotationT']
+            ),
+            order=order,
+            headers=headers,
+            row_separator=True,
+            allow_order_subkeys=True,
+            underline=True,
             table=True
         )

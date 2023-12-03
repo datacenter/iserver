@@ -20,7 +20,7 @@ class ErrorExit(Exception):
 
 @click.command("vm")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Filter by cluster name")
+@click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Cluster name")
 @click.option("--node", "node_name", default='', callback=validations.empty_string_to_none, help="Filter by cluster node name")
 @click.option("--namespace", "vm_namespace", default='', callback=validations.empty_string_to_none, help="Filter by virtual machine namespace")
 @click.option("--name", "vm_name", default='', callback=validations.validate_ocp_namespace_name, help="Filter by virtual machine name")
@@ -148,7 +148,7 @@ def get_ocp_vm_command(
 
         ctx.busy = False
 
-        if vms is None or len(vms) == 0:
+        if vms is None:
             raise ErrorExit
 
         if output == 'json':
@@ -164,7 +164,7 @@ def get_ocp_vm_command(
         ctx.my_output.json_output(vms)
 
         if 'all' in view or 'default' in view:
-            ocp_output_handler.print_ocp_vms(vms)
+            ocp_output_handler.print_ocp_vms(vms, title=True)
 
         if 'all' in view or 'disk' in view:
             ocp_output_handler.print_ocp_vms_disk(vms, title=True)

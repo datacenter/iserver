@@ -7,6 +7,7 @@ from lib import isctl_helper
 from lib import log_helper
 from lib import output_helper
 from lib.intersight import organization
+from lib.intersight import intersight_common
 from lib.intersight import compute_server_setting
 from lib.intersight import workflow
 from lib.intersight import workflow_task_info

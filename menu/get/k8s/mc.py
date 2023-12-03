@@ -167,6 +167,9 @@ def get_k8s_mc_command(
                 title=True
             )
 
+        ctx.my_output.default('Filter: name, path, systemd, content', before_newline=True)
+        ctx.my_output.default('View:   state (def), file, systemd, fcontent, scontent, user, all')
+
     except NoResultExit:
         ctx.busy = False
         sys.exit(666)

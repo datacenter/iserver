@@ -12,6 +12,11 @@ class K8sSecretInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            secret_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_secrets_info(self, cache_enabled=True):

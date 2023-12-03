@@ -25,7 +25,7 @@ class NexusSettings(Settings):
 
         self.nexus_cache_directory = os.path.join(
             self.settings_dir,
-            'nx-switch'
+            'nx-device'
         )
 
         if not self.initialize_nexus_settings():
@@ -37,9 +37,9 @@ class NexusSettings(Settings):
         settings['Cache'] = {}
         settings['Cache']['Enabled'] = False
         settings['Cache']['Command'] = {}
-        settings['Switches'] = []
+        settings['Devices'] = []
         settings['Defaults'] = {}
-        settings['Defaults']['Switch'] = None
+        settings['Defaults']['Device'] = None
         return settings
 
     def initialize_nexus_settings(self):
@@ -85,77 +85,91 @@ class NexusSettings(Settings):
 
         return True
 
-    def get_nexus_switches(self):
+    def get_nexus_devices(self):
         settings = self.get_nexus_settings()
         if settings is None:
             return None
 
-        return settings['Switches']
+        return settings['Devices']
 
-    def get_nexus_switch(self, nexus_name):
-        switches = self.get_nexus_switches()
-        if switches is None:
+    def get_nexus_domain_devices(self, domain_name):
+        settings = self.get_nexus_settings()
+        if settings is None:
             return None
 
-        for switch in switches:
-            if switch['name'] == nexus_name:
-                return switch
+        domain_devices = []
+        for device in settings['Devices']:
+            if device['domain'] == domain_name:
+                domain_devices.append(
+                    device
+                )
+
+        return domain_devices
+
+    def get_nexus_device(self, nexus_name):
+        devices = self.get_nexus_devices()
+        if devices is None:
+            return None
+
+        for device in devices:
+            if device['name'] == nexus_name:
+                return device
 
         return None
 
-    def set_nexus_switches(self, switches):
+    def set_nexus_devices(self, devices):
         settings = self.get_nexus_settings()
         if settings is None:
             return False
 
-        settings['Switches'] = switches
+        settings['Devices'] = devices
         return self.set_nexus_settings(settings)
 
-    def set_nexus_switch(self, nexus_name, nexus_ip, nexus_username, nexus_password, domain=''):
-        switches = self.get_nexus_switches()
-        if switches is None:
+    def set_nexus_device(self, nexus_name, nexus_ip, nexus_username, nexus_password, domain=''):
+        devices = self.get_nexus_devices()
+        if devices is None:
             return False
 
-        new_switches = []
-        for switch in switches:
-            if switch['name'] != nexus_name:
-                new_switches.append(switch)
+        new_devices = []
+        for device in devices:
+            if device['name'] != nexus_name:
+                new_devices.append(device)
 
-        new_switch = {}
-        new_switch['name'] = nexus_name
-        new_switch['ip'] = nexus_ip
-        new_switch['username'] = nexus_username
-        new_switch['password'] = nexus_password
-        new_switch['domain'] = domain
-        new_switches.append(new_switch)
+        new_device = {}
+        new_device['name'] = nexus_name
+        new_device['ip'] = nexus_ip
+        new_device['username'] = nexus_username
+        new_device['password'] = nexus_password
+        new_device['domain'] = domain
+        new_devices.append(new_device)
 
-        return self.set_nexus_switches(new_switches)
+        return self.set_nexus_devices(new_devices)
 
-    def delete_nexus_switch(self, nexus_name):
-        switches = self.get_nexus_switches()
-        if switches is None:
+    def delete_nexus_device(self, nexus_name):
+        devices = self.get_nexus_devices()
+        if devices is None:
             return False
 
-        new_switches = []
-        for switch in switches:
-            if switch['name'] != nexus_name:
-                new_switches.append(switch)
+        new_devices = []
+        for device in devices:
+            if device['name'] != nexus_name:
+                new_devices.append(device)
 
-        return self.set_nexus_switches(new_switches)
+        return self.set_nexus_devices(new_devices)
 
-    def get_default_nexus_switch(self):
+    def get_default_nexus_device(self):
         settings = self.get_nexus_settings()
         if settings is None:
             return None
 
         try:
-            default_switch_name = settings['Defaults']['Switch']
+            default_device_name = settings['Defaults']['Device']
         except BaseException:
-            default_switch_name = None
+            default_device_name = None
 
-        return default_switch_name
+        return default_device_name
 
-    def set_default_nexus_switch(self, name):
+    def set_default_nexus_device(self, name):
         settings = self.get_nexus_settings()
         if settings is None:
             return False
@@ -163,27 +177,27 @@ class NexusSettings(Settings):
         if 'Defaults' not in settings:
             settings['Defaults'] = {}
 
-        settings['Defaults']['Switch'] = name
+        settings['Defaults']['Device'] = name
         return self.set_nexus_settings(settings)
 
-    def get_nexus_switch_names(self):
-        switches = self.get_nexus_switches()
-        if switches is None:
+    def get_nexus_device_names(self):
+        devices = self.get_nexus_devices()
+        if devices is None:
             return None
 
         names = []
-        for switch in switches:
+        for device in devices:
             names.append(
-                switch['name']
+                device['name']
             )
 
         return names
 
-    def print_nexus_switches(self, switches, show_password=True):
-        switches = sorted(switches, key=lambda i: i['name'])
+    def print_nexus_devices(self, devices, show_password=True):
+        devices = sorted(devices, key=lambda i: i['name'])
         if not show_password:
-            for switch in switches:
-                switch['password'] = '******'
+            for device in devices:
+                device['password'] = '******'
 
         order = [
             'name',
@@ -202,7 +216,7 @@ class NexusSettings(Settings):
         ]
 
         self.my_output.my_table(
-            switches,
+            devices,
             order=order,
             headers=headers,
             table=True

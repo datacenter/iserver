@@ -12,6 +12,11 @@ class K8sStorageClassInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            storage_class_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_storage_classes_info(self, cache_enabled=True):

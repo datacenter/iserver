@@ -12,6 +12,11 @@ class K8sVirtualMachinePreferenceInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            virtual_machine_preference_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_virtual_machine_preferences_info(self, cache_enabled=True):

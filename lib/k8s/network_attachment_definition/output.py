@@ -1,3 +1,6 @@
+import json
+
+
 class K8sNetworkAttachmentDefinitionOutput():
     def __init__(self):
         pass
@@ -14,11 +17,21 @@ class K8sNetworkAttachmentDefinitionOutput():
             self.my_output.default('None')
             return
 
+        for item in info:
+            if item['resource_name'] is None:
+                item['resource_name'] = '--'
+
+            item['configT'] = json.dumps(
+                item['config'],
+                indent=2
+            ).split('\n')
+
         order = [
             'namespace',
             'name',
             'config.type',
             'resource_name',
+            'configT',
             'age'
         ]
 
@@ -26,7 +39,8 @@ class K8sNetworkAttachmentDefinitionOutput():
             'Namespace',
             'Name',
             'Type',
-            'Resource',
+            'SR-IOV Resource',
+            'Config',
             'Age'
         ]
 
@@ -34,7 +48,7 @@ class K8sNetworkAttachmentDefinitionOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['ipamT']
+                ['configT']
             ),
             order=order,
             headers=headers,

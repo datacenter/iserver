@@ -21,12 +21,37 @@ class OcpClusterOutput(
 
     def print_ocp_clusters(self, clusters):
         order = [
-            'name'
+            'name',
+            'kubeconfig',
+            'virtctl.descr',
+            'helm.descr',
+            'tools.descr'
         ]
 
         headers = [
-            'Name'
+            'Name',
+            'Kubeconfig',
+            'Virtctl',
+            'Helm',
+            'Tools'
         ]
+
+        for cluster in clusters:
+            for key in ['virtctl', 'helm', 'tools']:
+                if cluster[key] is None:
+                    cluster[key] = {}
+                    cluster[key]['descr'] = '--'
+                else:
+                    if cluster[key]['password'] is not None:
+                        cluster[key]['descr'] = '%s@%s w/pass' % (
+                            cluster[key]['username'],
+                            cluster[key]['ip']
+                        )
+                    else:
+                        cluster[key]['descr'] = '%s@%s w/key' % (
+                            cluster[key]['username'],
+                            cluster[key]['ip']
+                        )
 
         self.my_output.my_table(
             clusters,

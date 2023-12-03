@@ -12,6 +12,14 @@ class K8sServiceAccountInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            service_account_mo
+        )
+        info.update(metadata_info)
+
+        info['secret'] = self.get(service_account_mo, 'secrets', on_error=[], on_none=[])
+        info['secretCount'] = len(info['secret'])
+
         return info
 
     def get_service_accounts_info(self, cache_enabled=True):
@@ -45,6 +53,16 @@ class K8sServiceAccountInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             key_found = False
+
+            if key == 'namespace':
+                key_found = True
+                if not filter_helper.match_string(value, service_account_info['namespace']):
+                    return False
+
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (service_account_info['namespace'], service_account_info['name'])):
+                    return False
 
             if not key_found:
                 self.log.error(

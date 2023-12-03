@@ -12,6 +12,11 @@ class K8sVolumeSnapshotContentInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            volume_snapshot_content_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_volume_snapshot_contents_info(self, cache_enabled=True):

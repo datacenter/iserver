@@ -55,6 +55,7 @@ class K8sApi():
             start_time = int(time.time() * 1000)
 
             my_config = client.Configuration()
+            my_config.verify_ssl = False
             my_config.retries = self.api_retries
 
             with open(self.kubeconfig_filename, 'r', encoding='utf-8') as file_handler:

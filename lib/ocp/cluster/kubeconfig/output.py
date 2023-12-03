@@ -7,16 +7,14 @@ class OcpClusterKubeconfigOutput():
             'name',
             'kubeconfigFileTick',
             'apiFqdn',
-            'apiVip',
-            'apiDns'
+            'apiVip'
         ]
 
         headers = [
             'Name',
             'Kubeconfig',
             'API FQDN',
-            'API VIP',
-            'API DNS'
+            'API VIP'
         ]
 
         if 'kubeApiTick' in info:
@@ -33,22 +31,31 @@ class OcpClusterKubeconfigOutput():
             title_keys=headers
         )
 
-    def print_ocp_clusters_kubeconfig(self, clusters):
+    def print_ocp_clusters_kubeconfig(self, clusters, title=False):
+        if title:
+            self.my_output.default(
+                'OCP Kubeconfig [#%s]' % (len(clusters)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(clusters) == 0:
+            self.my_output.default('None')
+            return
+
         order = [
             'name',
-            'kubeconfigFileTick',
+            'kubeconfigFilename',
             'apiFqdn',
             'apiVip',
-            'apiDns',
             'kubeApiTick'
         ]
 
         headers = [
-            'Name',
+            'Cluster Name',
             'Kubeconfig',
             'API FQDN',
             'API VIP',
-            'API DNS',
             'K8s API'
         ]
 

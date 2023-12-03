@@ -13,19 +13,11 @@ class K8sSriovNetworkNodePolicyInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(sriov_network_node_policy_mo, 'metadata:namespace')
-        info['name'] = self.get(sriov_network_node_policy_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            sriov_network_node_policy_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['device_type'] = self.get(sriov_network_node_policy_mo, 'spec:deviceType')
         info['device_typeT'] = info['device_type']
@@ -75,11 +67,6 @@ class K8sSriovNetworkNodePolicyInfo():
         if info['resource_name'] is None or len(info['resource_name']) == 0:
             info['resource_nameT'] = '--'
 
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(sriov_network_node_policy_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
-
         return info
 
     def get_sriov_network_node_policies_info(self, cache_enabled=True):
@@ -120,12 +107,17 @@ class K8sSriovNetworkNodePolicyInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, sriov_network_node_policy_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (sriov_network_node_policy_info['namespace'], sriov_network_node_policy_info['name'])):
                     return False
 
             if key == 'resource':
                 key_found = True
                 if not filter_helper.match_string(value, sriov_network_node_policy_info['resource_name']):
+                    return False
+
+            if key == 'device_type':
+                key_found = True
+                if not filter_helper.match_string(value, sriov_network_node_policy_info['device_type']):
                     return False
 
             if key == 'interface':
@@ -147,7 +139,7 @@ class K8sSriovNetworkNodePolicyInfo():
 
         return True
 
-    def get_sriov_network_node_policies(self, object_filter=None, return_mo=False, cache_enabled=True):
+    def get_sriov_network_node_policies(self, object_filter=None, return_mo=False, sriov_network_info=False, cache_enabled=True):
         all_sriov_network_node_policies = self.get_sriov_network_node_policies_info(cache_enabled=cache_enabled)
         if all_sriov_network_node_policies is None:
             return None
@@ -164,6 +156,23 @@ class K8sSriovNetworkNodePolicyInfo():
                 )
                 continue
 
+            if sriov_network_info:
+                sriov_network_node_policy_info['info']['sriov_network'] = []
+                if len(sriov_network_node_policy_info['info']['resource_name']) > 0:
+                    sriov_network_node_policy_info['info']['sriov_network'] = self.get_sriov_networks_with_resource_name(
+                        sriov_network_node_policy_info['info']['resource_name']
+                    )
+                    if sriov_network_node_policy_info['info']['sriov_network'] is None:
+                        self.log.error(
+                            'get_sriov_network_node_policies',
+                            'Failed to get sriov networks for policy: %s' % (sriov_network_node_policy_info['info']['name'])
+                        )
+                        sriov_network_node_policy_info['info']['sriov_network_count'] = 0
+                    else:
+                        sriov_network_node_policy_info['info']['sriov_network_count'] = len(
+                            sriov_network_node_policy_info['info']['sriov_network']
+                        )
+
             sriov_network_node_policies.append(
                 sriov_network_node_policy_info['info']
             )
@@ -175,7 +184,7 @@ class K8sSriovNetworkNodePolicyInfo():
             return False
         return True
 
-    def get_sriov_network_node_policy(self, name, namespace='openshift-sriov-network-operator', return_mo=False, cache_enabled=True):
+    def get_sriov_network_node_policy(self, name, namespace='openshift-sriov-network-operator', return_mo=False, sriov_network_info=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'namespace:%s' % (namespace)
@@ -186,6 +195,7 @@ class K8sSriovNetworkNodePolicyInfo():
         sriov_network_node_policies = self.get_sriov_network_node_policies(
             object_filter=object_filter,
             return_mo=return_mo,
+            sriov_network_info=sriov_network_info,
             cache_enabled=cache_enabled
         )
         if sriov_network_node_policies is None:
@@ -196,7 +206,7 @@ class K8sSriovNetworkNodePolicyInfo():
 
         return None
 
-    def get_sriov_network_node_policy_with_resource_name(self, resource_name, return_mo=False, cache_enabled=True):
+    def get_sriov_network_node_policy_with_resource_name(self, resource_name, return_mo=False, sriov_network_info=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'resource:%s' % (resource_name)
@@ -204,6 +214,7 @@ class K8sSriovNetworkNodePolicyInfo():
         sriov_network_node_policies = self.get_sriov_network_node_policies(
             object_filter=object_filter,
             return_mo=return_mo,
+            sriov_network_info=sriov_network_info,
             cache_enabled=cache_enabled
         )
         if sriov_network_node_policies is None:
@@ -214,7 +225,7 @@ class K8sSriovNetworkNodePolicyInfo():
 
         return None
 
-    def get_sriov_network_node_policies_with_interface(self, interface_name, return_mo=False, cache_enabled=True):
+    def get_sriov_network_node_policies_with_interface(self, interface_name, return_mo=False, sriov_network_info=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'interface:%s' % (interface_name)
@@ -222,6 +233,7 @@ class K8sSriovNetworkNodePolicyInfo():
         sriov_network_node_policies = self.get_sriov_network_node_policies(
             object_filter=object_filter,
             return_mo=return_mo,
+            sriov_network_info=sriov_network_info,
             cache_enabled=cache_enabled
         )
         return sriov_network_node_policies

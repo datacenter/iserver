@@ -12,6 +12,11 @@ class K8sClusterQuotaInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            cluster_quota_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_cluster_quotas_info(self, cache_enabled=True):

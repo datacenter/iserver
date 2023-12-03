@@ -3,6 +3,8 @@ import traceback
 import click
 
 from lib.redfish import cache
+from lib.redfish import output as redfish_output
+from lib.redfish import settings
 
 
 class Failure(Exception):
@@ -21,8 +23,23 @@ def get_redfish_cache_command(ctx):
     # iserver get redfish cache
 
     try:
+        output_handler = redfish_output.RedfishOutput(log_id=ctx.run_id)
+
+        settings_handler = settings.RedfishSettings()
+        redfish_settings = settings_handler.get_redfish_settings()
+        output_handler.print_redfish_settings(redfish_settings)
+
         cache_handler = cache.RedfishCache()
-        cache_handler.print_redfish_cache()
+        info = cache_handler.get_redfish_cache_list()
+        if info is None:
+            ctx.my_output.error('Cache list not found')
+            raise ErrorExit
+
+        output_handler = redfish_output.RedfishOutput(log_id=ctx.run_id)
+        output_handler.print_redfish_cache(
+            info,
+            title=True
+        )
 
     except ErrorExit:
         sys.exit(1)

@@ -10,7 +10,21 @@ requests.packages.urllib3.disable_warnings()
 
 
 class RedfishEndpointStandard(RedfishEndpointCommon):
-    def __init__(self, endpoint_handler, endpoint_ip, endpoint_port, redfish_username, redfish_password, cache_filename=None, auto_connect=True, get_timeout=10, ssl_verify=False, deep_search_exlusions=True, log_id=None, verbose=False, debug=False):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            system_id=None,
+            cache_filename=None,
+            auto_connect=True,
+            get_timeout=10,
+            ssl_verify=False,
+            deep_search_exlusions=True,
+            log_id=None
+            ):
         RedfishEndpointCommon.__init__(
             self,
             endpoint_handler,
@@ -18,14 +32,13 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             endpoint_port,
             redfish_username,
             redfish_password,
+            system_id=system_id,
             cache_filename=cache_filename,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
             deep_search_exlusions=deep_search_exlusions,
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
+            log_id=log_id
         )
 
         self.endpoint_type = 'standard'
@@ -113,7 +126,10 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
 
         self.session_id = self.extract_session_id(response)
         if self.session_id is None:
-            self.my_output.error('Failed to get session_id from authentication response')
+            self.log.error(
+                'connect',
+                'Failed to get session_id from authentication response'
+            )
             self.log.debug(
                 'connect',
                 'Response headers: %s' % (str(response.headers))
@@ -128,7 +144,10 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
-        self.my_output.info('Redfish connected to %s in %s ms' % (self.endpoint_ip, duration_ms))
+        self.log.debug(
+            'connect',
+            'Redfish connected to %s in %s ms' % (self.endpoint_ip, duration_ms)
+        )
         self.log.redfish(
             'connect %s' % (self.endpoint_ip),
             True,
@@ -218,7 +237,10 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
-        self.my_output.info('Redfish disconnected from %s in %s ms' % (self.endpoint_ip, duration_ms))
+        self.log.debug(
+            'disconnect',
+            'Redfish disconnected from %s in %s ms' % (self.endpoint_ip, duration_ms)
+        )
         self.log.redfish(
             'disconnect %s' % (self.endpoint_ip),
             True,

@@ -9,12 +9,6 @@
 DOC_TEMPLATE:get_aci_endpoint.server:iserver.output.default
 ```
 
-- Use -o fabric option to get interface related information for get_aci_endpoint.server
-
-```
-DOC_TEMPLATE:get_aci_endpoint.server_fabric:iserver.output.default
-```
-
 - Use context to get interface details
 
 ```

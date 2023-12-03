@@ -6,6 +6,7 @@ from menu.get.k8s.cluster import get_k8s_cluster
 from menu.get.k8s.cm import get_k8s_cm_command
 from menu.get.k8s.cni import get_k8s_cni_command
 from menu.get.k8s.cquota import get_k8s_cquota_command
+from menu.get.k8s.crb import get_k8s_crb_command
 from menu.get.k8s.crd import get_k8s_crd_command
 from menu.get.k8s.csv import get_k8s_csv_command
 from menu.get.k8s.dc import get_k8s_dc_command
@@ -22,6 +23,9 @@ from menu.get.k8s.limit import get_k8s_limit_command
 from menu.get.k8s.mc import get_k8s_mc_command
 from menu.get.k8s.mcp import get_k8s_mcp_command
 from menu.get.k8s.nad import get_k8s_nad_command
+from menu.get.k8s.nnce import get_k8s_nnce_command
+from menu.get.k8s.nncp import get_k8s_nncp_command
+from menu.get.k8s.nns import get_k8s_nns_command
 from menu.get.k8s.node import get_k8s_node_command
 from menu.get.k8s.ns import get_k8s_ns_command
 from menu.get.k8s.og import get_k8s_og_command
@@ -36,12 +40,14 @@ from menu.get.k8s.promrule import get_k8s_promrule_command
 from menu.get.k8s.pv import get_k8s_pv_command
 from menu.get.k8s.pvc import get_k8s_pvc_command
 from menu.get.k8s.quota import get_k8s_quota_command
+from menu.get.k8s.rb import get_k8s_rb_command
 from menu.get.k8s.rc import get_k8s_rc_command
 from menu.get.k8s.route import get_k8s_route_command
 from menu.get.k8s.rs import get_k8s_rs_command
 from menu.get.k8s.ruler import get_k8s_ruler_command
 from menu.get.k8s.sa import get_k8s_sa_command
 from menu.get.k8s.sc import get_k8s_sc_command
+from menu.get.k8s.scc import get_k8s_scc_command
 from menu.get.k8s.sec import get_k8s_sec_command
 from menu.get.k8s.smon import get_k8s_smon_command
 from menu.get.k8s.srn import get_k8s_srn_command
@@ -88,6 +94,7 @@ get_k8s_menu.add_command(get_k8s_cluster)
 get_k8s_menu.add_command(get_k8s_cm_command)
 get_k8s_menu.add_command(get_k8s_cni_command)
 get_k8s_menu.add_command(get_k8s_cquota_command)
+get_k8s_menu.add_command(get_k8s_crb_command)
 get_k8s_menu.add_command(get_k8s_crd_command)
 get_k8s_menu.add_command(get_k8s_csv_command)
 get_k8s_menu.add_command(get_k8s_dc_command)
@@ -104,6 +111,9 @@ get_k8s_menu.add_command(get_k8s_limit_command)
 get_k8s_menu.add_command(get_k8s_mc_command)
 get_k8s_menu.add_command(get_k8s_mcp_command)
 get_k8s_menu.add_command(get_k8s_nad_command)
+get_k8s_menu.add_command(get_k8s_nnce_command)
+get_k8s_menu.add_command(get_k8s_nncp_command)
+get_k8s_menu.add_command(get_k8s_nns_command)
 get_k8s_menu.add_command(get_k8s_node_command)
 get_k8s_menu.add_command(get_k8s_ns_command)
 get_k8s_menu.add_command(get_k8s_og_command)
@@ -118,12 +128,14 @@ get_k8s_menu.add_command(get_k8s_promrule_command)
 get_k8s_menu.add_command(get_k8s_pv_command)
 get_k8s_menu.add_command(get_k8s_pvc_command)
 get_k8s_menu.add_command(get_k8s_quota_command)
+get_k8s_menu.add_command(get_k8s_rb_command)
 get_k8s_menu.add_command(get_k8s_rc_command)
 get_k8s_menu.add_command(get_k8s_route_command)
 get_k8s_menu.add_command(get_k8s_rs_command)
 get_k8s_menu.add_command(get_k8s_ruler_command)
 get_k8s_menu.add_command(get_k8s_sa_command)
 get_k8s_menu.add_command(get_k8s_sc_command)
+get_k8s_menu.add_command(get_k8s_scc_command)
 get_k8s_menu.add_command(get_k8s_sec_command)
 get_k8s_menu.add_command(get_k8s_smon_command)
 get_k8s_menu.add_command(get_k8s_srn_command)

@@ -14,22 +14,35 @@ class K8sSriovNetworkOutput():
             self.my_output.default('None')
             return
 
+        for item in info:
+            item['namespace_nameT'] = []
+            item['namespace_nameT'].append(
+                item['namespace']
+            )
+            item['namespace_nameT'].append(
+                item['name']
+            )
+
         order = [
-            'namespace',
-            'name',
+            'namespace_nameT',
             'network_namespace',
             'resource_name',
             'vlanT',
+            'spoof',
+            'trust',
+            'capabilitiesT',
             'ipamT',
             'age'
         ]
 
         headers = [
-            'Namespace',
-            'Name',
-            'Network Namespace',
+            'SR-IOV Network',
+            'NetNamespace',
             'Resource',
             'VLAN',
+            'Spoof',
+            'Trust',
+            'Caps',
             'IPAM',
             'Age'
         ]
@@ -38,7 +51,7 @@ class K8sSriovNetworkOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['ipamT']
+                ['namespace_nameT', 'ipamT', 'capabilitiesT']
             ),
             order=order,
             headers=headers,

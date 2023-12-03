@@ -18,23 +18,8 @@ class IntersightCache(IntersightSettings):
         if self.intersight_settings is None:
             raise ValueError('Intersight settings read failed')
 
-        self.intersight_cache_enabled = self.is_intersight_cache_enabled()
-        self.intersight_cache_directory = None
-        self.intersight_cache_ttl = None
-        if self.intersight_cache_enabled:
-            self.intersight_cache_directory = self.intersight_settings['ComputeCacheDirectory']
-            self.intersight_cache_ttl = self.intersight_settings['CacheTtl']
-
-    def set_cache_enabled(self, enabled):
-        self.intersight_cache_enabled = enabled
-        if self.intersight_cache_enabled:
-            self.intersight_cache_directory = self.intersight_settings['ComputeCacheDirectory']
-            self.intersight_cache_ttl = self.intersight_settings['CacheTtl']
-
-    def is_intersight_cache_enabled(self):
-        if 'CacheEnabled' in self.intersight_settings:
-            return self.intersight_settings['CacheEnabled']
-        return False
+        self.intersight_cache_directory = self.intersight_settings['ComputeCacheDirectory']
+        self.intersight_cache_ttl = self.intersight_settings['CacheTtl']
 
     def is_intersight_cache(self, cache_entry_name, subdirectory=None, cache_ttl=None):
         if self.get_intersight_cache_entry(cache_entry_name, subdirectory=subdirectory, cache_ttl=cache_ttl) is None:
@@ -42,9 +27,6 @@ class IntersightCache(IntersightSettings):
         return True
 
     def get_intersight_cache_entry(self, cache_entry_name, subdirectory=None, check_ttl=True, cache_ttl=None):
-        if not self.intersight_cache_enabled:
-            return None
-
         directory_name = self.intersight_cache_directory
         if subdirectory is not None:
             directory_name = os.path.join(
@@ -89,9 +71,6 @@ class IntersightCache(IntersightSettings):
         return cache_entry['data']
 
     def set_intersight_cache_entry(self, cache_entry_name, data, subdirectory=None):
-        if not self.intersight_cache_enabled:
-            return False
-
         directory_name = self.intersight_cache_directory
         if subdirectory is not None:
             directory_name = os.path.join(

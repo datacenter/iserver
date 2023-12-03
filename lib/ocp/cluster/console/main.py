@@ -12,7 +12,8 @@ class OcpClusterConsole():
         ssh_handler = ssh.Ssh(
             installer_ip,
             installer_username,
-            password=installer_password
+            password=installer_password,
+            log_id=self.log_id
         )
         source = './install/auth/kubeadmin-password'
         destination = '/tmp/kubeadmin'

@@ -13,6 +13,7 @@ def get_nexus_lldp_info(log_id=None, verbose=False, cache_enabled=False):
                 nexus_switch['ip'],
                 nexus_switch['username'],
                 nexus_switch['password'],
+                name=nexus_switch['name'],
                 log_id=log_id,
                 cache_enabled=cache_enabled
             )

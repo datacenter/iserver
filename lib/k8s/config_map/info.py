@@ -12,16 +12,16 @@ class K8sConfigMapInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            config_map_mo
+        )
+        info.update(metadata_info)
+
         info['namespace'] = self.get(config_map_mo, 'metadata:namespace')
         info['name'] = self.get(config_map_mo, 'metadata:name')
 
         info['data'] = self.get(config_map_mo, 'data', on_error={}, on_none={})
         info['dataCount'] = len(info['data'])
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(config_map_mo, 'metadata:creation_timestamp'),
-            on_error='--'
-        )
 
         return info
 
@@ -64,7 +64,7 @@ class K8sConfigMapInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, config_map_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (config_map_info['namespace'], config_map_info['name'])):
                     return False
 
             if key == 'cm-name':

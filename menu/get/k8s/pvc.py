@@ -27,7 +27,7 @@ class NoResultExit(Exception):
 @click.option("--cluster", default='', help="Kubernetes cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|metadata|pv|usage|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_pvc_command(
@@ -48,7 +48,7 @@ def get_k8s_pvc_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state',
+        'state|metadata|pv|usage|all',
         'state',
         []
     )
@@ -96,8 +96,13 @@ def get_k8s_pvc_command(
             )
             return
 
+        usage_info = False
+        if 'usage' in view:
+            usage_info = True
+
         pvcs = k8s_handlers.get_pvcs(
             object_filter=object_filter,
+            usage_info=usage_info,
             pv_info=True
         )
 
@@ -112,10 +117,32 @@ def get_k8s_pvc_command(
             )
             return
 
-        k8s_output_handler.print_pvcs(
-            pvcs,
-            title=True
-        )
+        if 'state' in view:
+            k8s_output_handler.print_pvcs(
+                pvcs,
+                title=True
+            )
+
+        if 'metadata' in view:
+            k8s_output_handler.print_pvcs_metadata(
+                pvcs,
+                title=True
+            )
+
+        if 'pv' in view:
+            k8s_output_handler.print_pvcs_pv(
+                pvcs,
+                title=True
+            )
+
+        if 'usage' in view:
+            k8s_output_handler.print_pvcs_usage(
+                pvcs,
+                title=True
+            )
+
+        ctx.my_output.default('Filter: namespace, name', before_newline=True)
+        ctx.my_output.default('View:   state (def), metadata, pv, usage, all')
 
     except NoResultExit:
         ctx.busy = False

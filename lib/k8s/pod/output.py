@@ -9,7 +9,7 @@ class K8sPodOutput():
     def print_pods_state(self, info, title=False):
         if title:
             self.my_output.default(
-                'POD - State Details [#%s]' % (len(info)),
+                'POD [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -33,9 +33,13 @@ class K8sPodOutput():
                 container_info['env_count'] = len(container_info['env'])
                 container_info['cm_count'] = len(container_info['cm'])
 
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
         order = [
             'namespace_nameT',
-            'owner',
             'container_state_summary',
             'phaseT',
             'condition.typeT',
@@ -49,7 +53,6 @@ class K8sPodOutput():
 
         headers = [
             'Pod',
-            'Owner',
             'Ready',
             'Status',
             'Condition',
@@ -66,6 +69,60 @@ class K8sPodOutput():
                 info,
                 order,
                 ['namespace_nameT', 'condition']
+            ),
+            order=order,
+            headers=headers,
+            row_separator=True,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )
+
+    def print_pods_metadata(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'POD - Metadata [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        for item in info:
+            item['namespace_nameT'] = []
+            item['namespace_nameT'].append(
+                item['namespace']
+            )
+            item['namespace_nameT'].append(
+                item['name']
+            )
+
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
+        order = [
+            'namespace_nameT',
+            'owner',
+            'labelT',
+            'annotationT'
+        ]
+
+        headers = [
+            'Pod',
+            'Owner',
+            'Label',
+            'Annotation'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['namespace_nameT', 'labelT', 'annotationT']
             ),
             order=order,
             headers=headers,
@@ -739,8 +796,6 @@ class K8sPodOutput():
 
         order = [
             'nameT',
-            'container_state_summary',
-            'phaseT',
             'host_network_tick',
             'network.interface',
             'network.name',
@@ -753,12 +808,10 @@ class K8sPodOutput():
 
         headers = [
             'Pod',
-            'Ready',
-            'Status',
-            'Host Network',
-            'Interface',
+            'HostNet',
+            'Intf',
             'Network',
-            'Default',
+            'Def',
             'MAC',
             'IP',
             'DNS',

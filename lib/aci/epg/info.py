@@ -1,4 +1,5 @@
 import copy
+import json
 
 from lib import filter_helper
 from lib import ip_helper
@@ -294,10 +295,14 @@ class EpgInfo():
             for key in item:
                 domain_info[key] = item[key]
 
-            if domain_info['tCl'] not in ['physDomP', 'vmmDomP']:
+            if domain_info['tCl'] not in ['physDomP', 'vmmDomP', 'infraDomP']:
                 self.log.error(
                     'get_epg_domain_info',
                     'Unsupported epg domain type: %s' % (domain_info['tCl'])
+                )
+                self.log.error(
+                    'get_epg_domain_info',
+                    json.dumps(domain_info, indent=4)
                 )
                 return None
 
@@ -305,6 +310,11 @@ class EpgInfo():
             if domain_info['type'] == 'physDomP':
                 # "tDn": "uni/phys-k8s_phys_PhysDom"
                 domain_info['typeT'] = 'Physical'
+                domain_info['name'] = domain_info['tDn'].split('/')[1][5:]
+
+            if domain_info['type'] == 'infraDomP':
+                # "tDn": "uni/phys-all-physical-devices"
+                domain_info['typeT'] = 'Infra'
                 domain_info['name'] = domain_info['tDn'].split('/')[1][5:]
 
             if domain_info['type'] == 'vmmDomP':

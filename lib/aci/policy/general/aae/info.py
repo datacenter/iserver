@@ -88,10 +88,11 @@ class PolicyGeneralAaeInfo():
                     policy_global_aae_info['vlanPool'].append(
                         domain_info['info']['vlan']
                     )
-                    for vlan_range in domain_info['info']['vlan_info']['fvnsEncapBlk']:
-                        policy_global_aae_info['vlanBlock'].append(
-                            vlan_range['blockInfo']
-                        )
+                    if domain_info['info']['vlan_info'] is not None:
+                        for vlan_range in domain_info['info']['vlan_info']['fvnsEncapBlk']:
+                            policy_global_aae_info['vlanBlock'].append(
+                                vlan_range['blockInfo']
+                            )
 
         policy_global_aae_info['vlanPool'] = sorted(
             policy_global_aae_info['vlanPool']
@@ -126,6 +127,14 @@ class PolicyGeneralAaeInfo():
             info['epgName'] = self.get_epg_name_from_dn(
                 managed_object['tDn']
             )
+
+        info['epgEncap'] = None
+        if info['epgName'] is not None:
+            if info['encap'] is not None and len(info['encap']) > 0:
+                info['epgEncap'] = '%s (%s)' % (
+                    info['epgName'],
+                    info['encap']
+                )
 
         return info
 

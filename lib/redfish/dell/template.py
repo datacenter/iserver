@@ -1,3 +1,5 @@
+import time
+
 from lib.redfish.dell.identity import RedfishEndpointDellTemplateIdentity
 from lib.redfish.dell.power import RedfishEndpointDellTemplatePower
 from lib.redfish.dell.thermal import RedfishEndpointDellTemplateThermal
@@ -15,31 +17,42 @@ class RedfishEndpointDellTemplate(RedfishEndpointDellTemplateIdentity, RedfishEn
             self
         )
 
-    def get_template_properties(self, template_name):
-        if template_name.lower() == 'identity':
-            return self.get_template_identity_properties()
+    def get_template_properties(self, template_name, cache_enabled=True, cache_key=None, cache_ttl=0):
+        if cache_enabled and cache_key is not None:
+            self.set_system_id(
+                cache_key
+            )
+            properties = self.endpoint_handler.endpoint_settings_handler.get_endpoint_settings(
+                cache_key,
+                filename=template_name
+            )
+            if properties is not None:
+                if cache_ttl == 0:
+                    return properties['data']
+                if int(time.time()) - properties['timestamp'] < cache_ttl:
+                    return properties['data']
 
-        if template_name.lower() == 'power':
-            return self.get_template_power_properties()
+        properties = None
 
-        if template_name.lower() == 'thermal':
-            return self.get_template_thermal_properties()
+        if template_name == 'identity':
+            properties = self.get_template_identity_properties()
 
-        self.my_output.error('Unsupported template: %s' % (template_name))
-        self.my_output.default('Supported templates:')
+        if template_name == 'power':
+            properties = self.get_template_power_properties()
 
-        templates = ['power', 'temp']
-        for template in templates:
-            self.my_output.default('- %s' % (template))
+        if template_name == 'thermal':
+            properties = self.get_template_thermal_properties()
 
-        return None
+        if properties is not None:
+            if cache_enabled and cache_key is not None:
+                cache_entry = {}
+                cache_entry['timestamp'] = int(time.time())
+                cache_entry['data'] = properties
 
-    def print_template_properties(self, template_name, properties):
-        if template_name.lower() == 'identity':
-            self.print_template_identity_properties(properties)
+                self.endpoint_handler.endpoint_settings_handler.set_endpoint_settings(
+                    cache_key,
+                    cache_entry,
+                    filename=template_name
+                )
 
-        if template_name.lower() == 'power':
-            self.print_template_power_properties(properties)
-
-        if template_name.lower() == 'thermal':
-            self.print_template_thermal_properties(properties)
+        return properties

@@ -3,7 +3,20 @@ from lib.redfish.hpe.template import RedfishEndpointHpeTemplate
 
 
 class RedfishEndpointHpe(RedfishEndpointStandard, RedfishEndpointHpeTemplate):
-    def __init__(self, endpoint_handler, endpoint_ip, endpoint_port, redfish_username, redfish_password, cache_filename=None, auto_connect=True, deep_search_exlusions=True, get_timeout=10, ssl_verify=False, log_id=None, verbose=False, debug=False):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            cache_filename=None,
+            auto_connect=True,
+            deep_search_exlusions=True,
+            get_timeout=10,
+            ssl_verify=False,
+            log_id=None
+            ):
         RedfishEndpointStandard.__init__(
             self,
             endpoint_handler,
@@ -16,9 +29,7 @@ class RedfishEndpointHpe(RedfishEndpointStandard, RedfishEndpointHpeTemplate):
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
             deep_search_exlusions=deep_search_exlusions,
-            log_id=log_id,
-            verbose=verbose,
-            debug=debug
+            log_id=log_id
         )
         RedfishEndpointHpeTemplate.__init__(
             self

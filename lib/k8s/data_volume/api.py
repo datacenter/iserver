@@ -1,4 +1,5 @@
 import time
+import json
 import traceback
 
 
@@ -62,7 +63,14 @@ class K8sDataVolumeApi():
             )
         except BaseException:
             success = False
-            self.log.error('k8s.create_data_volume', traceback.format_exc())
+            self.log.error(
+                'k8s.create_data_volume',
+                'PVC create failed: %s' % (json.dumps(data_volume, indent=4))
+            )
+            self.log.error(
+                'k8s.create_data_volume',
+                traceback.format_exc()
+            )
 
         self.log.ocp(
             'create',

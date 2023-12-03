@@ -1,4 +1,4 @@
-class VnfiGet():
+class NfvoVnfiGet():
     def __init__(self):
         self.vnfi_plans = None
         self.vnfi = None

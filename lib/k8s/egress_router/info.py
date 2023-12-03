@@ -12,6 +12,11 @@ class K8sEgressRouterInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            egress_router_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_egress_routers_info(self, cache_enabled=True):

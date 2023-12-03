@@ -3,7 +3,6 @@ import json
 import traceback
 
 from lib import log_helper
-from lib import output_helper
 from lib.settings_helper import Settings
 
 
@@ -13,7 +12,6 @@ class RedfishSettings(Settings):
 
         self.log = log_helper.Log(log_id=log_id)
         self.log_id = log_id
-        self.my_output = None
 
         self.redfish_settings_filename = os.path.join(
             self.settings_dir,
@@ -60,36 +58,3 @@ class RedfishSettings(Settings):
         settings['CacheEnabled'] = False
         settings['CacheDirectory'] = '/tmp/redfish'
         return settings
-
-    def print_redfish_settings(self):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(
-                log_id=self.log_id,
-                verbose=False,
-                debug=False
-            )
-
-        settings = self.get_redfish_settings()
-        if settings is None:
-            self.my_output.error('Redfish settings not found')
-            return
-
-        order = [
-            'CacheEnabled',
-            'CacheDirectory'
-        ]
-
-        headers = [
-            'Cache Enabled',
-            'Cache Directory'
-        ]
-
-        self.my_output.dictionary(
-            settings,
-            title='Redfish Settings',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )

@@ -1,29 +1,154 @@
 import os
+import time
+import json
 
 from progress.bar import Bar
 
 from lib import ip_helper
 from lib import log_helper
-from lib import output_helper
 
-from lib.endpoint_helper import EndpointSettings
+from lib.settings_helper import Settings
 from lib.redfish import endpoint
 
 
-class RedfishEndpointSettings(EndpointSettings):
+class RedfishEndpointSettings(Settings):
     def __init__(self, log_id=None):
-        EndpointSettings.__init__(self, log_id=log_id)
+        Settings.__init__(self)
 
         self.log_id = log_id
         self.log = log_helper.Log(log_id=log_id)
-        self.my_output = None
 
         self.redfish_settings_filename = os.path.join(
             self.settings_dir,
             'redfish'
         )
 
+        self.endpoint_directory = os.path.join(
+            self.settings_dir,
+            'endpoint'
+        )
+
+        if not self.initialize_endpoint_directory():
+            raise ValueError('Endpoints initialization failed')
+
+    def initialize_endpoint_directory(self):
+        try:
+            if not os.path.isdir(self.endpoint_directory):
+                os.makedirs(self.endpoint_directory)
+
+            for filename in os.listdir(self.endpoint_directory):
+                filename_path = os.path.join(
+                    self.endpoint_directory,
+                    filename
+                )
+                if os.path.isdir(filename_path):
+                    continue
+
+                try:
+                    with open(filename_path, 'r', encoding='utf-8') as file_handler:
+                        settings = json.loads(file_handler.read())
+
+                except BaseException:
+                    self.log.error(
+                        'initialize_endpoint_directory',
+                        'File read failed: %s' % (filename_path)
+                    )
+                    continue
+
+                os.remove(filename_path)
+                os.makedirs(filename_path, exist_ok=True)
+
+                settings_filename = os.path.join(
+                    filename_path,
+                    'settings'
+                )
+
+                try:
+                    with open(settings_filename, 'w', encoding='utf-8') as file_handler:
+                        file_handler.write(
+                            json.dumps(
+                                settings,
+                                indent=4
+                            )
+                        )
+
+                except BaseException:
+                    self.log.error(
+                        'initialize_endpoint_directory',
+                        'File write failed: %s' % (settings_filename)
+                    )
+
+        except BaseException:
+            return False
+        return True
+
+    def get_endpoint_ids(self):
+        return os.listdir(self.endpoint_directory)
+
+    def get_endpoint_settings(self, endpoint_id, filename='settings'):
+        endpoint_directory = os.path.join(
+            self.endpoint_directory,
+            endpoint_id
+        )
+        endpoint_filename = os.path.join(
+            endpoint_directory,
+            filename
+        )
+        if not os.path.isfile(endpoint_filename):
+            return None
+
+        try:
+            with open(endpoint_filename, 'r', encoding='utf-8') as file_handler:
+                settings = json.loads(file_handler.read())
+
+        except BaseException:
+            self.log.error(
+                'get_endpoint_settings',
+                'File read failed: %s' % (endpoint_filename)
+            )
+            return None
+
+        return settings
+
+    def set_endpoint_settings(self, endpoint_id, settings, filename='settings'):
+        endpoint_directory = os.path.join(
+            self.endpoint_directory,
+            endpoint_id
+        )
+        if not os.path.isdir(endpoint_directory):
+            os.makedirs(endpoint_directory, exist_ok=True)
+
+        endpoint_filename = os.path.join(
+            endpoint_directory,
+            filename
+        )
+
+        try:
+            with open(endpoint_filename, 'w', encoding='utf-8') as file_handler:
+                file_handler.write(
+                    json.dumps(
+                        settings,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            self.log.error(
+                'set_endpoint_settings',
+                'File write failed: %s' % (endpoint_filename)
+            )
+            return False
+
+        return True
+
     def get_redfish_endpoint_id(self, identity):
+        if 'SerialNumber' not in identity:
+            self.log.error(
+                'get_redfish_endpoint_id',
+                'No serial in endpoint identity: %s' % (identity)
+            )
+            return None
+
         return identity['SerialNumber']
 
     def is_redfish_endpoint(self, endpoint_id):
@@ -46,26 +171,44 @@ class RedfishEndpointSettings(EndpointSettings):
             redfish_endpoint_identity
         )
 
-        endpoint_settings = self.get_endpoint_settings(
-            endpoint_id
-        )
-        if endpoint_settings is None:
-            endpoint_settings = {}
-            endpoint_settings['endpoint_id'] = endpoint_id
+        if endpoint_id is None:
+            self.log.error(
+                'set_redfish_endpoint_settings',
+                'Failed on no endpoint id: %s' % (redfish_endpoint_identity)
+            )
+            return False
 
+        endpoint_settings = {}
+        endpoint_settings['endpoint_id'] = endpoint_id
         endpoint_settings['redfish'] = {}
         endpoint_settings['redfish']['endpoint_id'] = endpoint_id
-        endpoint_settings['redfish']['identity'] = redfish_endpoint_identity
         endpoint_settings['redfish']['endpoint'] = redfish_endpoint_configuration
 
-        return self.set_endpoint_settings(endpoint_id, endpoint_settings)
+        if not self.set_endpoint_settings(endpoint_id, endpoint_settings):
+            self.log.error(
+                'set_redfish_endpoint_settings',
+                'Failed: %s' % (endpoint_id)
+            )
+            return False
+
+        data = {}
+        data['timestamp'] = int(time.time())
+        data['data'] = redfish_endpoint_identity
+        if not self.set_endpoint_settings(endpoint_id, data, filename='identity'):
+            self.log.error(
+                'set_redfish_endpoint_settings',
+                'Identity failed: %s' % (endpoint_id)
+            )
+            return False
+
+        return True
 
     def match_redfish_endpoint(self, redfish_endpoint, endpoint_type, endpoint_ip, serial_number):
-        if len(endpoint_type) > 0 and endpoint_type != 'any':
+        if endpoint_type is not None and len(endpoint_type) > 0 and endpoint_type != 'any':
             if redfish_endpoint['endpoint']['type'] != endpoint_type:
                 return False
 
-        if len(endpoint_ip) > 0:
+        if endpoint_ip is not None and len(endpoint_ip) > 0:
             if ip_helper.is_valid_ipv4_address(endpoint_ip):
                 if redfish_endpoint['endpoint']['ip'] != endpoint_ip:
                     return False
@@ -74,13 +217,13 @@ class RedfishEndpointSettings(EndpointSettings):
                 if not ip_helper.is_ipv4_in_cidr(redfish_endpoint['endpoint']['ip'], endpoint_ip):
                     return False
 
-        if len(serial_number) > 0:
+        if serial_number is not None and len(serial_number) > 0:
             if redfish_endpoint['identity']['SerialNumber'] != serial_number:
                 return False
 
         return True
 
-    def get_redfish_endpoints_settings(self, endpoint_type='', endpoint_ip='', serial_number=''):
+    def get_redfish_endpoints_settings(self, endpoint_type=None, endpoint_ip=None, serial_number=None, include=[]):
         endpoint_ids = self.get_endpoint_ids()
 
         endpoints = []
@@ -99,11 +242,32 @@ class RedfishEndpointSettings(EndpointSettings):
             if not match:
                 continue
 
+            for key in include:
+                data = self.get_endpoint_settings(
+                    endpoint_id,
+                    filename=key
+                )
+                if data is not None:
+                    redfish_endpoint[key] = data['data']
+
             endpoints.append(
                 redfish_endpoint
             )
 
         return endpoints
+
+    def get_endpoint_id_with_ip(self, endpoint_ip):
+        endpoint_ids = self.get_endpoint_ids()
+
+        for endpoint_id in endpoint_ids:
+            redfish_settings = self.get_redfish_endpoint_settings(endpoint_id)
+            if redfish_settings is None:
+                continue
+
+            if redfish_settings['endpoint']['ip'] == endpoint_ip:
+                return endpoint_id
+
+        return None
 
     def get_servers_redfish_settings(self, servers_mo, verify=False, bar_enabled=False):
         redfish_endpoints_settings = self.get_redfish_endpoints_settings()
@@ -145,31 +309,6 @@ class RedfishEndpointSettings(EndpointSettings):
 
         return servers_mo
 
-    def get_servers_redfish_summary(self, servers, verify=False):
-        summary = {}
-        summary['count'] = len(servers)
-        summary['capable'] = 0
-        summary['enabled'] = 0
-        if verify:
-            summary['verified'] = 0
-        summary['ucsc'] = 0
-        summary['fi'] = 0
-        summary['dell'] = 0
-        summary['hpe'] = 0
-        summary['standard'] = 0
-
-        for server in servers:
-            if server['redfish_capable']:
-                summary['capable'] = summary['capable'] + 1
-            if server['redfish_enabled']:
-                summary['enabled'] = summary['enabled'] + 1
-                summary[server['redfish_endpoint_type']] = summary[server['redfish_endpoint_type']] + 1
-                if verify:
-                    if server['redfish_verified']:
-                        summary['verified'] = summary['verified'] + 1
-
-        return summary
-
     def delete_redfish_endpoint_settings(self, endpoint_id):
         endpoint_settings = self.get_endpoint_settings(endpoint_id)
         if 'redfish' in endpoint_settings:
@@ -195,236 +334,3 @@ class RedfishEndpointSettings(EndpointSettings):
             return False
 
         return True
-
-    def get_redfish_endpoint_template(self, endpoint_id, template_name):
-        endpoint_settings = self.get_redfish_endpoint_settings(endpoint_id)
-        if endpoint_settings is None:
-            return None
-
-        redfish_handler = endpoint.RedfishEndpoint(
-            endpoint_settings['endpoint']['type'],
-            endpoint_settings['endpoint']['ip'],
-            endpoint_settings['endpoint']['port'],
-            endpoint_settings['endpoint']['username'],
-            endpoint_settings['endpoint']['password'],
-            log_id=self.log_id
-        )
-
-        if not redfish_handler.is_connected():
-            return None
-
-        if endpoint_settings['endpoint']['type'] == 'fi':
-            redfish_handler.endpoint_handler.set_inventory(
-                endpoint_settings['endpoint']['inventory_type'],
-                endpoint_settings['endpoint']['inventory_id']
-            )
-
-        return redfish_handler.endpoint_handler.get_template_properties(template_name)
-
-    def print_redfish_endpoint_template(self, endpoint_id, template_name, template_properties):
-        endpoint_settings = self.get_redfish_endpoint_settings(endpoint_id)
-        if endpoint_settings is None:
-            return
-
-        redfish_handler = endpoint.RedfishEndpoint(
-            endpoint_settings['endpoint']['type'],
-            endpoint_settings['endpoint']['ip'],
-            endpoint_settings['endpoint']['port'],
-            endpoint_settings['endpoint']['username'],
-            endpoint_settings['endpoint']['password'],
-            auto_connect=False,
-            log_id=self.log_id
-        )
-
-        if endpoint_settings['endpoint']['type'] == 'fi':
-            redfish_handler.endpoint_handler.set_inventory(
-                endpoint_settings['endpoint']['inventory_type'],
-                endpoint_settings['endpoint']['inventory_id']
-            )
-
-        redfish_handler.endpoint_handler.print_template_properties(
-            template_name,
-            template_properties
-        )
-
-    def print_redfish_endpoint_settings(self, endpoints, verify=False, show_password=True):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(
-                log_id=self.log_id,
-                verbose=False,
-                debug=False
-            )
-
-        entries = []
-        for item in endpoints:
-            entry = item['endpoint']
-            for key in ['Product', 'SerialNumber', 'HostName']:
-                entry[key] = item['identity'][key]
-            entries.append(entry)
-
-        entries = sorted(entries, key=lambda k: (k['ip']))
-
-        if not show_password:
-            for item in entries:
-                item['password'] = '******'
-
-        order = [
-            'SerialNumber',
-            'Product',
-            'HostName',
-            'type',
-            'ip',
-            'port',
-            'username',
-            'password',
-            'inventory_type',
-            'inventory_id'
-        ]
-
-        headers = [
-            'S/N',
-            'Product',
-            'Name',
-            'Type',
-            'IP',
-            'Port',
-            'Username',
-            'Password',
-            'FI Inventory Type',
-            'FI Inventory ID'
-        ]
-
-        if verify:
-            order.append('verified')
-            headers.append('Authenticated')
-
-        self.my_output.my_table(
-            entries,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-    def print_servers_redfish(self, servers, verify=False, show_password=True):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(
-                log_id=self.log_id,
-                verbose=False,
-                debug=False
-            )
-
-        if not show_password:
-            for item in servers:
-                if item['redfish_enabled']:
-                    item['redfish_endpoint_password'] = '******'
-
-        order = [
-            'Name',
-            'Model',
-            'Serial',
-            'ManagementIp',
-            'redfish_capable',
-            'redfish_enabled',
-            'redfish_endpoint_type',
-            'redfish_endpoint_ip',
-            'redfish_endpoint_port',
-            'redfish_endpoint_username',
-            'redfish_endpoint_password',
-            'redfish_endpoint_inventory_type',
-            'redfish_endpoint_inventory_id'
-        ]
-
-        headers = [
-            'Name',
-            'Model',
-            'Serial',
-            'IP',
-            'Redfish Support',
-            'Redfish Access',
-            'Type',
-            'IP',
-            'Port',
-            'Username',
-            'Password',
-            'Inventory Type',
-            'Inventory ID'
-        ]
-
-        if verify:
-            order.append('redfish_verified')
-            headers.append('Authenticated')
-
-        self.my_output.my_table(
-            servers,
-            order=order,
-            headers=headers,
-            table=True
-        )
-
-    def print_servers_redfish_summary(self, summary, verify=False):
-        if self.my_output is None:
-            self.my_output = output_helper.OutputHelper(
-                log_id=self.log_id,
-                verbose=False,
-                debug=False
-            )
-
-        if verify:
-            self.my_output.dictionary(
-                summary,
-                title='Intersight Servers - Redfish Access Summary',
-                underline=True,
-                prefix="- ",
-                justify=True,
-                keys=[
-                    'count',
-                    'capable',
-                    'enabled',
-                    'verified',
-                    'standard',
-                    'ucsc',
-                    'fi',
-                    'dell',
-                    'hpe'
-                ],
-                title_keys=[
-                    'Servers Count',
-                    'Redfish Support',
-                    'Redfish Configured',
-                    'Redfish Access Verified',
-                    'Endpoint Type - standard',
-                    'Endpoint Type - ucsc',
-                    'Endpoint Type - fi',
-                    'Endpoint Type - dell',
-                    'Endpoint Type - hpe'
-                ]
-            )
-        else:
-            self.my_output.dictionary(
-                summary,
-                title='Intersight Servers - Redfish Access Summary',
-                underline=True,
-                prefix="- ",
-                justify=True,
-                keys=[
-                    'count',
-                    'capable',
-                    'enabled',
-                    'standard',
-                    'ucsc',
-                    'fi',
-                    'dell',
-                    'hpe'
-                ],
-                title_keys=[
-                    'Servers Count',
-                    'Redfish Support',
-                    'Redfish Configured',
-                    'Endpoint Type - standard',
-                    'Endpoint Type - ucsc',
-                    'Endpoint Type - fi',
-                    'Endpoint Type - dell',
-                    'Endpoint Type - hpe'
-                ]
-            )

@@ -14,20 +14,35 @@ class K8sServiceAccountOutput():
             self.my_output.default('None')
             return
 
+        row_separator = False
+        for item in info:
+            if len(item['secret']) > 1:
+                row_separator = True
+
         order = [
-            'tbd'
+            'namespace',
+            'name',
+            'secret.name',
+            'age'
         ]
 
         headers = [
-            'tbd'
+            'Namespace',
+            'Name',
+            'Secret',
+            'Age'
         ]
 
         self.my_output.my_table(
-            info,
+            self.my_output.expand_lists(
+                info,
+                order,
+                ['secret']
+            ),
             order=order,
             headers=headers,
             allow_order_subkeys=True,
             underline=True,
-            row_separator=False,
+            row_separator=row_separator,
             table=True
         )

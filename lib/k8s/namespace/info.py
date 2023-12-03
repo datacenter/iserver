@@ -12,12 +12,10 @@ class K8sNamespaceInfo():
         info = {}
         info['__Output'] = {}
 
-        info['name'] = self.get(namespace_mo, 'metadata:name')
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(namespace_mo, 'metadata:creation_timestamp'),
-            on_error='--'
+        metadata_info = self.get_metadata_info(
+            namespace_mo
         )
+        info.update(metadata_info)
 
         info['phase'] = self.get(namespace_mo, 'status:phase')
         if info['phase'] is not None and info['phase'] == 'Active':

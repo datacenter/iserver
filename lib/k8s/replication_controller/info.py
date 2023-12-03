@@ -12,6 +12,11 @@ class K8sReplicationControllerInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            replication_controller_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_replication_controllers_info(self, cache_enabled=True):

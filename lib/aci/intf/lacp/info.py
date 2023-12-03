@@ -37,6 +37,10 @@ class InterfaceLacpInfo():
         # topology/pod-1/node-201/sys/lacp/inst/if-[eth1/2]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
+        info['pod_node_name'] = 'pod-%s/%s' % (
+            info['podId'],
+            self.get_node_name(info['nodeId'])
+        )
 
         if info['adminSt'] == 'enabled':
             info['__Output']['adminSt'] = 'Green'

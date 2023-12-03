@@ -39,7 +39,7 @@ class MyCliContext():
 
         my_settings = settings_helper.Settings()
         self.defaults = {}
-        self.defaults['iaccount'] = my_settings.get_setting('iaccount', default='isctl')
+        self.defaults['iaccount'] = my_settings.get_setting('iaccount', default=None)
 
 
 def print_version(ctx, param, value):

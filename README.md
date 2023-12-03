@@ -2,22 +2,15 @@
 
 iserver is command line tool using REST API with various Cisco products.
 
-## Server Features
-
-- [Servers inventory](./doc/features/ServersInventory.md)
-- [Server details](./doc/features/ServerDetails.md)
-- [Power control](./doc/features/PowerControl.md)
-- [Locator LED control](./doc/features/LedControl.md)
-- [Operating System installation](./doc/features/OsInstall.md)
-- [Workflows](./doc/features/Workflows.md)
-- [Workflow details](./doc/features/Workflow.md)
-- [Power and Thermal monitoring](./doc/green/README.md)
-
-## Other Domains
+## Features
 
 - [ACI](./doc/aci/README.md)
-- [OpenShift Container Platform](./doc/ocp/README.md)
+- [Helm](./doc/helm/README.md)
+- [Intersight](./doc/intersight/README.md)
+- [Kubernetes](./doc/k8s/README.md)
 - [Redfish](./doc/redfish/README.md)
+- [OpenShift](./doc/ocp/README.md)
+- [OpenStack](./doc/osp/README.md)
 - [UCSM](./doc/ucsm/README.md)
 
 ## Installation

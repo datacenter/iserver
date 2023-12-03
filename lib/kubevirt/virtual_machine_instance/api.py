@@ -44,6 +44,53 @@ class KubevirtVirtualMachineInstanceApi():
 
         return True
 
+    def create_namespaced_virtual_machine_instance(self, vmi_definition):
+        if not self.connect():
+            return False
+
+        if self.api is None:
+            return False
+
+        start_time = int(time.time() * 1000)
+
+        namespace = vmi_definition['metadata']['namespace']
+        body = kubevirt.V1VirtualMachineInstance(
+            api_version=vmi_definition['apiVersion'],
+            kind='VirtualMachineInstance',
+            metadata=vmi_definition['metadata'],
+            spec=vmi_definition['spec']
+        )
+
+        try:
+            api_response = self.api.create_namespaced_virtual_machine_instance(
+                body,
+                namespace
+            )
+        except BaseException:
+            api_response = None
+            self.log.error(
+                'kubevirt.create_namespaced_virtual_machine_instance',
+                traceback.format_exc()
+            )
+
+        if api_response is None:
+            self.log.kubevirt(
+                'create',
+                'vmi',
+                False,
+                int(time.time() * 1000) - start_time
+            )
+            return False
+
+        self.log.kubevirt(
+            'create',
+            'vmi',
+            True,
+            int(time.time() * 1000) - start_time
+        )
+
+        return True
+
     def get_virtual_machine_instance_mo(self, cache_enabled=True):
         if cache_enabled:
             if self.virtual_machine_instance_mo is not None:

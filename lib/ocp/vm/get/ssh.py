@@ -30,7 +30,8 @@ class OcpVmGetSsh():
             deployment['ssh']['username'],
             port=node_port,
             password=deployment['ssh']['password'],
-            endpoint_type=deployment['ssh']['type']
+            endpoint_type=deployment['ssh']['type'],
+            log_id=self.log_id
         )
         if ssh_handler is None:
             self.my_output.error(

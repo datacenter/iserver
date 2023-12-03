@@ -4,6 +4,8 @@ import threading
 import traceback
 import click
 
+from lib.nso import output as nso_output
+
 from menu import validations
 from menu import progress
 
@@ -24,8 +26,7 @@ class ErrorExit(Exception):
 @click.option("--port", "ncs_port", default=8080, help="NSO Port")
 @click.option("--username", "ncs_username", default='', help="NSO Username")
 @click.option("--password", "ncs_password", default='', help="NSO Password")
-@click.option("--nfvo", "nfvo_version", type=click.Choice(['3.x', '4.x'], case_sensitive=False), default='4.x', show_default=True, help="NFVO Version")
-@click.option("--etsi", "nfvo_etsi", is_flag=True, show_default=True, default=False, help="NFVO ETSI")
+@click.option("--nfvo", type=click.Choice(['3.x', 'etsi:4.x'], case_sensitive=False), default='etsi:4.x', show_default=True, help="NFVO Version")
 @click.option("--restconf_disabled", is_flag=True, show_default=True, default=False, help="Restconf")
 @click.option("--id", "vnfd_id", default='', callback=validations.empty_string_to_none, help="VNFD name")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -38,8 +39,7 @@ def get_nso_nfvo_vnfd_command(
         ncs_port,
         ncs_username,
         ncs_password,
-        nfvo_version,
-        nfvo_etsi,
+        nfvo,
         restconf_disabled,
         vnfd_id,
         output,
@@ -53,7 +53,12 @@ def get_nso_nfvo_vnfd_command(
     ctx.output = output
 
     try:
-        nso_handler = validations.validate_nso_ncs(
+        nso_output_handler = nso_output.NsoOutput(
+            verbose=False,
+            debug=devel,
+            log_id=ctx.run_id
+        )
+        nso_handler = validations.validate_nso_nfvo(
             ctx,
             ncs_name,
             ncs_protocol,
@@ -62,8 +67,7 @@ def get_nso_nfvo_vnfd_command(
             ncs_username,
             ncs_password,
             not restconf_disabled,
-            nfvo_version,
-            nfvo_etsi
+            nfvo
         )
         if nso_handler is None:
             raise ErrorExit
@@ -73,7 +77,7 @@ def get_nso_nfvo_vnfd_command(
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         if vnfd_id is None:
-            vnfds = nso_handler.get_vnfds()
+            vnfds = nso_handler.nfvo_handler.get_vnfds()
 
             ctx.busy = False
 
@@ -89,12 +93,12 @@ def get_nso_nfvo_vnfd_command(
 
             ctx.my_output.json_output(vnfds)
 
-            nso_handler.print_vnfds(
+            nso_output_handler.print_vnfds(
                 vnfds
             )
 
         else:
-            vnfd = nso_handler.get_vnfd(
+            vnfd = nso_handler.nfvo_handler.get_vnfd(
                 vnfd_id=vnfd_id
             )
 

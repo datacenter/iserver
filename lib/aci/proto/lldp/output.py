@@ -127,7 +127,7 @@ class ProtocolLldpOutput():
 
         headers = [
             'Node',
-            'Interface Id',
+            'Intf',
             'Severity',
             'Code',
             'Cause',
@@ -176,7 +176,7 @@ class ProtocolLldpOutput():
 
         headers = [
             'Node',
-            'Interface Id',
+            'Intf',
             'Severity',
             'Code',
             'Cause',
@@ -232,7 +232,7 @@ class ProtocolLldpOutput():
 
         headers = [
             'Node',
-            'Interface Id',
+            'Intf',
             'Severity',
             'Code',
             'Cause',

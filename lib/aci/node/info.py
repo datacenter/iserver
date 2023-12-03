@@ -88,10 +88,14 @@ class NodeInfo():
             info['podId'],
             info['name']
         )
+        info['full_name'] = '%s/%s' % (
+            info['apic'],
+            info['pod_node_name']
+        )
 
         info['roleUi'] = info['role']
         if info['nodeType'] == 'remote-leaf-wan':
-            info['roleUi'] = 'remote leaf'
+            info['roleUi'] = 'r-leaf'
 
         if info['adSt'] == 'on':
             info['__Output']['adSt'] = 'Green'

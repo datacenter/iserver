@@ -6,13 +6,24 @@ import requests
 from lib import output_helper
 from lib import log_helper
 
-from lib.nexus.lldp import Lldp
 from lib.nexus.cache import Cache
 from lib.nexus.ws import WebSocket
 
+from lib.nexus.lacp.main import Lacp
+from lib.nexus.lldp.main import Lldp
+from lib.nexus.mac.main import Mac
+from lib.nexus.server.main import Server
 
-class NxApi(Cache, Lldp, WebSocket):
-    def __init__(self, ip_address, username, password, verbose=False, debug=False, log_id=None, cache_enabled=False):
+
+class NxApi(
+        Cache,
+        Lacp,
+        Lldp,
+        Mac,
+        Server,
+        WebSocket
+        ):
+    def __init__(self, ip_address, username, password, name=None, verbose=False, debug=False, log_id=None, cache_enabled=False):
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
             verbose=verbose,
@@ -20,6 +31,9 @@ class NxApi(Cache, Lldp, WebSocket):
         )
         self.log = log_helper.Log(log_id=log_id)
 
+        self.nexus_name = name
+        if self.nexus_name is None:
+            self.nexus_name = ip_address
         self.nexus_ip = ip_address
         self.username = username
         self.password = password
@@ -28,9 +42,13 @@ class NxApi(Cache, Lldp, WebSocket):
         self.session_connected = False
         self.token = None
 
-        Lldp.__init__(self)
         Cache.__init__(self, cache_enabled)
         WebSocket.__init__(self, ip_address, debug=debug)
+
+        Lacp.__init__(self)
+        Lldp.__init__(self)
+        Mac.__init__(self)
+        Server.__init__(self)
 
     def __del__(self):
         self.disconnect()
@@ -126,8 +144,8 @@ class NxApi(Cache, Lldp, WebSocket):
 
         return success
 
-    def run_show_command(self, command):
-        if not self.is_connected():
+    def run_show_command(self, command, autoconnect=False):
+        if not self.is_connected(autoconnect=autoconnect):
             return None
 
         data = {

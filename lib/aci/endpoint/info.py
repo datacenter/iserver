@@ -132,12 +132,17 @@ class EndpointInfo():
             )
 
         info['fvIp'] = []
+        address = []
         for ip_managed_object in managed_object['fvIp']:
-            info['fvIp'].append(
-                self.get_endpoint_ip_info(
-                    ip_managed_object
-                )
+            ip_info = self.get_endpoint_ip_info(
+                ip_managed_object
             )
+            info['fvIp'].append(
+                ip_info
+            )
+            address.append(ip_info['addr'])
+
+        info['ip'] = ','.join(address)
 
         info['fvRsToVm'] = None
         if 'fvRsToVm' in managed_object and managed_object['fvRsToVm'] is not None:
@@ -205,6 +210,9 @@ class EndpointInfo():
             key = rule.split(':')[0]
             value = ':'.join(rule.split(':')[1:])
             key_found = False
+
+            if key == 'mac':
+                key_found = True
 
             if key == 'tenant':
                 key_found = True

@@ -11,19 +11,11 @@ class K8sSubscriptionInfo():
 
         info = {}
         info['__Output'] = {}
-        info['namespace'] = self.get(subscription_mo, 'metadata:namespace')
-        info['name'] = self.get(subscription_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+
+        metadata_info = self.get_metadata_info(
+            subscription_mo
         )
-        info['namespace_nameT'] = []
-        info['namespace_nameT'].append(
-            info['namespace']
-        )
-        info['namespace_nameT'].append(
-            info['name']
-        )
+        info.update(metadata_info)
 
         info['channel'] = self.get(subscription_mo, 'spec:channel')
         info['channelT'] = info['channel']
@@ -44,11 +36,6 @@ class K8sSubscriptionInfo():
             info['is_latest_csv'] = False
             info['csvTick'] = '\u2717'
             info['__Output']['csvTick'] = 'Red'
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(subscription_mo, 'metadata:creationTimestamp'),
-            on_error='--'
-        )
 
         return info
 
@@ -90,7 +77,7 @@ class K8sSubscriptionInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, subscription_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (subscription_info['namespace'], subscription_info['name'])):
                     return False
 
             if not key_found:

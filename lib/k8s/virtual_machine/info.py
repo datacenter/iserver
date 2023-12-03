@@ -12,12 +12,67 @@ class K8sVirtualMachineInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(virtual_machine_mo, 'metadata:namespace')
-        info['name'] = self.get(virtual_machine_mo, 'metadata:name')
-        info['namespace_name'] = '%s/%s' % (
-            info['namespace'],
-            info['name']
+        metadata_info = self.get_metadata_info(
+            virtual_machine_mo
         )
+        info.update(metadata_info)
+
+        info['dv'] = []
+        dvs_mo = self.get(virtual_machine_mo, 'spec:dataVolumeTemplates', on_error=[], on_none=[])
+        for dv_mo in dvs_mo:
+            dv_info = {}
+            dv_info['namespace'] = self.get(dv_mo, 'metadata:namespace')
+            dv_info['name'] = self.get(dv_mo, 'metadata:name')
+            dv_info['storage'] = self.get(dv_mo, 'spec:pvc:resources:requests:storage')
+            dv_info['source'] = '--'
+            pvc_source = self.get(dv_mo, 'spec:source:pvc')
+            if pvc_source is not None:
+                dv_info['source'] = 'pvc:%s:%s' % (
+                    self.get(pvc_source, 'namespace'),
+                    self.get(pvc_source, 'name')
+                )
+            info['dv'].append(
+                dv_info
+            )
+
+        info['cores'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:cores')
+        info['sockets'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:sockets')
+        info['threads'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:threads')
+        info['memory'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:resources:requests:memory')
+
+        info['interface'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:devices:interfaces', on_error=[], on_none=[])
+        for interface in info['interface']:
+            interface['info'] = interface['name']
+            if 'masquerade' in interface:
+                interface['info'] = '%s (masq)' % (interface['name'])
+            if 'sriov' in interface:
+                interface['info'] = '%s (sriov)' % (interface['name'])
+
+        info['disk'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:devices:disks', on_error=[], on_none=[])
+        for disk in info['disk']:
+            disk['info'] = disk['name']
+
+        info['created'] = self.get(virtual_machine_mo, 'status:ready', on_error=False, on_none=False)
+        if info['created']:
+            info['createdTick'] = '\u2713'
+            info['__Output']['createdTick'] = 'Green'
+        else:
+            info['createdTick'] = '\u2717'
+            info['__Output']['createdTick'] = 'Red'
+
+        info['ready'] = self.get(virtual_machine_mo, 'status:ready', on_error=False, on_none=False)
+        if info['ready']:
+            info['readyTick'] = '\u2713'
+            info['__Output']['readyTick'] = 'Green'
+        else:
+            info['readyTick'] = '\u2717'
+            info['__Output']['readyTick'] = 'Red'
+
+        info['status'] = self.get(virtual_machine_mo, 'status:printableStatus')
+        if info['status'] == 'Running':
+            info['__Output']['status'] = 'Green'
+        if info['status'] == 'Provisioning':
+            info['__Output']['status'] = 'Yellow'
 
         return info
 
@@ -55,7 +110,7 @@ class K8sVirtualMachineInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_tenant_name(value, virtual_machine_info['namespace_name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (virtual_machine_info['namespace'], virtual_machine_info['name'])):
                     return False
 
             if key == 'namespace':

@@ -30,7 +30,7 @@ class PolicyGeneralAaeOutput():
             'infraRsDomP.domainType',
             'infraRsDomP.domainName',
             'infraRsDomP.state',
-            'infraRsFuncToEpg.epgName',
+            'infraRsFuncToEpg.epgEncap',
             'infraRtAttEntP.typeName',
             'infraRtAttEntP.name'
         ]

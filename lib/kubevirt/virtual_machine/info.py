@@ -438,6 +438,9 @@ class KubevirtVirtualMachineInfo():
                         )
                     )
 
+                    if initial_state == 'ErrorUnschedulable':
+                        return False
+
     def is_virtual_machine_stopped(self, namespace, name, cache_enabled=True):
         vm_info = self.get_virtual_machine(
             namespace,

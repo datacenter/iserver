@@ -129,6 +129,9 @@ def get_k8s_profile_command(
                 title=True
             )
 
+        ctx.my_output.default('Filter: namespace, name', before_newline=True)
+        ctx.my_output.default('View:   state (def), boot, error, all')
+
     except NoResultExit:
         ctx.busy = False
         sys.exit(666)

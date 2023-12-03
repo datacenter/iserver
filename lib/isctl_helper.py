@@ -38,6 +38,7 @@ class Isctl():
         if escape_update:
             if '\'' in command:
                 # isctl create ippool pool --Name aaa --Organization default --IpV4Blocks "[{\"From\": \"10.1.1.10\", \"To\": \"10.1.1.14\"}]"
+                command = command.replace('"', '\\"')
                 command = command.replace('\'', '"')
                 self.log.debug('isctl_helper.command_fixup_windows', command)
 
@@ -46,7 +47,6 @@ class Isctl():
     def isctl_exec_windows(self, command, json_conversion=False, retry=3):
         try:
             command = self.command_fixup_windows(command)
-
             for i in range(0, retry):
                 start = int(time.time() * 1000)
                 with subprocess.Popen(
@@ -127,8 +127,8 @@ class Isctl():
         if not success:
             self.log.cli(command, False, duration)
             try:
-                self.log.error('isctl_helper.create', command)
-                self.log.error('isctl_helper.create', response)
+                self.log.error('isctl_helper.get', command)
+                self.log.error('isctl_helper.get', response)
             except BaseException:
                 pass
             return None

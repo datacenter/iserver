@@ -71,6 +71,7 @@ def delete_k8s_pvc_command(
 
         pvcs = k8s_handlers.get_pvcs(
             object_filter=object_filter,
+            usage_info=True,
             cache_enabled=False
         )
 
@@ -80,12 +81,31 @@ def delete_k8s_pvc_command(
             ctx.my_output.default('No object found')
             return
 
-        if not no_confirm:
-            k8s_output_handler.print_pvcs(
-                pvcs,
-                title=True
-            )
+        k8s_output_handler.print_pvcs_with_usage(
+            pvcs,
+            title=True
+        )
 
+        delete_allowed = True
+        for pvc in pvcs:
+            if pvc['used']:
+                ctx.my_output.error(
+                    'PVC %s/%s is used and cannot be deleted' % (pvc['namespace'], pvc['name'])
+                )
+                delete_allowed = False
+                continue
+
+            if pvc['owner'] is not None:
+                ctx.my_output.error(
+                    'PVC %s/%s is owned by different object: %s' % (pvc['namespace'], pvc['name'], pvc['owner'])
+                )
+                delete_allowed = False
+                continue
+
+        if not delete_allowed:
+            raise ErrorExit
+
+        if not no_confirm:
             value = input('Confirm (Y/N) ')
             if value.lower() != 'y':
                 return
@@ -94,8 +114,12 @@ def delete_k8s_pvc_command(
         bar_handler.goto(0)
 
         success = True
+        used = []
         for pvc_info in pvcs:
-            success = success and k8s_handlers.delete_namespaced_pvc(pvc_info['namespace'], pvc_info['name'])
+            if pvc_info['used']:
+                used.append(pvc_info)
+            else:
+                success = success and k8s_handlers.delete_namespaced_pvc(pvc_info['namespace'], pvc_info['name'])
             bar_handler.next()
 
         bar_handler.finish()
@@ -103,6 +127,9 @@ def delete_k8s_pvc_command(
         if not success:
             ctx.my_output.error('Some delete api calls failed')
             raise ErrorExit
+
+        if len(used) > 0:
+            ctx.my_output.default('Used pvcs not deleted')
 
         ctx.my_output.default('Done')
 

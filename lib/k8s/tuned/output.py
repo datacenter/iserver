@@ -14,6 +14,11 @@ class K8sTunedOutput():
             self.my_output.default('None')
             return
 
+        info = self.my_output.prepare_list(
+            info,
+            empty=['owner']
+        )
+
         order = [
             'namespace',
             'name',

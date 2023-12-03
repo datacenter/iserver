@@ -1,7 +1,7 @@
 import time
 
 
-class VnfdGet():
+class NfvoVnfdGet():
     def __init__(self):
         pass
 
@@ -25,19 +25,19 @@ class VnfdGet():
         header = 'Accept'
         media_type = 'application/vnd.yang.collection'
         if self.nfvo_version == '3.x':
-            if self.restconf_enabled:
+            if self.rest_handler.restconf_enabled:
                 datapath = ('tailf-etsi-rel2-nfvo:nfvo', 'vnfd')
             else:
                 datapath = ('nfvo', 'vnfd')
 
         if self.nfvo_version == '4.x':
-            if self.restconf_enabled:
+            if self.rest_handler.restconf_enabled:
                 datapath = ('etsi-nfv-descriptors:nfv', 'vnfd')
             else:
                 datapath = ('nfv', 'vnfd')
 
         trace = 'nfvo.get_vnfds.%s' % (int(time.time() * 1000))
-        success, response = self.api_handler.get_data(
+        success, response = self.rest_handler.get_data(
             output_format,
             datastore,
             datapath,
@@ -72,13 +72,13 @@ class VnfdGet():
 
         if self.nfvo_version == '3.x':
             media_type = 'application/vnd.yang.data'
-            if self.restconf_enabled:
+            if self.rest_handler.restconf_enabled:
                 datapath = ('tailf-etsi-rel2-nfvo:nfvo', 'vnfd', vnfd_id)
             else:
                 datapath = ('nfvo', 'vnfd', vnfd_id)
 
         if self.nfvo_version == '4.x':
-            if self.restconf_enabled:
+            if self.rest_handler.restconf_enabled:
                 media_type = 'application/vnd.yang.collection'
                 datapath = ('etsi-nfv-descriptors:nfv', 'vnfd=%s' % (vnfd_id))
             else:
@@ -87,7 +87,7 @@ class VnfdGet():
                 params = 'deep'
 
         trace = 'nfvo.get_vnfd.%s' % (int(time.time() * 1000))
-        success, response = self.api_handler.get_data(
+        success, response = self.rest_handler.get_data(
             output_format,
             datastore,
             datapath,

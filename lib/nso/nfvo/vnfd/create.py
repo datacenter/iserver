@@ -1,7 +1,7 @@
 import time
 
 
-class VnfdCreate():
+class NfvoVnfdCreate():
     def __init__(self):
         pass
 

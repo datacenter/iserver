@@ -12,8 +12,10 @@ class K8sResourceQuotaInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(resource_quota_mo, 'metadata:namespace')
-        info['name'] = self.get(resource_quota_mo, 'metadata:name')
+        metadata_info = self.get_metadata_info(
+            resource_quota_mo
+        )
+        info.update(metadata_info)
 
         return info
 
@@ -56,7 +58,7 @@ class K8sResourceQuotaInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, resource_quota_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (resource_quota_info['namespace'], resource_quota_info['name'])):
                     return False
 
             if not key_found:

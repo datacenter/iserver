@@ -12,21 +12,10 @@ class K8sTunedInfo():
         info = {}
         info['__Output'] = {}
 
-        info['namespace'] = self.get(
-            tuned_mo,
-            'metadata:namespace'
+        metadata_info = self.get_metadata_info(
+            tuned_mo
         )
-
-        info['name'] = self.get(
-            tuned_mo,
-            'metadata:name'
-        )
-
-        owner = self.get_owner(
-            tuned_mo,
-            'metadata:ownerReferences'
-        )
-        info.update(owner)
+        info.update(metadata_info)
 
         info['profile'] = self.get(
             tuned_mo,
@@ -47,11 +36,6 @@ class K8sTunedInfo():
             'spec:recommend',
             on_error=[],
             on_none=[]
-        )
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(tuned_mo, 'metadata:creationTimestamp'),
-            on_error='--'
         )
 
         return info
@@ -95,7 +79,7 @@ class K8sTunedInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, tuned_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (tuned_info['namespace'], tuned_info['name'])):
                     return False
 
             if not key_found:

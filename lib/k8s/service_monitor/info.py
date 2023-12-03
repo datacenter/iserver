@@ -12,6 +12,11 @@ class K8sServiceMonitorInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            service_monitor_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_service_monitors_info(self, cache_enabled=True):

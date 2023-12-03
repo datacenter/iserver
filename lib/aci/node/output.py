@@ -17,10 +17,11 @@ class NodeOutput():
 
         order = []
         if self.is_apic:
-            order = ['apic']
+            order = ['full_name']
+        else:
+            order = ['pod_node_name']
 
         order = order + [
-            'pod_node_name',
             'id',
             'address',
             'adSt',
@@ -31,16 +32,12 @@ class NodeOutput():
             'version'
         ]
 
-        headers = []
-        if self.is_apic:
-            headers = ['Apic']
-
-        headers = headers + [
+        headers = [
             'Node Name',
-            'Node ID',
+            'ID',
             'VTEP IP',
-            'Admin State',
-            'Fabric State',
+            'Admin',
+            'Fabric',
             'Role',
             'Model',
             'Serial',

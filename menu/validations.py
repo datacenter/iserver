@@ -1,11 +1,8 @@
 import os
-import subprocess
 import socket
 import traceback
 
 import click
-
-from menu import common
 
 from lib import context
 from lib import file_helper
@@ -13,9 +10,6 @@ from lib import iaccount_helper
 from lib import ip_helper
 from lib import my_servers_helper
 
-from lib.intersight import compute
-from lib.intersight import compute_info
-from lib.intersight import compute_output
 from lib.intersight import organization
 from lib.intersight import scu
 from lib.intersight import os_image
@@ -27,6 +21,8 @@ from lib.aci import settings as aci_settings
 from lib.k8s import settings as k8s_settings
 from lib.k8s import main as k8s
 from lib.kubevirt import main as kubevirt
+from lib.osp import settings as osp_settings
+from lib.osp import main as osp
 
 from lib.nexus import settings as nexus_settings
 from lib.nexus import nxapi
@@ -38,31 +34,8 @@ from lib.ocp.vm import validate as ocp_deployment_validate
 from lib.ucsm import settings as ucsm_settings
 from lib.vc import vcenter
 from lib.vc import settings as vc_settings
-
-
-def validate_isctl():
-    try:
-        command = 'isctl version'
-        with subprocess.Popen(
-            args=command,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            shell=True,
-            env=os.environ
-        ) as process:
-            output, error = process.communicate()
-            if process.returncode == 0:
-                success = True
-                reason = None
-            else:
-                success = False
-                reason = 'isctl command execution failed'
-
-    except BaseException:
-        success = False
-        reason = 'Exception in running isctl command'
-
-    return success, reason
+from lib.linux import main as linux
+from lib.linux import settings as linux_settings
 
 
 def validate_iaccount(ctx, param, value):
@@ -70,25 +43,14 @@ def validate_iaccount(ctx, param, value):
     if not iaccount_handler.is_isctl():
         raise click.BadParameter('isctl not found')
 
-    if not iaccount_handler.is_isctl_configured():
-        ctx.my_output.error('isctl not configured')
-        ctx.my_output.default('\niserver requires isctl that is configured to work with Intersight\n')
-        ctx.my_output.default('Notes')
-        ctx.my_output.default('- follow isctl configuration instructions from https://github.com/cgascoig/isctl')
-        ctx.my_output.default('- iserver expects $HOME/.isctl.yaml file with isctl configuration parameters')
-        ctx.my_output.default('')
-        raise click.BadParameter('configure isctl first')
+    if value is None:
+        raise click.BadParameter('Define iaccount value')
 
-    if not iaccount_handler.initialize_iaccount():
-        raise click.BadParameter('iaccount initialization failure')
-
-    success, reason = validate_isctl()
-    if not success:
-        raise click.BadParameter(reason)
-
-    intersight_handler = iaccount_helper.IntersightAccount()
-    if not intersight_handler.is_iaccount_valid(value):
+    if not iaccount_handler.is_iaccount_valid(value):
         raise click.BadParameter('Invalid iaccount value')
+
+    iaccount_handler.set_default_iaccount(value)
+
     return value
 
 
@@ -133,7 +95,7 @@ def validate_fqdn(value):
 
 
 def validate_ip(ctx, param, value):
-    if len(value) > 0:
+    if value is not None and len(value) > 0:
         if not ip_helper.is_valid_ipv4_address(value):
             if not validate_fqdn(value):
                 raise click.BadParameter('Invalid IPv4 address: %s' % (value))
@@ -977,53 +939,177 @@ def validate_nexus_name(ctx, param, value):
         return None
 
     nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
-    nexus_switch = nexus_settings_handler.get_nexus_switch(value)
-    if nexus_switch is None:
-        switches = nexus_settings_handler.get_nexus_switch_names()
-        if switches is None:
-            raise click.BadParameter('Invalid switch name')
-        raise click.BadParameter('Invalid switch name. Define one of %s' % (','.join(switches)))
+    nexus_device = nexus_settings_handler.get_nexus_device(value)
+    if nexus_device is None:
+        devices = nexus_settings_handler.get_nexus_device_names()
+        if devices is None:
+            raise click.BadParameter('Invalid device name')
+        raise click.BadParameter('Invalid device name. Define one of %s' % (','.join(devices)))
 
-    return nexus_switch
+    return nexus_device
 
 
-def validate_nexus_switch(ctx, switch_obj, switch_ip, switch_username, switch_password, debug=False):
+def validate_nexus_any_name(ctx, param, value):
+    nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
+    selected_devices = []
+    names = []
+
+    if len(value) == 0:
+        default_nexus = nexus_settings_handler.get_default_nexus_device()
+        if default_nexus is not None:
+            value = default_nexus
+
+    for parameter in value.split(','):
+        if parameter.lower() in ['any', 'all']:
+            all_devices = nexus_settings_handler.get_nexus_devices()
+            if all_devices is not None:
+                for device in all_devices:
+                    if device['name'] not in names:
+                        names.append(
+                            device['name']
+                        )
+                        selected_devices.append(
+                            device
+                        )
+
+            continue
+
+        if parameter.startswith('dom:'):
+            domain_devices = nexus_settings_handler.get_nexus_domain_devices(
+                parameter[4:]
+            )
+            if domain_devices is not None:
+                for domain_device in domain_devices:
+                    if domain_device['name'] not in names:
+                        names.append(
+                            domain_device['name']
+                        )
+                        selected_devices.append(
+                            domain_device
+                        )
+
+            continue
+
+        device = nexus_settings_handler.get_nexus_device(parameter)
+        if device is not None:
+            nexus_settings_handler.set_default_nexus_device(
+                device['name']
+            )
+
+        if device is None:
+            devices = nexus_settings_handler.get_nexus_device_names()
+            if devices is None:
+                raise click.BadParameter('Invalid nexus name')
+            devices.append('any')
+            raise click.BadParameter('Invalid nexus name. Define one of %s' % (','.join(devices)))
+
+        if device['name'] not in names:
+            names.append(
+                device['name']
+            )
+            selected_devices.append(
+                device
+            )
+
+    return selected_devices
+
+
+def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_password, debug=False):
     nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
 
-    if switch_obj is None and len(switch_ip) == 0 and len(switch_username) == 0 and len(switch_password) == 0:
-        switch_name = nexus_settings_handler.get_default_nexus_switch()
-        if switch_name is not None:
-            switch_obj = nexus_settings_handler.get_nexus_switch(switch_name)
+    if device_obj is None and len(device_ip) == 0 and len(device_username) == 0 and len(device_password) == 0:
+        device_name = nexus_settings_handler.get_default_nexus_device()
+        if device_name is not None:
+            device_obj = nexus_settings_handler.get_nexus_device(device_name)
 
-    if switch_obj is not None:
-        switch_ip = switch_obj['ip']
-        switch_username = switch_obj['username']
-        switch_password = switch_obj['password']
-        nexus_settings_handler.set_default_nexus_switch(
-            switch_obj['name']
+    device_name = None
+    if device_obj is not None:
+        device_ip = device_obj['ip']
+        device_username = device_obj['username']
+        device_password = device_obj['password']
+        device_name = device_obj['name']
+        nexus_settings_handler.set_default_nexus_device(
+            device_obj['name']
         )
 
         if ctx.output == 'default':
-            ctx.my_output.default('Switch: %s' % (switch_obj['name']))
+            ctx.my_output.default('Switch: %s' % (device_obj['name']))
 
-    if switch_obj is None:
-        if len(switch_ip) == 0 or len(switch_username) == 0 or len(switch_password) == 0:
-            ctx.my_output.error('Define switch name or ip/username/password')
+    if device_obj is None:
+        if len(device_ip) == 0 or len(device_username) == 0 or len(device_password) == 0:
+            ctx.my_output.error('Define device name or ip/username/password')
             return None
 
     nexus_handler = nxapi.NxApi(
-        switch_ip,
-        switch_username,
-        switch_password,
+        device_ip,
+        device_username,
+        device_password,
+        name=device_name,
         log_id=ctx.run_id,
         debug=debug
     )
 
     if not nexus_handler.is_connected(autoconnect=True):
-        ctx.my_output.error('Failed to connect to switch')
+        ctx.my_output.error('Failed to connect to device')
         return None
 
     return nexus_handler
+
+
+def validate_nexus_devices(ctx, device_objs, device_ip, device_username, device_password, show_selected=True, debug=False):
+    nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
+
+    if len(device_objs) == 0 and len(device_ip) == 0 and len(device_username) == 0 and len(device_password) == 0:
+        device_name = nexus_settings_handler.get_default_nexus_device()
+        if device_name is not None:
+            device_objs.append(
+                nexus_settings_handler.get_nexus_device(device_name)
+            )
+
+    if len(device_ip) > 0 and len(device_username) > 0 and len(device_password) > 0:
+        device_objs.append(
+            dict(
+                name=device_ip,
+                ip=device_ip,
+                username=device_username,
+                password=device_password
+            )
+        )
+
+    if len(device_objs) == 0:
+        ctx.my_output.error('Select at least one device')
+        return None
+
+    device_handlers = []
+    names = []
+    for device_obj in device_objs:
+        device_name = device_obj['name']
+        device_ip = device_obj['ip']
+        device_username = device_obj['username']
+        device_password = device_obj['password']
+
+        nexus_handler = nxapi.NxApi(
+            device_ip,
+            device_username,
+            device_password,
+            name=device_name,
+            log_id=ctx.run_id,
+            debug=debug
+        )
+
+        names.append(device_obj['name'])
+        device_handlers.append(
+            dict(
+                name=device_obj['name'],
+                handler=nexus_handler
+            )
+        )
+
+    if show_selected and ctx.output == 'default':
+        if len(names) > 0:
+            ctx.my_output.default('Device: %s' % (','.join(names)))
+
+    return device_handlers
 
 
 def validate_ucsm_name(ctx, param, value):
@@ -1145,7 +1231,7 @@ def empty_string_to_none(ctx, param, value):
     return value
 
 
-def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False):
+def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=False):
     ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
 
     if cluster_name is None or cluster_name == '':
@@ -1154,10 +1240,10 @@ def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False):
             ctx.my_output.error('Define ocp cluster name')
             return None
 
-        if ctx.output == 'default':
+        if ctx.output == 'default' and not silent:
             ctx.my_output.default('Cluster: %s' % (cluster_name))
 
-    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name)
+    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
     if cluster_obj is None:
         ctx.my_output.error('Define valid ocp cluster name')
         names = ocp_settings_handler.get_ocp_cluster_names()
@@ -1172,13 +1258,65 @@ def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False):
     )
 
     ocp_handler = ocp.Ocp(
-        cluster_name,
+        cluster_obj['name'],
         verbose=verbose,
         debug=debug,
         log_id=ctx.run_id
     )
 
     return ocp_handler
+
+
+def get_ocp_cluster_settings(ctx, cluster_name, silent=False):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
+
+    if cluster_name is None or cluster_name == '':
+        cluster_name = ocp_settings_handler.get_default_cluster()
+        if cluster_name is None:
+            ctx.my_output.error('Define ocp cluster name')
+            names = ocp_settings_handler.get_ocp_cluster_names()
+            if names is not None:
+                for name in names:
+                    ctx.my_output.default('- %s' % (name))
+            return None
+
+        if ctx.output == 'default' and not silent:
+            ctx.my_output.default('Cluster: %s' % (cluster_name))
+
+        settings = ocp_settings_handler.get_ocp_cluster(cluster_name)
+        return settings
+
+    settings = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
+    if settings is None:
+        ctx.my_output.error('Define valid ocp cluster name')
+        names = ocp_settings_handler.get_ocp_cluster_names()
+        if names is not None:
+            for name in names:
+                ctx.my_output.default('- %s' % (name))
+        return None
+
+    ocp_settings_handler.set_default_cluster(
+        settings['name']
+    )
+
+    return settings
+
+
+def validate_ocp_cluster_settings(ctx, cluster_name, silent=False, mandatory=[]):
+    settings = get_ocp_cluster_settings(
+        ctx,
+        cluster_name,
+        silent=silent
+    )
+    if settings is None:
+        return None
+
+    for item in mandatory:
+        if item not in settings:
+            ctx.my_output.error('%s not defined for cluster %s' % (item, settings['name']))
+            return None
+
+    return settings
 
 
 def validate_ocp_node(ctx, ocp_handler, node_name):
@@ -1205,11 +1343,11 @@ def validate_ocp_cluster_name(ctx, param, cluster_name):
         if cluster_name is None:
             raise click.BadParameter('Define OCP cluster name')
 
-    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name)
+    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
     if cluster_obj is None:
         raise click.BadParameter('Define valid OCP cluster name')
 
-    return cluster_name
+    return cluster_obj['name']
 
 
 def validate_ocp_namespace_name(ctx, param, value):
@@ -1338,8 +1476,8 @@ def validate_ncs_name(ctx, param, value):
     return controller
 
 
-def validate_nso_ncs(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username, ncs_password, restconf_enabled, nfvo_version, nfvo_etsi):
-    nso_settings_handler = nso_settings.NsoSettings(log_id=None)
+def validate_nso_nfvo(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username, ncs_password, restconf_enabled, nfvo):
+    nso_settings_handler = nso_settings.NsoSettings(log_id=ctx.run_id)
 
     if ncs_obj is None and len(ncs_ip) == 0 and len(ncs_username) == 0 and len(ncs_password) == 0:
         ncs_name = nso_settings_handler.get_default_ncs()
@@ -1353,8 +1491,7 @@ def validate_nso_ncs(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username,
         ncs_username = ncs_obj['username']
         ncs_password = ncs_obj['password']
         restconf_enabled = ncs_obj['restconf_enabled']
-        nfvo_version = ncs_obj['nfvo_version']
-        nfvo_etsi = ncs_obj['nfvo_etsi']
+        nfvo = ncs_obj['nfvo']
         nso_settings_handler.set_default_ncs(
             ncs_obj['name']
         )
@@ -1374,8 +1511,51 @@ def validate_nso_ncs(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username,
         username=ncs_username,
         password=ncs_password,
         restconf_enabled=restconf_enabled,
-        nfvo_version=nfvo_version,
-        nfvo_etsi=nfvo_etsi,
+        nfvo=nfvo,
+        log_id=ctx.run_id
+    )
+
+    if not nso_handler.is_connected():
+        ctx.my_output.error('Failed to connect to NCS')
+        return None
+
+    return nso_handler
+
+
+def validate_nso(ctx, ncs_obj, ncs_protocol, ncs_ip, ncs_port, ncs_username, ncs_password, restconf_enabled):
+    nso_settings_handler = nso_settings.NsoSettings(log_id=ctx.run_id)
+
+    if ncs_obj is None and len(ncs_ip) == 0 and len(ncs_username) == 0 and len(ncs_password) == 0:
+        ncs_name = nso_settings_handler.get_default_ncs()
+        if ncs_name is not None:
+            ncs_obj = nso_settings_handler.get_nso_ncs(ncs_name)
+
+    if ncs_obj is not None:
+        ncs_protocol = ncs_obj['protocol']
+        ncs_ip = ncs_obj['ip']
+        ncs_port = ncs_obj['port']
+        ncs_username = ncs_obj['username']
+        ncs_password = ncs_obj['password']
+        restconf_enabled = ncs_obj['restconf_enabled']
+        nso_settings_handler.set_default_ncs(
+            ncs_obj['name']
+        )
+
+        if ctx.output == 'default':
+            ctx.my_output.default('NCS: %s' % (ncs_obj['name']))
+
+    if ncs_obj is None:
+        if len(ncs_ip) == 0 or len(ncs_username) == 0 or len(ncs_password) == 0:
+            ctx.my_output.error('Define ncs name or ip/username/password')
+            return None
+
+    nso_handler = nso.Nso(
+        ncs_protocol,
+        ncs_ip,
+        ncs_port,
+        username=ncs_username,
+        password=ncs_password,
+        restconf_enabled=restconf_enabled,
         log_id=ctx.run_id
     )
 
@@ -1516,17 +1696,18 @@ def validate_view(ctx, user_input, all_views, default, resolve):
     return views
 
 
-def validate_kubernetes_name(ctx, value, cluster_type=None):
+def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False):
     k8s_settings_handler = k8s_settings.K8sSettings(log_id=None)
-    if len(value) == 0:
+    if value is None or len(value) == 0:
         default_cluster_name = k8s_settings_handler.get_default_cluster()
         if default_cluster_name is not None:
-            ctx.my_output.default(
-                'Cluster: %s (type: %s)' % (
-                    default_cluster_name,
-                    k8s_settings_handler.get_k8s_cluster(default_cluster_name)['type']
+            if not silent:
+                ctx.my_output.default(
+                    'Cluster: %s (type: %s)' % (
+                        default_cluster_name,
+                        k8s_settings_handler.get_k8s_cluster(default_cluster_name)['type']
+                    )
                 )
-            )
             kubeconfig = k8s_settings_handler.get_k8s_cluster(default_cluster_name)['kubeconfig']
 
             cluster = k8s_settings_handler.get_k8s_cluster(default_cluster_name)
@@ -1549,9 +1730,10 @@ def validate_kubernetes_name(ctx, value, cluster_type=None):
                     )
                     return None
 
-            ctx.my_output.default(
-                'Cluster: %s (type: %s)' % (cluster['name'], cluster['type'])
-            )
+            if not silent:
+                ctx.my_output.default(
+                    'Cluster: %s (type: %s)' % (cluster['name'], cluster['type'])
+                )
             success = k8s_settings_handler.set_default_cluster(cluster['name'])
             if not success:
                 ctx.my_output.default(
@@ -1598,5 +1780,228 @@ def validate_kubevirt_name(ctx, value):
         ctx.my_output.error('Define cluster name')
         for cluster_name in cluster_names:
             ctx.my_output.default('- %s' % (cluster_name))
+
+    return None
+
+
+def validate_linux_name(ctx, server_name, no_cache=False):
+    linux_settings_handler = linux_settings.LinuxSettings(log_id=None)
+    if server_name is None:
+        default_server_name = linux_settings_handler.get_default_server()
+        if default_server_name is not None:
+            ctx.my_output.default(
+                'Server: %s' % (
+                    default_server_name
+                )
+            )
+            server = linux_settings_handler.get_linux_server(default_server_name)
+            if server is None:
+                ctx.my_output.error('Default server not found')
+                return None
+
+            return linux.Linux(
+                server['address'],
+                server['username'],
+                password=server['password'],
+                key_filename=server['key'],
+                server_name=server['name'],
+                no_cache=no_cache
+            )
+
+    if server_name is not None and len(server_name) > 0:
+        server = linux_settings_handler.get_linux_server(server_name, strict_match=False)
+        if server is not None:
+            ctx.my_output.default(
+                'Server: %s' % (server['name'])
+            )
+            success = linux_settings_handler.set_default_server(server['name'])
+            if not success:
+                ctx.my_output.default(
+                    '[Warning] Default server name set failed'
+                )
+
+            return linux.Linux(
+                server['address'],
+                server['username'],
+                password=server['password'],
+                key_filename=server['key'],
+                server_name=server['name'],
+                no_cache=no_cache
+            )
+
+    servers = linux_settings_handler.get_linux_servers()
+    if len(servers) == 0:
+        ctx.my_output.error('No linux server defined')
+        return None
+
+    ctx.my_output.error('Define linux server')
+    for server in servers:
+        ctx.my_output.default('- %s' % (server['name']))
+
+    return None
+
+
+def validate_linux_names(ctx, server_names, no_cache=False):
+    linux_settings_handler = linux_settings.LinuxSettings(log_id=None)
+    if len(server_names) == 0:
+        default_server_name = linux_settings_handler.get_default_server()
+        if default_server_name is not None:
+            ctx.my_output.default(
+                'Server: %s' % (
+                    default_server_name
+                )
+            )
+            default_server = linux_settings_handler.get_linux_server(default_server_name)
+            if default_server is None:
+                ctx.my_output.error('Default server not found')
+                return None
+
+            server_handler = linux.Linux(
+                default_server['address'],
+                default_server['username'],
+                password=default_server['password'],
+                key_filename=default_server['key'],
+                server_name=default_server['name'],
+                no_cache=no_cache,
+                log_id=ctx.run_id
+            )
+            return [server_handler]
+
+    all_servers = linux_settings_handler.get_linux_servers()
+    if len(all_servers) == 0:
+        ctx.my_output.error('No linux server defined')
+        return None
+
+    selected_server_names = []
+    for server_name in server_names:
+        for server in all_servers:
+            if server_name in server['name']:
+                if server['name'] not in selected_server_names:
+                    selected_server_names.append(server['name'])
+
+    if len(selected_server_names) == 0:
+        ctx.my_output.error('Define linux server')
+        for server in all_servers:
+            ctx.my_output.default('- %s' % (server['name']))
+        return None
+
+    server_handlers = []
+    server_handler_names = []
+    for server_name in selected_server_names:
+        server = linux_settings_handler.get_linux_server(server_name, strict_match=False)
+        if server is not None:
+            server_handler_names.append(server_name)
+            server_handler = linux.Linux(
+                server['address'],
+                server['username'],
+                password=server['password'],
+                key_filename=server['key'],
+                server_name=server['name'],
+                no_cache=no_cache,
+                log_id=ctx.run_id
+            )
+            server_handlers.append(server_handler)
+
+    if len(selected_server_names) == 0:
+        ctx.my_output.error('Define linux server')
+        for server in all_servers:
+            ctx.my_output.default('- %s' % (server['name']))
+        return None
+
+    if len(selected_server_names) == 1:
+        success = linux_settings_handler.set_default_server(server['name'])
+        if not success:
+            ctx.my_output.default(
+                '[Warning] Default server name set failed'
+            )
+
+    ctx.my_output.default(
+        'Server: %s' % (
+            ','.join(selected_server_names)
+        )
+    )
+    return server_handlers
+
+
+def validate_helm_chart(ctx, values_filename):
+    chart_info = {}
+    chart_info['directory'] = os.path.dirname(values_filename)
+    chart_info['values'] = values_filename
+
+    if not os.path.isfile(chart_info['values']):
+        ctx.my_output.error('Values file not found: %s' % (chart_info['values']))
+        return None
+
+    if file_helper.get_file_yaml(chart_info['values']) is None:
+        ctx.my_output.error('File should be YAML: %s' % (chart_info['values']))
+        return None
+
+    chart_filename = os.path.join(
+        chart_info['directory'],
+        'Chart.yaml'
+    )
+
+    if not os.path.isfile(chart_filename):
+        ctx.my_output.error('Chart file not found: %s' % (chart_filename))
+        return None
+
+    chart_definition = file_helper.get_file_yaml(chart_filename)
+    if chart_definition is None:
+        ctx.my_output.error('File should be YAML: %s' % (chart_filename))
+        return None
+
+    chart_info['chart'] = chart_definition['name']
+    chart_info['version'] = chart_definition['version']
+    chart_info['appVersion'] = chart_definition['appVersion']
+
+    templates_directory = os.path.join(chart_info['directory'], 'templates')
+    if not os.path.isdir(templates_directory):
+        ctx.my_output.error('Templates directory not found: %s' % (templates_directory))
+        return None
+
+    charts_directory = os.path.join(chart_info['directory'], 'charts')
+    if not os.path.isdir(charts_directory):
+        ctx.my_output.error('Charts directory not found: %s' % (charts_directory))
+        return None
+
+    return chart_info
+
+
+def validate_osp_name(ctx, value):
+    osp_settings_handler = osp_settings.OspSettings(log_id=None)
+    if value is None or len(value) == 0:
+        default_cluster_name = osp_settings_handler.get_default_cluster()
+        if default_cluster_name is not None:
+            ctx.my_output.default(
+                'Cluster: %s (type: %s)' % (
+                    default_cluster_name,
+                    osp_settings_handler.get_openstack_cluster(default_cluster_name)['type']
+                )
+            )
+            openrc = osp_settings_handler.get_openstack_cluster(default_cluster_name)['openrc']
+            cert = osp_settings_handler.get_openstack_cluster(default_cluster_name)['cert']
+            return osp.Osp(openrc_filename=openrc, cert_filename=cert, log_id=ctx.run_id)
+
+    if len(value) > 0:
+        cluster = osp_settings_handler.get_openstack_cluster(value, strict_match=False)
+        if cluster is not None:
+            ctx.my_output.default(
+                'Cluster: %s' % (cluster['name'])
+            )
+            success = osp_settings_handler.set_default_cluster(cluster['name'])
+            if not success:
+                ctx.my_output.default(
+                    '[Warning] Default osp cluster name set failed'
+                )
+
+            return osp.Osp(openrc_filename=cluster['openrc'], cert_filename=cluster['cert'], log_id=ctx.run_id)
+
+    clusters = osp_settings_handler.get_openstack_clusters()
+    if len(clusters) == 0:
+        ctx.my_output.error('No cluster defined')
+    else:
+        ctx.my_output.error('Define cluster name')
+        for cluster in clusters:
+            ctx.my_output.default('- %s' % (cluster['name']))
 
     return None

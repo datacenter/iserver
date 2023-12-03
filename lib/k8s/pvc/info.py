@@ -22,8 +22,11 @@ class K8sPvcInfo():
         info = {}
         info['__Output'] = {}
 
-        info['name'] = self.get(pvc_mo, 'metadata:name')
-        info['namespace'] = self.get(pvc_mo, 'metadata:namespace')
+        metadata_info = self.get_metadata_info(
+            pvc_mo,
+            exclude_annotations=['cdi.kubevirt.io/storage.clone.token']
+        )
+        info.update(metadata_info)
 
         info['access_modes'] = self.get(pvc_mo, 'status:access_modes', on_error=[], on_none=[])
         info['access_modes_string'] = ','.join(
@@ -48,40 +51,6 @@ class K8sPvcInfo():
             self.get(pvc_mo, 'metadata:annotations')
         )
 
-        owner_references = self.get(
-            pvc_mo,
-            'metadata:owner_references',
-            on_error=[],
-            on_none=[]
-        )
-
-        info['owner_kind'] = None
-        info['owner_name'] = None
-
-        if len(owner_references) == 1:
-            info['owner_kind'] = self.get(
-                owner_references[0],
-                'kind'
-            )
-
-            info['owner_name'] = self.get(
-                owner_references[0],
-                'name'
-            )
-
-        if info['owner_kind'] is None or info['owner_name'] is None:
-            info['owner'] = '--'
-        else:
-            info['owner'] = '%s/%s' % (
-                info['owner_kind'],
-                info['owner_name']
-            )
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(pvc_mo, 'metadata:creation_timestamp'),
-            on_error='--'
-        )
-
         return info
 
     def match_pvc(self, pvc_info, object_filter):
@@ -100,7 +69,7 @@ class K8sPvcInfo():
 
             if key == 'name':
                 key_found = True
-                if not filter_helper.match_string(value, pvc_info['name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (pvc_info['namespace'], pvc_info['name'])):
                     return False
 
             if not key_found:
@@ -131,9 +100,14 @@ class K8sPvcInfo():
                 pvc_info
             )
 
+        self.log.k8s_mo(
+            'pvc.info',
+            self.pvc
+        )
+
         return self.pvc
 
-    def get_pvcs(self, object_filter=None, pv_info=False, return_mo=False, cache_enabled=True):
+    def get_pvcs(self, object_filter=None, pv_info=False, usage_info=False, return_mo=False, cache_enabled=True):
         all_pvcs = self.get_pvcs_info(cache_enabled=cache_enabled)
         if all_pvcs is None:
             return None
@@ -162,6 +136,36 @@ class K8sPvcInfo():
                     pvc_info['info']['__Output']['volume_phase'] = pvc_pv_info['__Output']['phase']
                     pvc_info['info']['volume_phase'] = pvc_pv_info['phase']
 
+            if usage_info:
+                pvc_info['info']['usage_pod'] = []
+                pvc_info['info']['usage_vmi'] = []
+                pvc_info['info']['used'] = False
+                pvc_info['info']['usedTick'] = '\u2717'
+                pvc_info['info']['__Output']['usedTick'] = 'Red'
+
+                pods = self.get_pods(
+                    object_filter=['pvc:%s' % (pvc_info['info']['namespace_name'])]
+                )
+                if pods is not None:
+                    for pod in pods:
+                        pvc_info['info']['usage_pod'].append(
+                            pod['namespace_name']
+                        )
+
+                vmis = self.get_virtual_machine_instances(
+                    object_filter=['pvc:%s' % (pvc_info['info']['namespace_name'])]
+                )
+                if vmis is not None:
+                    for vmi in vmis:
+                        pvc_info['info']['usage_vmi'].append(
+                            vmi['namespace_name']
+                        )
+
+                if len(pvc_info['info']['usage_pod']) > 0 or len(pvc_info['info']['usage_vmi']) > 0:
+                    pvc_info['info']['used'] = True
+                    pvc_info['info']['usedTick'] = '\u2713'
+                    pvc_info['info']['__Output']['usedTick'] = 'Green'
+
             pvcs.append(
                 pvc_info['info']
             )
@@ -173,7 +177,13 @@ class K8sPvcInfo():
             return False
         return True
 
-    def get_pvc(self, namespace, name, return_mo=False, cache_enabled=True):
+    def is_pvc_used(self, namespace, name, cache_enabled=True):
+        pvc_info = self.get_pvc(namespace, name, usage_info=True, cache_enabled=cache_enabled)
+        if pvc_info is None:
+            return False
+        return pvc_info['used']
+
+    def get_pvc(self, namespace, name, pv_info=False, usage_info=False, return_mo=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'namespace:%s' % (namespace)
@@ -183,6 +193,8 @@ class K8sPvcInfo():
         )
         pvcs = self.get_pvcs(
             object_filter=object_filter,
+            pv_info=pv_info,
+            usage_info=usage_info,
             return_mo=return_mo,
             cache_enabled=cache_enabled
         )
@@ -194,7 +206,7 @@ class K8sPvcInfo():
 
         return None
 
-    def wait_pvc_bound(self, namespace, name, max_time=300):
+    def wait_pvc_bound(self, namespace, name, max_time=60, log_error_on_timeout=True):
         start_time = int(time.time())
         while True:
             pvc_info = self.get_pvc(
@@ -208,10 +220,11 @@ class K8sPvcInfo():
 
             duration = int(time.time()) - start_time
             if duration > max_time:
-                self.log.error(
-                    'k8s.wait_pvc_bound',
-                    'Max time reached'
-                )
+                if log_error_on_timeout:
+                    self.log.error(
+                        'k8s.wait_pvc_bound',
+                        'Max time reached: %s/%s' % (namespace, name)
+                    )
                 return False
 
             time.sleep(5)

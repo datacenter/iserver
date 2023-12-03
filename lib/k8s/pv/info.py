@@ -20,7 +20,10 @@ class K8sPvInfo():
         info = {}
         info['__Output'] = {}
 
-        info['name'] = self.get(pv_mo, 'metadata:name')
+        metadata_info = self.get_metadata_info(
+            pv_mo
+        )
+        info.update(metadata_info)
 
         info['access_modes'] = self.get(pv_mo, 'spec:access_modes', on_error=[], on_none=[])
         info['access_modes_string'] = ','.join(
@@ -34,11 +37,6 @@ class K8sPvInfo():
 
         info['pvc_namespace'] = self.get(pv_mo, 'spec:claim_ref:namespace')
         info['pvc_name'] = self.get(pv_mo, 'spec:claim_ref:name')
-
-        info['age'] = self.convert_timestamp_to_age(
-            self.get(pv_mo, 'metadata:creation_timestamp'),
-            on_error='--'
-        )
 
         info['phase'] = self.get(pv_mo, 'status:phase')
         if info['phase'] is not None and info['phase'] == 'Bound':
@@ -69,7 +67,7 @@ class K8sPvInfo():
 
             if key == 'pvc-name':
                 key_found = True
-                if not filter_helper.match_string(value, pv_info['pvc_name']):
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (pv_info['pvc_namespace'], pv_info['pvc_name'])):
                     return False
 
             if not key_found:

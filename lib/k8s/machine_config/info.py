@@ -18,7 +18,7 @@ class K8sMachineConfigInfo():
 
         info['generated_by'] = self.get(machine_config_mo, 'metadata:annotations:machineconfiguration.openshift.io/generated-by-controller-version', on_error='--', on_none='--')
 
-        owner = self.get_owner(
+        owner = self.get_metadata_owner_info(
             machine_config_mo,
             'metadata:ownerReferences'
         )
@@ -148,12 +148,38 @@ class K8sMachineConfigInfo():
 
         return self.machine_config
 
+    def filter_machine_config_label(self, labels, label_filter):
+        new_labels = {}
+
+        if len(label_filter.split(':')) > 2:
+            return new_labels
+
+        if len(label_filter.split(':')) == 1:
+            label_filter_key = label_filter
+            label_filter_value = None
+
+        if len(label_filter.split(':')) == 2:
+            (label_filter_key, label_filter_value) = label_filter.split(':')
+
+        for lkey in labels:
+            if filter_helper.match_string(label_filter_key, lkey):
+                if label_filter_value is None:
+                    new_labels[lkey] = labels[lkey]
+                    continue
+
+                if filter_helper.match_string(label_filter_value, labels[lkey]):
+                    new_labels[lkey] = labels[lkey]
+                    continue
+
+        return new_labels
+
     def match_machine_config(self, machine_config_info, object_filter):
         if object_filter is None or len(object_filter) == 0:
             return True
 
         for rule in object_filter:
-            (key, value) = rule.split(':')
+            key = rule.split(':')[0]
+            value = ':'.join(rule.split(':')[1:])
 
             key_found = False
 
@@ -171,6 +197,15 @@ class K8sMachineConfigInfo():
             if key == 'content':
                 key_found = True
 
+            if key == 'label':
+                key_found = True
+                filtered_labels = self.filter_machine_config_label(
+                    machine_config_info['label'],
+                    value
+                )
+                if len(filtered_labels) == 0:
+                    return False
+
             if not key_found:
                 self.log.error(
                     'match_machine_config',
@@ -184,7 +219,8 @@ class K8sMachineConfigInfo():
             return True
 
         for rule in object_filter:
-            (key, value) = rule.split(':')
+            key = rule.split(':')[0]
+            value = ':'.join(rule.split(':')[1:])
 
             key_found = False
 
@@ -204,6 +240,9 @@ class K8sMachineConfigInfo():
                 if not filter_helper.match_string(value, machine_config_file_info['content']):
                     return False
 
+            if key == 'label':
+                key_found = True
+
             if not key_found:
                 self.log.error(
                     'match_machine_config_file',
@@ -217,7 +256,8 @@ class K8sMachineConfigInfo():
             return True
 
         for rule in object_filter:
-            (key, value) = rule.split(':')
+            key = rule.split(':')[0]
+            value = ':'.join(rule.split(':')[1:])
 
             key_found = False
 
@@ -259,6 +299,9 @@ class K8sMachineConfigInfo():
 
                 if machine_config_systemd_info['content'] is None and len(machine_config_systemd_info['dropin']) == 0:
                     return False
+
+            if key == 'label':
+                key_found = True
 
             if not key_found:
                 self.log.error(

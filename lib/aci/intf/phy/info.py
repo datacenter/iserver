@@ -562,7 +562,10 @@ class InterfacePhyInfo():
                     if len(interface_fc_stats) != 1:
                         self.log.error(
                             'get_interfaces_phy',
-                            'Unexpected fc stats count: %s' % (interface_info['dn'])
+                            'Unexpected fc stats count (%s): %s' % (
+                                len(interface_fc_stats),
+                                interface_info['dn']
+                            )
                         )
                     else:
                         interface_info['fc_stats'] = interface_fc_stats[0]

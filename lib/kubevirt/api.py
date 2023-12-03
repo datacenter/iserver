@@ -29,8 +29,11 @@ class KubevirtApi():
             config_loader = config.kube_config._get_kube_config_loader_for_yaml_file(
                 self.kubeconfig_filename
             )
+
+            kubevirt_configuration = kubevirt.configuration
+            kubevirt_configuration.verify_ssl = False
             config_loader.load_and_set(
-                kubevirt.configuration
+                kubevirt_configuration
             )
 
             api_client = kubevirt.ApiClient()

@@ -1,14 +1,13 @@
+import time
+import json
 import traceback
 import requests
 
 from lib import log_helper
 
-from lib.nso.api.trace import Trace
 
-
-class Rest(Trace):
-    def __init__(self, protocol, ip_address, port, username=None, password=None, restconf_enabled=True, nfvo_version='4.x', log_id=None):
-        Trace.__init__(self)
+class Rest():
+    def __init__(self, protocol, ip_address, port, username, password, restconf_enabled=True, log_id=None):
         self.log = log_helper.Log(log_id=log_id)
 
         self.session = requests.Session()
@@ -19,7 +18,6 @@ class Rest(Trace):
         self.ip_address = ip_address
         self.port = port
         self.restconf_enabled = restconf_enabled
-        self.nfvo_version = nfvo_version
 
         self.get_timeout = 15
         self.patch_timeout = 15
@@ -27,7 +25,7 @@ class Rest(Trace):
         self.put_timeout = 15
         self.delete_timeout = 15
 
-    def format_url_rest(self, resource_type, path):
+    def format_url_rest(self, path, resource_type=None):
         if resource_type is None:
             if path is None:
                 url = '%s://%s:%s/api' % (
@@ -61,7 +59,7 @@ class Rest(Trace):
 
         return url
 
-    def format_url_restconf(self, resource_type, path):
+    def format_url_restconf(self, path, resource_type=None):
         if resource_type is None:
             if path is None:
                 url = '%s://%s:%s/restconf' % (
@@ -96,10 +94,10 @@ class Rest(Trace):
 
         return url
 
-    def format_url(self, resource_type, path):
+    def format_url(self, path, resource_type=None):
         if self.restconf_enabled:
-            return self.format_url_restconf(resource_type, path)
-        return self.format_url_rest(resource_type, path)
+            return self.format_url_restconf(path, resource_type=resource_type)
+        return self.format_url_rest(path, resource_type=resource_type)
 
     def get_headers_rest(self, header, media_type, output_format):
         if header == 'Accept':
@@ -158,7 +156,7 @@ class Rest(Trace):
         return error_message
 
     def get_rest(self, output_format, resource_type, header, media_type, path=None, params=None, trace=None):
-        url = self.format_url(resource_type, path)
+        url = self.format_url(path, resource_type=resource_type)
         headers = self.get_headers(header, media_type, output_format)
 
         success = True
@@ -181,11 +179,19 @@ class Rest(Trace):
 
             rest_response.raise_for_status()
 
-        except requests.HTTPError:
+        except requests.HTTPError as err:
             success = False
             self.log.error(
                 'nso.get_rest',
                 'HTTPError exception: %s' % (url)
+            )
+            self.log.error(
+                'nso.get_rest',
+                'Status code: %s' % (err.response.status_code)
+            )
+            self.log.error(
+                'nso.get_rest',
+                err.response.text
             )
 
         except BaseException:
@@ -214,7 +220,7 @@ class Rest(Trace):
         return success, content
 
     def post_rest(self, output_format, resource_type, header, media_type, data, path=None, params=None, timeout=None, trace=None):
-        url = self.format_url(resource_type, path)
+        url = self.format_url(path, resource_type=resource_type)
         headers = self.get_headers(header, media_type, output_format)
 
         if timeout is None:
@@ -248,11 +254,19 @@ class Rest(Trace):
 
             rest_response.raise_for_status()
 
-        except requests.HTTPError:
+        except requests.HTTPError as err:
             success = False
             self.log.error(
                 'nso.post_rest',
                 'HTTP Error exception: %s' % (url)
+            )
+            self.log.error(
+                'nso.post_rest',
+                'Status code: %s' % (err.response.status_code)
+            )
+            self.log.error(
+                'nso.post_rest',
+                err.response.text
             )
 
         except BaseException:
@@ -276,7 +290,7 @@ class Rest(Trace):
         return success, content
 
     def patch_rest(self, output_format, resource_type, header, media_type, data, path=None, params=None, timeout=None, trace=None):
-        url = self.format_url(resource_type, path)
+        url = self.format_url(path, resource_type=resource_type)
         headers = self.get_headers(header, media_type, output_format)
 
         if timeout is None:
@@ -303,11 +317,19 @@ class Rest(Trace):
 
             rest_response.raise_for_status()
 
-        except requests.HTTPError:
+        except requests.HTTPError as err:
             success = False
             self.log.error(
                 'nso.patch_rest',
                 'HTTPError exception: %s' % (url)
+            )
+            self.log.error(
+                'nso.patch_rest',
+                'Status code: %s' % (err.response.status_code)
+            )
+            self.log.error(
+                'nso.patch_rest',
+                err.response.text
             )
 
         except BaseException:
@@ -335,7 +357,7 @@ class Rest(Trace):
         return success, content
 
     def put_rest(self, output_format, resource_type, header, media_type, data, path=None, params=None, timeout=None, trace=None):
-        url = self.format_url(resource_type, path)
+        url = self.format_url(path, resource_type=resource_type)
         headers = self.get_headers(header, media_type, output_format)
 
         if timeout is None:
@@ -362,11 +384,19 @@ class Rest(Trace):
 
             rest_response.raise_for_status()
 
-        except requests.HTTPError:
+        except requests.HTTPError as err:
             success = False
             self.log.error(
                 'nso.put_rest',
                 'HTTPError exception: %s' % (url)
+            )
+            self.log.error(
+                'nso.put_rest',
+                'Status code: %s' % (err.response.status_code)
+            )
+            self.log.error(
+                'nso.put_rest',
+                err.response.text
             )
 
         except BaseException:
@@ -395,7 +425,7 @@ class Rest(Trace):
         return success, content
 
     def delete_rest(self, output_format, resource_type, header, media_type, path=None, params=None, trace=None):
-        url = self.format_url(resource_type, path)
+        url = self.format_url(path, resource_type=resource_type)
         headers = self.get_headers(header, media_type, output_format)
 
         success = True
@@ -418,11 +448,19 @@ class Rest(Trace):
 
             rest_response.raise_for_status()
 
-        except requests.HTTPError:
+        except requests.HTTPError as err:
             success = False
             self.log.error(
                 'nso.delete_rest',
                 'HTTPError exception: %s' % (url)
+            )
+            self.log.error(
+                'nso.delete_rest',
+                'Status code: %s' % (err.response.status_code)
+            )
+            self.log.error(
+                'nso.delete_rest',
+                err.response.text
             )
 
         except BaseException:
@@ -448,3 +486,40 @@ class Rest(Trace):
         )
 
         return success, content
+
+    def trace_rest(self, trace_filename, method, url, headers, data, params, response_code, response_data):
+        if response_data is None:
+            return
+
+        if data is not None:
+            try:
+                data = data.decode('utf-8')
+            except BaseException:
+                data = str(data)
+
+        timestamp = int(time.time() * 1000)
+        message = {
+            'timestamp': timestamp,
+            'message': method,
+            'url': url,
+            'headers': headers,
+            'data': data,
+            'params': params,
+            'response_code': response_code,
+            'response_data': response_data
+        }
+
+        if trace_filename is not None:
+            self.log.adhoc(
+                trace_filename,
+                json.dumps(message, indent=4)
+            )
+
+        else:
+            self.log.adhoc(
+                'nso.trace.%s' % (timestamp),
+                json.dumps(
+                    message,
+                    indent=4
+                )
+            )

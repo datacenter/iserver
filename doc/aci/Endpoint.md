@@ -20,8 +20,7 @@ Cross domain filter options:
   - [server](./EndpointServer.md)
 
 View options:
-  - [default](./EndpointAll.md)
-  - [fabric](./EndpointOutputFabric.md)
+  - [state](./EndpointAll.md)
   - [vm](./EndpointOutputVm.md)
 
 Output options:

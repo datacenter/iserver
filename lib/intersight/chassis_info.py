@@ -14,23 +14,18 @@ class ChassisInfo(ChassisCache, ChassisFilter):
 
     def get_default_settings(self):
         settings = {}
-        settings['summary'] = {}
-        settings['summary']['enabled'] = True
-        settings['power'] = {}
-        settings['power']['enabled'] = False
-        settings['fan'] = {}
-        settings['fan']['enabled'] = False
-        settings['module'] = {}
-        settings['module']['enabled'] = False
-        settings['port'] = {}
-        settings['port']['enabled'] = False
-        settings['node'] = {}
-        settings['node']['enabled'] = False
-
+        settings['power'] = False
+        settings['fan'] = False
+        settings['fan_control'] = False
+        settings['module'] = False
+        settings['port'] = False
+        settings['node'] = False
         return settings
 
-    def get_info(self, chassiz_mo, settings, match_rules, cache_ttl, parallel=False):
-        self.set_cache(chassiz_mo, settings, cache_ttl, parallel=parallel)
+    def get_info(self, chassiz_mo, settings, match_rules, cache_ttl, prepare_cache=True, bar_handler=None):
+        if prepare_cache:
+            self.set_cache(chassiz_mo, settings, cache_ttl)
+
         chassiz_info = []
 
         for chassis_mo in chassiz_mo:
@@ -43,5 +38,8 @@ class ChassisInfo(ChassisCache, ChassisFilter):
             chassiz_info.append(
                 chassis_info
             )
+
+            if bar_handler is not None:
+                bar_handler.next()
 
         return chassiz_info

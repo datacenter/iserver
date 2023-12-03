@@ -1,55 +1,53 @@
-import time
-
-from lib import ip_helper
 from lib import log_helper
-from lib import my_servers_helper
 
-from lib.intersight import adapter_unit
-from lib.intersight import adapter_ext_eth_interface
-from lib.intersight import adapter_host_eth_interface
-from lib.intersight import adapter_host_fc_interface
-from lib.intersight import asset_device_registration
-from lib.intersight import asset_device_contract_information
-from lib.intersight import bios_boot_mode
-from lib.intersight import boot_cdd_device
-from lib.intersight import boot_device_boot_mode
-from lib.intersight import boot_device_boot_security
-from lib.intersight import boot_hdd_device
-from lib.intersight import boot_iscsi_device
-from lib.intersight import boot_nvme_device
-from lib.intersight import boot_pxe_device
-from lib.intersight import boot_san_device
-from lib.intersight import boot_sd_device
-from lib.intersight import boot_uefi_device
-from lib.intersight import boot_usb_device
-from lib.intersight import boot_vmedia_device
 from lib.intersight import cache as intersight_cache
-from lib.intersight import compute_blade
-from lib.intersight import compute_rack
-from lib.intersight import cond_alarm
-from lib.intersight import cond_hclstatus
-from lib.intersight import cond_hclstatus_detail
-from lib.intersight import compute_board
-from lib.intersight import compute_server_setting
-from lib.intersight import equipment_chassis
-from lib.intersight import equipment_fan_module
-from lib.intersight import equipment_led
-from lib.intersight import equipment_psu
-from lib.intersight import equipment_tpm
-from lib.intersight import memory_unit
-from lib.intersight import pci_device
-from lib.intersight import processor_unit
-from lib.intersight import running_firmware
-from lib.intersight import search_item
-from lib.intersight import server_profile
-from lib.intersight import storage_physical_disk
-from lib.intersight import storage_physical_disk_usage
-from lib.intersight import storage_virtual_drive
-from lib.intersight import storage_controller
-from lib.intersight import tam_advisory_definition
-from lib.intersight import tam_advisory_instance
-from lib.intersight import tam_security_advisory
-from lib.intersight import workflow
+
+from lib.intersight.adapter_unit import main as adapter_unit
+from lib.intersight.adapter_ext_eth_interface import main as adapter_ext_eth_interface
+from lib.intersight.adapter_host_eth_interface import main as adapter_host_eth_interface
+from lib.intersight.adapter_host_fc_interface import main as adapter_host_fc_interface
+from lib.intersight.asset_device_registration import main as asset_device_registration
+from lib.intersight.asset_device_contract_information import main as asset_device_contract_information
+from lib.intersight.bios_boot_mode import main as bios_boot_mode
+from lib.intersight.boot_cdd_device import main as boot_cdd_device
+from lib.intersight.boot_device_boot_mode import main as boot_device_boot_mode
+from lib.intersight.boot_device_boot_security import main as boot_device_boot_security
+from lib.intersight.boot_hdd_device import main as boot_hdd_device
+from lib.intersight.boot_iscsi_device import main as boot_iscsi_device
+from lib.intersight.boot_nvme_device import main as boot_nvme_device
+from lib.intersight.boot_pxe_device import main as boot_pxe_device
+from lib.intersight.boot_san_device import main as boot_san_device
+from lib.intersight.boot_sd_device import main as boot_sd_device
+from lib.intersight.boot_uefi_device import main as boot_uefi_device
+from lib.intersight.boot_usb_device import main as boot_usb_device
+from lib.intersight.boot_vmedia_device import main as boot_vmedia_device
+from lib.intersight.compute_blade import main as compute_blade
+from lib.intersight.compute_rack import main as compute_rack
+from lib.intersight.cond_alarm import main as cond_alarm
+from lib.intersight.cond_hclstatus import main as cond_hclstatus
+from lib.intersight.cond_hclstatus_detail import main as cond_hclstatus_detail
+from lib.intersight.compute_board import main as compute_board
+from lib.intersight.compute_server_setting import main as compute_server_setting
+from lib.intersight.equipment_chassis import main as equipment_chassis
+from lib.intersight.equipment_fan_module import main as equipment_fan_module
+from lib.intersight.equipment_fan import main as equipment_fan
+from lib.intersight.equipment_led import main as equipment_led
+from lib.intersight.equipment_psu import main as equipment_psu
+from lib.intersight.equipment_tpm import main as equipment_tpm
+from lib.intersight.memory_unit import main as memory_unit
+from lib.intersight.pci_device import main as pci_device
+from lib.intersight.processor_unit import main as processor_unit
+from lib.intersight.running_firmware import main as running_firmware
+from lib.intersight.search_item import main as search_item
+from lib.intersight.server_profile import main as server_profile
+from lib.intersight.storage_physical_disk import main as storage_physical_disk
+from lib.intersight.storage_physical_disk_usage import main as storage_physical_disk_usage
+from lib.intersight.storage_virtual_drive import main as storage_virtual_drive
+from lib.intersight.storage_controller import main as storage_controller
+from lib.intersight.tam_advisory_definition import main as tam_advisory_definition
+from lib.intersight.tam_advisory_instance import main as tam_advisory_instance
+from lib.intersight.tam_security_advisory import main as tam_security_advisory
+from lib.intersight.workflow import main as workflow
 
 from lib.redfish import endpoint_settings as redfish_endpoint_settings
 from lib.ucsm import endpoint_settings as ucsm_endpoint_settings
@@ -183,7 +181,11 @@ class Compute(ComputeMo, ComputeInfo):
             iaccount,
             log_id=log_id
         )
-        self.fan_handler = equipment_fan_module.EquipmentFanModule(
+        self.fan_module_handler = equipment_fan_module.EquipmentFanModule(
+            iaccount,
+            log_id=log_id
+        )
+        self.fan_handler = equipment_fan.EquipmentFan(
             iaccount,
             log_id=log_id
         )

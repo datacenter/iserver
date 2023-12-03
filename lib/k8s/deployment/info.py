@@ -12,6 +12,31 @@ class K8sDeploymentInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            deployment_mo
+        )
+        info.update(metadata_info)
+
+        keys = [
+            'observedGeneration',
+            'replicas',
+            'updatedReplicas',
+            'readyReplicas',
+            'availableReplicas',
+            'conditions'
+        ]
+        for key in keys:
+            info[key] = self.get(deployment_mo, 'status:%s' % (key))
+
+        info['readyT'] = '%s/%s' % (
+            info['replicas'],
+            info['readyReplicas']
+        )
+        if info['replicas'] > 0 and info['replicas'] == info['readyReplicas']:
+            info['__Output']['readyT'] = 'Green'
+        else:
+            info['__Output']['readyT'] = 'Red'
+
         return info
 
     def get_deployments_info(self, cache_enabled=True):
@@ -45,6 +70,16 @@ class K8sDeploymentInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             key_found = False
+
+            if key == 'namespace':
+                key_found = True
+                if not filter_helper.match_string(value, deployment_info['namespace']):
+                    return False
+
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (deployment_info['namespace'], deployment_info['name'])):
+                    return False
 
             if not key_found:
                 self.log.error(

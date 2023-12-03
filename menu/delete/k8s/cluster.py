@@ -18,7 +18,7 @@ class ErrorExit(Exception):
 
 @click.command("cluster")
 @click.pass_obj
-@click.option("--name", "cluster_name", default='', help="K8s cluster name")
+@click.option("--cluster", "cluster_name", default='', help="K8s cluster name")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def delete_k8s_cluster(
         ctx,

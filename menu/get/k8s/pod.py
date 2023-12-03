@@ -27,7 +27,7 @@ class NoResultExit(Exception):
 @click.option("--cluster", default='', help="Kubernetes cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state|cont|res|svc|env|cm|vol|net|log|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|metadata|cont|res|svc|env|cm|vol|net|log|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_pod_command(
@@ -48,7 +48,7 @@ def get_k8s_pod_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|cont|res|svc|env|cm|vol|net|log|all',
+        'state|metadata|cont|res|svc|env|cm|vol|net|log|all',
         'state',
         []
     )
@@ -131,6 +131,12 @@ def get_k8s_pod_command(
                 title=True
             )
 
+        if 'metadata' in view:
+            k8s_output_handler.print_pods_metadata(
+                pods,
+                title=True
+            )
+
         if 'cont' in view:
             k8s_output_handler.print_pods_container(
                 pods,
@@ -178,6 +184,9 @@ def get_k8s_pod_command(
                 pods,
                 title=True
             )
+
+        ctx.my_output.default('Filter: namespace, name', before_newline=True)
+        ctx.my_output.default('View:   state (def), metadata, cont, res, svc, env, cm, vol, net, log, all')
 
     except NoResultExit:
         ctx.busy = False

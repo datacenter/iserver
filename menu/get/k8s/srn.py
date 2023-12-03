@@ -75,7 +75,7 @@ def get_k8s_srn_command(
                 'Connection to kubernetes cluster failed'
             )
             raise ErrorExit
-        
+
         if output == 'mo':
             sriov_networks = k8s_handlers.get_sriov_networks(
                 object_filter=object_filter,
@@ -108,6 +108,9 @@ def get_k8s_srn_command(
             sriov_networks,
             title=True
         )
+
+        ctx.my_output.default('Filter: name', before_newline=True)
+        ctx.my_output.default('View:   state (def)')
 
     except NoResultExit:
         ctx.busy = False

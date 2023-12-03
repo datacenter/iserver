@@ -32,6 +32,7 @@ class NoResultExit(Exception):
 @click.option("--pod", "pod_id", default='', callback=validations.empty_string_to_none, help="Pod ID")
 @click.option("--node", "node_names", multiple=True, help="Node name patterns")
 @click.option("--role", "node_role", type=click.Choice(['any', 'leaf', 'spine'], case_sensitive=False), default='any', show_default=True)
+@click.option("--mac", default='', callback=validations.empty_string_to_none, help="Filter by mac address")
 @click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
 @click.option("--view", "-v", default=['intf'], help="[inst|intf|stats|event|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -47,6 +48,7 @@ def get_aci_node_proto_lacp_command(
         pod_id,
         node_names,
         node_role,
+        mac,
         fault_when,
         view,
         output,
@@ -120,6 +122,12 @@ def get_aci_node_proto_lacp_command(
         interfaces = []
         event = []
 
+        interface_filter = []
+        if mac is not None:
+            interface_filter.append(
+                'mac:%s' % (mac)
+            )
+
         if output not in ['json']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
@@ -130,6 +138,7 @@ def get_aci_node_proto_lacp_command(
                 node_info['id'],
                 instance_info=instance_info,
                 interface_info=interface_info,
+                interface_filter=interface_filter,
                 event_info=event_info,
                 event_filter=event_filter
             )

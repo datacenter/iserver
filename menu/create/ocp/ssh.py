@@ -1,5 +1,4 @@
 import sys
-import time
 import traceback
 import threading
 import click
@@ -20,7 +19,7 @@ class ErrorExit(Exception):
 @click.pass_obj
 @click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Filter by cluster name")
 @click.option("--role", "node_role", type=click.Choice(['any', 'master', 'worker'], case_sensitive=False), default='any', show_default=True)
-@click.option("--filename", default='', callback=validations.validate_file, help="SSH public key")
+@click.option("--file", "filename", default='', callback=validations.validate_file, help="SSH public key")
 @click.option("--no-wait", "no_wait", is_flag=True, show_default=True, default=False, help="No-wait for mcp update")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def create_ocp_ssh_command(
