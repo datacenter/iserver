@@ -8,6 +8,7 @@ from menu.set.nx.main import set_nx_menu
 from menu.set.nso.main import set_nso_menu
 from menu.set.ocp.main import set_ocp_menu
 from menu.set.osp.main import set_osp_menu
+from menu.set.psirt import set_psirt_command
 from menu.set.redfish.main import set_redfish_menu
 from menu.set.server.main import set_server_menu
 from menu.set.ucsm.main import set_ucsm_menu
@@ -32,6 +33,7 @@ set_menu.add_command(set_nx_menu)
 set_menu.add_command(set_nso_menu)
 set_menu.add_command(set_ocp_menu)
 set_menu.add_command(set_osp_menu)
+set_menu.add_command(set_psirt_command)
 set_menu.add_command(set_redfish_menu)
 set_menu.add_command(set_server_menu)
 set_menu.add_command(set_ucsm_menu)

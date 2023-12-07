@@ -22,7 +22,7 @@ def get_nso_ncs_command(
         show_password,
         devel
         ):
-    """Get aci controllers"""
+    """Get ncs instances"""
 
     # iserver get aci controller
 

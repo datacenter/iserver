@@ -23,7 +23,7 @@ class ErrorExit(Exception):
 @click.option("--username", "ncs_username", default='', help="NCS username")
 @click.option("--password", "ncs_password", default='', help="NCS password")
 @click.option("--port", "ncs_port", default=8080, help="NCS REST API Port")
-@click.option("--nfvo", "nfvo_version", type=click.Choice(['3.x', '4.x'], case_sensitive=False), default='4.x', show_default=True, help="NFVO Version")
+@click.option("--nfvo", "nfvo_version", type=click.Choice(['none', '3.x', '4.x'], case_sensitive=False), default='none', show_default=True, help="NFVO Version")
 @click.option("--protocol", "ncs_protocol", type=click.Choice(['http', 'https'], case_sensitive=False), default='http', show_default=True, help="Protocol")
 @click.option("--restconf_disabled", is_flag=True, show_default=True, default=False, help="Restconf")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -63,6 +63,9 @@ def set_nso_ncs_command(
             ctx.my_output.error('Define ncs password')
             raise ErrorExit
 
+        if nfvo_version == 'none':
+            nfvo_version = None
+
         nso_handler = nso.Nso(
             ncs_protocol,
             ncs_ip,
@@ -70,7 +73,7 @@ def set_nso_ncs_command(
             username=ncs_username,
             password=ncs_password,
             restconf_enabled=not restconf_disabled,
-            nfvo_version=nfvo_version,
+            nfvo=nfvo_version,
             log_id=ctx.run_id
         )
 

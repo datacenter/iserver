@@ -276,6 +276,9 @@ def get_aci_ep_command(
                 endpoints
             )
 
+        ctx.my_output.default('Filter: mac, address, subnet, tenant, bd, epg, vlan, ap, vrf, node, vmm, hv, vm', before_newline=True)
+        ctx.my_output.default('View:   state (def), vm, all')
+
         if len(endpoints) == 0:
             raise NoResultExit
 

@@ -21,7 +21,7 @@ class HelmRelease():
         if not success:
             self.log.error(
                 'get_release_mo',
-                'Helm command failed'
+                'Helm command failed at %s: %s' % (self.helm_ip, command)
             )
             return None
 
@@ -62,7 +62,7 @@ class HelmRelease():
         if not success:
             self.log.error(
                 'get_release_values',
-                'Helm command failed'
+                'Helm command failed at %s: %s' % (self.helm_ip, command)
             )
             return None
 
@@ -431,7 +431,7 @@ class HelmRelease():
             reason = 'Helm command failed'
             self.log.error(
                 'create_release',
-                'Helm command failed'
+                'Helm command failed at %s: %s' % (self.helm_ip, command)
             )
 
             if output is not None and len(output) > 0:
@@ -462,7 +462,7 @@ class HelmRelease():
         if not success:
             self.log.error(
                 'delete_release',
-                'Helm command failed'
+                'Helm command failed at %s: %s' % (self.helm_ip, command)
             )
             return False
         return True

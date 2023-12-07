@@ -267,8 +267,10 @@ class K8sVirtualMachineInstanceInfo():
             if vm_info:
                 if self.is_virtual_machine(virtual_machine_instance_info['info']['namespace'], virtual_machine_instance_info['info']['name'], cache_enabled=cache_enabled):
                     virtual_machine_instance_info['info']['vmTick'] = '\u2713'
+                    virtual_machine_instance_info['info']['__Output']['vmTick'] = 'Green'
                 else:
                     virtual_machine_instance_info['info']['vmTick'] = '\u2717'
+                    virtual_machine_instance_info['info']['__Output']['vmTick'] = 'Red'
 
             virtual_machine_instances.append(
                 virtual_machine_instance_info['info']

@@ -25,10 +25,13 @@ class NsoCnfmDeviceInfo():
             )
 
         info['cluster'] = []
-        clusters_mo = self.get(
-            cnfm_device_mo['k8s-cnfm:clusters'],
-            'cluster'
-        )
+        clusters_mo = None
+        if 'k8s-cnfm:clusters' in cnfm_device_mo:
+            clusters_mo = self.get(
+                cnfm_device_mo['k8s-cnfm:clusters'],
+                'cluster'
+            )
+
         if clusters_mo is not None:
             for cluster_mo in clusters_mo:
                 cluster_info = {}

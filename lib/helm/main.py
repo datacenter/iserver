@@ -13,6 +13,7 @@ class Helm(
         HelmChart.__init__(self)
         HelmRelease.__init__(self)
 
+        self.helm_ip = ip_address
         self.log = log_helper.Log(log_id=log_id)
         self.ssh_handler = ssh.Ssh(
             ip_address,

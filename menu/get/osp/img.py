@@ -27,6 +27,7 @@ class NoResultExit(Exception):
 @click.option("--cluster", default='', help="Openstack cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by image name")
 @click.option("--vm", "virtual_machine", default='', callback=validations.empty_string_to_none, help="Filter by virtual machine name")
+@click.option("--file", "filename", default='', callback=validations.empty_string_to_none, help="Download selected image to file")
 @click.option("--view", "-v", default=['state'], help="[state|id|vm|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -35,6 +36,7 @@ def get_osp_img_command(
         cluster,
         name,
         virtual_machine,
+        filename,
         view,
         output,
         devel
@@ -123,6 +125,24 @@ def get_osp_img_command(
                 images,
                 title=True
             )
+
+        if filename is not None and len(images) != 1:
+            ctx.my_output.error('Select one image for download operation')
+        else:
+            ctx.my_output.default(
+                'Image download request: %s => %s' % (
+                    images[0]['name'],
+                    filename
+                )
+            )
+            success = osp_handlers.download_image(
+                images[0]['id'],
+                filename
+            )
+            if success:
+                ctx.my_output.default('Download successful')
+            else:
+                ctx.my_output.error('Download failed')
 
         ctx.my_output.default('Filter: name, vm', before_newline=True)
         ctx.my_output.default('View:   state (def), id, vm, all')

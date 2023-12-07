@@ -13,6 +13,7 @@ from menu.get.nx.main import get_nx_menu
 from menu.get.nso.main import get_nso_menu
 from menu.get.ocp.main import get_ocp_menu
 from menu.get.osp.main import get_osp_menu
+from menu.get.psirt import get_psirt_command
 from menu.get.redfish.main import get_redfish_menu
 from menu.get.server import get_server_command
 from menu.get.ucsm.main import get_ucsm_menu
@@ -42,6 +43,7 @@ get_menu.add_command(get_nx_menu)
 get_menu.add_command(get_nso_menu)
 get_menu.add_command(get_ocp_menu)
 get_menu.add_command(get_osp_menu)
+get_menu.add_command(get_psirt_command)
 get_menu.add_command(get_redfish_menu)
 get_menu.add_command(get_server_command)
 get_menu.add_command(get_ucsm_menu)

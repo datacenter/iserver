@@ -1,4 +1,5 @@
 import os
+import time
 import sys
 import traceback
 import threading
@@ -57,11 +58,11 @@ def create_k8s_pvc_command(
         if settings is None:
             raise ErrorExit
 
-        if 'tools' not in settings:
+        if 'tools' not in settings or settings['tools'] is None:
             ctx.my_output.error('Tools not defined for cluster %s' % (settings['name']))
             raise ErrorExit
 
-        if 'virtctl' not in settings:
+        if 'virtctl' not in settings or settings['virtctl'] is None:
             ctx.my_output.error('Virtctl not defined for cluster %s' % (settings['name']))
             raise ErrorExit
 
@@ -171,7 +172,20 @@ def create_k8s_pvc_command(
         )
         if not success:
             ctx.busy = False
+            time.sleep(.1)
             ctx.my_output.error('PVC creation failed')
+
+            if k8s_handlers.is_data_volume(namespace, name, cache_enabled=False):
+                if not k8s_handlers.delete_data_volume(namespace, name):
+                    ctx.my_output.error('DV/PVC delete failed: %s/%s' % (namespace, name))
+                    raise ErrorExit
+                ctx.my_output.default('DV/PVC deleted: %s/%s' % (namespace, name))
+            else:
+                if not k8s_handlers.delete_namespaced_pvc(namespace, name):
+                    ctx.my_output.error('PVC delete failed: %s/%s' % (namespace, name))
+                    raise ErrorExit
+                ctx.my_output.default('PVC deleted: %s/%s' % (namespace, name))
+
             raise ErrorExit
 
         ctx.busy = False

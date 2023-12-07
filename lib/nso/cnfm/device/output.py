@@ -5,7 +5,7 @@ class NsoCnfmDeviceOutput():
     def print_cnfm_state(self, info, title=False):
         if title:
             self.my_output.default(
-                'CNFM State [#%s]' % (len(info)),
+                'CNFM Device - State [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -17,17 +17,25 @@ class NsoCnfmDeviceOutput():
         order = [
             'name',
             'device.address_port',
+            'device.authgroup',
+            'device.device_type',
+            'device.ned',
+            'device.state',
             'device.syncTick',
             'cluster_count',
             'cnfi_summary'
         ]
 
         headers = [
-            'CNFM',
+            'Device Name',
             'Address',
+            'AuthGroup',
+            'Type',
+            'NED',
+            'State',
             'Sync',
             'Cluster',
-            'CNF Instance'
+            'Cnfi'
         ]
 
         self.my_output.my_table(
@@ -44,7 +52,7 @@ class NsoCnfmDeviceOutput():
     def print_cnfm_clusters(self, info, title=False):
         if title:
             self.my_output.default(
-                'CNFM Cluster [#%s]' % (len(info)),
+                'CNFM Device - Cluster [#%s]' % (len(info)),
                 underline=True,
                 before_newline=True
             )
@@ -81,12 +89,12 @@ class NsoCnfmDeviceOutput():
         ]
 
         headers = [
-            'CNFM',
-            'Cluster',
+            'Device Name',
+            'Cluster Name',
             'Type',
             'Namespace Access',
             'Namespace',
-            'CNF Instance'
+            'Cnfi'
         ]
 
         self.my_output.my_table(
@@ -100,49 +108,6 @@ class NsoCnfmDeviceOutput():
             allow_order_subkeys=True,
             underline=True,
             row_separator=True,
-            table=True,
-            merge=True
-        )
-
-    def print_cnfm_devices(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'CNFM Device [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'device.name',
-            'device.address_port',
-            'device.authgroup',
-            'device.device_type',
-            'device.ned',
-            'device.state',
-            'device.syncTick'
-        ]
-
-        headers = [
-            'Name',
-            'Address',
-            'AuthGroup',
-            'Type',
-            'NED',
-            'State',
-            'In-Sync'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=False,
             table=True,
             merge=True
         )

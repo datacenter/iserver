@@ -26,6 +26,7 @@ class Log():
         self.ucsm_filename = os.path.join(self.logs_directory, 'ucsm.debug')
         self.k8s_filename = os.path.join(self.logs_directory, 'k8s.debug')
         self.osp_filename = os.path.join(self.logs_directory, 'osp.debug')
+        self.psirt_filename = os.path.join(self.logs_directory, 'psirt.debug')
         self.nso_filename = os.path.join(self.logs_directory, 'nso.debug')
         self.ocapi_filename = os.path.join(self.logs_directory, 'ocapi.debug')
         self.ocp_filename = os.path.join(self.logs_directory, 'ocp.debug')
@@ -52,6 +53,7 @@ class Log():
         self.mapping['ucsm'] = self.ucsm_filename
         self.mapping['k8s'] = self.k8s_filename
         self.mapping['osp'] = self.osp_filename
+        self.mapping['psirt'] = self.psirt_filename
         self.mapping['nso'] = self.nso_filename
         self.mapping['ocapi'] = self.ocapi_filename
         self.mapping['ocp'] = self.ocp_filename
@@ -306,6 +308,35 @@ class Log():
         result['total_time'] = 0
 
         content = self.get_file(self.osp_filename)
+        if content is None:
+            return result
+
+        result['read'] = True
+        for line in content.split('\n'):
+            if len(line) > 0:
+                (when, success, duration, scope, command) = line.split('\t')
+                if success == 'True':
+                    result['success'] = result['success'] + 1
+                else:
+                    result['failed'] = result['failed'] + 1
+
+                result['total_time'] = result['total_time'] + int(duration)
+
+                result['mo'] = result['mo'] + 1
+                result['mo_time'] = result['mo_time'] + int(duration)
+
+        return result
+
+    def analyze_psirt(self):
+        result = {}
+        result['read'] = False
+        result['success'] = 0
+        result['failed'] = 0
+        result['mo'] = 0
+        result['mo_time'] = 0
+        result['total_time'] = 0
+
+        content = self.get_file(self.psirt_filename)
         if content is None:
             return result
 
@@ -599,6 +630,10 @@ class Log():
         if info['read']:
             result['osp'] = info
 
+        info = self.analyze_psirt()
+        if info['read']:
+            result['psirt'] = info
+
         info = self.analyze_nso()
         if info['read']:
             result['nso'] = info
@@ -693,7 +728,7 @@ class Log():
 
     def get_logs(self, files=None):
         if files is None:
-            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'osp', 'nso', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'iwo']
+            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'osp', 'psirt', 'nso', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'iwo']
 
         content = {}
         for filename in files:
@@ -1075,6 +1110,47 @@ class Log():
             )
             if not success:
                 print('Osp log failed...')
+
+        except BaseException:
+            pass
+
+    def psirt_mo(self, name, managed_object):
+        try:
+            filename = os.path.join(
+                self.logs_directory,
+                'psirt.mo.%s' % (name)
+            )
+
+            if not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            pass
+
+    def psirt(self, command, scope, success, duration):
+        try:
+            current_time = datetime.datetime.now()
+
+            msg = "%s\t%s\t%s\t%s\t%s\n" % (
+                current_time,
+                success,
+                duration,
+                command,
+                scope
+            )
+
+            success = self.safe_append(
+                self.psirt_filename,
+                msg
+            )
+            if not success:
+                print('Psirt log failed...')
 
         except BaseException:
             pass

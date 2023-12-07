@@ -28,7 +28,7 @@ class ErrorExit(Exception):
 @click.option("--password", "ncs_password", default='', help="NSO Password")
 @click.option("--restconf_disabled", is_flag=True, show_default=True, default=False, help="Restconf")
 @click.option("--name", "cnfm_name", default='', callback=validations.empty_string_to_none, help="Filter by cnfm name")
-@click.option("--view", "-v", default=['state'], help="[state|cluster|device|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|cluster|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_nso_cnfm_command(
@@ -101,9 +101,6 @@ def get_nso_cnfm_command(
         if 'cluster' in view:
             cnfi_info = True
 
-        if 'device' in view:
-            device_info = True
-
         devices = nso_handler.get_cnfm_devices(
             object_filter=object_filter,
             cnfi_info=cnfi_info,
@@ -135,11 +132,8 @@ def get_nso_cnfm_command(
                 title=True
             )
 
-        if 'device' in view:
-            nso_output_handler.print_cnfm_devices(
-                devices,
-                title=True
-            )
+        ctx.my_output.default('Filter: name', before_newline=True)
+        ctx.my_output.default('View:   state (def), cluster, all')
 
     except ErrorExit:
         ctx.busy = False

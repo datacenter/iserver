@@ -97,7 +97,7 @@ class OspImageTask():
                 'download_image',
                 'No api handler'
             )
-            return None
+            return False
 
         if os.path.isfile(filename):
             self.log.error(
