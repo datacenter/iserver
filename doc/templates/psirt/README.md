@@ -62,5 +62,8 @@ Use 'iserver set --cache on|off' or 'iserver set --ttl <sec>' commands to contro
 
 ## Command Options
 
+```
+DOC_TEMPLATE:get_psirt_filter.help:output
+```
 
 [[Back]](../../README.md)

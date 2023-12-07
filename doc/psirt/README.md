@@ -62,5 +62,32 @@ Use 'iserver set --cache on|off' or 'iserver set --ttl <sec>' commands to contro
 
 ## Command Options
 
+```
+# iserver get psirt --help
+
+Usage: iserver.py get psirt [OPTIONS]
+
+  Get psirt advisory
+
+Options:
+  --sev [any|crit|high|med|low|info]
+                                  [default: any]
+  --bug TEXT                      Filter by bug
+  --cve TEXT                      Filter by cve
+  --cwe TEXT                      Filter by cwe
+  --prod TEXT                     Filter by product name
+  --ver TEXT                      Filter by product version
+  --added INTEGER                 [default: -1]
+  --updated INTEGER               [default: 365]
+  -l, --limit INTEGER             [default: 25]
+  --show-password                 Show password
+  -v, --view TEXT                 [list|url|sum|ver|prod|settings|all]
+                                  [default: list]
+  -o, --output [default|json]     [default: default]
+  --devel                         Developer output
+  --help                          Show this message and exit.
+
+Info: finished in 48 ms and logs saved in /tmp/iserver\a81c19754f72
+```
 
 [[Back]](../../README.md)
