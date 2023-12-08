@@ -16,15 +16,15 @@ class ErrorExit(Exception):
     pass
 
 
-@click.command("switch")
+@click.command("device")
 @click.pass_obj
-@click.option("--name", "nexus_name", default='', help="Nexus switch name")
-@click.option("--ip", "nexus_ip", default='', help="Nexus switch IP/FQDN")
-@click.option("--username", "nexus_username", default='', help="Nexus switch username")
-@click.option("--password", "nexus_password", default='', help="Nexus switch password")
+@click.option("--name", "nexus_name", default='', help="Nexus device name")
+@click.option("--ip", "nexus_ip", default='', help="Nexus device IP/FQDN")
+@click.option("--username", "nexus_username", default='', help="Nexus device username")
+@click.option("--password", "nexus_password", default='', help="Nexus device password")
 @click.option("--domain", "nexus_domain", default='', help="Administrative domain")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
-def set_nx_switch_command(
+def set_nx_device_command(
         ctx,
         nexus_name,
         nexus_ip,
@@ -33,9 +33,9 @@ def set_nx_switch_command(
         nexus_domain,
         devel
         ):
-    """Set nexus switch access details"""
+    """Set nexus device access details"""
 
-    # iserver set nx switch
+    # iserver set nx device
 
     ctx.developer = devel
     common.flags_fixup(ctx, False, False, False)
@@ -65,14 +65,15 @@ def set_nx_switch_command(
             log_id=ctx.run_id
         )
 
-        if not nexus_handler.is_connected():
-            ctx.my_output.error('Failed to connect to Nexus switch')
-            raise ErrorExit
-
-        ctx.my_output.default('Nexus switch authentication successful')
+        if nexus_handler.is_connected():
+            ctx.my_output.default('Nexus device authentication successful')
+        else:
+            ctx.my_output.error('Failed to connect to Nexus device. Continue?')
+            if not common.get_confirmation():
+                raise ErrorExit
 
         settings_handler = settings.NexusSettings(log_id=ctx.run_id)
-        success = settings_handler.set_nexus_switch(
+        success = settings_handler.set_nexus_device(
             nexus_name,
             nexus_ip,
             nexus_username,
@@ -83,7 +84,7 @@ def set_nx_switch_command(
             ctx.my_output.error('Failed to define nexus entry')
             raise ErrorExit
 
-        ctx.my_output.default('Nexus switch entry created: %s' % (nexus_name))
+        ctx.my_output.default('Nexus device entry created: %s' % (nexus_name))
 
     except ErrorExit:
         ctx.busy = False

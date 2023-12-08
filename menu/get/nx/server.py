@@ -34,7 +34,6 @@ class NoResultExit(Exception):
 @click.option("--address", "server_ip", callback=validations.validate_ip, help="Server IP")
 @click.option("--view", "-v", default=['all'], help="[lacp|lldp|mac|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_nx_server_command(
         ctx,
@@ -46,7 +45,6 @@ def get_nx_server_command(
         server_ip,
         view,
         output,
-        no_cache,
         devel
         ):
     """Get server information"""
@@ -115,94 +113,6 @@ def get_nx_server_command(
 
         ctx.busy = False
 
-        # if 'lacp' in view:
-        #     mac_filter = []
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_filter.append(
-        #             mac_info['MacAddress']
-        #         )
-
-        #     object_filter = []
-        #     object_filter.append(
-        #         'mac:%s' % (','.join(mac_filter))
-        #     )
-
-        #     interfaces = []
-        #     for device_handler in device_handlers:
-        #         device_interfaces = device_handler['handler'].get_lacps(
-        #             object_filter=object_filter
-        #         )
-        #         if device_interfaces is not None:
-        #             interfaces = interfaces + device_interfaces
-
-        # if 'lldp' in view:
-        #     mac_filter = []
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_filter.append(
-        #             mac_info['MacAddress']
-        #         )
-
-        #     object_filter = []
-        #     object_filter.append(
-        #         'mac:%s' % (','.join(mac_filter))
-        #     )
-
-        #     neighbors = []
-        #     for device_handler in device_handlers:
-        #         device_neighbors = device_handler['handler'].get_lldps(
-        #             object_filter=object_filter
-        #         )
-        #         if device_neighbors is not None:
-        #             neighbors = neighbors + device_neighbors
-
-        # if 'mac' in view:
-        #     mac_filter = []
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_filter.append(
-        #             mac_info['MacAddress']
-        #         )
-
-        #     object_filter = []
-        #     object_filter.append(
-        #         'mac:%s' % (','.join(mac_filter))
-        #     )
-
-        #     macs = []
-        #     for device_handler in device_handlers:
-        #         device_macs = device_handler['handler'].get_macs(
-        #             object_filter=object_filter
-        #         )
-        #         if device_macs is not None:
-        #             macs = macs + device_macs
-
-        # ctx.busy = False
-
-        # if 'lacp' in view:
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_info['interface'] = None
-        #         for interface in interfaces:
-        #             port_match = False
-        #             for port_info in interface:
-        #                 if ip_helper.is_mac_equal(mac_info['MacAddress'], port_info['partner_mac']):
-        #                     port_match = True
-
-        #             if port_match:
-        #                 mac_info['interface'] = interface
-
-        # if 'lldp' in view:
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_info['adjacency'] = None
-        #         for neighbor in neighbors:
-        #             if ip_helper.is_mac_equal(mac_info['MacAddress'], neighbor['port_id']):
-        #                 mac_info['adjacency'] = neighbor
-
-        # if 'mac' in view:
-        #     for mac_info in servers_info[0]['MacAddressInfo']:
-        #         mac_info['mac'] = None
-        #         for mac in macs:
-        #             if ip_helper.is_mac_equal(mac_info['MacAddress'], mac['mac_addr']):
-        #                 mac_info['mac'] = mac
-
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -224,6 +134,9 @@ def get_nx_server_command(
             server_info,
             title=True
         )
+
+        ctx.my_output.default('Filter: --', before_newline=True)
+        ctx.my_output.default('View:   lacp, lldp, mac, all (def)')
 
     except NoResultExit:
         ctx.busy = False

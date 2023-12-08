@@ -52,7 +52,7 @@ class Server():
             for mac_info in server['MacAddressInfo']:
                 for device_interface in device_interfaces:
                     port_match = False
-                    for port_info in device_interface:
+                    for port_info in device_interface['port']:
                         if ip_helper.is_mac_equal(mac_info['MacAddress'], port_info['partner_mac']):
                             port_match = True
 

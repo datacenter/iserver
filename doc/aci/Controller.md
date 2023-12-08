@@ -1,6 +1,6 @@
 # Controller
 
-## Show Defined Controllers
+## Show controllers
 
 Use '--show-password' option to get the passwords.
 
@@ -12,18 +12,21 @@ Use '--show-password' option to get the passwords.
 +----------+---------------------------+--------------------------+----------+--------+
 | apic11   | apic11o.emea-sp.cisco.com | admin                    | ******   | milan  |
 | apic21   | apic21o.emea-sp.cisco.com | admin                    | ******   | milan  |
-| krk-mpod | 10.62.188.10              | apic#Local\\fwardzic-acc | ******   |        |
 +----------+---------------------------+--------------------------+----------+--------+
 ```
 
-## Add Controller
+Controlles can be tagged with domain. You can run aci commands for group of controllers by using --apic dom:domain-name parameter.
+
+## Add controller
+
+Domain (--domain) is optional.
 
 ```
-# iserver set aci controller --name test --ip 10.1.1.1 --username admin --password secret
+# iserver set aci controller --name test --ip 10.1.1.1 --username admin --password secret --domain lab
 APIC entry created: test
 ```
 
-## Delete Controller
+## Delete controller
 
 ```
 # iserver delete aci controller --name test

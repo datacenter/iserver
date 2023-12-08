@@ -13,6 +13,7 @@ from lib.nexus.lacp.main import Lacp
 from lib.nexus.lldp.main import Lldp
 from lib.nexus.mac.main import Mac
 from lib.nexus.server.main import Server
+from lib.nexus.version.main import Version
 
 
 class NxApi(
@@ -21,6 +22,7 @@ class NxApi(
         Lldp,
         Mac,
         Server,
+        Version,
         WebSocket
         ):
     def __init__(self, ip_address, username, password, name=None, verbose=False, debug=False, log_id=None, cache_enabled=False):
@@ -49,6 +51,7 @@ class NxApi(
         Lldp.__init__(self)
         Mac.__init__(self)
         Server.__init__(self)
+        Version.__init__(self)
 
     def __del__(self):
         self.disconnect()

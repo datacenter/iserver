@@ -6,6 +6,7 @@ from menu.delete.helm.main import delete_helm_menu
 from menu.delete.k8s.main import delete_k8s_menu
 from menu.delete.linux.main import delete_linux_menu
 from menu.delete.nso.main import delete_nso_menu
+from menu.delete.nx.main import delete_nx_menu
 from menu.delete.ocp.main import delete_ocp_menu
 from menu.delete.osp.main import delete_osp_menu
 from menu.delete.os_image import delete_os_image_command
@@ -31,6 +32,7 @@ delete_menu.add_command(delete_helm_menu)
 delete_menu.add_command(delete_k8s_menu)
 delete_menu.add_command(delete_linux_menu)
 delete_menu.add_command(delete_nso_menu)
+delete_menu.add_command(delete_nx_menu)
 delete_menu.add_command(delete_ocp_menu)
 delete_menu.add_command(delete_osp_menu)
 delete_menu.add_command(delete_os_image_command)

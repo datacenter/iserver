@@ -34,6 +34,10 @@ Uses [Cisco PSIRT openVuln API](https://developer.cisco.com/psirt/) calls to pro
 - [default](./PsirtOutputDefault.md)
 - [json](./PsirtOutputJson.md)
 
+## Cross domain
+- [aci](./XdAci.md)
+- [nx-os](./XdNexus.md)
+
 ## API authentication
 
 iserver interacts with Cisco API console using REST API. Follow the [guide](https://developer.cisco.com/docs/psirt/#!authentication) in order to get key and secret .Values.day0.domain

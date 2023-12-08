@@ -23,8 +23,8 @@ class ErrorExit(Exception):
 @click.option("--ip", "device_ip", default='', callback=validations.validate_ip, help="Device IP")
 @click.option("--username", "device_username", default='', help="Device Username")
 @click.option("--password", "device_password", default='', help="Device Password")
-@click.option("--id", "nbr_id", default='', callback=validations.empty_string_to_none, help="Filter neighbor by device id")
-@click.option("--mac", "nbr_mac", default='', callback=validations.empty_string_to_none, help="Filter neighbor by mac address")
+@click.option("--mac", "nbr_mac", default='', callback=validations.empty_string_to_none, help="Filter by mac address")
+@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_nx_lacp_command(
@@ -33,8 +33,8 @@ def get_nx_lacp_command(
         device_ip,
         device_username,
         device_password,
-        nbr_id,
         nbr_mac,
+        view,
         output,
         devel
         ):
@@ -44,6 +44,15 @@ def get_nx_lacp_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state',
+        'state',
+        []
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         device_handlers = validations.validate_nexus_devices(
@@ -63,11 +72,6 @@ def get_nx_lacp_command(
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         object_filter = []
-        if nbr_id is not None:
-            object_filter.append(
-                'id:%s' % (nbr_id)
-            )
-
         if nbr_mac is not None:
             object_filter.append(
                 'mac:%s' % (nbr_mac)
@@ -96,10 +100,14 @@ def get_nx_lacp_command(
 
         ctx.my_output.json_output(neighbors)
 
-        nexus_output_handler.print_lacps(
-            neighbors,
-            title=True
-        )
+        if 'state' in view:
+            nexus_output_handler.print_lacps(
+                neighbors,
+                title=True
+            )
+
+        ctx.my_output.default('Filter: mac', before_newline=True)
+        ctx.my_output.default('View:   state (def)')
 
     except ErrorExit:
         ctx.busy = False

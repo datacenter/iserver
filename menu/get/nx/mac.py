@@ -25,6 +25,7 @@ class ErrorExit(Exception):
 @click.option("--password", "device_password", default='', help="Device Password")
 @click.option("--mac", default='', callback=validations.empty_string_to_none, help="Filter by mac address")
 @click.option("--vlan", default='', callback=validations.empty_string_to_none, help="Filter by vlan")
+@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_nx_mac_command(
@@ -35,6 +36,7 @@ def get_nx_mac_command(
         device_password,
         mac,
         vlan,
+        view,
         output,
         devel
         ):
@@ -44,6 +46,15 @@ def get_nx_mac_command(
 
     ctx.developer = devel
     ctx.output = output
+    view = validations.validate_view(
+        ctx,
+        view,
+        'state',
+        'state',
+        []
+    )
+    if view is None:
+        sys.exit(1)
 
     try:
         device_handlers = validations.validate_nexus_devices(
@@ -96,10 +107,14 @@ def get_nx_mac_command(
 
         ctx.my_output.json_output(macs)
 
-        nexus_output_handler.print_macs(
-            macs,
-            title=True
-        )
+        if 'state' in view:
+            nexus_output_handler.print_macs(
+                macs,
+                title=True
+            )
+
+        ctx.my_output.default('Filter: mac, vlan', before_newline=True)
+        ctx.my_output.default('View:   state (def)')
 
     except ErrorExit:
         ctx.busy = False

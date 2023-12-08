@@ -199,7 +199,14 @@ class ComputeNxOutput():
                 port_info['partner_port_state'] = '--'
                 mac['port'].append(port_info)
             else:
-                mac['port'] = mac['interface']['port']
+                if 'port' not in mac:
+                    mac['port'] = []
+
+                for interface_info in mac['interface']:
+                    for port_info in interface_info['port']:
+                        mac['port'].append(
+                            port_info
+                        )
 
             info.append(
                 mac

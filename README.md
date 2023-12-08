@@ -9,6 +9,7 @@ iserver is command line tool using REST API with various Cisco products.
 - [Intersight](./doc/intersight/README.md)
 - [Kubernetes](./doc/k8s/README.md)
 - [Network Services Orchestrator (NSO)](./doc/nso/README.md)
+- [Nexus](./doc/nexus/README.md)
 - [Redfish](./doc/redfish/README.md)
 - [OpenShift](./doc/ocp/README.md)
 - [OpenStack](./doc/osp/README.md)

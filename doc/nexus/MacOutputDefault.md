@@ -1,0 +1,243 @@
+# MAC Table
+
+## Default output
+
+```
+# iserver get nx mac --device ipn11
+
+Device: ipn11
+
+MAC [#221]
+----------
+
++--------+------+----------------+---------+-----+-----+------+------------------+
+| Device | VLAN | MAC            | Type    | Age | Sec | Ntfy | Port             |
++--------+------+----------------+---------+-----+-----+------+------------------+
+| ipn11  | 3    | 0008.312b.d2a8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0008.312b.d4ac | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 003a.9cbd.8f00 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 003a.9cbd.9200 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.052e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.20eb | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.38d5 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.3c15 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.4127 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.7148 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.78da | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.9fb6 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.affd | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.e0bd | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.f01f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 0050.56b2.f9d4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 24a9.3745.1657 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 24a9.3745.2d76 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 2c5a.0f6f.6c00 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 3c57.31cc.0e46 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | 3c57.31cc.140a | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | a292.ecb2.4898 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | ce94.f98d.2b9d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 3    | d009.c850.ad0f | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 3    | d009.c850.b33f | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 3    | d009.c850.ddff | dynamic | 0   | F   | F    | Po11             | 
+| ipn11  | 3    | d009.c850.e087 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 5    | 500f.80dd.dbb4 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 5    | 500f.80de.2228 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 5    | 54a2.7424.609a | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 5    | 84f1.4762.b360 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 5    | ecf4.0c0d.4b64 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c0d.4cf4 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c0d.4dbc | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c0d.512c | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c0d.5190 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c0d.80d4 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 5    | ecf4.0c38.29a8 | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 5    | ecf4.0c3a.708c | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 5    | ecf4.0c3a.77e4 | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 5    | fc5b.39a9.95e8 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 12   | 00a2.ee3f.7296 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 12   | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 12   | 242a.0499.c160 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 12   | 242a.04e4.42d0 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 12   | 7c21.0e80.9520 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 12   | c0f8.7ffe.0fe0 | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 12   | c0f8.7ffe.10b0 | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 15   | 5c71.0d85.a125 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5660.3c06 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5661.1232 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5661.cec3 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5661.f0b2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5662.047a | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5662.3474 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5662.ff67 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5663.0e51 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5663.9da2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5664.7494 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5664.d66f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5665.7559 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5665.e0d8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5666.2ee7 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5666.350a | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5666.62ff | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5666.a5a9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5667.2de8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5667.7c91 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5667.8caa | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5668.7828 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5668.95a2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5668.9aad | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.5669.1956 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566a.1e97 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566a.6368 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566a.8759 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566a.c05c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566a.ffc4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566b.385b | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566c.92d1 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566e.023d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566e.dc19 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566f.1bc6 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566f.4edc | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566f.5216 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566f.5236 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 0050.566f.d6bc | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | 2c5a.0f6f.6c00 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 17   | ce94.f98d.2b9d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5660.05c9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5660.b011 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5661.53b0 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5663.6c67 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5663.dda4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5663.e1c4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5664.7ada | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5664.b94c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5664.d812 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5666.c9d2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5668.7e61 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5668.ee68 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5669.478e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.5669.945c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566a.0e94 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566b.0af5 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566b.b50e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566c.4664 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566e.04e0 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566e.3801 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566f.6d74 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566f.87e5 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 18   | 0050.566f.bbf9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5661.7033 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5662.4e7c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5662.5ac1 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5662.95dd | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5663.3bdd | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5664.1db0 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5664.7be2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5665.1568 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5666.147a | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5667.00a7 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5667.3ef2 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5667.852d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5669.b996 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5669.df4e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.5669.f7c1 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566a.5771 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566a.5c55 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566a.eeca | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566c.9c6d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566c.e9aa | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566c.f119 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566d.8917 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 19   | 0050.566e.e08f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 20   | 0050.56b2.3c8d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 20   | 0050.56b2.5926 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 32   | 000d.5d2a.9bf2 | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 32   | 000d.5d2a.9bf6 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 32   | 000d.5d2a.9bfa | dynamic | 0   | F   | F    | Po12             | 
+| ipn11  | 32   | 000d.5d2a.9bfc | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 32   | 000d.5d2a.9bfe | dynamic | 0   | F   | F    | Po13             | 
+| ipn11  | 32   | 0020.85dc.9b57 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 32   | 0020.85dc.9bb8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 32   | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 000c.2989.2224 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 50   | 0050.56b2.0b65 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.1237 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.3818 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.4ec8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.4fc8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.5807 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.5b66 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.6eeb | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.7c63 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.83cd | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.88a1 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.8a8e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.8e36 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.9759 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.ae7d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.c4ce | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.d570 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.d647 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.d68e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.d727 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.dcda | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.e844 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.fa48 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b2.fe4a | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 0050.56b4.f2ce | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 50   | 500f.80dd.dbba | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 50   | 500f.80de.222e | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 50   | 54a2.7424.60a0 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 50   | 84f1.4762.b366 | dynamic | 0   | F   | F    | Po14             | 
+| ipn11  | 90   | 0050.56b2.2a15 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 90   | 0050.56b2.78f1 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 99   | 0050.56b2.6f82 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 300  | 0050.56b2.3762 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 300  | 0050.56b2.bb96 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 300  | 0050.56b2.f450 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 303  | 0050.56b2.7f35 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 303  | 0050.56b2.ac8c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 303  | 0050.56b2.b7ee | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 405  | 0050.56b2.9d53 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 405  | 0050.56b2.b03c | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 405  | 0050.56b2.f912 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 415  | 0050.56b2.0960 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 415  | 0050.56b2.f26d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 601  | 0022.bdf8.19ff | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.34e4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.46e8 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.5423 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.9a3f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.a729 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.cb4e | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.cd2d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.dfc9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 620  | 0050.56b2.ede4 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 621  | 0050.56b2.080d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 621  | 0050.56b2.0ee3 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 621  | 0050.56b2.7d2b | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 621  | 0050.56b2.b623 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 622  | 0050.56b2.3bb9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 622  | 0050.56b2.7ad0 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 622  | 0050.56b2.f61d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 622  | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 624  | 0050.56b2.9b3d | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 624  | 0050.56b2.c256 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 625  | 0050.56b2.37e9 | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 626  | 0050.56b2.afcb | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 626  | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 800  | 00a3.8eeb.b33f | dynamic | 0   | F   | F    | Po5              | 
+| ipn11  | 800  | 14a2.a0ec.7504 | dynamic | 0   | F   | F    | Po800            | 
+| ipn11  | 3    | 04a7.410f.eb41 | dynamic | 0   | F   | F    | vPC Peer-Link    | 
+| ipn11  | -    | 3c51.0ee0.447f | static  | -   | F   | F    | sup-eth1(R)      | 
+| ipn11  | 3    | 3c51.0ee0.447f | static  | -   | F   | F    | sup-eth1(R)      | 
+| ipn11  | 3    | a0b4.3971.f6d3 | static  | -   | F   | F    | vPC Peer-Link(R) | 
++--------+------+----------------+---------+-----+-----+------+------------------+
+
+Filter: mac, vlan
+View:   state (def)
+```
+
+[[Back]](./Mac.md)

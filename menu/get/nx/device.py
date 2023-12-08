@@ -31,12 +31,12 @@ def get_nx_device_command(
     try:
         settings_handler = settings.NexusSettings(log_id=ctx.run_id)
 
-        switches = settings_handler.get_nexus_switches()
+        switches = settings_handler.get_nexus_devices()
         if switches is None:
             ctx.my_output.error('Failed to get Nexus devices')
             raise ErrorExit
 
-        settings_handler.print_nexus_switches(
+        settings_handler.print_nexus_devices(
             switches,
             show_password=show_password
         )
