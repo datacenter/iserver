@@ -8,31 +8,31 @@ Important note: documentation is partial and it will be uploaded again once sens
 
 Compute
 - [Intersight](./doc/intersight/README.md)
-- [IMC](./doc/imc/README.md)
-- [Redfish](./doc/redfish/README.md)
-- [UCSM](./doc/ucsm/README.md)
+- IMC
+- Redfish
+- UCSM
 
 Networking
-- [ACI](./doc/aci/README.md)
-- [Nexus](./doc/nexus/README.md)
+- ACI
+- Nexus
 
 Virtualization
-- [OpenStack](./doc/osp/README.md)
-- [vCenter](./doc/vcenter/README.md)
+- OpenStack
+- vCenter
 
 Containers
-- [Helm](./doc/helm/README.md)
-- [Kubernetes](./doc/k8s/README.md)
-- [OpenShift](./doc/ocp/README.md)
+- Helm
+- Kubernetes
+- OpenShift
 
 Orchestration
-- [Network Services Orchestrator](./doc/nso/README.md)
+- Network Services Orchestrator
 
 Security
-- [PSIRT](./doc/psirt/README.md)
+- PSIRT
 
 Other
-- [Webex Bot](./doc/bot/README.md)
+- Webex Bot
 
 ## Installation
 
