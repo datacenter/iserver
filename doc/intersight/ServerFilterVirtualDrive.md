@@ -20,7 +20,7 @@ Virtual drive count filtering options:
 
 ```
 # iserver get server
-    --name p2b
+    --name test
     --vd count:gt1 -v vd
 
 iaccount demo (cache: any)

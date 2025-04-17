@@ -112,11 +112,8 @@ Ctx:    ip, mac
 
 ```
 # iserver get server
-    --group p2b
+    --group test
     --fan state:nok -v fan
-    --iaccount demo
-    --ttl 0
-    --anonymize
 
 iaccount demo (cache: any)
 Select servers...

@@ -15,9 +15,6 @@ Examples
 ```
 # iserver get server
     --pci model:xxv710 -v pci
-    --iaccount demo
-    --ttl 0
-    --anonymize
 
 iaccount demo (cache: any)
 Select servers...

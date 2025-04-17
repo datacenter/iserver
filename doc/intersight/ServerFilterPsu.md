@@ -56,10 +56,7 @@ Ctx:    ip, mac
 
 ```
 # iserver get server
-    --psu serial:2338 -v psu
-    --iaccount demo
-    --ttl 0
-    --anonymize
+    --psu serial:xyz -v psu
 
 iaccount demo (cache: any)
 Select servers...

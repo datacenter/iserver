@@ -6,9 +6,6 @@
 # iserver get server
     --group test
     --days 100 -v workflow
-    --iaccount demo
-    --ttl 0
-    --anonymize
 
 iaccount demo (cache: any)
 Select servers...

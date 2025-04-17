@@ -5,9 +5,6 @@
 ```
 # iserver get server
     --group test-env -v power
-    --iaccount demo
-    --ttl 0
-    --anonymize
 
 iaccount demo (cache: any)
 Select servers...

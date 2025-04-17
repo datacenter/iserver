@@ -5,7 +5,7 @@
 Mix-and-match filtering options with implicit logical AND rule being applied.
 
 ```
-name:p2b
+name:server
 ip:10.**.**.**
 ip:10.**.**.*/24
 serial:myserial

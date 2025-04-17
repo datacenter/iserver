@@ -50,9 +50,6 @@ Ctx:    ip, mac
 ```
 # iserver get server
     --gpu model:nvidia -v gpu
-    --iaccount demo
-    --ttl 0
-    --anonymize
 
 iaccount demo (cache: any)
 Select servers...
