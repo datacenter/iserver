@@ -32,41 +32,45 @@ Advanced filter options:
   - [sc](ServerFilterStorageController.md)
   - [vd](ServerFilterVirtualDrive.md)
 
-View options:
-  - [adv](./ServerViewAdv.md)
-  - [alarm](./ServerViewAlarm.md)
-  - [board](./ServerViewBoard.md)
-  - [boot](./ServerViewBoot.md)
-  - [connector](./ServerViewConnector.md)
-  - [contract](./ServerViewContract.md)
-  - [cpu](./ServerViewCpu.md)
-  - [env](./ServerViewEnv.md)
-  - [fan](./ServerViewFan.md)
-  - [fw](./ServerViewFw.md)
-  - [gpu](./ServerViewGpu.md)
-  - [hcl](./ServerViewHcl.md)
-  - [hw](./ServerViewHw.md)
-  - [inv](./ServerViewInv.md)
-  - [istate](./ServerViewIstate.md)
-  - [kvm](./ServerViewKvm.md)
-  - [lic](./ServerViewLic.md)
-  - [mem](./ServerViewMem.md)
-  - [net](./ServerViewNet.md)
-  - [pci](./ServerViewPci.md)
-  - [power](./ServerViewPower.md)
-  - [profile](./ServerViewProfile.md)
-  - [psu](./ServerViewPsu.md)
-  - [state (default)](./ServerViewState.md)
-  - [storage](./ServerViewStorage.md)
-  - [summary](./ServerViewSummary.md)
-  - [sw](./ServerViewSw.md)
-  - [thermal](./ServerViewThermal.md)
-  - [tpm](./ServerViewTpm.md)
-  - [workflow](./ServerViewWorkflow.md)
+View options with supported output types
+
+Name | Default | JSON | CSV
+--- | --- | --- | ---
+[adv](./ServerViewAdv.md) | V | V |
+[alarm](./ServerViewAlarm.md) | V | V |
+[board](./ServerViewBoard.md) | V | V |
+[boot](./ServerViewBoot.md) | V | V |
+[connector](./ServerViewConnector.md) | V | V |
+[contract](./ServerViewContract.md) | V | V | V
+[cpu](./ServerViewCpu.md) | V | V |
+[env](./ServerViewEnv.md) | V | V |
+[fan](./ServerViewFan.md) | V | V |
+[fw](./ServerViewFw.md) | V | V |
+[gpu](./ServerViewGpu.md) | V | V |
+[hcl](./ServerViewHcl.md) | V | V |
+[hw](./ServerViewHw.md) | V | V |
+[inv](./ServerViewInv.md) | V | V | V
+[istate](./ServerViewIstate.md) | V | V |
+[kvm](./ServerViewKvm.md) | V | V |
+[lic](./ServerViewLic.md) | V | V |
+[mem](./ServerViewMem.md) | V | V |
+[net](./ServerViewNet.md) | V | V |
+[pci](./ServerViewPci.md) | V | V |
+[power](./ServerViewPower.md) | V | V |
+[profile](./ServerViewProfile.md) | V | V |
+[psu](./ServerViewPsu.md) | V | V |
+[state (default)](./ServerViewState.md) | V | V |
+[storage](./ServerViewStorage.md) | V | V |
+[summary](./ServerViewSummary.md) | V | V |
+[sw](./ServerViewSw.md) | V | V |
+[thermal](./ServerViewThermal.md) | V | V |
+[tpm](./ServerViewTpm.md) | V | V |
+[workflow](./ServerViewWorkflow.md) | V | V |
 
 Output options:
   - [default](./ServerOutputDefault.md)
   - json
+  - csv (using --csv filename)
 
 ```
 # iserver get server --help
@@ -110,14 +114,12 @@ Options:
                                 [default: state]
   --days INTEGER                Last <n> days workflows
   --ttl TEXT                    Cache TTL
-  --inventory TEXT              Inventory CSV filename
+  --csv TEXT                    CSV filename supported for selected views
   --set TEXT                    Set as group
   -o, --output [default|json]   [default: default]
   --anonymize                   Anonymized output
   --devel                       Developer output
   --help                        Show this message and exit.
-
-Info: finished in 139 ms and logs saved in /tmp/iserver\50005c7daef0
 ```
 
 ## Servers Group
