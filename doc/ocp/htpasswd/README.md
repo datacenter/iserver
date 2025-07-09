@@ -198,3 +198,27 @@ OAuth HTPasswd [#1]
 |         |                   |                   |           | user67         |
 +---------+-------------------+-------------------+-----------+----------------+
 ```
+
+## Delete user
+
+```
+# iserver set ocp htpasswd --cluster my-cluster --provider my_test2_provider --user user66 --mode delete
+
++---------+-------------------+-------------------+-----------+----------------+
+| OAuth   | Name              | Secret            | Is Secret | User           |
++---------+-------------------+-------------------+-----------+----------------+
+| cluster | my_test2_provider | my-test2-provider | True      | user66 (admin) |
+|         |                   |                   |           | user67         |
++---------+-------------------+-------------------+-----------+----------------+
+
+Deleting user [user66] and identity [my_test2_provider:user66]
+User already deleted, checking for identity leftover
+Deleting user [user66] from cluster-admin group
+Secret openshift-config/my-test2-provider updated
+
++---------+-------------------+-------------------+-----------+--------+
+| OAuth   | Name              | Secret            | Is Secret | User   |
++---------+-------------------+-------------------+-----------+--------+
+| cluster | my_test2_provider | my-test2-provider | True      | user67 |
++---------+-------------------+-------------------+-----------+--------+
+```
