@@ -19,6 +19,8 @@ Note: while UI supports OVNKubernetes CNI only, assisted installer [REST API](./
 - zero-touch OpenShift installation on bare metal servers
 - OpenShift cluster post-installation tasks
 
+YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ24Dv2_X2Atsi)
+
 ## Requirements
 
 Get the data from RedHat Console
