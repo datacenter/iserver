@@ -78,6 +78,7 @@ Directory | manifests | True | False | [Custom CNI manifests](./bm/input_data_cn
 
 ## Modules
 
+- [Verification](./bm/verification.md)
 - [Fabric configuration](./bm/input_data_fabric.md)
 - [Cluster installation](./bm/cluster.md)
 - [Post-installation tasks](./bm/input_data_tasks.md)
