@@ -1,0 +1,70 @@
+[
+    {
+        "cli": {
+            "exec": [
+                "oc get node"
+            ],
+            "virtctl": true,
+            "helm": true,
+            "bashrc": true,
+            "cilium": true,
+            "hubble": true
+        }
+    },
+    {
+        "cni": {
+            "ovs": "0.39.0"
+        }
+    },
+    {
+        "identity": {
+            "provider": "htpasswd",
+            "filename": "htpasswd",
+            "admin": [
+                "__ALL__"
+            ]
+        }
+    },
+    {
+        "identity": {
+            "provider": "kubeadmin",
+            "delete": false
+        }
+    },
+    {
+        "ssh": {
+            "keys": [
+                "ssh-ed25519 AAAAC... username@host"
+            ]
+        }
+    },
+    {
+        "nmstate": {
+            "lldp": {
+                "nic-fw-disable": true,
+                "enable": true
+            }
+        },
+        "nfd": {},
+        "sriov": {
+            "policy": [
+                {
+                    "interface": "ens1f0",
+                    "type": "netdevice",
+                    "name": "ens1f0net",
+                    "resource": "ens1f0net",
+                    "vfs": "64",
+                    "range": "0-31"
+                },
+                {
+                    "interface": "ens1f0",
+                    "type": "vfio-pci",
+                    "name": "ens1f0dpdk",
+                    "resource": "ens1f0dpdk",
+                    "vfs": "64",
+                    "range": "32-63"
+                }
+            ]
+        }
+    }
+]

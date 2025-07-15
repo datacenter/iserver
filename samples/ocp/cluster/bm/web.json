@@ -1,0 +1,5 @@
+{
+    "ip": "localhost",
+    "image_base_url": "http://10.10.10.10:8080",
+    "image_upload_directory": "/home/user/image"
+}

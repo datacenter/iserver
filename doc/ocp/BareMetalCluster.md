@@ -63,6 +63,8 @@ File | [nmstate.yaml](./bm/input_data_nmstate.md) | False | True | nmstate-forma
 Directory | ssh | True | False | with any-name.pub files for extra SSH pubkey configuration enabled with cluster.tasks.ssh section
 Directory | manifests | True | False | [Custom CNI manifests](./bm/input_data_cni.md) with optional variables defined in cluster.json
 
+[Example configuration](../../../../tree/master/samples/ocp/cluster/bm)
+
 ## Create
 
 - execute 'iserver create ocp cluster bm --dir [directory-name]'

@@ -1,0 +1,5 @@
+{
+    "http_proxy": "http://proxy.domain.com:80",
+    "https_proxy": "http://proxy.domain.com:80",
+    "no_proxy": "domain.com"
+}
