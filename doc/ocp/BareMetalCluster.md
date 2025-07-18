@@ -21,6 +21,10 @@ Note: while UI supports OVNKubernetes CNI only, assisted installer [REST API](./
 
 YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ24Dv2_X2Atsi)
 
+Examples:
+- [configuration template](../../../../tree/master/samples/ocp/cluster/bm)
+- [OpenShift Cluster on UCSX with NVIDIA GPU](./bm/uc1.md)
+
 ## Requirements
 
 Get the data from RedHat Console
@@ -62,8 +66,6 @@ File | [fabric.json](./bm/input_data_fabric.md) | True | False | cluster.fabric 
 File | [nmstate.yaml](./bm/input_data_nmstate.md) | False | True | nmstate-formatted file for interface configuration of the servers referred by cluster.server.nmstate value with variables
 Directory | ssh | True | False | with any-name.pub files for extra SSH pubkey configuration enabled with cluster.tasks.ssh section
 Directory | manifests | True | False | [Custom CNI manifests](./bm/input_data_cni.md) with optional variables defined in cluster.json
-
-[Example configuration](../../../../tree/master/samples/ocp/cluster/bm)
 
 ## Create
 
