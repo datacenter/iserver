@@ -103,7 +103,7 @@ REST POST API
       "ssh_authorized_key": "ssh-ed25519 xyz",
       "static_network_config": [
           {
-              "network_yaml": "interfaces:\r\n- name: eno5\r\n  type: ethernet\r\n  state: up\r\n- name: eno6\r\n  type: ethernet\r\n  state: up\r\n- name: bond1\r\n  type: bond\r\n  state: up\r\n  link-aggregation:\r\n    mode: 802.3ad\r\n    options:\r\n      lacp_rate: slow\r\n    port:\r\n    - eno5\r\n    - eno6\r\n- name: bond1.666\r\n  type: vlan\r\n  state: up\r\n  vlan:\r\n    base-iface: bond1\r\n    id: 666\r\n  ipv4:\r\n    address:\r\n    - ip: 10.4.4.1\r\n      prefix-length: 28\r\n    dhcp: false\r\n    enabled: true\r\nroutes:\r\n  config:\r\n  - destination: 0.0.0.0/0\r\n    next-hop-address: 10.4.4.15\r\n    next-hop-interface: bond1.666\r\ndns-resolver:\r\n  config:\r\n    search:\r\n    - cisco.com\r\n    server:\r\n    - 10.3.3.3",
+              "network_yaml": "interfaces:\r\n- name: eno5\r\n  type: ethernet\r\n  state: up\r\n- name: eno6\r\n  type: ethernet\r\n  state: up\r\n- name: bond1\r\n  type: bond\r\n  state: up\r\n  link-aggregation:\r\n    mode: 802.3ad\r\n    options:\r\n      lacp_rate: slow\r\n    port:\r\n    - eno5\r\n    - eno6\r\n- name: bond1.666\r\n  type: vlan\r\n  state: up\r\n  vlan:\r\n    base-iface: bond1\r\n    id: 666\r\n  ipv4:\r\n    address:\r\n    - ip: 10.4.4.1\r\n      prefix-length: 28\r\n    dhcp: false\r\n    enabled: true\r\nroutes:\r\n  config:\r\n  - destination: 0.0.0.0/0\r\n    next-hop-address: 10.4.4.15\r\n    next-hop-interface: bond1.666\r\ndns-resolver:\r\n  config:\r\n    search:\r\n    - domain.com\r\n    server:\r\n    - 10.3.3.3",
               "mac_interface_map": [
                   {
                       "logical_nic_name": "eno5",

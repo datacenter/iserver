@@ -10,7 +10,7 @@ The automation goal
 
 ## Description
 
-The cluster has been deployed and configured based on the following files
+The cluster deployed and configured based on the following files
 - cluster.json definining cluster and tasks intent
 - single.yaml for single interface with vlan connection to fabric
 - htpasswd for HTPasswd Identity Provider configuration
@@ -864,3 +864,5 @@ NAME            PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOL
 lvms-vg1        topolvm.io       Delete          WaitForFirstConsumer   true                   21m
 nfs (default)   nfs.csi.k8s.io   Delete          WaitForFirstConsumer   true                   18m
 ```
+
+[Back](../BareMetalCluster.md)

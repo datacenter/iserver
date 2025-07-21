@@ -24,6 +24,7 @@ YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ2
 Examples:
 - [configuration template](../../../../tree/master/samples/ocp/cluster/bm)
 - [OpenShift Cluster on UCSX with NVIDIA GPU](./bm/uc1.md)
+- [OpenShift Cluster with Cilium CNI](./bm/uc2.md)
 
 ## Requirements
 
