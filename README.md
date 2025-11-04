@@ -23,9 +23,7 @@ Virtualization
 Containers
 - Helm
 - Kubernetes
-- [OpenShift Bare Metal Installation](./doc/ocp/BareMetalCluster.md)
-- [OpenShift vCenter Installation](./doc/ocp/VcenterCluster.md)
-- [OpenShift Operations](./doc/ocp/Operations.md)
+- [OpenShift](./doc/ocp/Operations.md)
 
 Orchestration
 - Network Services Orchestrator

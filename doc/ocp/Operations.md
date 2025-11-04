@@ -1,22 +1,48 @@
 # OpenShift Operations
 
-OpenShift cluster day2 operations are clearly defined in OpenShift documentation. At the same time, some operational tasks require multiple steps, multiple commands, yaml file edits etc.
+Installation
+- [Configure OpenShift console access](./Console.md)
+- [Install on Bare Metal](./BareMetalCluster.md)
+- [Install in VMWare](./VcenterCluster.md)
 
-## Requirement
+Management
+- [Cluster access](./Access.md)
+- [CLI tools](./cli/README.md)
+- [Run automated day2ops workflows via tasks](./Tasks.md)
+- [Operators](./operator/README.md)
 
-On-time-task := load kubeconfig file of OpenShift cluster into iserver
+Configuration
+- [Container Runtime Policy](./cpolicy/README.md)
+- [NTP](./ntp/README.md)
 
-```
-# iserver set ocp kc --cluster my-cluster --file /tmp/kubeconfig
-OCP cluster kubeconfig created: my-cluster
-```
+Hardware
+- [Node Feature Discovery](./nfd/README.md)
+- [NVIDIA GPU](./gpu/README.md)
 
-Workflow commands take --cluster [name] parameter that selects the target OpenShift cluster.
+Networking
+- [OVN-to-Cilium CNI Migration](./migration/README.md)
+- [Cilium](./cilium-cni/README.md)
+- [NMState](./nmstate/README.md)
+- [NNCP](./nncp/README.md)
+- [SR-IOV](./sriov/README.md)
 
-Last used cluster name is cashed and does not have to be defined each time command runs.
+Storage
+- [LVM Storage](./lvm/README.md)
+- [Local Storage](./lso/README.md)
+- [ODF](./odf/README.md)
+- [Trident](./trident/README.md)
 
-## Workflows
+Virtualization
+- [Virtualization](./cnv/README.md)
 
+Security
+- [Certificate Manager](./cert-manager/README.md)
 - [HTPasswd Identity Provider](./htpasswd/README.md)
+- [SSH Access](./ssh/README.md)
+- [Tetragon](./tetragon/README.md)
+
+Monitoring
+- [Grafana](./grafana/README.md)
+- [Splunk](./splunk/README.md)
 
 [[Back]](../../README.md)

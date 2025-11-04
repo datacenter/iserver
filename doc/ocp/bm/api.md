@@ -58,7 +58,6 @@ REST POST API
     "http_proxy": "http://proxy.domain.com:80",
     "https_proxy": "http://proxy.domain.com:80",
     "no_proxy": "domain.com",
-    "olm_operators": [{"name": "cnv"}, {"name": "lvm"}],
     "network_type": "OVNKubernetes",
     "pull_secret": "abc"
   }

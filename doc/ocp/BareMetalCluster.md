@@ -1,91 +1,51 @@
-# OpenShift - Bare Metal Cluster Life Cycle Management
-
-## Problem statement
-
-OpenShift assisted installer is great deployment option provided by RedHat. At the same time
-- trust that network configuration matches the OpenShift cluster configuration (bonding, IP address, VLAN, etc)
-- does not support Cilium CNI from UI level
-- manual configuration of the servers boot from generated ISO
-- UI click-through inputs and interaction i.e. no full automation
-- several post installation steps may be required
-
-Note: while UI supports OVNKubernetes CNI only, assisted installer [REST API](./bm/api.md) supports other CNIs
+# OpenShift Installation on Bare Metal UCS Infrastructure
 
 ## Key Features
 
-![OcpBmClusterOverview](images/ocp_bm_cluster_v2.png)
-
-- network fabric configuration and/or state checks
+- [improves](./bm/assisted_installer.md) assisted installer
 - zero-touch OpenShift installation on bare metal servers
-- OpenShift cluster post-installation tasks
-
-YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ24Dv2_X2Atsi)
-
-Examples:
-- [configuration template](../../../../tree/master/samples/ocp/cluster/bm)
-- [OpenShift Cluster on UCSX with NVIDIA GPU](./bm/uc1.md)
-- [OpenShift Cluster with Cilium CNI](./bm/uc2.md)
+- network fabric checks prior to cluster installation
+- post-installation cluster configuration [tasks](./Tasks.md)
 
 ## Requirements
 
-Get the data from RedHat Console
-- [pull secret](https://console.redhat.com/openshift/install/pull-secret)
-- [access token](https://console.redhat.com/openshift/token)
+- RedHat console REST API one-time [configuration](./Console.md)
+- servers with Redfish enabled
+- internet access via imc interface for communication with RedHat Console
+- web server for servers' boot from iso over http 
+- no http proxy on the way between servers' imc and web server
+- access to machine host network for Kubernetes API
 
-One-time configuration
-- goto [home-dir]/.itool directory that is created the first time you run iserver tool
-- create 'openshift' directory
-- create 'token' one-liner file with access token
-- create 'pull_secret.txt' one-liner file with pull secret
+## Workflow
 
-IP reachability
-- Internet to download ISO from OpenShift Console
-- server imc w/Redfish
-- web server for ISO upload
-- server imc <=> web server for virtual media mount
-- machine host network for Linux SSH and Kubernetes API
+![Workflow](./images/workflow.png)
 
-## Definintion of intent
+## Input files
 
-Rules:
-- input data must be organized in files within single directory passed as parameter to iserver
-- cluster.json mandatory file
-- cluster.json may contain all information
-- intent defitions can be in dedicated files as per table below
+Check input files templates [repository](https://github.com/akaliwod/ocp-bm-cluster/blob/main/README.md) for examples of cluster installation definition.
 
-Type | Name | Fixed filename | Section Required | Note
---- | --- | --- | --- | ---
-File | [cluster.json](./bm/input_data_cluster.md) | True | True | Cluster definition file
-File | [server.json](./bm/input_data_server.md) | True | True | cluster.server section
-File | [proxy.json](./bm/input_data_proxy.md) | True | False | augments cluster with http proxy settings
-File | [ssh.pub](./bm/input_data_ssh_pub.md) | True | True | cluster.ssh_public_key property
-File | [web.json](./bm/input_data_web.md) | True | True | cluster.web_server section
-File | [redfish.json](./bm/input_data_redfish.md) | True | True | augments cluster.server.redfish section with username and password
-File | [tasks.json](./bm/input_data_tasks.md) | True | False | cluster.tasks section
-File | [htpasswd](./bm/input_data_htpasswd.md) | False | False | htpasswd-formatted file referred in cluster.tasks.identity provider configuration
-File | [fabric.json](./bm/input_data_fabric.md) | True | False | cluster.fabric section
-File | [nmstate.yaml](./bm/input_data_nmstate.md) | False | True | nmstate-formatted file for interface configuration of the servers referred by cluster.server.nmstate value with variables
-Directory | ssh | True | False | with any-name.pub files for extra SSH pubkey configuration enabled with cluster.tasks.ssh section
-Directory | manifests | True | False | [Custom CNI manifests](./bm/input_data_cni.md) with optional variables defined in cluster.json
+Cluster installation definition files
+- [cluster.json](./bm/input_data_cluster_base.md)
+- [server.json](./bm/input_data_server.md)
+- [redfish.json](./bm/input_data_redfish.md)
+- [nmstate.yaml](./bm/input_data_nmstate.md)
+- [ssh.pub](./bm/input_data_ssh_pub.md)
+- [web.json](./bm/input_data_web.md)
+- [proxy.json](./bm/input_data_proxy.md)
 
-## Create
+Post-installation [tasks](./Tasks.md) can be defined in tasks.json file.
 
-- execute 'iserver create ocp cluster bm --dir [directory-name]'
-- option --fabric check (default) to trigger fabric check workflow
-- option --fabric patch to trigger fabric configuration workflow
-- option --mode create (default) to trigger cluster installation workflow
-- option --mode check to trigger cluster intent definition check-only workflow
+## HowTo Create
 
-## Delete
+```
+# iserver create ocp cluster bm --dir <directory> --mode install
+```
 
-- execute 'iserver delete ocp cluster bm --dir [directory-name]'
-- option --fabric to trigger fabric unconfiguration workflow
+[Example output](./bm/example.md)
 
-## Modules
+## Other Resources
 
-- [Verification](./bm/verification.md)
-- [Fabric configuration](./bm/input_data_fabric.md)
-- [Cluster installation](./bm/cluster.md)
-- [Post-installation tasks](./bm/input_data_tasks.md)
+YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ24Dv2_X2Atsi)
 
-[[Back]](../../README.md)
+
+[[Back]](./Operations.md)

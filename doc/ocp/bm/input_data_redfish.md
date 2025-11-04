@@ -1,64 +1,6 @@
-# Redfish authentication
+# redfish.json
 
-iserver uses redfish to configure virtual media mount, boot order and trigger server reboot. It is defined per server in either [server](./input_data_server.md) section or redfish.json file.
-
-## Server section in cluster.json
-
-```
-    "server": [
-        {
-            "hostname": "bm1-1"
-            "redfish": {
-                "username": "user",
-                "password": "pass"
-            }
-        },
-        {
-            "hostname": "bm1-2"
-            "redfish": {
-                "username": "user",
-                "password": "pass"
-            }
-        },
-        {
-            "hostname": "bm1-3"
-            "redfish": {
-                "username": "user",
-                "password": "pass"
-            }
-        }
-    ]
-```
-
-## server.json file
-
-```
-[
-    {
-        "hostname": "bm1-1"
-        "redfish": {
-            "username": "user",
-            "password": "pass"
-        }
-    },
-    {
-        "hostname": "bm1-2"
-        "redfish": {
-            "username": "user",
-            "password": "pass"
-        }
-    },
-    {
-        "hostname": "bm1-3"
-        "redfish": {
-            "username": "user",
-            "password": "pass"
-        }
-    }
-]
-```
-
-## redfish.json
+Redfish credentials defined in redfish.json are used for redfish authentication for every server defined in [server.json](./input_data_server.md).
 
 ```
 {
@@ -67,6 +9,6 @@ iserver uses redfish to configure virtual media mount, boot order and trigger se
 }
 ```
 
-Note: in case of redfish.json, do not include redfish.username or redfish.password section in cluster.server. It will be overwritten anyway based on file content.
+In case of Fabric Interconnect connected servers, the credentials are for FI. So as the endpoint_ip in server.json. inventory_id attribute selects the server.
 
 [Back](../BareMetalCluster.md)
