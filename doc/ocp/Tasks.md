@@ -74,15 +74,26 @@ Example:
 
 Feature | Create | Delete
 --- | --- | ---
+Cilium Image | [Link](./cilium-cni/set_image_task.md) | ---
+Cilium Mesh | [Link](./cilium-mesh/create_task.md) | [Link](./cilium-mesh/delete_task.md)
+Cilium Private Network | [Link](./cilium-pnet/create_task.md) | [Link](./cilium-pnet/delete_task.md)
+Cilium Timescape | [Link](./cilium-timescape/create_task.md) | [Link](./cilium-timescape/delete_task.md)
+CLI tools | [Link](./cli/create_task.md) | ---
 Container virtualization (cnv) | [Link](./cnv/create_task.md) | [Link](./cnv/delete_task.md)
 GPU | [Link](./gpu/create_task.md) | [Link](./gpu/delete_task.md)
 Grafana | [Link](./grafana/create_task.md) | [Link](./grafana/delete_task.md)
 HTPasswd Identity Provider | [Link](./htpasswd/create_task.md) | [Link](./htpasswd/delete_task.md)
+Intersight Open Telemetry | [Link](./iotel/create_task.md) | [Link](./iotel/delete_task.md)
+Intersight Server Discovery | [Link](./imm/create_task.md) | [Link](./imm/delete_task.md)
 Local Storage | [Link](./lso/create_task.md) | [Link](./lso/delete_task.md)
 LVM Storage | [Link](./lvm/create_task.md) | [Link](./lvm/delete_task.md)
 Node Feature Discovery (nfd) | [Link](./nfd/create_task.md) | [Link](./nfd/delete_task.md)
 NMstate | [Link](./nmstate/create_task.md) | [Link](./nmstate/delete_task.md)
+NVIDIA NIM | [Link](./nim/create_task.md) | [Link](./nim/delete_task.md)
 OpenShift Data Foundation (odf) | [Link](./odf/create_task.md) | [Link](./odf/delete_task.md)
+Red Hat OpenShift AI | [Link](./ai/create_task.md) | [Link](./ai/delete_task.md)
+Serverless | [Link](./serverless/create_task.md) | [Link](./serverless/delete_task.md)
+Service Mesh | [Link](./service-mesh/create_task.md) | [Link](./service-mesh/delete_task.md)
 SR-IOV | [Link](./sriov/create_task.md) | [Link](./sriov/delete_task.md)
 SSH | [Link](./ssh/create_task.md) | [Link](./ssh/delete_task.md)
 Tetragon | [Link](./tetragon/create_task.md) | [Link](./tetragon/delete_task.md)
