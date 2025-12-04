@@ -46,8 +46,4 @@ aggregator = "count_results"
 interval = 60
 ```
 
-## Templates 
-
-You can either define the pollers with the right filtering rules yourself manually or use the pollers [templates](./templates.md) that combined with [Intersight server discovery](../imm/README.md) feature generate the pollers definition with the right cluster name, cluster node names as well as Intersight object ids.
-
 [[Back]](./README.md)

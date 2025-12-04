@@ -19,4 +19,11 @@ iserver delete ocp grafana --mode wipe | delete grafana crds | [Link](./delete_w
 iserver delete ocp grafana --mode all | delete grafana crds, disable monitoring and delete operator | [Link](./delete_all.md)
 iserver delete ocp task | in task way | [Link](./delete_task.md)
 
+## Extras
+
+- [grafana instance](./grafana_instance.md)
+- [empty dashboard](./add_empty_dashboard.md)
+- [dashboard with panels](./add_panels_dashboard.md)
+- [integration with Intersight OpenTelemtry](https://github.com/akaliwod/imonitor/blob/master/README.md)
+
 [[Back]](../Operations.md)

@@ -2,12 +2,13 @@
 
 ## Workflow
 
-- delete service monitor
-- delete service
-- delete deployment
-- delete configmaps
-- delete secret
-- delete namespace (if there are no resources)
+- delete kubernetes resources for instance selected with --suffix
+  - service monitor
+  - service
+  - deployment
+  - configmaps
+  - secret
+- delete intersight-otel namespace (if there are no resources left)
 
 ## Requirements
 

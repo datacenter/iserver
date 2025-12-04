@@ -52,7 +52,7 @@ None
   --no-confirm     Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 - grafana operator installed
 - user-workload monitoring enabled (optional)

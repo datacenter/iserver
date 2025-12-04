@@ -19,7 +19,7 @@ None
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/grafana/operator_create.png)
 

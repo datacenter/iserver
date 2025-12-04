@@ -50,7 +50,7 @@ None
   --no-confirm     Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 - grafana instance deleted
 - all resources wiped

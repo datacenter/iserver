@@ -2,7 +2,6 @@
 
 ## Workflow
 
-- check user-workload monitoring [enabled](../prometheus/enable_monitoring.md)
 - create namespace
 - create secret with Intersight authentication details
 - create configmap for otel-collector
@@ -10,12 +9,6 @@
 - create deployment with intersight poller and open telemetry collector
 - create service for prometheus metrics
 - create service monitor for prometheus metrics collection
-
-If deployment is present then simplified workflow is executed that effectively updates the pollers definition
-- delete deployment
-- delete configmap with intersight poller
-- create configmap for intersight poller based on user-defined query targets
-- create deployment with intersight poller and open telemetry collector
 
 ## Requirements
 
@@ -31,9 +24,6 @@ If deployment is present then simplified workflow is executed that effectively u
   --pem TEXT         Intersight pem filename
   --suffix TEXT      Resources name suffix
   --pollers TEXT     Pollers definition file
-  --template [advisory|alarm|all]
-  --target TEXT                   [default: __self__]
-  --pmode [replace|add]           [default: replace]
   --verbose          Verbose output
   --no-confirm       Confirmation mode
 ```
@@ -42,19 +32,7 @@ Notes:
 - Intersight authentication can be defined with [iaccount](../../intersight/README.md) or with key-id and pem filename
 - workflow creates multiple CRDs with suffix set to iaccount value by default
 - use --suffix if iaccount is not specified or you want different suffix
-- pollers filename must have proper [syntax](https://github.com/cgascoig/intersight-otel/blob/main/examples/kubernetes/all-in-one.yaml)
-- template, target and pmode attributes control the way pollers are created and pushed
-
-Parameter | Generation | Intent 
---- | ---| --- 
---pollers /tmp/pollers.txt | no | set pollers from file 
---pollers /tmp/pollers.txt --mode add | no | as above but add to existing pollers in configmap 
---template all | yes | set generated pollers for all templates in scope of own cluster (self) 
---template all --mode add | yes | as above but add to existing pollers in configmap 
---template all --target ocp:bm2 | yes | set generated pollers for all templates in scope of selected cluster 
---template all --target ocp:bm2 --mode add | yes | as above but add to existing pollers in configmap 
-
-Refer to [pollers](./pollers.md) and [templates](./templates.md) documentation for more details.
+- pollers file content must have proper [syntax](./pollers.md)
 
 ## Non-configurable defaults
 
