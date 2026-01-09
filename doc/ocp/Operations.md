@@ -8,11 +8,14 @@ Installation
 Management
 - [Cluster access](./Access.md)
 - [CLI tools](./cli/README.md)
-- [Run automated day2ops workflows via tasks](./Tasks.md)
+- [Web terminal](./web-terminal/README.md)
+- [Tasks](./Tasks.md)
 - [Operators](./operator/README.md)
 - [Node reload](./reload/README.md)
+- [Image registry](./image-registry/manual.md)
 
 Configuration
+- [Apply CRDs from yaml](./apply/README.md)
 - [Container Runtime Policy](./cpolicy/README.md)
 - [NTP](./ntp/README.md)
 
@@ -26,14 +29,18 @@ Networking
 - [SR-IOV](./sriov/README.md)
 
 Cilium 
-- [OVN-to-Cilium CNI Migration](./migration/README.md)
+- [Migration](./migration/README.md)
 - [CNI](./cilium-cni/README.md)
 - [Cluster Mesh](./cilium-mesh/README.md)
+- [Private Network](./cilium-pnet/README.md)
+- [Isovalent Network Bridge](./cilium-inb/README.md)
 
 Storage
 - [Disk](./disk/README.md)
+- [Storage Class](./storage-class/README.md)
 - [LVM Storage](./lvm/README.md)
 - [Local Storage](./lso/README.md)
+- [MinIO AIStor](./minio/README.md)
 - [ODF](./odf/README.md)
 - [Trident](./trident/README.md)
 
@@ -42,7 +49,8 @@ Virtualization
 
 AI
 - [Red Hat OpenShift AI](./ai/README.md)
-- [NVIDIA GPU](./gpu/README.md)
+- [NVIDIA GPU Operator](./gpu/README.md)
+- [GPU Passthrough (VFIO)](./gpu-pt/README.md)
 - [NVIDIA NIM](./nim/README.md)
 - [Serverless](./serverless/README.md)
 - [Service Mesh v2](./service-mesh/README.md)
