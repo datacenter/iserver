@@ -1,44 +1,54 @@
-# Certificate Manager - Enable feature
+# Certificate Manager - Create via Task
 
-## Workflow
+## Input
 
-- check cert manager repo and helm chart
-- add repo if required
-- install helm if required
-- check cert manager crds
+```
+[
+  {
+    "cert-manager": {
+      "feature": {}
+    }
+  }
+]
+```
+
+Notes:
+- [feature](./disable.md) trigger workflow execution with optional input parameters
+- you can reuse exactly the same input file that is used for [delete task](./delete_task.md)
 
 ## Requirements
 
-Cluster with [helm cli enabled](../cli/helm.md)
-
-## Expected outcome
-
-Certificate manager CRDs available
-- Issuer
-- Certificate
+None
 
 ## Configurable options
 
 ```
-# iserver set ocp cert-manager 
-  --cluster TEXT  Cluster Name
+# iserver set ocp task 
+  --cluster TEXT   Cluster Name
+  --filename TEXT  Tasks filename
+  --validate       Validate only
+  --break          Break on error
+  --no-confirm     Confirmation mode
 ```
 
-## Non-configurable defaults
+## Expected outcome
 
-```
-{
-    "namespace": "cert-manager",
-    "helm": "cert-manager",
-    "repo_name": "jetstack",
-    "repo_url": "https://charts.jetstack.io"
-}
-```
+- certificate manager installed
+- crds available
+  - Issuer
+  - Certificate
 
 ## Example
 
 ```
-# iserver set ocp ocp cert-manager --cluster bm1 
+# iserver set ocp task --cluster bm1 --filename C:\tmp\task.json --no-confirm
+
+OpenShift Workflow - Create Tasks
+=================================
+
+Validate Input
+--------------
+Completed
 
 
 OpenShift Workflow - Certificate Manager - Install
@@ -58,11 +68,11 @@ Workflow Parameters
 
 OpenShift Cluster
 -----------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
+- cluster: bm1 [domain:*****]
+- api [*****]: ok
 - dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-- management node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
+- cluster node [*****]: ok
+- management node [*****]: ok
 - cli helm: ok
 
 Check repo jetstack https://charts.jetstack.io
@@ -79,7 +89,7 @@ Not found
 Install jetstack/cert-manager
 ~~~
 NAME: cert-manager
-LAST DEPLOYED: Thu Oct 30 16:40:09 2025
+LAST DEPLOYED: Thu Nov  6 16:02:26 2025
 NAMESPACE: cert-manager
 STATUS: deployed
 REVISION: 1
