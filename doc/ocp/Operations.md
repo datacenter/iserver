@@ -28,9 +28,12 @@ Networking
 - [NNCP](./nncp/README.md)
 - [SR-IOV](./sriov/README.md)
 
-Cilium 
-- [Migration](./migration/README.md)
-- [CNI](./cilium-cni/README.md)
+Cilium CNI
+- [State](./cilium-state/README.md)
+- [Version](./cilium-version/README.md)
+- [OVN-2-Cilium CNI Migration](./cni-migration/README.md)
+
+Cilium Features
 - [Cluster Mesh](./cilium-mesh/README.md)
 - [Private Network](./cilium-pnet/README.md)
 - [Isovalent Network Bridge](./cilium-inb/README.md)
@@ -38,14 +41,21 @@ Cilium
 Storage
 - [Disk](./disk/README.md)
 - [Storage Class](./storage-class/README.md)
+- [Persistent Volume Claim](./k8s-pvc/README.md)
+- [Local Image Registry](./image-registry/README.md)
+
+CSI
 - [LVM Storage](./lvm/README.md)
 - [Local Storage](./lso/README.md)
 - [MinIO AIStor](./minio/README.md)
 - [ODF](./odf/README.md)
+- [Portworx](./portworx/README.md)
 - [Trident](./trident/README.md)
 
 Virtualization
-- [Virtualization](./cnv/README.md)
+- [Container Virtualization Operator](./cnv/README.md)
+- [CDI Data Import Cron](./cnv-data-import/README.md)
+- [Migration Toolkit for Virtualization](./mtv/README.md)
 
 AI
 - [Red Hat OpenShift AI](./ai/README.md)
