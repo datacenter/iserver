@@ -9,7 +9,7 @@ Important note: documentation is partial and it will be uploaded again once sens
 Compute
 - [Intersight](./doc/intersight/README.md)
 - IMC
-- [Intersight](./doc/redfish/README.md)
+- [Redfish](./doc/redfish/README.md)
 - UCSM
 
 Networking
