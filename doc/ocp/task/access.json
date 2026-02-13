@@ -1,0 +1,21 @@
+[
+    {
+        "ssh": {
+            "filename": [
+                "C:\\tmp\\key.pub"
+            ]
+        }
+    },
+    {
+        "identity": {
+            "type": "htpasswd",
+            "provider": "custom",
+            "filename": [
+                "C:\\tmp\\htpasswd"
+            ],
+            "admins": [
+                "__ALL__"
+            ]
+        }
+    }
+] 

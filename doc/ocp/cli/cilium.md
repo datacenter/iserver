@@ -15,7 +15,7 @@ Add cilium cli on the cluster [management node](../Access.md)
 Cluster [connector](../Access.md) must be defined with management ip
 Ssh access to management node must work
 
-## Expected Outcome
+## Expected outcome
 
 ```
 $ ssh core@10.10.10.10                                  

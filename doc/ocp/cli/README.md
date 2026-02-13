@@ -7,6 +7,7 @@ Command | Intent | Details
 iserver get ocp connector -v cli | check cli tools | [Link](./get.md)
 iserver set ocp cli-butane | add butane cli | [Link](./butane.md)
 iserver set ocp cli-cilium | add cilium cli | [Link](./cilium.md)
+iserver get ocp cli-helm | check helm cli | [Link](./get_helm.md)
 iserver set ocp cli-helm | add helm cli | [Link](./helm.md)
 iserver set ocp cli-hubble | add hubble cli | [Link](./hubble.md)
 iserver set ocp cli-virtctl | add virtctl cli | [Link](./virtctl.md)

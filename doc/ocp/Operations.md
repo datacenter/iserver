@@ -26,22 +26,24 @@ Hardware
 Networking
 - [NMState](./nmstate/README.md)
 - [NNCP](./nncp/README.md)
+- [Network Attachment Definition (NAD)](./k8s-nad/README.md)
 - [SR-IOV](./sriov/README.md)
 
-Cilium CNI
+Cilium
+- [Operator](./cilium-operator/README.md)
+- [Agent](./cilium-agent/README.md)
+- [Configuration](./cilium-config/README.md)
 - [State](./cilium-state/README.md)
-- [Version](./cilium-version/README.md)
-- [OVN-2-Cilium CNI Migration](./cni-migration/README.md)
-
-Cilium Features
-- [Cluster Mesh](./cilium-mesh/README.md)
-- [Private Network](./cilium-pnet/README.md)
-- [Isovalent Network Bridge](./cilium-inb/README.md)
+- [Migration](./cni-migration/README.md)
+- Features
+    - [Cluster Mesh](./cilium-mesh/README.md)
+    - [Private Network](./cilium-pnet/README.md)
+    - [Isovalent Network Bridge](./cilium-inb/README.md)
 
 Storage
 - [Disk](./disk/README.md)
 - [Storage Class](./storage-class/README.md)
-- [Persistent Volume Claim](./k8s-pvc/README.md)
+- [Volume](./k8s-volume/README.md)
 - [Local Image Registry](./image-registry/README.md)
 
 CSI
@@ -54,6 +56,7 @@ CSI
 
 Virtualization
 - [Container Virtualization Operator](./cnv/README.md)
+- [Virtual Machine](./k8s-vm/README.md)
 - [CDI Data Import Cron](./cnv-data-import/README.md)
 - [Migration Toolkit for Virtualization](./mtv/README.md)
 

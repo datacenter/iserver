@@ -1,0 +1,44 @@
+[
+    {
+        "imm": {
+            "iaccount": "iac"
+        }
+    },
+    {
+        "iotel": {
+            "instance": {
+                "iaccount": "iac",
+                "pollers": "C:\\tmp\\pollers.txt"
+            }
+        }
+    },
+    {
+        "prometheus": {
+           "user": {}
+        }
+    },
+    {
+        "grafana": {
+            "operator": {},
+            "instance": [
+                {
+                    "instance": "testa",
+                    "username": "usera",
+                    "password": "pass",
+                    "prometheus": true,
+                    "datasource": "k8s"
+                }
+            ]
+        }
+    },
+    {
+        "splunk": {
+            "operator": {},
+            "instance": [
+                {
+                    "instance": "s1"
+                }
+            ]
+        }
+    }
+]

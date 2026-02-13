@@ -1,0 +1,37 @@
+[
+    {
+        "lvm": {
+            "operator": {},
+            "cluster": {
+                "device": [
+                  "sda",
+                  "sdb"
+                ]
+            }
+        }
+    },
+    {
+        "lso": {
+            "operator": {},
+            "volume": {
+                "sc": "local-sc",
+                "device": ["bm1-1:wwn-0xaaa", "bm1-2:wwn-0xbbb"],
+                "volume": "block",
+                "max": 2,
+                "limit": ["type:disk"]
+            }
+        }
+    },
+    {
+        "odf": {
+            "operator": {},
+            "cluster": {
+                "replica": 3,
+                "count": 2,
+                "nfs": true,
+                "default_sc": true,
+                "flexible": true
+            }
+        }
+    }
+]

@@ -13,7 +13,7 @@ Add virtctl cli on the cluster [management node](../Access.md)
 
 Virtualization [operator](../cnv/create_operator.md) and [instance](../cnv/create_instance.md) ready
 
-## Expected Outcome
+## Expected outcome
 
 ```
 $ ssh core@10.10.10.10                                  
@@ -96,7 +96,7 @@ Cnv operator installed
 Cnv hyperconverged instance created
 Check for cluster endpoint to download virtctl binary from [timeout:30]...
 Wait for endpoint openshift-cnv/hyperconverged-cluster-cli-download...
-Downloading virtctl binary from https://hyperconverged-cluster-cli-download-openshift-cnv.apps.bm1.domain.com/amd64/linux/virtctl.tar.gz
+Downloading virtctl binary from https://hyperconverged-cluster-cli-download-openshift-cnv.apps.bm1.ocp.emea-sp.cisco.com/amd64/linux/virtctl.tar.gz
 Uploading virtctl binary to cluster management node
 Unpack
 Change file flags

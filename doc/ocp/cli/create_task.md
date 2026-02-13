@@ -11,14 +11,16 @@
       "helm": {},
       "hubble": {},
       "virtctl": {},
-      "web": {}
+      "web": {
+        "operator": {}
+      }
     }
   }
 ]
 ```
 
 Notes:
-- [butane](./butane.md), [cilium](./cilium.md), [helm](./helm.md), [hubble](./hubble.md), [virtctl](./virtctl.md) and [web](../web/README.md) trigger workflow execution with optional input parameters
+- [butane](./butane.md), [cilium](./cilium.md), [helm](./helm.md), [hubble](./hubble.md), [virtctl](./virtctl.md) and [web](../web-terminal/README.md) trigger workflow execution with optional input parameters
 
 ## Requirements
 

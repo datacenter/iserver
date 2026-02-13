@@ -14,4 +14,4 @@ Usage:
 - [delete cluster](./vcenter/DeleteVcenterCluster.md)
 - [get cluster settings and state](./vcenter/GetVcenterCluster.md)
 
-[[Back]](./Operations.md)
+[[Back]](../../README.md)

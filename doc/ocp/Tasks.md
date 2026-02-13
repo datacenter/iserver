@@ -17,58 +17,19 @@ Input json file defines the list of dictionaries, where each dictionary has sing
         "task-name": {
             task-parameters
         }
-    },
-    {
-        "task-name": {
-            task-parameters
-        }
     }
 ]
 ```
 
-Example:
+## Example
 
-```
-[
-    {
-        "lvm": {
-            "operator": {},
-            "cluster": {
-                "device": [
-                  "sda",
-                  "sdb"
-                ]
-            }
-        }
-    },
-    {
-        "grafana": {
-            "operator": {},
-            "mon": {},
-            "instance": [
-                {
-                    "instance": "testa",
-                    "username": "usera",
-                    "password": "pass",
-                    "prometheus": true,
-                    "datasource": "k8s",
-                    "crd": [
-                      "file-or-directory"
-                    ],
-                    "fixup": true
-                },
-                {
-                    "instance": "testb",
-                    "username": "userb",
-                    "password": "pass",
-                    "prometheus": true,
-                    "datasource": "k8s"
-                }
-            ]
-        }
-    }
-]
-```
+Scope | Link
+--- | ---
+Access | [Link](./task/access.json)
+AI | [Link](./task/ai.json)
+Monitoring | [Link](./task/monitoring.json)
+Network | [Link](./task/network.json)
+Storage | [Link](./task/storage.json)
 
 ## Supported tasks
 
@@ -98,6 +59,7 @@ SR-IOV | [Link](./sriov/create_task.md) | [Link](./sriov/delete_task.md)
 SSH | [Link](./ssh/create_task.md) | [Link](./ssh/delete_task.md)
 Tetragon | [Link](./tetragon/create_task.md) | [Link](./tetragon/delete_task.md)
 Trident | [Link](./trident/create_task.md) | [Link](./trident/delete_task.md)
+Web Terminal | [Link](./web-terminal/create_task.md) | ---
 
 ## Create tasks
 

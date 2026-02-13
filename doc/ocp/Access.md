@@ -17,13 +17,15 @@ Cluster installed via iserver has connector created automatically.
 - [domain name](./Domain.nd) (optional)
 - kubeconfig file (mandatory)
 - ssh public key for cluster nodes' access (optional)
-- ip address of cluster node (aka management node), with cli tools (optional)
+- ip address of cluster node (aka [management node](./ManagementServer.md)), with cli tools (optional)
 
 ### workflow and connector
 
 - day2 operations workflows always require kubernetes API (kubeconfig required)
 - some day2 operations workflows run commands via ssh on the cluster nodes (ssh public key required)
 - some day2 operations workflows depend on [cli tools](./cli/README.md) such as helm or virtctl (ssh public key and management ip required)
+
+Refer to [management node](./ManagementServer.md) for more details on setting up the environment in case day2 operations require cli-over-ssh interactions.
 
 ## Add connector
 
