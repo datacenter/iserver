@@ -34,11 +34,11 @@ Cilium
 - [Agent](./cilium-agent/README.md)
 - [Configuration](./cilium-config/README.md)
 - [State](./cilium-state/README.md)
-- [Migration](./cni-migration/README.md)
-- Features
-    - [Cluster Mesh](./cilium-mesh/README.md)
-    - [Private Network](./cilium-pnet/README.md)
-    - [Isovalent Network Bridge](./cilium-inb/README.md)
+- [OVN Migration](./cni-migration/README.md)
+- [BGP](./cilium-bgp/README.md)
+- [Cluster Mesh](./cilium-mesh/README.md)
+- [Private Network](./cilium-pnet/README.md)
+- [Isovalent Network Bridge](./cilium-inb/README.md)
 
 Storage
 - [Disk](./disk/README.md)
