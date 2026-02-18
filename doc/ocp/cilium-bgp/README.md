@@ -12,7 +12,7 @@ Cilium Enterprise CNI
 
 Command | Intent | Details
 --- | --- | ---
-iserver get ocp cilium bgp -v state | get bgp control plane crds | [Link](./get_state.md)
+iserver get ocp cilium bgp -v state | get bgp control plane state | [Link](./get_state.md)
 iserver get ocp cilium bgp -v cli | get `cilium bgp` outputs | [Link](./get_cli.md)
 iserver get ocp cilium bgp -v crd | get bgp control plane crds | [Link](./get_crd.md)
 iserver set ocp cilium bgp --mode feature | enable bgp control plane | [Link](./enable.md)
