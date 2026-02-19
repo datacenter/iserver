@@ -2,20 +2,24 @@ class EndpointApi():
     def __init__(self):
         self.endpoints_mo = None
 
-    def get_endpoints_mo(self):
+    def init_endpoint_mo(self):
+        self.endpoints_mo = None
+
+    def get_endpoints_mo(self, cache_enabled=True):
         if self.endpoints_mo is not None:
             return self.endpoints_mo
 
-        cache = self.get_object_cache(
-            'fvCEp'
-        )
-        if cache is not None:
-            self.endpoints_mo = cache
-            self.log.apic_mo(
-                'fvCEp',
-                self.endpoints_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'fvCEp'
             )
-            return self.endpoints_mo
+            if cache is not None:
+                self.endpoints_mo = cache
+                self.log.apic_mo(
+                    'fvCEp',
+                    self.endpoints_mo
+                )
+                return self.endpoints_mo
 
         query = 'rsp-subtree-include=health,fault-count&rsp-subtree=children'
         children = [

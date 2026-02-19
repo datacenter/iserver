@@ -2,56 +2,21 @@ class K8sNodeOutput():
     def __init__(self):
         pass
 
-    def print_nodes_state(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Node - State [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'name',
-            'readyTick',
-            'memoryTick',
-            'diskTick',
-            'pidTick',
-            'cnvTick',
-            'mcpTick',
-            'role',
-            'ipT',
-            'age'
-        ]
-
-        headers = [
-            'Name',
-            'Ready',
-            'Memory',
-            'Disk',
-            'PID',
-            'CNV',
-            'MCP',
-            'Role',
-            'IP',
-            'Age'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['ipT', 'role']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=False,
-            table=True
+    def print_nodes_state(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Node', 'name'],
+                ['Ready', 'readyTick'],
+                ['Taint', 'taint'],
+                ['Memory', 'memoryTick'],
+                ['Disk', 'diskTick'],
+                ['PID', 'pidTick'],
+                ['MCP', 'mcpTick'],
+                ['Role', 'role'],
+                ['IP', 'ipT'],
+                ['Age', 'age']
+            ]
         )
 
     def print_nodes_version(self, info, title=False):

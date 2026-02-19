@@ -1,6 +1,4 @@
 import json
-
-from lib.redfish.cache import RedfishCache
 from lib.redfish import endpoint_settings
 from lib.redfish.ucs_rack import endpoint as ucs_rack_endpoint
 from lib.redfish.standard import endpoint as standard_endpoint
@@ -10,7 +8,7 @@ from lib.redfish.hpe import endpoint as hpe_endpoint
 from lib.redfish import tree
 
 
-class RedfishEndpoint(RedfishCache):
+class RedfishEndpoint():
     def __init__(
         self,
         endpoint_type,
@@ -19,7 +17,6 @@ class RedfishEndpoint(RedfishCache):
         redfish_username,
         redfish_password,
         system_id=None,
-        cache_name=None,
         get_timeout=10,
         auto_connect=True,
         ssl_verify=False,
@@ -27,29 +24,10 @@ class RedfishEndpoint(RedfishCache):
         tree_max_execution_time=0,
         log_id=None
         ):
-
-        RedfishCache.__init__(self, log_id=log_id)
-
         self.endpoint_settings_handler = endpoint_settings.RedfishEndpointSettings(log_id=log_id)
 
         self.tree_max_execution_time = tree_max_execution_time
         self.endpoint_handler = None
-
-        endpoint_cache_filename = None
-        endpoint_cache_entry = None
-        if endpoint_type == 'cache':
-            endpoint_cache_entry = self.get_redfish_cache_entry(cache_name)
-            if endpoint_cache_entry is None:
-                raise ValueError('Unknown cache entry: %s' % (cache_name))
-
-            endpoint_cache_filename = self.get_cache_resources_filename(cache_name)
-            if endpoint_cache_filename is None or len(endpoint_cache_filename) == 0:
-                raise ValueError('Unknown cache filename: %s' % (cache_name))
-
-            endpoint_type = endpoint_cache_entry['EndpointType']
-            endpoint_ip = endpoint_cache_entry['EndpointType']
-            redfish_username = None
-            redfish_password = None
 
         if endpoint_type == 'standard':
             self.endpoint_handler = standard_endpoint.RedfishEndpointStandard(
@@ -58,7 +36,6 @@ class RedfishEndpoint(RedfishCache):
                 endpoint_port,
                 redfish_username,
                 redfish_password,
-                cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
@@ -74,7 +51,6 @@ class RedfishEndpoint(RedfishCache):
                 redfish_username,
                 redfish_password,
                 system_id=system_id,
-                cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
@@ -89,19 +65,12 @@ class RedfishEndpoint(RedfishCache):
                 endpoint_port,
                 redfish_username,
                 redfish_password,
-                cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
                 deep_search_exlusions=deep_search_exlusions,
                 log_id=log_id
             )
-
-            if endpoint_cache_entry is not None:
-                self.endpoint_handler.set_inventory(
-                    endpoint_cache_entry['EndpointInventoryType'],
-                    endpoint_cache_entry['EndpointInventoryId']
-                )
 
         if endpoint_type == 'dell':
             self.endpoint_handler = dell_endpoint.RedfishEndpointDell(
@@ -110,7 +79,6 @@ class RedfishEndpoint(RedfishCache):
                 endpoint_port,
                 redfish_username,
                 redfish_password,
-                cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
@@ -125,7 +93,6 @@ class RedfishEndpoint(RedfishCache):
                 endpoint_port,
                 redfish_username,
                 redfish_password,
-                cache_filename=endpoint_cache_filename,
                 auto_connect=auto_connect,
                 get_timeout=get_timeout,
                 ssl_verify=ssl_verify,
@@ -142,6 +109,11 @@ class RedfishEndpoint(RedfishCache):
         if self.endpoint_handler is not None:
             del self.endpoint_handler
 
+    def reconnect(self):
+        self.endpoint_handler.disconnect()
+        self.endpoint_handler.connect()
+        return self.endpoint_handler.is_connected()
+    
     def connect(self):
         return self.endpoint_handler.connect()
 

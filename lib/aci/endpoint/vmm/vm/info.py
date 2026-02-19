@@ -6,26 +6,6 @@ class EndpointVmmVmInfo():
         self.endpoint_vmm_vm = None
 
     def get_endpoint_vmm_vm_info(self, managed_object):
-        # "cfgdOs": "Red Hat Enterprise Linux 8 (64-bit)",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-12127",
-        # "ftRole": "unset",
-        # "guid": "5034b867-282f-2aff-9024-d4d063029325",
-        # "id": "0",
-        # "issues": "",
-        # "lcOwn": "local",
-        # "modTs": "2023-01-16T21:15:07.545+01:00",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "name": "cluster-6csrc-rhcos",
-        # "nameAlias": "",
-        # "oid": "vm-12127",
-        # "os": "",
-        # "state": "poweredOff",
-        # "status": "",
-        # "template": "yes",
-        # "type": "virt",
-        # "uuid": "4234e811-d953-f70b-d555-fa5d1b947709"
         info = {}
         info['__Output'] = {}
 

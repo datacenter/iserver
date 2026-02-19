@@ -22,7 +22,6 @@ class InterfaceManagementFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/mgmt-[mgmt0]/mgmt"
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfaceManagementFaultInfo():
                 if '/mgmt-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/mgmt-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/mgmt-[mgmt0]/mgmt"
         if info['interfaceId'] is None:
             if '/mgmt-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/mgmt-[')[1].split(']')[0]

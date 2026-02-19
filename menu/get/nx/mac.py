@@ -4,6 +4,7 @@ import threading
 import traceback
 import click
 
+from lib import file_helper
 from lib.nexus import settings as nexus_settings
 from lib.nexus import output as nexus_output
 from menu import validations
@@ -80,7 +81,7 @@ def get_nx_mac_command(
 
         nexus_output_handler = nexus_output.NexusOutput(log_id=ctx.run_id)
 
-        if output not in ['json']:
+        if output == 'default':
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
@@ -106,6 +107,8 @@ def get_nx_mac_command(
 
         ctx.busy = False
 
+        ctx.my_output.json_output(macs)
+
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -115,8 +118,6 @@ def get_nx_mac_command(
                 )
             )
             return
-
-        ctx.my_output.json_output(macs)
 
         if 'state' in view:
             nexus_output_handler.print_macs(

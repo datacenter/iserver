@@ -22,7 +22,6 @@ class InterfaceVirtualPortChannelFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/vpc/inst/dom-278/if-687"
         info['domainId'] = None
         info['interfaceId'] = None
 
@@ -33,7 +32,6 @@ class InterfaceVirtualPortChannelFaultInfo():
                     if '/if-' in info['affected']:
                         info['interfaceId'] = info['affected'].split('/')[7].split('if-')[1]
 
-        # "dn": "topology/pod-1/node-2208/sys/vpc/inst/dom-278/if-686/fault-F1296",
         if info['domainId'] is None:
             if 'sys/vpc/inst/dom-' in info['dn']:
                 info['domainId'] = info['dn'].split('sys/vpc/inst/dom-')[1].split('/')[0]

@@ -28,7 +28,6 @@ class InterfaceManagementStateInfo():
         else:
             info['__Output']['operSt'] = 'Red'
 
-        # "dn": "topology/pod-1/node-205/sys/mgmt-[mgmt0]/mgmt",
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = info['dn'].split('mgmt-[')[1].split(']')[0]

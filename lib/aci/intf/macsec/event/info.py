@@ -21,7 +21,6 @@ class InterfaceMacSecEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/macsec-[lo0]"
         info['interfaceId'] = None
         if '/macsec-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/macsec-[')[1].split(']')[0]

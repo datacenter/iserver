@@ -34,7 +34,7 @@ class OcpVmCreateService():
                         self.my_output.default('Service already exists')
                         continue
 
-                    if not self.k8s_handler.create_namespaced_service(content):
+                    if not self.k8s_handler.create_service_mo(content):
                         self.my_output.error('Service create failed')
                         return False
 

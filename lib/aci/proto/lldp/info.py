@@ -38,18 +38,20 @@ class ProtocolLldpInfo():
             )
 
             if instance_info:
-                info['instance']['adjacencyCount'] = len(info['adjacency'])
+                if info['instance'] is not None and info['adjacency'] is not None:
+                    info['instance']['adjacencyCount'] = len(info['adjacency'])
 
             if stats_info:
-                info['instance']['__Output']['errorsTick'] = info['stats']['__Output']['errorsTick']
-                info['instance']['errorsTick'] = info['stats']['errorsTick']
+                if info['instance'] is not None:
+                    info['instance']['__Output']['errorsTick'] = info['stats']['__Output']['errorsTick']
+                    info['instance']['errorsTick'] = info['stats']['errorsTick']
 
         if fault_info:
             info['faultInst'] = self.get_protocol_lldp_fault(
                 pod_id,
                 node_id
             )
-            if adjacency_info:
+            if adjacency_info and info['adjacency'] is not None:
                 for adjacency in info['adjacency']:
                     adjacency['faultInst'] = self.get_protocol_lldp_adjacency_fault(
                         pod_id,
@@ -63,7 +65,7 @@ class ProtocolLldpInfo():
                 pod_id,
                 node_id
             )
-            if adjacency_info:
+            if adjacency_info and info['adjacency'] is not None:
                 for adjacency in info['adjacency']:
                     adjacency['faultRecord'] = self.get_protocol_lldp_adjacency_fault(
                         pod_id,
@@ -78,7 +80,7 @@ class ProtocolLldpInfo():
                 pod_id,
                 node_id
             )
-            if adjacency_info:
+            if adjacency_info and info['adjacency'] is not None:
                 for adjacency in info['adjacency']:
                     adjacency['eventLog'] = self.get_protocol_lldp_adjacency_event(
                         pod_id,

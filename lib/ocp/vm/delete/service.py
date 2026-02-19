@@ -12,7 +12,7 @@ class OcpVmDeleteService():
 
         if services_info is not None and len(services_info) > 0:
             for service_info in services_info:
-                if not self.k8s_handler.delete_namespaced_service(service_info['namespace'], service_info['name']):
+                if not self.k8s_handler.delete_service_mo(service_info['namespace'], service_info['name']):
                     self.log.error(
                         'delete_ocp_vm_service',
                         'Service delete failed: %s/%s' % (service_info['namespace'], service_info['name'])

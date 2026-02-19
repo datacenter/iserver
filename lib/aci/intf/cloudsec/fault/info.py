@@ -22,7 +22,6 @@ class InterfaceCloudSecFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/cloudsec-[lo0]"
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfaceCloudSecFaultInfo():
                 if '/cloudsec-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/cloudsec-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/inst-overlay-1/cloudsec-[lo0]"
         if info['interfaceId'] is None:
             if '/cloudsec-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/cloudsec-[')[1].split(']')[0]

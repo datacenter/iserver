@@ -11,6 +11,7 @@ from lib.aci.ws import WebSocket
 
 from lib.aci.ap.main import ApplicationProfile
 from lib.aci.bd.main import BridgeDomain
+from lib.aci.configuration.main import Configuration
 from lib.aci.context import Context
 from lib.aci.contract.main import Contract
 from lib.aci.domain.main import Domain
@@ -24,6 +25,7 @@ from lib.aci.path.main import FabricPath
 from lib.aci.pg.main import PolicyGroup
 from lib.aci.policy.main import Policy
 from lib.aci.pool.main import Pool
+from lib.aci.profile.main import Profile
 from lib.aci.proto.main import Protocol
 from lib.aci.server.main import Server
 from lib.aci.system.main import System
@@ -36,6 +38,7 @@ class Apic(
         ApplicationProfile,
         BridgeDomain,
         Cache,
+        Configuration,
         Common,
         Context,
         Contract,
@@ -48,8 +51,9 @@ class Apic(
         L3Out,
         Node,
         Policy,
-        Pool,
         PolicyGroup,
+        Pool,
+        Profile,
         Protocol,
         Server,
         System,
@@ -57,7 +61,7 @@ class Apic(
         Vrf,
         WebSocket
         ):
-    def __init__(self, apic_ip, apic_port, username, password, apic_name=None, verbose=False, debug=False, log_id=None, no_cache=False):
+    def __init__(self, apic_ip, apic_port, username, password, apic_name=None, verbose=False, debug=False, log_id=None, requested_ttl=-1):
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
             verbose=verbose,
@@ -81,7 +85,7 @@ class Apic(
             username,
             password
         )
-        Cache.__init__(self, self.apic_name, no_cache=no_cache)
+        Cache.__init__(self, self.apic_name, requested_ttl=requested_ttl)
         Common.__init__(self)
         Context.__init__(self)
         WebSocket.__init__(
@@ -92,6 +96,7 @@ class Apic(
 
         ApplicationProfile.__init__(self)
         BridgeDomain.__init__(self)
+        Configuration.__init__(self)
         Contract.__init__(self)
         Domain.__init__(self)
         Endpoint.__init__(self)
@@ -102,8 +107,9 @@ class Apic(
         L3Out.__init__(self)
         Node.__init__(self)
         Policy.__init__(self)
-        Pool.__init__(self)
         PolicyGroup.__init__(self)
+        Pool.__init__(self)
+        Profile.__init__(self)
         Protocol.__init__(self)
         Server.__init__(self)
         System.__init__(self)

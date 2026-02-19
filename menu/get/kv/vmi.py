@@ -107,8 +107,7 @@ def get_kubevirt_vmi_command(
 
         if 'state' in view:
             kubevirt_output_handler.print_virtual_machine_instances(
-                virtual_machine_instances,
-                title=True
+                virtual_machine_instances
             )
 
     except NoResultExit:

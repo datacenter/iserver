@@ -47,7 +47,6 @@ class LcmServerPower(LcmServerCommon):
             return True
 
         if self.wait:
-            self.my_output.default('Collect workflow information...')
             servers = self.get_server_workflow_info(servers_mo)
 
         if self.silent:

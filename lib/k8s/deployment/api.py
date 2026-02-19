@@ -46,3 +46,80 @@ class K8sDeploymentApi():
         )
 
         return self.deployment_mo
+
+    def create_deployment_mo(self, body):
+        api_handler = self.get_api(cluster_type='standard', api_type='apps')
+        if api_handler is None:
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+            response = api_handler.create_namespaced_deployment(
+                body['metadata']['namespace'],
+                body
+            )
+
+        except BaseException:
+            self.log.error('k8s.create_deployment_mo', traceback.format_exc())
+            self.log.k8s(
+                'create',
+                'deployment',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True
+
+    def patch_deployment_mo(self, namespace, name, body):
+        api_handler = self.get_api(cluster_type='standard', api_type='apps')
+        if api_handler is None:
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+            response = api_handler.patch_namespaced_deployment(
+                name,
+                namespace,
+                body
+            )
+
+        except BaseException:
+            self.log.error('k8s.patch_deployment_mo', traceback.format_exc())
+            self.log.k8s(
+                'patch',
+                'deployment',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True
+
+    def delete_deployment_mo(self, namespace, name):
+        api_handler = self.get_api(cluster_type='standard', api_type='apps')
+        if api_handler is None:
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+            response = api_handler.delete_namespaced_deployment(
+                name,
+                namespace
+            )
+
+        except BaseException:
+            self.log.error('k8s.delete_deployment_mo', traceback.format_exc())
+            self.log.k8s(
+                'delete',
+                'deployment',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True
+    

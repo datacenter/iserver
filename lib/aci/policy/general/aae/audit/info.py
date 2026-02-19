@@ -14,7 +14,6 @@ class PolicyGeneralAaeAuditInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # uni/infra/attentp-HX1_AAEP/rsdomP-[uni/phys-HX1_PhysDom]
         info['policyName'] = None
         if 'uni/infra/attentp-' in info['affected']:
             info['policyName'] = info['affected'].split('uni/infra/attentp-')[1].split('/')[0]

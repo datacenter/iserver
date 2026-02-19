@@ -4,7 +4,7 @@ import traceback
 import yaml
 import click
 
-from lib.intersight import hcl_operating_system_vendor
+from lib.intersight.hcl_operating_system_vendor import main as hcl_operating_system_vendor
 from menu import defaults
 from menu import validations
 
@@ -48,7 +48,7 @@ def get_intersight_os_vendor_command(ctx, iaccount, output, devel):
             ctx.log_prompt = False
             return
 
-        handler.print(vendors)
+        handler.print(vendors, title=True)
 
     except ErrorExit:
         sys.exit(1)

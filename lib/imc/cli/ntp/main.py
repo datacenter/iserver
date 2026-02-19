@@ -10,13 +10,13 @@ class ImcCliNtp():
             if self.ntp_mo is not None:
                 return self.ntp_mo
 
-            self.ntp_mo = self.get_icm_cli_cache_entry(
+            self.ntp_mo = self.get_imc_cli_cache_entry(
                 'ntp'
             )
             if self.ntp_mo is not None:
                 return self.ntp_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/network # show ntp detail
+        # com /cimc/network # show ntp detail
         # NTP Service Settings:
         #     Enabled: yes
         #     Server 1: <fqdn>
@@ -51,8 +51,25 @@ class ImcCliNtp():
         info['__Output'] = {}
         info['__IP'] = self.endpoint_ip
 
-        for key in ntp_mo:
-            info[key] = ntp_mo[key]
+        info['Enabled'] = ntp_mo['Enabled']
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
+
+        info['Server'] = []
+        for index in range(1, 5):
+            server_id = 'Server %s' % (index)
+            if server_id in ntp_mo and len(ntp_mo[server_id]) > 0:
+                info['Server'].append(
+                    ntp_mo[server_id]
+                )
+
+        info['Status'] = ntp_mo['Status']
+        if info['Status'] == 'ok':
+            info['__Output']['Status'] = 'Green'
+        else:
+            info['__Output']['Status'] = 'Red'
 
         self.log.debug(
             'get_ntp_info',

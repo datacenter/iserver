@@ -21,3 +21,4 @@ class AssistedInstall(
         AssistedInstallInfra.__init__(self)
         AssistedInstallManifest.__init__(self)
         AssistedInstallVersion.__init__(self)
+

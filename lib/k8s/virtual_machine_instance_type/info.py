@@ -16,7 +16,6 @@ class K8sVirtualMachineInstanceTypeInfo():
             virtual_machine_instance_type_mo
         )
         info.update(metadata_info)
-
         return info
 
     def get_virtual_machine_instance_types_info(self, cache_enabled=True):

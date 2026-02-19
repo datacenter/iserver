@@ -15,11 +15,11 @@ class K8sVirtualMachineInstanceMigrationOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Instance Migration'
         ]
 
         self.my_output.my_table(

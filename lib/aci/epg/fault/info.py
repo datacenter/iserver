@@ -22,7 +22,6 @@ class EpgFaultInfo():
         if not managed_object['delegated']:
             if 'affected' in info:
                 if 'uni/tn-' in info['affected']:
-                    # uni/tn-k8s/ap-k8s_ANP/epg-bmk8s_prov
                     info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
                 if '/ap-' in info['affected']:
@@ -33,7 +32,6 @@ class EpgFaultInfo():
 
         if info['tenantName'] is None:
             if 'uni/tn-' in info['dn']:
-                # uni/tn-k8s/ap-k8s_ANP/epg-bmk8s_prov
                 info['tenantName'] = info['dn'].split('uni/tn-')[1].split('/')[0]
 
             if '/ap-' in info['dn']:

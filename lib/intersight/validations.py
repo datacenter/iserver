@@ -1,6 +1,9 @@
+import os
 import click
+from lib import file_helper
 
 from lib.intersight import settings as intersight_settings
+from lib.workflow.ocp_imm import get as ocp_workflow
 
 
 def validate_cache_ttl(user_cache_ttl, log_id=None):
@@ -98,6 +101,16 @@ def add_group_filter(serial_filters, group_filters):
             )
         )
     return serial_filters
+
+
+def add_ip_filter(filter1, filter2):
+    combined = []
+    for item in filter1:
+        combined.append(item)
+    for item in filter2:
+        combined.append(item)
+
+    return combined
 
 
 def get_serial_filter_from_mo(servers_mo):
@@ -200,6 +213,16 @@ def tag_filter(ctx, param, user_input):
     return filters
 
 
+def ocp_filter(ctx, param, user_input):
+    ips = []
+    if user_input is not None and len(user_input) > 0:
+        ips, error = ocp_workflow.get_ips(user_input)
+        if ips is None:
+            raise click.BadParameter(error)
+
+    return ips
+
+
 def bot_cpu_filter(value):
     try:
         filter = cpu_filter(None, None, value)
@@ -216,6 +239,20 @@ def cpu_filter(ctx, param, user_input):
 
     for item in user_input:
         filters['enabled'] = True
+
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
 
         if len(item.split(':')) != 2:
             if ctx is not None:
@@ -297,6 +334,20 @@ def gpu_filter(ctx, param, user_input):
     for item in user_input:
         filters['enabled'] = True
 
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
+
         if len(item.split(':')) != 2:
             if ctx is not None:
                 raise click.BadParameter('GPU filter validation failed: key:value format expected')
@@ -341,6 +392,20 @@ def memory_filter(ctx, param, user_input):
 
     for item in user_input:
         filters['enabled'] = True
+
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
 
         if len(item.split(':')) != 2:
             if ctx is not None:
@@ -400,6 +465,20 @@ def pci_filter(ctx, param, user_input):
     for item in user_input:
         filters['enabled'] = True
 
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
+
         if len(item.split(':')) != 2:
             if ctx is not None:
                 raise click.BadParameter('PCI filter validation failed: key:value format expected')
@@ -447,6 +526,20 @@ def sc_filter(ctx, param, user_input):
     for item in user_input:
         filters['enabled'] = True
 
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
+
         if len(item.split(':')) != 2:
             if ctx is not None:
                 raise click.BadParameter('Storage controller filter validation failed: key:value format expected')
@@ -485,6 +578,20 @@ def pd_filter(ctx, param, user_input):
 
     for item in user_input:
         filters['enabled'] = True
+
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
 
         if len(item.split(':')) != 2:
             if ctx is not None:
@@ -551,6 +658,20 @@ def vd_filter(ctx, param, user_input):
     for item in user_input:
         filters['enabled'] = True
 
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
+
         if len(item.split(':')) != 2:
             if ctx is not None:
                 raise click.BadParameter('Virtual drive filter validation failed: key:value format expected')
@@ -591,6 +712,20 @@ def fan_filter(ctx, param, user_input):
 
     for item in user_input:
         filters['enabled'] = True
+
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
 
         if len(item.split(':')) != 2:
             if ctx is not None:
@@ -651,6 +786,20 @@ def psu_filter(ctx, param, user_input):
 
     for item in user_input:
         filters['enabled'] = True
+
+        if len(item.split(':')) == 3:
+            if item.split(':')[1] == 'file' and os.path.isfile(item.split(':')[2]):
+                filename = item.split(':')[2]
+                content = file_helper.get_file_text(filename)
+                if content is None:
+                    raise click.BadParameter('File read failed: %s' % (filename))
+
+                content = content.replace('\n', ',').replace(' ','').strip()
+                item = '%s:%s' % (
+                    item.split(':')[0],
+                    content
+                )
+                print(item)
 
         if len(item.split(':')) != 2:
             if ctx is not None:

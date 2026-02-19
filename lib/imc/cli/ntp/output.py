@@ -3,10 +3,10 @@ class ImcCliNtpOutput():
         pass
 
     def print_imc_ntp(self, info):
-        self.print_list_dict(
+        self.print_list_table(
             info,
-            'NTP',
+            title='NTP',
             add_endpoint_ip=True,
-            underline=False,
-            allow_order_subkeys=False
+            allow_order_subkeys=False,
+            expand=['Server']
         )

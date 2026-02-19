@@ -47,7 +47,7 @@ class InterfacePhyEpgStatsApi():
             if 'children' in managed_object['l1PhysIf']:
                 for deploy_child in managed_object['l1PhysIf']['children']:
                     for resource_child in deploy_child['pconsCtrlrDeployCtx']['children']:
-                        epg_info = self.get_epg(
+                        epg_info = self.get_epg_dn(
                             resource_child['pconsResourceCtx']['attributes']['ctxDn']
                         )
                         if epg_info is not None:

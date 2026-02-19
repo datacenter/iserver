@@ -6,34 +6,6 @@ class FabricPathInfo():
         self.fabric_path = None
 
     def get_fabric_path_info(self, managed_object):
-        #
-        # Single Port
-        #
-        # "breakT": "nonbroken",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "topology/pod-1/paths-205/pathep-[eth1/14]",
-        # "lagT": "not-aggregated",
-        # "lcOwn": "local",
-        # "modTs": "2019-11-28T12:17:56.054+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "eth1/14",
-        # "pathT": "leaf",
-        # "status": ""
-        #
-        # Port Aggregation
-        #
-        # "breakT": "nonbroken",
-        # "childAction": "",
-        # "descr": "ACI1 UCSB1-FI-A Policy Group (Created by Ansible)",
-        # "dn": "topology/pod-1/paths-206/pathep-[UCSB1-FI-A_PolGrp]",
-        # "lagT": "node",
-        # "lcOwn": "local",
-        # "modTs": "2022-09-14T22:41:36.792+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "UCSB1-FI-A_PolGrp",
-        # "pathT": "leaf",
-        # "status": ""
         info = {}
         info['__Output'] = {}
 

@@ -42,7 +42,6 @@ class ContractStandardInfo():
             return None
 
         if managed_object['tCl'] == 'fvAEPg':
-            # "tDn": "uni/tn-mgmt/ap-EU-SPDC_ANP/epg-EU-SPDC-MGMT"
             info = {}
             info['class'] = 'fvAEPg'
             info['tenant'] = managed_object['tDn'].split('/')[1][3:]
@@ -59,7 +58,6 @@ class ContractStandardInfo():
             )
 
         if managed_object['tCl'] == 'l3extInstP':
-            # "tDn": "uni/tn-common/out-Infra_privIP_L3out/instP-Infra_privIP_ExtEPG"
             info = {}
             info['class'] = 'l3extInstP'
             info['tenant'] = managed_object['tDn'].split('/')[1][3:]
@@ -76,7 +74,6 @@ class ContractStandardInfo():
             )
 
         if managed_object['tCl'] == 'l2extInstP':
-            # "tDn": "uni/tn-common/l2out-VNF-mgmt_L2out/instP-VNF-mgmt_L2ext"
             info = {}
             info['class'] = 'l2extInstP'
             info['tenant'] = managed_object['tDn'].split('/')[1][3:]
@@ -93,7 +90,6 @@ class ContractStandardInfo():
             )
 
         if managed_object['tCl'] == 'mgmtInB':
-            # "tDn": "uni/tn-mgmt/mgmtp-default/inb-default"
             info = {}
             info['class'] = 'mgmtInB'
             info['tenant'] = managed_object['tDn'].split('/')[1][3:]
@@ -169,6 +165,7 @@ class ContractStandardInfo():
             'intent',
             'name',
             'scope',
+            'prio',
             'targetDscp',
             'userdom'
         ]
@@ -186,6 +183,17 @@ class ContractStandardInfo():
             info['tenant'],
             info['name']
         )
+
+        info['vzSubj'] = []
+        for item_mo in managed_object['vzSubj']:
+            subject_info = self.get_subject(
+                managed_object['dn'].split('/')[1][3:],
+                item_mo['name']
+            )
+            if subject_info is not None:
+                info['vzSubj'].append(
+                    subject_info
+                )
 
         info['vzFilter'] = self.get_standard_contract_filters_info(
             managed_object

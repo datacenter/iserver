@@ -7,7 +7,6 @@ def sanitize_string(value):
     return value
 
 
-# https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/all/syslog/guide/b_ACI_System_Messages_Guide/b_ACI_System_Messages_Guide_chapter_011.html
 with open('source.html', 'rb') as file_handler:
     content = file_handler.read()
 

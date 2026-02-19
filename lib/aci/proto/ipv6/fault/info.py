@@ -15,7 +15,6 @@ class ProtocolIpv6FaultInfo():
             )
         )
 
-        # topology/pod-1/node-2208/sys/ipv6/inst/dom-common:Infra_privIP_VRF/if-[vlan50]/addr-[<ip>/24]
         info['domainName'] = None
         if 'affected' in info:
             if 'sys/ipv6/inst/dom-' in info['affected']:

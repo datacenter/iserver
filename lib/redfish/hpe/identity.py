@@ -7,21 +7,6 @@ class RedfishEndpointHpeTemplateIdentity():
         self.chassis_url = '/Chassis/1'
         self.system_url = '/Systems/1'
 
-    def get_identity_default_cache_name(self, properties):
-        firmware = properties['Firmware']
-        if len(firmware) > 0:
-            firmware = firmware.replace('(', '.').replace(')', '')
-
-        product = properties['Product'].replace(' ', '-')
-
-        name = 'hpe-%s-%s-%s-%s' % (
-            product.lower(),
-            properties['SerialNumber'].lower(),
-            firmware.lower(),
-            properties['PowerState'].lower()
-        )
-        return name
-
     def get_template_identity_properties(self):
         main = self.get_properties(self.identity_main_url)
         chassis = self.get_properties(self.chassis_url)
@@ -42,11 +27,5 @@ class RedfishEndpointHpeTemplateIdentity():
         properties['PowerState'] = chassis['PowerState']
         properties['BiosVersion'] = system['BiosVersion']
         properties['RedfishVersion'] = main['RedfishVersion']
-
-        properties['DefaultCacheName'] = self.get_identity_default_cache_name(properties)
-        if properties['UUID'] == '':
-            properties['CacheFileName'] = str(uuid.uuid4()).lower()
-        else:
-            properties['CacheFileName'] = properties['UUID'].lower()
 
         return properties

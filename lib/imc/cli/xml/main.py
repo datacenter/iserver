@@ -10,13 +10,13 @@ class ImcCliXml():
             if self.xml_mo is not None:
                 return self.xml_mo
 
-            self.xml_mo = self.get_icm_cli_cache_entry(
+            self.xml_mo = self.get_imc_cli_cache_entry(
                 'xml'
             )
             if self.xml_mo is not None:
                 return self.xml_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show xmlapi detail
+        # com# show xmlapi detail
         # XMLAPI Settings:
         #     Enabled: yes
         #     Active Sessions: 0
@@ -48,6 +48,11 @@ class ImcCliXml():
 
         for key in xml_mo:
             info[key] = xml_mo[key]
+
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
 
         self.log.debug(
             'get_xml_info',

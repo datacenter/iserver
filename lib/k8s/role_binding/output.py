@@ -35,7 +35,7 @@ class K8sRoleBindingOutput():
         ]
 
         headers = [
-            'Namespace - Name',
+            'Role Binding',
             'Role - Subject',
             'Age'
         ]

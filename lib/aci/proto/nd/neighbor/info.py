@@ -8,7 +8,6 @@ class ProtocolNdNeighborInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # topology/pod-1/node-201/sys/nd/inst/if-[mgmt0]/adj-1
         info['interfaceId'] = info['dn'].split('if-')[1].split(']')[0][1:]
         info['__Output']['interfaceId'] = 'Yellow'
 

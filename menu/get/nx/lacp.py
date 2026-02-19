@@ -4,6 +4,7 @@ import threading
 import traceback
 import click
 
+from lib import file_helper
 from lib.nexus import settings as nexus_settings
 from lib.nexus import output as nexus_output
 from menu import validations

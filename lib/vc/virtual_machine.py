@@ -1,6 +1,7 @@
 import time
 import traceback
 import requests
+from lib.vc import helper as vc_helper
 
 # pylint: disable=no-name-in-module
 from pyVmomi import vim, vmodl
@@ -93,7 +94,7 @@ class VcVirtualMachine():
                 disk_device['controllerKey'] = device.controllerKey
                 disk_device['unitNumber'] = device.unitNumber
                 disk_device['capacity'] = device.capacityInBytes
-                disk_device['capacity_unit'] = self.convert_storage(device.capacityInBytes)
+                disk_device['capacity_unit'] = vc_helper.convert_storage(device.capacityInBytes)
                 disk_devices.append(disk_device)
 
         return disk_devices
@@ -180,19 +181,10 @@ class VcVirtualMachine():
         if not isinstance(device.backing, vim.vm.device.VirtualDisk.SparseVer2BackingInfo):
             info['thin'] = device.backing.thinProvisioned
         info['capacity'] = device.capacityInBytes
-        info['capacityUnit'] = self.convert_storage(info['capacity'])
+        info['capacityUnit'] = vc_helper.convert_storage(info['capacity'])
         return info
 
     def get_vm_config_info(self, vm_config):
-        # 'alternateGuestName', 'annotation', 'bootOptions', 'changeTrackingEnabled', 'changeVersion', 'consolePreferences', 'contentLibItemInfo', 'cpuAffinity', 'cpuAllocation',
-        # 'cpuFeatureMask', 'cpuHotAddEnabled', 'cpuHotRemoveEnabled', 'createDate', 'datastoreUrl', 'defaultPowerOps', 'dynamicProperty', 'dynamicType', 'extraConfig',
-        # 'files', 'firmware', 'flags', 'forkConfigInfo', 'ftEncryptionMode', 'ftInfo', 'guestAutoLockEnabled', 'guestFullName', 'guestId', 'guestIntegrityInfo',
-        # 'guestMonitoringModeInfo', 'hardware', 'hotPlugMemoryIncrementSize', 'hotPlugMemoryLimit', 'initialOverhead', 'instanceUuid', 'keyId', 'latencySensitivity', 'locationId',
-        # 'managedBy', 'maxMksConnections', 'memoryAffinity', 'memoryAllocation', 'memoryHotAddEnabled', 'memoryReservationLockedToMax', 'messageBusTunnelEnabled', 'migrateEncryption',
-        # 'modified', 'name', 'nestedHVEnabled', 'networkShaper', 'npivDesiredNodeWwns', 'npivDesiredPortWwns', 'npivNodeWorldWideName', 'npivOnNonRdmDisks', 'npivPortWorldWideName',
-        # 'npivTemporaryDisabled', 'npivWorldWideNameType', 'pmem', 'pmemFailoverEnabled', 'repConfig', 'scheduledHardwareUpgradeInfo', 'sevEnabled', 'sgxInfo', 'swapPlacement',
-        # 'swapStorageObjectId', 'template', 'tools', 'uuid', 'vAppConfig', 'vAssertsEnabled', 'vFlashCacheReservation', 'vPMCEnabled', 'vcpuConfig', 'version',
-        # 'vmOpNotificationToAppEnabled', 'vmStorageObjectId', 'vmxConfigChecksum']
         info = {}
         info['uuid'] = vm_config.uuid
         info['guestFullName'] = vm_config.guestFullName
@@ -217,9 +209,7 @@ class VcVirtualMachine():
         info['cpu']['cpuHotRemoveEnabled'] = vm_config.cpuHotRemoveEnabled
         if info['cpu']['cpuHotAddEnabled'] or info['cpu']['cpuHotRemoveEnabled']:
             info['cpu']['flags'] = '%sH' % (info['cpu']['flags'])
-        info['cpu']['cpuAffinity'] = vm_config.cpuAffinity
-        if info['cpu']['cpuAffinity'] is not None:
-            info['cpu']['flags'] = '%sA' % (info['cpu']['flags'])
+
         info['cpu']['virtualization'] = vm_config.nestedHVEnabled
         if info['cpu']['virtualization']:
             info['cpu']['flags'] = '%sV' % (info['cpu']['flags'])
@@ -233,7 +223,7 @@ class VcVirtualMachine():
 
         info['memory'] = {}
         info['memory']['memory'] = vm_config.hardware.memoryMB * 1024 * 1024
-        info['memory']['memoryUnit'] = self.convert_memory(
+        info['memory']['memoryUnit'] = vc_helper.convert_memory(
             info['memory']['memory']
         )
         info['memory']['reservation'] = vm_config.memoryAllocation.reservation
@@ -241,7 +231,6 @@ class VcVirtualMachine():
         info['memory']['memoryHotAddEnabled'] = vm_config.memoryHotAddEnabled
         info['memory']['hotPlugMemoryLimit'] = vm_config.hotPlugMemoryLimit
         info['memory']['hotPlugMemoryIncrementSize'] = vm_config.hotPlugMemoryIncrementSize
-        info['memory']['memoryAffinity'] = vm_config.memoryAffinity
 
         info['nic'] = []
         info['disk'] = []
@@ -283,7 +272,7 @@ class VcVirtualMachine():
             info['cpuReservationUnit'] = None
         else:
             info['cpuReservation'] = vm_config.cpuReservation * 1000 * 1000
-            info['cpuReservationUnit'] = self.convert_cpu_capacity(
+            info['cpuReservationUnit'] = vc_helper.convert_cpu_capacity(
                 info['cpuReservation'],
                 empty_for_zero=True
             )
@@ -293,7 +282,7 @@ class VcVirtualMachine():
             info['memoryUnit'] = None
         else:
             info['memory'] = vm_config.memorySizeMB * 1024 * 1024
-            info['memoryUnit'] = self.convert_memory(
+            info['memoryUnit'] = vc_helper.convert_memory(
                 info['memory']
             )
 
@@ -302,7 +291,7 @@ class VcVirtualMachine():
             info['memoryReservationUnit'] = None
         else:
             info['memoryReservation'] = vm_config.memoryReservation * 1024 * 1024
-            info['memoryReservationUnit'] = self.convert_memory(
+            info['memoryReservationUnit'] = vc_helper.convert_memory(
                 info['memoryReservation'],
                 empty_for_zero=True
             )
@@ -330,15 +319,20 @@ class VcVirtualMachine():
             info['usedStoragePct'] = None
         else:
             info['provisionedStorage'] = storage.uncommitted + storage.committed
-            info['provisionedStorageUnit'] = self.convert_storage(
+            info['provisionedStorageUnit'] = vc_helper.convert_storage(
                 info['provisionedStorage']
             )
             info['usedStorage'] = storage.committed
-            info['usedStorageUnit'] = self.convert_storage(
+            info['usedStorageUnit'] = vc_helper.convert_storage(
                 info['usedStorage']
             )
-            usage = info['usedStorage'] * 100 / info['provisionedStorage']
-            info['usedStoragePct'] = self.convert_pct(
+
+            try:
+                usage = info['usedStorage'] * 100 / info['provisionedStorage']
+            except BaseException:
+                usage = 0
+
+            info['usedStoragePct'] = vc_helper.convert_pct(
                 usage,
                 rounded=0
             )
@@ -349,17 +343,17 @@ class VcVirtualMachine():
 
         stats = vm_object['summary'].quickStats
         info['cpuUsage'] = stats.overallCpuUsage * 1000 * 1000
-        info['cpuUsageUnit'] = self.convert_cpu_capacity(
+        info['cpuUsageUnit'] = vc_helper.convert_cpu_capacity(
             info['cpuUsage']
         )
 
         info['guestMemoryUsage'] = stats.guestMemoryUsage
         info['hostMemoryUsage'] = stats.hostMemoryUsage * 1024 * 1024
-        info['hostMemoryUsageUnit'] = self.convert_memory(
+        info['hostMemoryUsageUnit'] = vc_helper.convert_memory(
             info['hostMemoryUsage']
         )
         info['guestMemoryUsage'] = stats.guestMemoryUsage * 1024 * 1024
-        info['guestMemoryUsageUnit'] = self.convert_memory(
+        info['guestMemoryUsageUnit'] = vc_helper.convert_memory(
             info['guestMemoryUsage']
         )
 
@@ -367,7 +361,7 @@ class VcVirtualMachine():
             info['guestMemoryUsagePct'] = None
         else:
             usage = info['guestMemoryUsage'] * 100 / int(info['memory'])
-            info['guestMemoryUsagePct'] = self.convert_pct(
+            info['guestMemoryUsagePct'] = vc_helper.convert_pct(
                 usage,
                 rounded=0
             )
@@ -670,7 +664,7 @@ class VcVirtualMachine():
 
         vm_state['vmPathName'] = vm_obj.summary.config.vmPathName
         vm_state['memorySizeMB'] = vm_obj.summary.config.memorySizeMB
-        vm_state['memorySizeUnit'] = self.convert_memory(
+        vm_state['memorySizeUnit'] = vc_helper.convert_memory(
             vm_obj.summary.config.memorySizeMB * 1024 * 1024
         )
         vm_state['numCpu'] = vm_obj.summary.config.numCpu
@@ -795,6 +789,31 @@ class VcVirtualMachine():
                 order,
                 ['nic']
             ),
+            order=order,
+            headers=headers,
+            underline=True,
+            allow_order_subkeys=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_vm_net(self, info):
+        order = [
+            'label',
+            'type',
+            'networkName',
+            'macAddress'
+        ]
+
+        headers = [
+            'Label',
+            'Type',
+            'Network',
+            'MAC'
+        ]
+
+        self.my_output.my_table(
+            info,
             order=order,
             headers=headers,
             underline=True,

@@ -60,12 +60,13 @@ class ProtocolBgp(
             )
 
         if instance_info and domain_info and neighbor_info:
-            info['instance']['summary'] = self.get_protocol_bgp_instance_summary(
-                info
-            )
-            info['instance'] = self.my_output.merge_output(
-                info['instance']
-            )
+            if info['instance'] is not None:
+                info['instance']['summary'] = self.get_protocol_bgp_instance_summary(
+                    info
+                )
+                info['instance'] = self.my_output.merge_output(
+                    info['instance']
+                )
 
         if fault_info:
             info['faultInst'] = self.get_protocol_bgp_fault(

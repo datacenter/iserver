@@ -27,7 +27,7 @@ class VcVirtualMachineDeploymentValidator(InputValidator):
         self.my_output = output_helper.OutputHelper(log_id=log_id, verbose=verbose, debug=debug)
         self.template_handler = template.Template(debug=debug, log_id=log_id)
         self.template_category = 'vc'
-        self.vc_helper_handler = helper.VcHelper()
+        vc_helper_handler = helper.VcHelper()
         self.vcenter_handler = None
         self.user_input = None
         self.vm_parameters = {}
@@ -170,13 +170,11 @@ class VcVirtualMachineDeploymentValidator(InputValidator):
             port=22,
             password=self.vm_parameters['jump']['password']
         )
-        success = ssh_handler.is_ssh()
+        success, exception_name, error = ssh_handler.is_ssh()
         if not success:
             self.my_output.error(
-                'Jump access fails: %s@%s with %s' % (
-                    self.vm_parameters['jump']['username'],
-                    self.vm_parameters['jump']['ip'],
-                    self.vm_parameters['jump']['password']
+                'Jump access fails: %s' % (
+                    error
                 )
             )
             return False
@@ -202,14 +200,14 @@ class VcVirtualMachineDeploymentValidator(InputValidator):
         # - otherwise destination is based on vcenter.iso_folder and linux.iso.filename
 
         if '/' in iso_section['filename']:
-            self.vm_parameters['iso']['folder_name'] = self.vc_helper_handler.get_parent_folder_name(
+            self.vm_parameters['iso']['folder_name'] = vc_helper_handler.get_parent_folder_name(
                 iso_section['filename']
             )
             self.vm_parameters['iso']['file_name'] = iso_section['filename'].split('/')[-1]
             self.vm_parameters['iso']['destination'] = '%s%s' % (self.vm_parameters['iso']['folder_name'], self.vm_parameters['iso']['file_name'])
             self.my_output.debug('iso destination verified: %s' % (self.vm_parameters['iso']['destination']))
         else:
-            self.vm_parameters['iso']['folder_name'] = self.vc_helper_handler.fixup_datastore_folder_name(
+            self.vm_parameters['iso']['folder_name'] = vc_helper_handler.fixup_datastore_folder_name(
                 self.vm_parameters['vcenter']['iso_folder']
             )
             self.vm_parameters['iso']['file_name'] = iso_section['filename']
@@ -447,7 +445,7 @@ class VcVirtualMachineDeploymentValidator(InputValidator):
 
         # Kickstart destination related parameters
 
-        self.vm_parameters['ks']['folder_name'] = self.vc_helper_handler.fixup_datastore_folder_name(
+        self.vm_parameters['ks']['folder_name'] = vc_helper_handler.fixup_datastore_folder_name(
             self.vm_parameters['vcenter']['ks_folder']
         )
         self.vm_parameters['ks']['file_name'] = '%s-ks.iso' % (

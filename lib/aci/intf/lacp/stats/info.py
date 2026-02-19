@@ -28,7 +28,6 @@ class InterfaceLacpStatsInfo():
         if int(info['pduTimeOut']) > 0:
             info['__Output']['pduTimeOut'] = 'Red'
 
-        # "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/27]/ifstats"
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = info['dn'].split('if-[')[1].split(']')[0]

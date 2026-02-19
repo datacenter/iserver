@@ -1,9 +1,12 @@
+import time
 from lib import filter_helper
+from lib.workflow.ocp_interface_state_up import get as ocp_workflow
 
 
 class K8sNodeNetworkStateInfo():
     def __init__(self):
         self.node_network_state = None
+        self.node_network_state_interface_up = None
 
     def get_node_network_state_interface_ipv4_info(self, interface_mo):
         info = {}
@@ -66,7 +69,7 @@ class K8sNodeNetworkStateInfo():
 
         ethtool_mo = self.get(interface_mo, 'ethtool', on_error={}, on_none={})
         for key in ethtool_mo:
-            if key not in ['feature', 'coalesce', 'pause', 'ring']:
+            if key not in ['feature', 'coalesce', 'pause', 'ring', 'fec']:
                 self.log.error(
                     'get_node_network_state_interface_ethtool_info',
                     'Unsupported ethtool section: %s' % (key)
@@ -88,6 +91,10 @@ class K8sNodeNetworkStateInfo():
         for key in ethtool_mo:
             info['ethtool']['ring:%s' % (key)] = ethtool_mo[key]
 
+        ethtool_mo = self.get(interface_mo, 'ethtool:fec', on_error={}, on_none={})
+        for key in ethtool_mo:
+            info['ethtool']['fec:%s' % (key)] = ethtool_mo[key]
+
         return info
 
     def get_node_network_state_interface_lacp_info(self, interface_mo):
@@ -103,6 +110,59 @@ class K8sNodeNetworkStateInfo():
 
         return info
 
+    def get_node_network_state_interface_lldp_neighbor_info(self, neighbor_mo):
+        info = {}
+
+        for item in neighbor_mo:
+            item_type = self.get(item, 'type')
+            if item_type is None:
+                continue
+
+            if item_type == 5:
+                info['system'] = self.get(item, 'system-name')
+
+            if item_type == 6:
+                info['description'] = self.get(item, 'system-description')
+
+            if item_type == 7:
+                info['capabilities'] = self.get(item, 'system-capabilities')
+
+            if item_type == 1:
+                info['chassis_id'] = self.get(item, 'chassis-id')
+
+            if item_type == 2:
+                info['interface'] = self.get(item, 'port-id')
+
+            if item_type == 127:
+                item_subtype = self.get(item, 'subtype')
+                if item_subtype is None:
+                    continue
+
+                if item_subtype == 3:
+                    info['oui'] = self.get(item, 'oui')
+                    info['vlans'] = self.get(item, 'ieee-802-1-vlans', on_error=[], on_none=[])
+
+                if item_subtype == 4:
+                    info['max_frame_size'] = self.get(item, 'ieee-802-3-max-frame-size')
+
+            if item_type == 8:
+                info['mgmt_ip'] = None
+                info['mgmt_mac'] = None
+                addresses_mo = self.get(item, 'management-addresses')
+                if addresses_mo is not None:
+                    for address_mo in addresses_mo:
+                        address_type = self.get(address_mo, 'address-subtype')
+                        if address_type is None:
+                            continue
+
+                        if address_type == 'IPv4':
+                            info['mgmt_ip'] = self.get(address_mo, 'address')
+
+                        if address_type == 'MAC':
+                            info['mgmt_mac'] = self.get(address_mo, 'address')
+
+        return info
+
     def get_node_network_state_interface_lldp_info(self, interface_mo):
         info = {}
         lldp_mo = self.get(interface_mo, 'lldp', on_error=None, on_none=None)
@@ -115,6 +175,16 @@ class K8sNodeNetworkStateInfo():
             info['lldp_enabledTick'] = '\u2713'
         else:
             info['lldp_enabledTick'] = '\u2717'
+
+        info['lldp_neighbors'] = []
+        neighbors_mo = self.get(interface_mo, 'lldp:neighbors', on_error=None)
+        if neighbors_mo is not None:
+            for neighbor_mo in neighbors_mo:
+                info['lldp_neighbors'].append(
+                    self.get_node_network_state_interface_lldp_neighbor_info(
+                        neighbor_mo
+                    )
+                )
 
         return info
 
@@ -194,8 +264,9 @@ class K8sNodeNetworkStateInfo():
 
                 info['ethernet_sriov_vfs_count'] = 0
                 for vf_info in info['ethernet_sriov_vfs']:
-                    if vf_info['_vf_iface_name'] is not None:
-                        info['ethernet_sriov_vfs_count'] = info['ethernet_sriov_vfs_count'] + 1
+                    if 'iface-name' in vf_info:
+                        if vf_info['iface-name'] is not None:
+                            info['ethernet_sriov_vfs_count'] = info['ethernet_sriov_vfs_count'] + 1
 
                 info['ethernet_sriov_vfs_summary'] = '%s/%s' % (
                     info['ethernet_sriov_vfs_count'],
@@ -213,7 +284,7 @@ class K8sNodeNetworkStateInfo():
 
         return info
 
-    def get_node_network_state_interface_info(self, interface_mo):
+    def get_node_network_state_interface_info(self, node_name, interface_mo):
         info = {}
         info['__Output'] = {}
 
@@ -225,6 +296,13 @@ class K8sNodeNetworkStateInfo():
         ]
         for key in keys:
             info[key] = self.get(interface_mo, key)
+
+        if self.node_network_state_interface_up is not None:
+            if node_name in self.node_network_state_interface_up:
+                if self.node_network_state_interface_up[node_name] is not None:
+                    if info['name'] in self.node_network_state_interface_up[node_name]:
+                        if info['state'] == 'up' and not self.node_network_state_interface_up[node_name][info['name']]:
+                            info['state'] = 'ip-cli-down'
 
         if info['state'] == 'up':
             info['stateTick'] = '\u2713'
@@ -313,10 +391,10 @@ class K8sNodeNetworkStateInfo():
 
         return info
 
-    def get_node_network_state_interfaces_info(self, interfaces_mo):
+    def get_node_network_state_interfaces_info(self, node_name, interfaces_mo):
         interfaces_info = []
         for interface_mo in interfaces_mo:
-            interface_info = self.get_node_network_state_interface_info(interface_mo)
+            interface_info = self.get_node_network_state_interface_info(node_name, interface_mo)
             if interface_info is not None:
                 interfaces_info.append(
                     interface_info
@@ -348,14 +426,16 @@ class K8sNodeNetworkStateInfo():
         vf_interface_names = []
         vf_interface_state = {}
         for interface_info in interfaces_info:
-            if interface_info['type'] == 'ethernet' and interface_info['ethernet_sriov_enabled']:
-                for vf_info in interface_info['ethernet_sriov_vfs']:
-                    if vf_info['_vf_iface_name'] is not None:
-                        if vf_info['_vf_iface_name'] not in vf_interface_names:
-                            vf_interface_names.append(
-                                vf_info['_vf_iface_name']
-                            )
-                            vf_interface_state[vf_info['_vf_iface_name']] = vf_info
+            if interface_info['type'] == 'ethernet':
+                if 'ethernet_sriov_enabled' in interface_info and interface_info['ethernet_sriov_enabled']:
+                    for vf_info in interface_info['ethernet_sriov_vfs']:
+                        if 'iface-name' in vf_info:
+                            if vf_info['iface-name'] is not None:
+                                if vf_info['iface-name'] not in vf_interface_names:
+                                    vf_interface_names.append(
+                                        vf_info['iface-name']
+                                    )
+                                    vf_interface_state[vf_info['iface-name']] = vf_info
 
         bond_interface_names = {}
         for interface_info in interfaces_info:
@@ -430,6 +510,7 @@ class K8sNodeNetworkStateInfo():
         info.update(metadata_info)
 
         info['interface'] = self.get_node_network_state_interfaces_info(
+            info['name'],
             self.get(
                 node_network_state_mo,
                 'status:currentState:interfaces'
@@ -533,7 +614,13 @@ class K8sNodeNetworkStateInfo():
 
         return True
 
-    def get_node_network_states(self, object_filter=None, return_mo=False, cache_enabled=True):
+    def get_node_network_states(self, object_filter=None, return_mo=False, cluster_name=None, fixup=False, cache_enabled=True):
+        if fixup and cluster_name is not None:
+            if cache_enabled and self.node_network_state_interface_up is None or not cache_enabled:
+                params = {}
+                params['cluster'] = self.cluster_name
+                self.node_network_state_interface_up = ocp_workflow.run(params, log_id=self.log_id)
+
         all_node_network_states = self.get_node_network_states_info(cache_enabled=cache_enabled)
         if all_node_network_states is None:
             return None
@@ -589,3 +676,42 @@ class K8sNodeNetworkStateInfo():
             return node_network_states[0]
 
         return None
+
+    def wait_node_network_state(self, node_name, max_time=360):
+        start_time = int(time.time())
+        while True:
+            nns = self.get_node_network_state(
+                node_name,
+                cache_enabled=False
+            )
+            if nns is not None:
+                return nns
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_node_network_state',
+                    'Max time reached'
+                )
+                return False
+
+            time.sleep(5)
+
+    def wait_nodes_network_state(self, max_time=360, my_output=None):
+        nodes = self.get_nodes()
+        if nodes is None:
+            return False
+
+        if my_output is not None:
+            my_output.default('Wait for nns ready on all cluster nodes')
+
+        for node in nodes:
+            success = self.wait_node_network_state(node['name'], max_time=max_time)
+            if not success:
+                if my_output is not None:
+                    my_output.error('Node [%s] nns collection failed' % (node['name']))
+                return False
+
+            my_output.default('Node [%s] nns collected' % (node['name']))
+
+        return True

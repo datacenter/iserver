@@ -11,15 +11,15 @@ class FiPower():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['switch_name'] = info['dn'].split('/')[1]
         info['psu_name'] = info['dn'].split('/')[2]
 
         for suffix in ['', '_avg', '_min', '_max']:
-            info['current%s' % (suffix)] = getattr(managed_object, 'current%s' % (suffix))
-            info['power%s' % (suffix)] = getattr(managed_object, 'power%s' % (suffix))
-            info['voltage%s' % (suffix)] = getattr(managed_object, 'voltage%s' % (suffix))
+            info['current%s' % (suffix)] = getattr(managed_object, 'current%s' % (suffix), None)
+            info['power%s' % (suffix)] = getattr(managed_object, 'power%s' % (suffix), None)
+            info['voltage%s' % (suffix)] = getattr(managed_object, 'voltage%s' % (suffix), None)
 
         return info
 

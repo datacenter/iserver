@@ -1,8 +1,12 @@
+import time
 from lib import filter_helper
 
 
 class DomainL3Info():
     def __init__(self):
+        self.domain_l3 = None
+
+    def init_domain_l3(self):
         self.domain_l3 = None
 
     def get_domain_l3_info(self, managed_object):
@@ -23,8 +27,6 @@ class DomainL3Info():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         info['aaep_names'].append(
                             item['tDn'].split('/')[2][8:]
@@ -34,8 +36,6 @@ class DomainL3Info():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']
@@ -55,8 +55,6 @@ class DomainL3Info():
         if 'extnwRtL3DomAtt' in managed_object:
             if managed_object['extnwRtL3DomAtt'] is not None:
                 for item in managed_object['extnwRtL3DomAtt']:
-                    # "tCl": "l3extOut",
-                    # "tDn": "uni/tn-k8s/out-bml3_k8s"
                     if item['tCl'] == 'l3extOut':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']
@@ -97,11 +95,11 @@ class DomainL3Info():
 
         return info
 
-    def get_domains_l3_info(self):
+    def get_domains_l3_info(self, cache_enabled=True):
         if self.domain_l3 is not None:
             return self.domain_l3
 
-        domains_mo = self.get_domain_l3_mo()
+        domains_mo = self.get_domain_l3_mo(cache_enabled=cache_enabled)
         if domains_mo is None:
             return None
 
@@ -192,9 +190,14 @@ class DomainL3Info():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_domains = self.get_domains_l3_info()
+        if not cache_enabled:
+            self.init_domain_l3()
+            self.init_domain_l3_mo()
+
+        all_domains = self.get_domains_l3_info(cache_enabled=cache_enabled)
 
         domains = []
 
@@ -220,7 +223,7 @@ class DomainL3Info():
                                 )
                             )
 
-                if not self.match_domain_phy(domain_info, domain_filter):
+                if not self.match_domain_l3(domain_info, domain_filter):
                     continue
 
             if node_info:
@@ -299,13 +302,35 @@ class DomainL3Info():
 
         return domains
 
-    def get_domain_l3(self, domain_name, vlan_info=False, vlan_usage_info=False):
+    def get_domain_l3(self, domain_name, vlan_info=False, vlan_usage_info=False, cache_enabled=True):
         domain_filter = ['name:%s' % (domain_name)]
         domains = self.get_domains_l3(
             domain_filter=domain_filter,
             vlan_info=vlan_info,
-            vlan_usage_info=vlan_usage_info
+            vlan_usage_info=vlan_usage_info,
+            cache_enabled=cache_enabled
         )
         if domains is None or len(domains) != 1:
             return None
         return domains[0]
+
+    def is_domain_l3(self, domain_name, cache_enabled=True):
+        if self.get_domain_l3(domain_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def wait_domain_l3(self, policy_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_domain_l3(policy_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_domain_l3',
+                    'Max time reached: %s' % (policy_name)
+                )
+                return False
+
+            time.sleep(5)

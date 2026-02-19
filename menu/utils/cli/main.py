@@ -1,7 +1,6 @@
 import click
 
 from menu.utils.cli.list import utils_cli_list_command
-from menu.utils.cli.bug import utils_cli_bug_command
 
 
 class Failure(Exception):
@@ -15,4 +14,3 @@ def utils_cli_menu(ctx):
 
 
 utils_cli_menu.add_command(utils_cli_list_command)
-utils_cli_menu.add_command(utils_cli_bug_command)

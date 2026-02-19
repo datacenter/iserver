@@ -12,31 +12,6 @@ class NodePowerInfo():
         return round(float(value), 2)
 
     def get_node_power_info(self, managed_object):
-        # "childAction": "",
-        # "cnt": "1",
-        # "dn": "topology/pod-1/node-3/sys/ch/psuslot-5/psu/CDeqptPsPower15min",
-        # "drawnAvg": "64.000000",
-        # "drawnLast": "64.000000",
-        # "drawnMax": "64.000000",
-        # "drawnMin": "64.000000",
-        # "drawnSpct": "0",
-        # "drawnThr": "",
-        # "drawnTr": "0.000000",
-        # "drawnTrBase": "58.666667",
-        # "drawnTtl": "64.000000",
-        # "lastCollOffset": "300",
-        # "repIntvEnd": "2023-05-19T09:05:29.169+02:00",
-        # "repIntvStart": "2023-05-19T09:00:28.504+02:00",
-        # "status": "",
-        # "suppliedAvg": "72.000000",
-        # "suppliedLast": "72.000000",
-        # "suppliedMax": "72.000000",
-        # "suppliedMin": "72.000000",
-        # "suppliedSpct": "0",
-        # "suppliedThr": "",
-        # "suppliedTr": "0.000000",
-        # "suppliedTrBase": "66.666667",
-        # "suppliedTtl": "72.000000"
         info = {}
         info['__Output'] = {}
 
@@ -63,7 +38,6 @@ class NodePowerInfo():
             info['nodeName']
         )
 
-        # "dn": "topology/pod-1/node-3/sys/ch/psuslot-5/psu/CDeqptPsPower15min"
         info['slotId'] = info['dn'].split('/')[5][8:]
 
         return info

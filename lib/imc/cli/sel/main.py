@@ -10,13 +10,13 @@ class ImcCliSel():
             if self.sel_mo is not None:
                 return self.sel_mo
 
-            self.sel_mo = self.get_icm_cli_cache_entry(
+            self.sel_mo = self.get_imc_cli_cache_entry(
                 'sel'
             )
             if self.sel_mo is not None:
                 return self.sel_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show sel detail
+        # com# show sel detail
         # SEL Information:
         #     No of Entries: 3008
         #     Max Entries: 3008

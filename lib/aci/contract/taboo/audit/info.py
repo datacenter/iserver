@@ -18,7 +18,6 @@ class ContractTabooAuditInfo():
         info['contractName'] = None
 
         if 'uni/tn-' in info['affected']:
-            # uni/tn-k8s/taboo-BT-Demo
             info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if '/taboo-' in info['affected']:

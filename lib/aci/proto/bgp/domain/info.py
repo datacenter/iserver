@@ -17,7 +17,8 @@ class ProtocolBgpDomainInfo():
                 info['dn'].split('/')[2].split('-')[1]
             )
         )
-
+        info['pod_node_nameT'] = info['pod_node_name'].split('/')
+        
         info['__Output']['name'] = 'Yellow'
 
         if info['operSt'] == 'up':
@@ -63,9 +64,9 @@ class ProtocolBgpDomainInfo():
         if key in self.bgp_domains:
             return self.bgp_domains[key]
 
+        self.bgp_domains[key] = []
         bgp_domains_mo = self.get_protocol_bgp_domains_mo(pod_id, node_id)
         if bgp_domains_mo is not None:
-            self.bgp_domains[key] = []
             for bgp_domain_mo in bgp_domains_mo:
                 self.bgp_domains[key].append(
                     self.get_protocol_bgp_domain_info(

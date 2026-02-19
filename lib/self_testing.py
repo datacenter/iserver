@@ -11,6 +11,7 @@ import platform
 
 from progress.bar import Bar
 
+from lib import file_helper
 from lib import log_helper
 from lib import template_helper
 from lib import isctl_helper
@@ -282,12 +283,16 @@ def get_test_by_name(test_name, directory):
     tests = []
     tests_count = 0
     for test_filename in os.listdir(directory):
+        if test_filename.endswith('.md'):
+            continue
+
         test_definition = get_test(test_filename, directory)
         if test_definition is not None:
-            if test_definition['type'] == 'test':
-                if match_test(test_definition, test_name):
-                    tests_count = tests_count + get_tests_count(test_definition)
-                    tests.append(test_definition)
+            if 'type' in test_definition:
+                if test_definition['type'] == 'test':
+                    if match_test(test_definition, test_name):
+                        tests_count = tests_count + get_tests_count(test_definition)
+                        tests.append(test_definition)
 
     return tests, tests_count
 
@@ -747,7 +752,7 @@ def run_test(bar_handler, test, tests_directory, results_directory, variables, i
                 if not success:
                     print('\nCommand failed: %s' % (command))
                     print(output)
-                    sys.exit(1)
+                    # sys.exit(1)
 
                 if not run_post_scripts(results_directory, filename, test, key, tests_directory):
                     sys.exit(1)
@@ -809,14 +814,20 @@ def load_test_variables(directory, environment):
     tests_directory = os.path.join(bundle_dir, directory)
 
     if len(environment) > 0:
-        environment_directory = os.path.join(tests_directory, 'environment')
-        environment_file = os.path.join(environment_directory, environment)
-        if not os.path.isfile(environment_file):
-            print('Environment file not found: %s' % (environment_file))
-            return None
+        variables = file_helper.get_file_json(
+            os.path.join(tests_directory, environment)
+        )
+        if variables is None:
+            variables = file_helper.get_file_json(
+                os.path.join(
+                    os.path.join(tests_directory, 'environment'),
+                    environment
+                )
+            )
 
-        with open(environment_file, 'r', encoding='utf-8') as file_handler:
-            variables = json.loads(file_handler.read())
+        if variables is None:
+            print('Environment file not found: %s' % (environment))
+            return None
 
     cloud_init_directory = os.path.join(tests_directory, 'cloud-init')
     variables['CLOUD_INIT_DIRECTORY'] = cloud_init_directory
@@ -890,6 +901,7 @@ def run_tests(tests, tests_count, tests_directory, results_directory, environmen
                 iserver_version,
                 wait=wait
             )
+
         for test_result in test_results:
             results.append(test_result)
 

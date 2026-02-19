@@ -3,10 +3,9 @@ class ImcCliRedfishOutput():
         pass
 
     def print_imc_redfish(self, info):
-        self.print_list_dict(
+        self.print_list_table(
             info,
-            'Redfish',
+            title='Redfish',
             add_endpoint_ip=True,
-            underline=False,
             allow_order_subkeys=False
         )

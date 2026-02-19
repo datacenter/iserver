@@ -19,7 +19,6 @@ class InterfacePolicyProfileApi():
             )
             return self.interface_policy_profile_mo[key]
 
-        # https://<apic>/api/node/mo/uni/infra/accportprof-SPN_IntProf.json?query-target=subtree&target-subtree-class=infraHPortS,infraRsAccBaseGrp,infraPortBlk,infraSubPortBlk&_dc=1684139157872
         distinguished_name = 'uni/infra/accportprof-%s' % (
             profile_name
         )

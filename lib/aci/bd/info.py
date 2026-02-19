@@ -8,7 +8,10 @@ class BridgeDomainInfo():
     def __init__(self):
         self.bridge_domains = None
 
-    def get_bridge_domain_count(self, tenant_name=None):
+    def init_bridge_domain(self):
+        self.bridge_domains = None
+
+    def get_bridge_domain_count(self, tenant_name=None, cache_enabled=True):
         bridge_domain_filter = None
         if tenant_name is not None:
             bridge_domain_filter = ['tenant:%s' % (tenant_name)]
@@ -202,11 +205,11 @@ class BridgeDomainInfo():
 
         return info
 
-    def get_bridge_domains_info(self):
+    def get_bridge_domains_info(self, cache_enabled=True):
         if self.bridge_domains is not None:
             return self.bridge_domains
 
-        bridge_domains_mo = self.get_bridge_domains_mo()
+        bridge_domains_mo = self.get_bridge_domains_mo(cache_enabled=cache_enabled)
         if bridge_domains_mo is None:
             return None
 
@@ -335,7 +338,8 @@ class BridgeDomainInfo():
             endpoint_vm_info=False,
             snoop_info=False,
             vrf_info=False,
-            epg_info=False
+            epg_info=False,
+            cache_enabled=True
             ):
         bridge_domain_filter = []
         bridge_domain_filter.append(
@@ -351,21 +355,18 @@ class BridgeDomainInfo():
             endpoint_vm_info=endpoint_vm_info,
             snoop_info=snoop_info,
             vrf_info=vrf_info,
-            epg_info=epg_info
+            epg_info=epg_info,
+            cache_enabled=cache_enabled
         )
         if len(bridge_domains) == 1:
             return bridge_domains[0]
 
-        self.log.error(
-            'get_bridge_domain',
-            'Not found: %s/%s (%s)' % (
-                tenant_name,
-                bridge_domain_name,
-                len(bridge_domains)
-            )
-        )
-
         return None
+
+    def is_bridge_domain(self, tenant_name, bd_name, cache_enabled=True):
+        if self.get_bridge_domain(tenant_name, bd_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
 
     def get_bridge_domains(
             self,
@@ -383,9 +384,15 @@ class BridgeDomainInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_bridge_domains = self.get_bridge_domains_info()
+
+        if not cache_enabled:
+            self.init_bridge_domain()
+            self.init_bridge_domain_mo()
+
+        all_bridge_domains = self.get_bridge_domains_info(cache_enabled=cache_enabled)
         if all_bridge_domains is None:
             return None
 
@@ -393,7 +400,7 @@ class BridgeDomainInfo():
         for bridge_domain_info in all_bridge_domains:
             if vrf_info:
                 bridge_domain_info['fvCtx'] = copy.deepcopy(
-                    self.get_vrf(
+                    self.get_vrf_by_dn(
                         bridge_domain_info['fvRsCtx']['dn']
                     )
                 )

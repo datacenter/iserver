@@ -8,8 +8,7 @@ class RedfishEndpointUcsRackAccount():
 
         self.accounts = self.get_template_account_properties(
             role_info=True,
-            include_disabled=include_disabled,
-            cache_enabled=False
+            include_disabled=include_disabled
         )
         return self.accounts
 

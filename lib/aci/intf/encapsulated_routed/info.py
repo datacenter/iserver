@@ -70,8 +70,6 @@ class InterfaceEncapsulatedRoutedInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # Dn format
-        # topology/pod-1/node-201/sys/inst-overlay-1/encrtd-[eth1/108.7]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 

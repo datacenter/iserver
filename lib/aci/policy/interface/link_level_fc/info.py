@@ -22,22 +22,6 @@ class PolicyInterfaceLinkLevelFcInfo():
         return info
 
     def get_policy_interface_link_level_fc_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/llfc-default",
-        # "extMngdBy": "",
-        # "lcOwn": "local",
-        # "llfcRcvAdminSt": "off",
-        # "llfcSendAdminSt": "off",
-        # "modTs": "2021-03-17T04:02:25.117+01:00",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": "all"
         keys = [
             'annotation',
             'dn',
@@ -158,7 +142,7 @@ class PolicyInterfaceLinkLevelFcInfo():
 
         return True
 
-    def get_policy_interface_link_level_fc(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_link_level_fc(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_link_level_fc_info()
         if all_policies is None:
             return None
@@ -218,3 +202,29 @@ class PolicyInterfaceLinkLevelFcInfo():
         )
 
         return policy
+
+    def get_policy_interface_link_level_fc(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_link_level_fc(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_link_level_fc(self, policy_name):
+        if self.get_policy_interface_link_level_fc(policy_name) is None:
+            return False
+        return True

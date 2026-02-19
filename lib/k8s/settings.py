@@ -43,6 +43,10 @@ class K8sSettings(Settings):
         if not os.path.isfile(self.k8s_settings_filename):
             settings = self.get_k8s_default_settings()
             if not self.set_k8s_settings(settings):
+                self.log.error(
+                    'initialize_k8s_settings',
+                    'set_k8s_settings failed'
+                )
                 return False
 
         if not os.path.isdir(self.k8s_clusters_directory):
@@ -52,6 +56,10 @@ class K8sSettings(Settings):
             )
 
         if not self.import_ocp_settings():
+            self.log.error(
+                'initialize_k8s_settings',
+                'import_ocp_settings failed'
+            )
             return False
 
         return True
@@ -72,8 +80,20 @@ class K8sSettings(Settings):
 
     def import_ocp_settings(self):
         default_cluster_name = self.get_default_cluster()
+        if not self.is_k8s_cluster(default_cluster_name):
+            default_cluster_name = None
+            if not self.set_default_cluster(None):
+                self.log.error(
+                    'import_ocp_settings',
+                    'Failed to set default cluster name to None value'
+                )
+                return False
 
         if not self.delete_ocp_clusters():
+            self.log.error(
+                'import_ocp_settings',
+                'Failed to delete_ocp_clusters'
+            )
             return False
 
         ocp_settings_handler = ocp_settings.OcpSettings(
@@ -81,7 +101,14 @@ class K8sSettings(Settings):
         )
         ocp_clusters = ocp_settings_handler.get_ocp_clusters()
         for ocp_cluster in ocp_clusters:
-            if not self.set_k8s_cluster('%s' % (ocp_cluster['name']), ocp_cluster['kubeconfig'], cluster_type='ocp', cluster_source='import'):
+            success = self.set_k8s_cluster(
+                '%s' % (ocp_cluster['name']),
+                ocp_cluster['kubeconfig'],
+                cluster_type='ocp',
+                cluster_source='import',
+                domain=ocp_cluster['domain']
+            )
+            if not success:
                 self.log.error(
                     'import_ocp_settings',
                     'Failed to add ocp cluster: %s' % (ocp_cluster['name'])
@@ -168,6 +195,11 @@ class K8sSettings(Settings):
                 if not filter_helper.match_string(value, cluster_settings['name']):
                     return False
 
+            if key == 'domain':
+                key_found = True
+                if not filter_helper.match_string(value, cluster_settings['domain']):
+                    return False
+
             if not key_found:
                 self.log.error(
                     'match_cluster',
@@ -217,6 +249,11 @@ class K8sSettings(Settings):
 
         return None
 
+    def is_k8s_cluster(self, k8s_name):
+        if self.get_k8s_cluster(k8s_name) is None:
+            return False
+        return True
+
     def set_k8s_clusters(self, clusters):
         settings = self.get_k8s_settings()
         if settings is None:
@@ -265,7 +302,7 @@ class K8sSettings(Settings):
 
         return target_filename
 
-    def set_k8s_cluster(self, k8s_name, kubeconfig_filename, cluster_type='standard', cluster_source='user'):
+    def set_k8s_cluster(self, k8s_name, kubeconfig_filename, cluster_type='standard', cluster_source='user', domain=None):
         if not os.path.isfile(kubeconfig_filename):
             self.log.error(
                 'set_k8s_cluster',
@@ -310,6 +347,7 @@ class K8sSettings(Settings):
         new_cluster['kubeconfig'] = target_kubeconfig_filename
         new_cluster['type'] = cluster_type
         new_cluster['source'] = cluster_source
+        new_cluster['domain'] = domain
         new_clusters.append(new_cluster)
 
         return self.set_k8s_clusters(new_clusters)

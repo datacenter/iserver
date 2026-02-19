@@ -18,6 +18,7 @@ class ImcCliAdmin():
             sol_info=False,
             ssh_info=False,
             syslog_info=False,
+            tls_info=False,
             vmedia_info=False,
             cache_enabled=True,
             xml_info=False
@@ -69,6 +70,9 @@ class ImcCliAdmin():
 
         if all_info or syslog_info:
             info['syslog'] = self.get_syslog(cache_enabled=cache_enabled)
+
+        if all_info or tls_info:
+            info['tls'] = self.get_tls(cache_enabled=cache_enabled)
 
         if all_info or vmedia_info:
             info['vmedia'] = self.get_vmedia(cache_enabled=cache_enabled)

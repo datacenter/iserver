@@ -4,7 +4,7 @@ from lib.ucsm.power_modules.fi import FiPower
 
 
 class Power(ChassisPower, ServerPower, FiPower):
-    def __init__(self, log_id=None):
-        ChassisPower.__init__(self, log_id=log_id)
-        ServerPower.__init__(self, log_id=log_id)
-        FiPower.__init__(self, log_id=log_id)
+    def __init__(self):
+        ChassisPower.__init__(self)
+        ServerPower.__init__(self)
+        FiPower.__init__(self)

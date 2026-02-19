@@ -19,6 +19,7 @@ class AssistedInstallOutput():
             return
 
         order = [
+            'id',
             'name',
             'status_info',
             'openshift_version',
@@ -26,6 +27,7 @@ class AssistedInstallOutput():
         ]
 
         headers = [
+            'Id',
             'Name',
             'Status',
             'Version',
@@ -46,6 +48,12 @@ class AssistedInstallOutput():
         if 'cidr' not in cluster or cluster['cidr'] is None:
             self.my_output.default('[WARNING] CIDR information not found')
             return
+
+        self.my_output.default(
+            'Cluster CIDR',
+            underline=True,
+            before_newline=True
+        )
 
         order = [
             'type',
@@ -419,7 +427,7 @@ class AssistedInstallOutput():
             justify=True
         )
 
-    def print_assisted_install_cluster(self, cluster):
+    def print_assisted_install_cluster(self, cluster, view):
         order = [
             'name',
             'id',
@@ -439,10 +447,7 @@ class AssistedInstallOutput():
             'no_proxy',
             'ssh_public_key',
             'iso_type',
-            'iso_url',
-            'credentials.console_url',
-            'credentials.username',
-            'credentials.password'
+            'iso_url'
         ]
 
         headers = [
@@ -464,10 +469,7 @@ class AssistedInstallOutput():
             'No proxy',
             'SSH public key',
             'ISO Type',
-            'ISO URL',
-            'Console URL',
-            'Username',
-            'Password'
+            'ISO URL'
         ]
 
         cluster['api_vipsT'] = '--'
@@ -499,20 +501,19 @@ class AssistedInstallOutput():
             justify=True
         )
 
-        self.print_assisted_install_cluster_cidr(cluster)
-        self.print_assisted_install_cluster_config(cluster)
-        self.print_assisted_install_cluster_static_network_config(cluster)
-        self.print_assisted_install_cluster_hosts(cluster)
-        self.print_assisted_install_cluster_kubeconfig(cluster)
+        if 'cred' in view:
+            self.print_assisted_install_cluster_credentials(cluster)
+            self.print_assisted_install_cluster_kubeconfig(cluster)
 
-    def print_assisted_install_versions(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Assisted Installation - OpenShift version [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
+        if 'config' in view:
+            self.print_assisted_install_cluster_cidr(cluster)
+            self.print_assisted_install_cluster_config(cluster)
+            self.print_assisted_install_cluster_static_network_config(cluster)
 
+        if 'host' in view:
+            self.print_assisted_install_cluster_hosts(cluster)
+
+    def print_assisted_install_openshift_versions(self, info):
         order = [
             'display_name',
             'support_level',
@@ -520,9 +521,9 @@ class AssistedInstallOutput():
         ]
 
         headers = [
-            'Name',
-            'Support',
-            'CPU'
+            'OpenShift Version',
+            'Support Level',
+            'CPU Architectures'
         ]
 
         self.my_output.my_table(

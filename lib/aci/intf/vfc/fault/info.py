@@ -22,7 +22,6 @@ class InterfaceVfcFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/vfc-[lo0]"
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfaceVfcFaultInfo():
                 if '/vfc-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/vfc-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/inst-overlay-1/vfc-[lo0]"
         if info['interfaceId'] is None:
             if '/vfc-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/vfc-[')[1].split(']')[0]

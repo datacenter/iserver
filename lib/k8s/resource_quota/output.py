@@ -15,13 +15,11 @@ class K8sResourceQuotaOutput():
             return
 
         order = [
-            'namespace',
-            'name'
+            'namespace_name'
         ]
 
         headers = [
-            'Namespace',
-            'Name'
+            'Resource Quota'
         ]
 
         self.my_output.my_table(

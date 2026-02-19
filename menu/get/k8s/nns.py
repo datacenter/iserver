@@ -24,16 +24,18 @@ class NoResultExit(Exception):
 
 @click.command("nns")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--only", is_flag=True, show_default=True, default=False, help="No fixup state with ip commands")
 @click.option("--verbose", is_flag=True, show_default=True, default=False, help="Include verbose")
-@click.option("--view", "-v", default=['all'], help="[dns|route|bond|eth|lb|ovs|vf|vlan|intf|route|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['all'], help="[dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf|route|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_nns_command(
         ctx,
         cluster,
         name,
+        only,
         verbose,
         view,
         output,
@@ -48,7 +50,7 @@ def get_k8s_nns_command(
     view = validations.validate_view(
         ctx,
         view,
-        'dns|route|bond|eth|lb|ovs|vf|vlan|intf|route|all',
+        'dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf|route|all',
         'all',
         [
             'intf:bond,eth,lb,ovs,vf,vlan'
@@ -59,7 +61,7 @@ def get_k8s_nns_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -95,7 +97,9 @@ def get_k8s_nns_command(
             return
 
         states = k8s_handlers.get_node_network_states(
-            object_filter=object_filter
+            object_filter=object_filter,
+            cluster_name=cluster,
+            fixup=not only
         )
 
         ctx.busy = False
@@ -108,6 +112,8 @@ def get_k8s_nns_command(
                 )
             )
             return
+
+        ctx.my_output.json_output(states)
 
         if 'dns' in view:
             k8s_output_handler.print_node_network_state_dns(
@@ -174,8 +180,14 @@ def get_k8s_nns_command(
                 ethtool=verbose
             )
 
+        if 'lldp' in view:
+            k8s_output_handler.print_node_network_state_lldp(
+                states,
+                title=True
+            )
+
         ctx.my_output.default('Filter: name', before_newline=True)
-        ctx.my_output.default('View:   all (def), dns, route, intf, bond, eth, vlan, vf, lb, ovs')
+        ctx.my_output.default('View:   all (def), dns, route, intf, bond, eth, vlan, vf, lb, ovs, lldp')
 
     except NoResultExit:
         ctx.busy = False

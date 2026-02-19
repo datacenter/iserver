@@ -22,22 +22,6 @@ class PolicyInterfaceStpInfo():
         return info
 
     def get_policy_interface_stp_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "ctrl": "bpdu-filter,bpdu-guard",
-        # "descr": "",
-        # "dn": "uni/infra/ifPol-test",
-        # "extMngdBy": "",
-        # "lcOwn": "local",
-        # "modTs": "2023-02-06T14:52:55.014+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "test",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:"
         keys = [
             'annotation',
             'ctrl',
@@ -171,7 +155,7 @@ class PolicyInterfaceStpInfo():
 
         return True
 
-    def get_policy_interface_stp(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_stp(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_stp_info()
         if all_policies is None:
             return None
@@ -231,3 +215,29 @@ class PolicyInterfaceStpInfo():
         )
 
         return policy
+
+    def get_policy_interface_stp(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_stp(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_stp(self, policy_name):
+        if self.get_policy_interface_stp(policy_name) is None:
+            return False
+        return True

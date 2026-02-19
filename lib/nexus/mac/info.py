@@ -14,13 +14,6 @@ class MacInfo():
         info['__Output'] = {}
         info['nexus_name'] = self.nexus_name
 
-        # "disp_mac_addr": "0008.312b.d2a8",
-        # "disp_type": "dynamic",
-        # "disp_vlan": "3",
-        # "disp_age": "0",
-        # "disp_is_secure": "F",
-        # "disp_is_ntfy": "F",
-        # "disp_port": "Po3"
         for key in mac_mo:
             if key.startswith('disp_'):
                 info[key[5:]] = mac_mo[key]

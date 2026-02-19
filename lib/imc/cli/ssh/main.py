@@ -10,13 +10,13 @@ class ImcCliSsh():
             if self.ssh_mo is not None:
                 return self.ssh_mo
 
-            self.ssh_mo = self.get_icm_cli_cache_entry(
+            self.ssh_mo = self.get_imc_cli_cache_entry(
                 'ssh'
             )
             if self.ssh_mo is not None:
                 return self.ssh_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show ssh detail
+        # com# show ssh detail
         # SSH Settings:
         #     SSH Port: 22
         #     Timeout: 1800
@@ -50,6 +50,11 @@ class ImcCliSsh():
 
         for key in ssh_mo:
             info[key] = ssh_mo[key]
+
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
 
         self.log.debug(
             'get_ssh_info',

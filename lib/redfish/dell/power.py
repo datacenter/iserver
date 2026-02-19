@@ -12,39 +12,12 @@ class RedfishEndpointDellTemplatePower():
         properties['Data'] = {}
         properties['Data']['PowerControl'] = {}
 
-        # {
-        #     "PhysicalContext": "PowerSupply",
-        #     "PowerMetrics": {
-        #         "MinConsumedWatts": 186,
-        #         "AverageConsumedWatts": 349,
-        #         "MaxConsumedWatts": 495
-        #     },
-        #     "MemberId": "1",
-        #     "PowerLimit": {
-        #         "LimitException": "NoAction"
-        #     },
-        #     "PowerConsumedWatts": 360,
-        #     "@odata.id": "/redfish/v1/Chassis/1/Power#/PowerControl/1"
-        # }
         power_control_data = data['PowerControl'][0]
         properties['Data']['PowerControl']['PowerConsumedWatts'] = power_control_data['PowerConsumedWatts']
         properties['Data']['PowerControl']['LimitException'] = power_control_data['PowerLimit']['LimitException']
         for key in power_control_data['PowerMetrics']:
             properties['Data']['PowerControl'][key] = power_control_data['PowerMetrics'][key]
 
-        # {
-        #     "PhysicalContext": "PowerSupply",
-        #     "SensorNumber": 48,
-        #     "MemberId": "1",
-        #     "@odata.id": "/redfish/v1/Chassis/1/Power#/Voltages/PSU1_VOUT",
-        #     "Status": {
-        #         "State": "Enabled",
-        #         "Health": "OK"
-        #     },
-        #     "UpperThresholdCritical": 14,
-        #     "Name": "PSU1_VOUT",
-        #     "ReadingVolts": 12.2
-        # },
         properties['Data']['Voltage'] = []
         for voltage in data['Voltages']:
             voltage_info = {}
@@ -56,36 +29,6 @@ class RedfishEndpointDellTemplatePower():
             voltage_info['Health'] = voltage['Status']['Health']
             properties['Data']['Voltage'].append(voltage_info)
 
-        # {
-        #     "SerialNumber": "LIT241244RQ",
-        #     "InputRanges": [
-        #         {
-        #             "InputType": "AC",
-        #             "OutputWattage": 1050,
-        #             "MaximumFrequencyHz": 63,
-        #             "MaximumVoltage": 264,
-        #             "MinimumVoltage": 90,
-        #             "MinimumFrequencyHz": 47
-        #         }
-        #     ],
-        #     "FirmwareVersion": "10062019",
-        #     "@odata.id": "/redfish/v1/Chassis/1/Power#/PowerSupplies/PSU1",
-        #     "PowerOutputWatts": 171,
-        #     "LineInputVoltage": 229,
-        #     "Name": "PSU1",
-        #     "PowerInputWatts": 186,
-        #     "Manufacturer": "Cisco Systems Inc",
-        #     "LastPowerOutputWatts": 171,
-        #     "MemberId": "1",
-        #     "PartNumber": "341-0638-03",
-        #     "PowerSupplyType": "AC",
-        #     "Model": "PS-2112-9S-LF",
-        #     "SparePartNumber": "341-0638-03",
-        #     "Status": {
-        #         "State": "Enabled",
-        #         "Health": "OK"
-        #     }
-        # },
         properties['Data']['PowerSupply'] = []
         for power_supply in data['PowerSupplies']:
             power_supply_info = {}

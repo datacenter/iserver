@@ -1,5 +1,7 @@
 from lib.aci.bd.api import BridgeDomainApi
 from lib.aci.bd.info import BridgeDomainInfo
+from lib.aci.bd.create import BridgeDomainCreate
+from lib.aci.bd.delete import BridgeDomainDelete
 from lib.aci.bd.igmp.main import BridgeDomainIgmp
 from lib.aci.bd.l3out.main import BridgeDomainL3Out
 from lib.aci.bd.mld.main import BridgeDomainMld
@@ -14,6 +16,8 @@ from lib.aci.bd.node.main import BridgeDomainNode
 
 class BridgeDomain(
         BridgeDomainApi,
+        BridgeDomainCreate,
+        BridgeDomainDelete,
         BridgeDomainIgmp,
         BridgeDomainInfo,
         BridgeDomainL3Out,
@@ -28,6 +32,8 @@ class BridgeDomain(
         ):
     def __init__(self):
         BridgeDomainApi.__init__(self)
+        BridgeDomainCreate.__init__(self)
+        BridgeDomainDelete.__init__(self)
         BridgeDomainIgmp.__init__(self)
         BridgeDomainInfo.__init__(self)
         BridgeDomainL3Out.__init__(self)

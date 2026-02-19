@@ -1,8 +1,12 @@
+import time
 from lib import filter_helper
 
 
 class DomainPhyInfo():
     def __init__(self):
+        self.domain_phy = None
+
+    def init_domain_phy(self):
         self.domain_phy = None
 
     def get_domain_phy_info(self, managed_object):
@@ -23,8 +27,6 @@ class DomainPhyInfo():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         info['aaep_names'].append(
                             item['tDn'].split('/')[2][8:]
@@ -34,8 +36,6 @@ class DomainPhyInfo():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']
@@ -55,8 +55,6 @@ class DomainPhyInfo():
         if 'infraRtDomAtt' in managed_object:
             if managed_object['infraRtDomAtt'] is not None:
                 for item in managed_object['infraRtDomAtt']:
-                    # "tCl": "fvAEPg",
-                    # "tDn": "uni/tn-k8s/ap-k8s_ANP/epg-site1_pe"
                     if item['tCl'] == 'fvAEPg':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']
@@ -105,11 +103,11 @@ class DomainPhyInfo():
 
         return info
 
-    def get_domains_phy_info(self):
+    def get_domains_phy_info(self, cache_enabled=True):
         if self.domain_phy is not None:
             return self.domain_phy
 
-        domains_mo = self.get_domain_phy_mo()
+        domains_mo = self.get_domain_phy_mo(cache_enabled=cache_enabled)
         if domains_mo is None:
             return None
 
@@ -200,9 +198,15 @@ class DomainPhyInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_domains = self.get_domains_phy_info()
+
+        if not cache_enabled:
+            self.init_domain_phy()
+            self.init_domain_phy_mo()
+
+        all_domains = self.get_domains_phy_info(cache_enabled=cache_enabled)
 
         domains = []
 
@@ -307,13 +311,35 @@ class DomainPhyInfo():
 
         return domains
 
-    def get_domain_phy(self, domain_name, vlan_info=False, vlan_usage_info=False):
+    def get_domain_phy(self, domain_name, vlan_info=False, vlan_usage_info=False, cache_enabled=True):
         domain_filter = ['name:%s' % (domain_name)]
         domains = self.get_domains_phy(
             domain_filter=domain_filter,
             vlan_info=vlan_info,
-            vlan_usage_info=vlan_usage_info
+            vlan_usage_info=vlan_usage_info,
+            cache_enabled=cache_enabled
         )
         if domains is None or len(domains) != 1:
             return None
         return domains[0]
+
+    def is_domain_phy(self, domain_name, cache_enabled=True):
+        if self.get_domain_phy(domain_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def wait_domain_phy(self, policy_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_domain_phy(policy_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_domain_phy',
+                    'Max time reached: %s' % (policy_name)
+                )
+                return False
+
+            time.sleep(5)

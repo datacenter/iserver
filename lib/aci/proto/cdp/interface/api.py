@@ -19,7 +19,6 @@ class ProtocolCdpInterfaceApi():
             )
             return self.cdp_interfaces_mo[key]
 
-        # url: https://<apic>/api/node/class/topology/pod-1/node-201/cdpIf.json?rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required
         class_name = 'topology/pod-%s/node-%s/cdpIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=cdpIf,cdpIfStats&rsp-subtree-include=required'
         managed_objects = self.get_class(

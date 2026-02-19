@@ -38,7 +38,7 @@ class NoResultExit(Exception):
 @click.option("--subnet", "ip_subnet", default='', callback=validations.validate_ip_subnet, help="Filter by subnet within subnet")
 @click.option("--view", "-v", default=['state'], help="[state|intf|ip|power|psu|sensor|temp|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_node_command(
         ctx,
@@ -56,7 +56,7 @@ def get_aci_node_command(
         ip_subnet,
         view,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci node"""
@@ -82,7 +82,7 @@ def get_aci_node_command(
             controller_port,
             controller_username,
             controller_password,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handlers is None:
             raise ErrorExit

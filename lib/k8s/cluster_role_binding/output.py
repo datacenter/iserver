@@ -22,7 +22,7 @@ class K8sClusterRoleBindingOutput():
         ]
 
         headers = [
-            'Name',
+            'Cluster Role Binding',
             'Role',
             'Subject',
             'Age'

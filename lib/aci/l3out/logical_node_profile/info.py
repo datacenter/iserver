@@ -42,10 +42,6 @@ class L3OutLogicalNodeProfileInfo():
             # [0]: uni/tn-{name}/out-{name}/lnodep-{name}/lifp-{name}/vlifp-[{nodeDn}]-[{encap}]/peerP-[{addr}]
             # [1]: uni/tn-{name}/out-{name}/lnodep-{name}/lifp-{name}/rspathL3OutAtt-[{tDn}]/peerP-[{addr}]
             # [2]: uni/tn-{name}/out-{name}/lnodep-{name}/peerP-[{addr}]
-            # Examples
-            # dn: /uni/tn-common/out-Infra_L3out/lnodep-Infra_L3out_LNP/lifp-Infra_L3out_LIfP/rspathL3OutAtt-[topology/pod-1/paths-2205/pathep-[eth1/25]]/peerP-[<ip>]
-            # dn: /uni/tn-NSO_testvf/out-VNF_PRIVATE/lnodep-RIGHT/lifp-Floating_SVI/vlifp-[topology/pod-1/node-2206]-[vlan-936]/peerP-[<ip>/29]
-            # dn: uni/tn-vEPC_demo/out-ACC_L3out/lnodep-ACC-L3out_LNP/peerP-[<ip>/32]
             keys = [
                 'addr',
                 'addrTCtrl',
@@ -152,8 +148,6 @@ class L3OutLogicalNodeProfileInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # Dn format
-        # uni/tn-SPIN_InnoLab/out-Calico_L3Out/lnodep-Calico_L3Out_nodeProfile
         info['tenant'] = info['dn'].split('/')[1][3:]
         info['l3out'] = info['dn'].split('/')[2][4:]
 

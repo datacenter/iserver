@@ -16,6 +16,7 @@ class K8sSecretInfo():
             secret_mo
         )
         info.update(metadata_info)
+        info['data'] = self.get(secret_mo, 'data')
 
         return info
 
@@ -51,6 +52,16 @@ class K8sSecretInfo():
 
             key_found = False
 
+            if key == 'namespace':
+                key_found = True
+                if not filter_helper.match_string(value, secret_info['namespace']):
+                    return False
+
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_namespace_name(value, '%s/%s' % (secret_info['namespace'], secret_info['name'])):
+                    return False
+
             if not key_found:
                 self.log.error(
                     'match_secret',
@@ -81,3 +92,30 @@ class K8sSecretInfo():
             )
 
         return secrets
+
+    def get_secret(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        secrets = self.get_secrets(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+
+        if secrets is None:
+            return None
+
+        if len(secrets) == 1:
+            return secrets[0]
+
+        return None
+
+    def is_secret(self, namespace, name, cache_enabled=True):
+        if self.get_secret(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

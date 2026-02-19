@@ -22,8 +22,6 @@ class InterfaceEncapsulatedRoutedApi():
             )
             return self.interface_encap_routed_mo[key]
 
-        # https://<apic>/api/node/class/topology/pod-1/node-201/l3EncRtdIf.json?rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf&subscription=yes&order-by=l3EncRtdIf.mplsEnable|asc&page=0&page-size=15&_dc=1683801093405
-
         class_name = 'topology/pod-%s/node-%s/l3EncRtdIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=ethpmEncRtdIf&rsp-subtree-include=health,fault-count,required'
         managed_objects = self.get_class(

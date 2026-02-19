@@ -28,6 +28,11 @@ class IntersightCache(IntersightSettings):
 
     def get_intersight_cache_entry(self, cache_entry_name, subdirectory=None, check_ttl=True, cache_ttl=None):
         directory_name = self.intersight_cache_directory
+        directory_name = os.path.join(
+            directory_name,
+            self.iaccount
+        )
+
         if subdirectory is not None:
             directory_name = os.path.join(
                 directory_name,
@@ -72,6 +77,11 @@ class IntersightCache(IntersightSettings):
 
     def set_intersight_cache_entry(self, cache_entry_name, data, subdirectory=None):
         directory_name = self.intersight_cache_directory
+        directory_name = os.path.join(
+            directory_name,
+            self.iaccount
+        )
+
         if subdirectory is not None:
             directory_name = os.path.join(
                 directory_name,

@@ -33,6 +33,19 @@ class K8sReplicaSetInfo():
             if info['readyReplicas'] is None:
                 info['readyReplicas'] = 0
 
+        info['replicasT'] = '%s/%s/%s' % (
+            info['replicas'],
+            info['availableReplicas'],
+            info['readyReplicas']
+        )
+        if info['replicas'] == 0:
+            info['__Output']['replicasT'] = 'Yellow'
+        else:
+            if info['replicas'] == info['availableReplicas'] and info['availableReplicas'] == info['readyReplicas']:
+                info['__Output']['replicasT'] = 'Green'
+            else:
+                info['__Output']['replicasT'] = 'Red'
+
         return info
 
     def get_replica_sets_info(self, cache_enabled=True):
@@ -111,4 +124,73 @@ class K8sReplicaSetInfo():
                 replica_set_info['info']
             )
 
+        return replica_sets
+
+    def get_replica_set(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        replica_sets = self.get_replica_sets(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if replica_sets is None:
+            return None
+
+        if len(replica_sets) == 1:
+            return replica_sets[0]
+
+        return None
+
+    def is_replica_set(self, namespace, name, cache_enabled=True):
+        if self.get_replica_set(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def get_replica_set_deployment(self, namespace, deployment_name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'owner:Deployment/%s' % (deployment_name)
+        )
+        replica_sets = self.get_replica_sets(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if replica_sets is None:
+            return None
+
+        if len(replica_sets) == 1:
+            return replica_sets[0]
+
+        self.log.error(
+            'get_replica_set_deployment',
+            'Unexpected rs count %s/%s: %s' % (namespace, deployment_name, len(replica_sets))
+        )
+        return None
+
+    def get_replica_set_deployments(self, namespace, deployment_name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'owner:Deployment/%s' % (deployment_name)
+        )
+        replica_sets = self.get_replica_sets(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if replica_sets is None:
+            return None
+        
         return replica_sets

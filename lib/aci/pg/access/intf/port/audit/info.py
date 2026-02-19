@@ -14,7 +14,6 @@ class PolicyGroupAccessInterfacePortAuditInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "affected": "uni/infra/funcprof/accportgrp-ESX-R7DC_PolGrp/rsqosDppIfPol"
         info['pgName'] = None
         if 'uni/infra/funcprof/accportgrp-' in info['affected']:
             info['pgName'] = info['affected'].split('uni/infra/funcprof/accportgrp-')[1].split('/')[0]

@@ -22,22 +22,6 @@ class PolicyInterfaceAuthInfo():
         return info
 
     def get_policy_interface_auth_info(self, managed_object):
-        # "adminSt": "disabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/portauthpol-default",
-        # "extMngdBy": "",
-        # "hostMode": "single-host",
-        # "lcOwn": "local",
-        # "modTs": "2020-12-09T19:07:28.202+01:00",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": ""
         keys = [
             'adminSt',
             'annotation',
@@ -145,7 +129,7 @@ class PolicyInterfaceAuthInfo():
 
         return True
 
-    def get_policy_interface_auth(self, policy_filter=None, attachment_info=False):
+    def get_policies_interface_auth(self, policy_filter=None, attachment_info=False):
         all_policies = self.get_policies_interface_auth_info()
         if all_policies is None:
             return None
@@ -205,3 +189,29 @@ class PolicyInterfaceAuthInfo():
         )
 
         return policy
+
+    def get_policy_interface_auth(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_auth(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_auth(self, policy_name):
+        if self.get_policy_interface_auth(policy_name) is None:
+            return False
+        return True

@@ -3,26 +3,6 @@ class PolicyMonitoring():
         pass
 
     def get_policy_monitoring_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "extMngdBy": "",
-        # "forceResolve": "yes",
-        # "lcOwn": "local",
-        # "modTs": "2021-05-19T18:26:53.317+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "rType": "mo",
-        # "rn": "rsmonIfInfraPol",
-        # "state": "formed",
-        # "stateQual": "default-target",
-        # "status": "",
-        # "tCl": "monInfraPol",
-        # "tContextDn": "",
-        # "tDn": "uni/infra/moninfra-default",
-        # "tRn": "moninfra-default",
-        # "tType": "name",
-        # "tnMonInfraPolName": "",
-        # "uid": "0",
-        # "userdom": "all"
         keys = [
             'state',
             'tDn',

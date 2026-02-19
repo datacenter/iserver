@@ -1,7 +1,9 @@
 import click
 
 from menu.set.k8s.kc import set_k8s_kc
-
+from menu.set.k8s.node.main import set_k8s_node_menu
+from menu.set.k8s.sc.main import set_k8s_sc_menu
+from menu.set.k8s.vm.main import set_k8s_vm_menu
 
 class Failure(Exception):
     pass
@@ -14,3 +16,6 @@ def set_k8s_menu(ctx):
 
 
 set_k8s_menu.add_command(set_k8s_kc)
+set_k8s_menu.add_command(set_k8s_node_menu)
+set_k8s_menu.add_command(set_k8s_sc_menu)
+set_k8s_menu.add_command(set_k8s_vm_menu)

@@ -2,20 +2,24 @@ class ApplicationProfileApi():
     def __init__(self):
         self.application_profile_mo = None
 
-    def get_application_profile_mo(self):
+    def init_application_profile_mo(self):
+        self.application_profile_mo = None
+
+    def get_application_profile_mo(self, cache_enabled=True):
         if self.application_profile_mo is not None:
             return self.application_profile_mo
 
-        cache = self.get_object_cache(
-            'fvAp'
-        )
-        if cache is not None:
-            self.application_profile_mo = cache
-            self.log.apic_mo(
-                'fvAp',
-                self.application_profile_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'fvAp'
             )
-            return self.application_profile_mo
+            if cache is not None:
+                self.application_profile_mo = cache
+                self.log.apic_mo(
+                    'fvAp',
+                    self.application_profile_mo
+                )
+                return self.application_profile_mo
 
         query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
         managed_objects = self.get_class(

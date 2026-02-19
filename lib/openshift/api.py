@@ -6,21 +6,21 @@ from lib import log_helper
 
 
 class Api():
-    def __init__(self, token, log_id=None):
+    def __init__(self, token, log_id=None, timeout=30, verify=True):
         self.authentication_token = token
         self.access_token = None
         self.access_token_timestamp = None
         self.access_token_ttl = 240
 
-        self.authentication_request_timeout = 5
-        self.get_request_timeout = 5
-        self.patch_request_timeout = 5
-        self.post_request_timeout = 5
-        self.delete_request_timeout = 5
-
         self.log = log_helper.Log(log_id=log_id)
+        self.timeout = timeout
+        self.verify = verify
 
     def generate_access_token(self):
+        # https://console.redhat.com/openshift/token/show
+        # token is deleted after 30 days of inactivity
+        # put the token in .itool/openshift/token file
+        # https://github.com/openshift/assisted-service/blob/master/docs/cloud.md
         url = 'https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token'
         headers = {}
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -37,8 +37,8 @@ class Api():
                 url,
                 data=data,
                 headers=headers,
-                verify=False,
-                timeout=self.authentication_request_timeout
+                verify=self.verify,
+                timeout=self.timeout
             )
             if response.status_code < 300:
                 self.access_token = response.json()['access_token']
@@ -76,9 +76,17 @@ class Api():
 
     def is_access_token_valid(self):
         if self.access_token is None:
+            self.log.debug(
+                'is_access_token_valid',
+                'Access token is None - as such invalid'
+            )
             return False
 
         if int(time.time() * 1000) - self.access_token_timestamp > self.access_token_ttl * 1000:
+            self.log.debug(
+                'is_access_token_valid',
+                'Access token fails on ttl check'
+            )
             return False
 
         return True
@@ -87,7 +95,12 @@ class Api():
         if self.is_access_token_valid():
             return self.access_token
 
+        self.log.debug(
+            'get_access_token',
+            'Access token is invalid - generate new one'
+        )
         self.generate_access_token()
+
         return self.access_token
 
     def get_query(self, url_suffix, extra_headers=None, params=None):
@@ -115,32 +128,36 @@ class Api():
             if params is not None:
                 self.log.debug(
                     'get_query',
-                    'URL [%s] Headers [%s] Params [%s]' % (
+                    'URL [%s] Headers [%s] Params [%s] Verify [%s] Timeout [%s]' % (
                         url,
                         headers,
-                        params
+                        params,
+                        self.verify,
+                        self.timeout
                     )
                 )
                 response = requests.get(
                     url,
                     headers=headers,
                     params=params,
-                    verify=False,
-                    timeout=self.get_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
             else:
                 self.log.debug(
                     'get_query',
-                    'URL [%s] Headers [%s]' % (
+                    'URL [%s] Headers [%s] Verify [%s] Timeout [%s]' % (
                         url,
-                        headers
+                        headers,
+                        self.verify,
+                        self.timeout
                     )
                 )
                 response = requests.get(
                     url,
                     headers=headers,
-                    verify=False,
-                    timeout=self.get_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
 
             if response.status_code < 300:
@@ -221,8 +238,8 @@ class Api():
                     url,
                     headers=headers,
                     data=data,
-                    verify=False,
-                    timeout=self.patch_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
             else:
                 self.log.debug(
@@ -240,8 +257,8 @@ class Api():
                 response = requests.post(
                     url,
                     headers=headers,
-                    verify=False,
-                    timeout=self.patch_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
 
             if response.status_code < 300:
@@ -315,8 +332,8 @@ class Api():
                     url,
                     headers=headers,
                     data=data,
-                    verify=False,
-                    timeout=self.post_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
             else:
                 self.log.debug(
@@ -329,8 +346,8 @@ class Api():
                 response = requests.post(
                     url,
                     headers=headers,
-                    verify=False,
-                    timeout=self.post_request_timeout
+                    verify=self.verify,
+                    timeout=self.timeout
                 )
 
             if response.status_code < 300:
@@ -398,8 +415,8 @@ class Api():
             response = requests.delete(
                 url,
                 headers=headers,
-                verify=False,
-                timeout=self.delete_request_timeout
+                verify=self.verify,
+                timeout=self.timeout
             )
 
             if response.status_code < 300:

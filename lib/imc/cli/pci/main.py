@@ -11,20 +11,11 @@ class ImcCliPci():
             if self.pci_mo is not None:
                 return self.pci_mo
 
-            self.pci_mo = self.get_icm_cli_cache_entry(
+            self.pci_mo = self.get_imc_cli_cache_entry(
                 'pci'
             )
             if self.pci_mo is not None:
                 return self.pci_mo
-
-        # Slot 1:
-        #     Vendor ID: 0x8086
-        #     Device ID: 0x158b
-        #     SubVendor ID: 0x1137
-        #     SubDevice ID: 0x0225
-        #     Firmware Version: 0x8000B900-1.826.0
-        #     Product Name: Cisco(R) Ethernet Converged NIC XXV710-DA2
-        #     Option ROM Status : Not-Loaded
 
         self.pci_mo = self.show_list(
             'show pci-adapter detail',
@@ -53,19 +44,11 @@ class ImcCliPci():
             if self.pci_pid_mo is not None:
                 return self.pci_pid_mo
 
-            self.pci_pid_mo = self.get_icm_cli_cache_entry(
+            self.pci_pid_mo = self.get_imc_cli_cache_entry(
                 'pci_pid'
             )
             if self.pci_pid_mo is not None:
                 return self.pci_pid_mo
-
-        # Slot 1:
-        #     Description: Cisco(R) Ethernet Converged NIC XXV710-DA2
-        #     Product ID: UCSC-PCIE-ID25GF
-        #     Vendor ID: 0x8086
-        #     Device ID: 0x158b
-        #     SubVendor ID: 0x1137
-        #     SubDevice ID: 0x0225
 
         self.pci_pid_mo = self.show_list(
             'show pciadapter-pid detail',

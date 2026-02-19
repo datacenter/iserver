@@ -207,7 +207,6 @@ class InterfacePortChannelInfo():
                 member['isActiveMemberTick'] = '\u2717'
                 member['__Output']['isActiveMemberTick'] = 'Red'
 
-        # topology/pod-1/node-201/sys/aggr-[po15]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 

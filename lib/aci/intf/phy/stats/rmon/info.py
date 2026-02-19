@@ -7,7 +7,6 @@ class InterfacePhyRmonStatsInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "dn": "topology/pod-1/node-205/sys/phys-[eth1/1]/dbgEtherStats"
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = None
@@ -17,24 +16,21 @@ class InterfacePhyRmonStatsInfo():
         if info['dn'].split('/')[4].startswith('aggr-'):
             info['interface_id'] = info['dn'].split('aggr-[')[1].split(']')[0]
 
-        # topology/pod-1/node-205/sys/mgmt-[mgmt0]/dbgEtherStats
         if info['dn'].split('/')[4].startswith('mgmt-'):
             info['interface_id'] = info['dn'].split('mgmt-[')[1].split(']')[0]
 
         if info['dn'].split('/')[4].startswith('ctx-'):
-            # topology/pod-1/node-205/sys/ctx-[vxlan-2523141]/encrtd-[eth1/24.52]/dbgEtherStats
             if info['dn'].split('/')[5].startswith('encrtd-'):
                 info['interface_id'] = info['dn'].split('encrtd-[')[1].split(']')[0]
                 info['context_id'] = info['dn'].split('ctx-[')[1].split(']')[0]
 
-            # topology/pod-1/node-205/sys/ctx-[vxlan-2195458]/bd-[vxlan-16121819]/svi-[vlan11]/dbgEtherStats
             if info['dn'].split('/')[5].startswith('bd-'):
                 info['interface_id'] = info['dn'].split('svi-[')[1].split(']')[0]
                 info['context_id'] = info['dn'].split('ctx-[')[1].split(']')[0]
 
-        # topology/pod-1/node-205/sys/inst-overlay-1/encrtd-[eth1/35.9]/dbgEtherStats
         if info['dn'].split('/')[4].startswith('inst-'):
-            info['interface_id'] = info['dn'].split('encrtd-[')[1].split(']')[0]
+            if len(info['dn'].split('encrtd-[')) == 2:
+                info['interface_id'] = info['dn'].split('encrtd-[')[1].split(']')[0]
 
         if info['interface_id'] is None:
             self.log.error(

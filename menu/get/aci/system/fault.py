@@ -34,7 +34,7 @@ class ErrorExit(Exception):
 @click.option("--desc", "fault_description", default='', callback=validations.empty_string_to_none, help="Filter by description")
 @click.option("--view", "-v", type=click.Choice(['summary', 'domain', 'type', 'verbose'], case_sensitive=False), multiple=False, default='summary', show_default=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_system_fault_command(
         ctx,
@@ -52,7 +52,7 @@ def get_aci_system_fault_command(
         fault_description,
         view,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci system fault"""
@@ -71,7 +71,7 @@ def get_aci_system_fault_command(
             controller_port,
             controller_username,
             controller_password,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit

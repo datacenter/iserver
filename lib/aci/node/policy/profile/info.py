@@ -3,21 +3,6 @@ class NodeInterfacePolicyProfileInfo():
         pass
 
     def get_node_interface_policy_profile_info(self, managed_object):
-        # "childAction": "deleteNonPresent",
-        # "deplSt": "delivered",
-        # "dn": "uni/infra/nodecfgcont/node-205/rsinterfacePolProfile-[uni/infra/accportprof-UCSB1-FI-A_IntProf]",
-        # "forceResolve": "yes",
-        # "lcOwn": "local",
-        # "modTs": "2021-12-09T23:30:56.576+02:00",
-        # "monPolDn": "",
-        # "rType": "mo",
-        # "state": "formed",
-        # "stateQual": "none",
-        # "status": "",
-        # "tCl": "infraAccPortP",
-        # "tDn": "uni/infra/accportprof-UCSB1-FI-A_IntProf",
-        # "tType": "mo"
-
         keys = [
             'tCl',
             'tDn'

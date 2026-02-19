@@ -22,7 +22,6 @@ class ProtocolNdInterfaceApi():
             )
             return self.nd_interface_mo[key]
 
-        # url: https://<apic>/api/node/class/topology/pod-1/node-201/ndIf.json?rsp-subtree=children&rsp-subtree-class=ndIf,ndIfStats&rsp-subtree-include=required
         class_name = 'topology/pod-%s/node-%s/ndIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-class=ndIf,ndIfStats&rsp-subtree-include=required'
         managed_objects = self.get_class(

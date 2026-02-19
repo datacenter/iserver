@@ -28,7 +28,7 @@ class K8sNodeNetworkStateOutput():
         ]
 
         headers = [
-            'Node',
+            'Node NNS',
             'Search',
             'Server'
         ]
@@ -207,13 +207,16 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_ethernet(self, state, ethtool=False, title=False):
+    def print_node_network_state_ethernet(self, state, ethtool=False, title=False, brief=False):
         interfaces = []
 
         info = copy.deepcopy(state)
         for item in info:
             for interface in item['interface']:
                 if interface['type'] != 'ethernet':
+                    continue
+
+                if interface['state'] == 'ignore':
                     continue
 
                 interface['node_name'] = item['name']
@@ -285,18 +288,7 @@ class K8sNodeNetworkStateOutput():
             'name',
             'stateTick',
             'mtu',
-            'mac',
-            'ethernet_autoTick',
-            'ethernet_duplex',
-            'ethernet_speed',
-            'ethernet_sriov_vfs_summary',
-            'lldp_enabledTick',
-            'lacp_parent',
-            'vlanTick',
-            'ovsTick',
-            'bridge',
-            'ipv4',
-            'ipv6'
+            'mac'
         ]
 
         headers = [
@@ -304,20 +296,38 @@ class K8sNodeNetworkStateOutput():
             'Interface',
             'State',
             'MTU',
-            'MAC',
-            'Auto',
-            'Duplex',
-            'Speed',
-            'SR-IOV',
-            'LLDP',
-            'LACP',
-            'VLAN',
-            'OVS',
-            'LB',
-            'IPv4',
-            'IPv6'
+            'MAC'
         ]
 
+        if not brief:
+            order = order + [
+                'ethernet_autoTick',
+                'ethernet_duplex',
+                'ethernet_speed',
+                'ethernet_sriov_vfs_summary',
+                'lldp_enabledTick',
+                'lacp_parent',
+                'vlanTick',
+                'ovsTick',
+                'bridge',
+                'ipv4',
+                'ipv6'
+            ]
+
+            headers = headers + [
+                'Auto',
+                'Duplex',
+                'Speed',
+                'SR-IOV',
+                'LLDP',
+                'LACP',
+                'VLAN',
+                'OVS',
+                'LB',
+                'IPv4',
+                'IPv6'
+            ]
+            
         to_expand = ['ipv4', 'ipv6']
         if ethtool:
             order.append('ethtoolT')
@@ -329,6 +339,84 @@ class K8sNodeNetworkStateOutput():
                 interfaces,
                 order,
                 to_expand
+            ),
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=True,
+            table=True
+        )
+
+    def print_node_network_state_lldp(self, state, title=False):
+        interfaces = []
+
+        info = copy.deepcopy(state)
+        for item in info:
+            for interface in item['interface']:
+                if interface['type'] != 'ethernet':
+                    continue
+
+                if interface['state'] == 'ignore':
+                    continue
+
+                interface['node_name'] = item['name']
+
+                if interface['lldp_neighbors'] is None:
+                    interface['lldp_neighbors'] = []
+
+                if len(interface['lldp_neighbors']) == 0:
+                    interface['lldp_neighbors'].append(
+                        dict(
+                            system='--',
+                            interface='--'
+                        )
+                    )
+
+                interfaces.append(
+                    interface
+                )
+
+        interfaces = sorted(
+            interfaces,
+            key=lambda i: (
+                i['node_name'].lower(),
+                i['name'].lower()
+            )
+        )
+
+        if title:
+            self.my_output.default(
+                'Node Network State - Ethernet Interface - LLDP [#%s]' % (len(interfaces)),
+                underline=True,
+                before_newline=True
+            )
+
+        order = [
+            'node_name',
+            'name',
+            'mac',
+            'stateTick',
+            'lldp_enabledTick',
+            'lldp_neighbors.system',
+            'lldp_neighbors.interface'
+        ]
+
+        headers = [
+            'Node',
+            'Interface',
+            'MAC',
+            'State',
+            'LLDP',
+            'Nei System',
+            'Nei Interface'
+        ]
+
+        self.my_output.my_table(
+            self.my_output.expand_lists(
+                interfaces,
+                order,
+                ['lldp_neighbors']
             ),
             order=order,
             headers=headers,

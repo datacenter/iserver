@@ -15,11 +15,11 @@ class K8sThanosRulerOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Thanos Ruler'
         ]
 
         self.my_output.my_table(

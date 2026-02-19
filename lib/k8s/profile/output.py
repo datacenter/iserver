@@ -24,8 +24,7 @@ class K8sProfileOutput():
                 item['ownerT'] = item['owner'].split('/')
 
         order = [
-            'namespace',
-            'name',
+            'namespace_name',
             'profile',
             'ownerT',
             'appliedTick',
@@ -36,8 +35,7 @@ class K8sProfileOutput():
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Tuned Profile',
             'Tuned',
             'Owner',
             'Applied',

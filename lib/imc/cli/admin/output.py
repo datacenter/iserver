@@ -3,54 +3,167 @@ class ImcCliAdminOutput():
         pass
 
     def print_imc_admin(self, info):
-        for item in info:
-            self.my_output.default(
-                'Endpoint: %s' % (item['endpoint_ip']),
-                before_newline=True,
-                underline=True
+        if len(info) == 0:
+            return
+
+        # Communication services
+
+        if 'http' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['http']
+                )
+            self.print_imc_http(
+                values
             )
 
-            if 'fault' in item:
-                self.print_imc_fault(item['fault'])
+        if 'ssh' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['ssh']
+                )
+            self.print_imc_ssh(
+                values
+            )
 
-            if 'http' in item:
-                self.print_imc_http(item['http'])
+        if 'tls' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['tls']
+                )
+            self.print_imc_tls(
+                values
+            )
 
-            if 'ip' in item:
-                self.print_imc_ip(item['ip'])
+        if 'xml' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['xml']
+                )
+            self.print_imc_xml(
+                values
+            )
 
-            if 'ipmi' in item:
-                self.print_imc_ipmi(item['ipmi'])
+        if 'redfish' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['redfish']
+                )
+            self.print_imc_redfish(
+                values
+            )
 
-            if 'kvm' in item:
-                self.print_imc_kvm(item['kvm'])
+        if 'ipmi' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['ipmi']
+                )
+            self.print_imc_ipmi(
+                values
+            )
 
-            if 'ntp' in item:
-                self.print_imc_ntp(item['ntp'])
+        if 'fault' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['fault']
+                )
+            self.print_imc_fault(
+                values
+            )
 
-            if 'redfish' in item:
-                self.print_imc_redfish(item['redfish'])
+        if 'ip' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['ip']
+                )
+            self.print_imc_ip(
+                values
+            )
 
-            if 'sel' in item:
-                self.print_imc_sel(item['sel'])
+        if 'kvm' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['kvm']
+                )
+            self.print_imc_kvm(
+                values
+            )
 
-            if 'smtp' in item:
-                self.print_imc_smtp(item['smtp'])
+        if 'ntp' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['ntp']
+                )
+            self.print_imc_ntp(
+                values
+            )
 
-            if 'snmp' in item:
-                self.print_imc_snmp(item['snmp'])
+        if 'sel' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['sel']
+                )
+            self.print_imc_sel(
+                values
+            )
 
-            if 'sol' in item:
-                self.print_imc_sol(item['sol'])
+        if 'smtp' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['smtp']
+                )
+            self.print_imc_smtp(
+                values
+            )
 
-            if 'ssh' in item:
-                self.print_imc_ssh(item['ssh'])
+        if 'snmp' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['snmp']
+                )
+            self.print_imc_snmp(
+                values
+            )
 
-            if 'syslog' in item:
-                self.print_imc_syslog(item['syslog'])
+        if 'sol' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['sol']
+                )
+            self.print_imc_sol(
+                values
+            )
 
-            if 'vmedia' in item:
-                self.print_imc_vmedia(item['vmedia'])
+        if 'syslog' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['syslog']
+                )
+            self.print_imc_syslog(
+                values
+            )
 
-            if 'xml' in item:
-                self.print_imc_xml(item['xml'])
+        if 'vmedia' in info[0]:
+            values = []
+            for item in info:
+                values.append(
+                    item['vmedia']
+                )
+            self.print_imc_vmedia(
+                values
+            )

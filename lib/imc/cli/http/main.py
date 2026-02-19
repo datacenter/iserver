@@ -10,22 +10,11 @@ class ImcCliHttp():
             if self.http_mo is not None:
                 return self.http_mo
 
-            self.http_mo = self.get_icm_cli_cache_entry(
+            self.http_mo = self.get_imc_cli_cache_entry(
                 'http'
             )
             if self.http_mo is not None:
                 return self.http_mo
-
-        # comp-7-p2b-eu-spdc-WMP24040061# show http detail
-        # HTTP Settings:
-        #     HTTP Port: 80
-        #     HTTPS Port: 443
-        #     Timeout: 10800
-        #     Max Sessions: 4
-        #     Active Sessions: 0
-        #     HTTPS Enabled: yes
-        #     HTTP Redirected: yes
-        #     HTTP Enabled: yes
 
         self.http_mo = self.show_dict(
             'show http detail',
@@ -53,6 +42,21 @@ class ImcCliHttp():
 
         for key in http_mo:
             info[key] = http_mo[key]
+
+        if info['HTTP Enabled'] == 'yes':
+            info['__Output']['HTTP Enabled'] = 'Green'
+        else:
+            info['__Output']['HTTP Enabled'] = 'Red'
+
+        if info['HTTP Redirected'] == 'yes':
+            info['__Output']['HTTP Redirected'] = 'Green'
+        else:
+            info['__Output']['HTTP Redirected'] = 'Red'
+
+        if info['HTTPS Enabled'] == 'yes':
+            info['__Output']['HTTPS Enabled'] = 'Green'
+        else:
+            info['__Output']['HTTPS Enabled'] = 'Red'
 
         self.log.debug(
             'get_http_info',

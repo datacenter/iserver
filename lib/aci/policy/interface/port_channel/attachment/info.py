@@ -6,17 +6,6 @@ class PolicyInterfacePortChannelAttachmentInfo():
         self.policy_interface_port_channel_attachment = None
 
     def get_policy_interface_port_channel_attachment_info(self, managed_object):
-        # "tDn": "uni/infra/lacplagp-k8s_lacp_active",
-        # "tName": "k8s_lacp_active",
-        # "tCl": "lacpLagPol",
-        # "nodeId": "2208",
-        # "profiles": [
-        #     {
-        #         "class": "infraAccPortP",
-        #         "dn": "uni/infra/accportprof-k8s_CL2208_IntProf"
-        #     }
-        # ],
-        # "dn": "topology/pod-1/node-2208/sys/aggr-[po8]"
         info = {}
         info['podId'] = managed_object['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = managed_object['dn'].split('/')[2].split('-')[1]

@@ -25,7 +25,7 @@ class ImcCliCommand():
             self.session.close()
 
     def is_cli_ready(self):
-        session = self.ssh_handler.create_session(max_attempts=1)
+        session, exception_name, error = self.ssh_handler.create_session(max_attempts=1)
         if session is None:
             return False
 
@@ -41,16 +41,11 @@ class ImcCliCommand():
         if self.session is not None:
             return True
 
-        self.session = self.ssh_handler.create_session(max_attempts=max_attempts)
+        self.session, exception_name, error = self.ssh_handler.create_session(max_attempts=max_attempts)
         if self.session is None:
             self.log.error(
                 'create_session',
-                'Session create failed: %s@%s:%s pass:%s' % (
-                    self.username,
-                    self.endpoint_ip,
-                    self.endpoint_port,
-                    self.password
-                )
+                error
             )
 
             return False
@@ -89,6 +84,14 @@ class ImcCliCommand():
                 )
 
             self.prompt = self.prompt.split('#')[0]
+
+            # Warning!!!  Your Cisco IMC certificate expired on Feb 1 11:11:11 2111 GMT. Please replace it with a new certificate immediately.
+            if len(self.prompt.split('Please replace it with a new certificate immediately.')) > 1:
+                self.prompt = self.prompt.split('Please replace it with a new certificate immediately.')[1].strip()
+
+            # Warning!!! Your Cisco IMC certificate will expire on Jun 1 11:11:11 2111 GMT. Please replace it with a new certificate before this date.
+            if len(self.prompt.split('Please replace it with a new certificate before this date.')) > 1:
+                self.prompt = self.prompt.split('Please replace it with a new certificate before this date.')[1].strip()
 
             self.log.debug(
                 'set_prompt',
@@ -270,6 +273,26 @@ class ImcCliCommand():
 
                 items[key] = value
 
+            if len(line.split(':')) > 2:
+                key = line.split(':')[0].strip()
+                value = ':'.join(line.split(':')[1:])
+
+                if ignore_keys is not None:
+                    ignore = False
+                    for ignore_key in ignore_keys:
+                        if filter_helper.match_string('%s*' % (ignore_key), key):
+                            ignore = True
+                            break
+
+                    if ignore:
+                        continue
+
+                if ignore_start is not None:
+                    if filter_helper.match_string('%s*' % (ignore_start), key):
+                        break
+
+                items[key] = value
+
         return items
 
     def show_dict(self, command, scope=None, start=None, top=True, ignore_keys=None, ignore_start=None):
@@ -307,7 +330,8 @@ class ImcCliCommand():
             commands.append('top')
 
         if scope is not None:
-            commands.append('scope %s' % (scope))
+            for item in scope.split(','):
+                commands.append('scope %s' % (item))
 
         commands.append(
             command

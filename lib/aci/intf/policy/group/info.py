@@ -16,25 +16,64 @@ class InterfacePolicyGroupInfo():
                     if selector_info['policy_group_type'] == 'infraAccBndlGrp':
                         info = self.get_policy_groups_access_interface_vpc(
                             policy_group_filter=['name:%s' % (selector_info['policy_group_name'])],
+                            strict=True,
                             aaep_info=True
                         )
                         if info is not None and len(info) == 1:
                             selector_info['policy_group_info'] = info[0]
+                        else:
+                            self.log.error(
+                                'get_interface_policy_group_selector',
+                                'Unexpected object count: %s %s (%s)' % (
+                                    selector_info['policy_group_type'],
+                                    selector_info['policy_group_name'],
+                                    len(info)
+                                )
+                            )
 
                     if selector_info['policy_group_type'] == 'infraAccPortGrp':
                         info = self.get_policy_groups_access_interface_port(
                             policy_group_filter=['name:%s' % (selector_info['policy_group_name'])],
+                            strict=True,
                             aaep_info=True
                         )
                         if info is not None and len(info) == 1:
                             selector_info['policy_group_info'] = info[0]
+                        else:
+                            self.log.error(
+                                'get_interface_policy_group_selector',
+                                'Unexpected object count: %s %s (%s)' % (
+                                    selector_info['policy_group_type'],
+                                    selector_info['policy_group_name'],
+                                    len(info)
+                                )
+                            )
 
                     if selector_info['policy_group_type'] == 'infraBrkoutPortGrp':
                         info = self.get_policy_groups_access_interface_breakout(
-                            policy_group_filter=['name:%s' % (selector_info['policy_group_name'])]
+                            policy_group_filter=['name:%s' % (selector_info['policy_group_name'])],
+                            strict=True
                         )
                         if info is not None and len(info) == 1:
                             selector_info['policy_group_info'] = info[0]
+                        else:
+                            if info is None:
+                                self.log.error(
+                                    'get_interface_policy_group_selector',
+                                    'Unexpected object count: %s %s (N/A)' % (
+                                        selector_info['policy_group_type'],
+                                        selector_info['policy_group_name']
+                                    )
+                                )
+                            else:
+                                self.log.error(
+                                    'get_interface_policy_group_selector',
+                                    'Unexpected object count: %s %s (%s)' % (
+                                        selector_info['policy_group_type'],
+                                        selector_info['policy_group_name'],
+                                        len(info)
+                                    )
+                                )
 
                     if selector_info['policy_group_type'] not in ['infraAccBndlGrp', 'infraAccPortGrp', 'infraBrkoutPortGrp']:
                         self.log.error(

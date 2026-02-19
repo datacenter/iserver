@@ -156,7 +156,7 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
             if not common.get_confirmation():
                 return
 
-        if not k8s_handlers.delete_namespaced_pvc(pvc_namespace, pvc_name):
+        if not k8s_handlers.delete_pvc_mo(pvc_namespace, pvc_name):
             ctx.my_output.error('PVC delete failed')
             return False
 
@@ -171,7 +171,7 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
         )
     )
 
-    success = k8s_handlers.create_pvc_via_data_volume_upload(
+    success = k8s_handlers.create_data_volume_upload(
         pvc_namespace,
         pvc_name,
         settings['tools'],
@@ -188,14 +188,10 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
 
     pvcs = k8s_handlers.get_pvcs(
         object_filter=['namespace:%s' % (pvc_namespace), 'name:%s' % (pvc_name)],
-        usage_info=False,
-        pv_info=True,
+        usage_info=True,
         cache_enabled=False
     )
-    k8s_output_handler.print_pvcs(
-        pvcs,
-        title=False
-    )
+    k8s_output_handler.print_pvcs(pvcs)
 
     remove_file = True
     if confirmation_mode:
@@ -344,7 +340,7 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
                 ctx.my_output.error('Service already exists')
                 return False
 
-            if not k8s_handlers.create_namespaced_service(service_content[service_name]):
+            if not k8s_handlers.create_service_mo(service_content[service_name]):
                 ctx.my_output.error('Service create failed')
                 return False
 

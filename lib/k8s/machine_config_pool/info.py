@@ -1,6 +1,7 @@
 import time
-
+import yaml
 from lib import filter_helper
+from menu.common import get_confirmation
 
 
 class K8sMachineConfigPoolInfo():
@@ -77,6 +78,9 @@ class K8sMachineConfigPoolInfo():
         info['current_configuration'] = self.get(machine_config_pool_mo, 'status:configuration:name')
 
         info['source'] = self.get(machine_config_pool_mo, 'status:configuration:source', on_error=[], on_none=[])
+        info['source_names'] = []
+        for source in info['source']:
+            info['source_names'].append(source['name'])
 
         info['machine_config_selector'] = self.get(machine_config_pool_mo, 'spec:machineConfigSelector', on_error={}, on_none={})
         info['node_selector'] = self.get(machine_config_pool_mo, 'spec:nodeSelector', on_error={}, on_none={})
@@ -232,7 +236,9 @@ class K8sMachineConfigPoolInfo():
 
         return None
 
-    def wait_machine_config_pool_update(self, machine_config_pools, machine_configs, output_handler=None, max_time=3600):
+    def wait_machine_config_pool_update(self, machine_configs, output_handler=None, max_time=3600):
+        machine_config_pools = self.get_machine_config_pools(cache_enabled=False)
+        
         target_mcp = []
         mcp_configurations = {}
         for machine_config_pool in machine_config_pools:
@@ -297,3 +303,73 @@ class K8sMachineConfigPoolInfo():
             ready = ready and pool['ready']
 
         return ready
+
+    def wait_machine_config_pool_ready(self, max_time=3600):
+        start_time = int(time.time())
+        while True:
+            if self.is_machine_config_pools_ready():
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_machine_config_pool_ready',
+                    'Max time reached'
+                )
+                return False
+
+            time.sleep(5)
+
+    def get_machine_config_pool_pause_body(self, mcp_name, pause):
+        body = {}
+        body['apiVersion'] = 'machineconfiguration.openshift.io/v1'
+        body['kind'] = 'MachineConfigPool'
+        body['metadata'] = dict(name=mcp_name)
+        body['spec'] = dict(paused=pause)
+        return body
+    
+
+    def set_machine_config_pool_pause(self, mcp_name, pause, confirmation=False, my_output=None, wait=True):
+        if my_output is None:
+            confirmation = False
+
+        if my_output is not None:
+            my_output.default('Set Machine Config Pool Pause', before_newline=True, underline=True)
+            my_output.default('- name: %s' % (mcp_name))
+            my_output.default('- pause: %s' % (pause))
+            
+        mcp_mo = self.get_machine_config_pool(mcp_name, return_mo=True, cache_enabled=False)
+        if mcp_name is None:
+            if my_output is not None:
+                my_output.error('mcp not found')
+            return False
+
+        if pause and mcp_mo['spec']['paused']:
+            if my_output is not None:
+                my_output.default('- already paused')
+            return True
+
+        if not pause and not mcp_mo['spec']['paused']:
+            if my_output is not None:
+                my_output.default('- already not paused')
+            return True
+
+        body = self.get_machine_config_pool_pause_body(mcp_name, pause)
+        if my_output is not None:
+            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+
+        if confirmation:
+            if not get_confirmation():
+                return False     
+
+        success = self.patch_machine_config_pool_mo(body)
+        if not success:
+            if my_output is not None:
+                my_output.error('patch failed')
+            return False
+        
+        if my_output is not None:
+            my_output.default('Patch successful')
+
+        return True
+    

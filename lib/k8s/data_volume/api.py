@@ -38,7 +38,6 @@ class K8sDataVolumeApi():
                 True,
                 int(time.time() * 1000) - start_time
             )
-            print(traceback.format_exc())
             return None
 
         self.log.k8s_mo(
@@ -48,7 +47,7 @@ class K8sDataVolumeApi():
 
         return self.data_volume_mo
 
-    def create_data_volume(self, data_volume):
+    def create_data_volume_mo(self, data_volume):
         api_handler = self.get_api(cluster_type='ocp')
         if api_handler is None:
             return None
@@ -81,7 +80,7 @@ class K8sDataVolumeApi():
 
         return success
 
-    def delete_data_volume(self, namespace, name):
+    def delete_data_volume_mo(self, namespace, name):
         api_handler = self.get_api(cluster_type='ocp')
         if api_handler is None:
             return None

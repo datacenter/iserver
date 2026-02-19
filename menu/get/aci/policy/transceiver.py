@@ -36,7 +36,7 @@ class NoResultExit(Exception):
 @click.option("--used", is_flag=True, show_default=True, default=False, help="Filter used")
 @click.option("--view", "-v", type=click.Choice(['default', 'usage', 'intf', 'verbose'], case_sensitive=False), multiple=True, show_default=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_policy_transceiver_command(
         ctx,
@@ -52,7 +52,7 @@ def get_aci_policy_transceiver_command(
         used,
         view,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci policy interface transceiver"""
@@ -71,7 +71,7 @@ def get_aci_policy_transceiver_command(
             controller_port,
             controller_username,
             controller_password,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit
@@ -109,7 +109,7 @@ def get_aci_policy_transceiver_command(
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        policies = apic_handler.get_policy_interface_transceiver(
+        policies = apic_handler.get_policies_interface_transceiver(
             policy_filter=policy_filter,
             attachment_info=True
         )

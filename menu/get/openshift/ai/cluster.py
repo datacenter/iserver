@@ -22,14 +22,16 @@ class ErrorExit(Exception):
 @click.command("cluster")
 @click.pass_obj
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by cluster name")
-@click.option("--view", "-v", default=['state'], help="[state|verbose]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|config|cred|host|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
+@click.option("--insecure", is_flag=True, show_default=True, default=False, help="No SSL verification")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_openshift_ai_cluster_command(
         ctx,
         name,
         view,
         output,
+        insecure,
         devel
         ):
     """Get openshift assisted installer clusters"""
@@ -39,7 +41,7 @@ def get_openshift_ai_cluster_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|verbose',
+        'state|config|cred|host|all',
         'state',
         []
     )
@@ -48,7 +50,7 @@ def get_openshift_ai_cluster_command(
 
     try:
         openshift_output_handler = openshift_output.OpenshiftOutput(log_id=ctx.run_id)
-        console_handler = console.Console(log_id=ctx.run_id)
+        console_handler = console.Console(log_id=ctx.run_id, check_ssl=not insecure)
 
         if output not in ['json']:
             ctx.busy = True
@@ -66,18 +68,21 @@ def get_openshift_ai_cluster_command(
             )
 
         config_info = False
-        credentials_info = False
-        infra_info = False
-        manifest_info = False
-        kubeconfig_info = False
-
-        if 'verbose' in view:
+        if 'config' in view:
             config_info = True
+        
+        credentials_info = False
+        if 'cred' in view:
             credentials_info = True
+        
+        infra_info = False
+        if 'state' in view:
             infra_info = True
+        
+        manifest_info = False
+        if 'state' in view:
             manifest_info = True
-            kubeconfig_info = True
-
+        
         object_filter = []
 
         if name is not None:
@@ -96,7 +101,7 @@ def get_openshift_ai_cluster_command(
             credentials_info=credentials_info,
             infra_info=infra_info,
             manifest_info=manifest_info,
-            kubeconfig_info=kubeconfig_info
+            kubeconfig_info=credentials_info
         )
 
         ctx.busy = False
@@ -112,28 +117,12 @@ def get_openshift_ai_cluster_command(
 
         ctx.my_output.json_output(clusters)
 
-        if 'state' in view:
-            openshift_output_handler.print_assisted_install_clusters_state(clusters, title=True)
-
-        if 'verbose' in view:
-            for cluster in clusters:
-                openshift_output_handler.print_assisted_install_cluster(cluster)
+        openshift_output_handler.print_assisted_install_clusters_state(clusters, title=True)
+        for cluster in clusters:
+            openshift_output_handler.print_assisted_install_cluster(cluster, view)
 
         ctx.my_output.default('Filter: name', before_newline=True)
-        ctx.my_output.default('View:   state (def), verbose')
-
-        # print(json.dumps(response, indent=4))
-        # print(json.dumps(json.loads(response[0]['validations_info']), indent=4))
-
-        # cluster_id = '2069d759-cbc3-42e5-9b3a-3bc7b395a738'
-        # response = console_handler.get_assisted_install_cluster_install_config_mo(cluster_id)
-        # print(json.dumps(response, indent=4))
-
-        # response = console_handler.get_assisted_install_infra_mo()
-        # print(response)
-
-        # response = console_handler.get_assisted_install_manifest_mo(cluster_id)
-        # print(response)
+        ctx.my_output.default('View:   state (def), config, cred, host, all')
 
     except ErrorExit:
         ctx.busy = False

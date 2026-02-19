@@ -1,4 +1,6 @@
 from lib.aci.pg.access.intf.vpc.api import PolicyGroupAccessInterfaceVpcApi
+from lib.aci.pg.access.intf.vpc.create import PolicyGroupAccessInterfaceVpcCreate
+from lib.aci.pg.access.intf.vpc.delete import PolicyGroupAccessInterfaceVpcDelete
 from lib.aci.pg.access.intf.vpc.info import PolicyGroupAccessInterfaceVpcInfo
 from lib.aci.pg.access.intf.vpc.audit.main import PolicyGroupAccessInterfaceVpcAudit
 from lib.aci.pg.access.intf.vpc.event.main import PolicyGroupAccessInterfaceVpcEvent
@@ -10,6 +12,8 @@ from lib.aci.pg.access.intf.vpc.ports.main import PolicyGroupAccessInterfaceVpcP
 
 class PolicyGroupAccessInterfaceVpc(
         PolicyGroupAccessInterfaceVpcApi,
+        PolicyGroupAccessInterfaceVpcCreate,
+        PolicyGroupAccessInterfaceVpcDelete,
         PolicyGroupAccessInterfaceVpcInfo,
         PolicyGroupAccessInterfaceVpcAudit,
         PolicyGroupAccessInterfaceVpcEvent,
@@ -20,6 +24,8 @@ class PolicyGroupAccessInterfaceVpc(
         ):
     def __init__(self):
         PolicyGroupAccessInterfaceVpcApi.__init__(self)
+        PolicyGroupAccessInterfaceVpcCreate.__init__(self)
+        PolicyGroupAccessInterfaceVpcDelete.__init__(self)
         PolicyGroupAccessInterfaceVpcInfo.__init__(self)
         PolicyGroupAccessInterfaceVpcNode.__init__(self)
         PolicyGroupAccessInterfaceVpcNodes.__init__(self)

@@ -141,7 +141,7 @@ class NexusSettings(Settings):
         settings['Devices'] = devices
         return self.set_nexus_settings(settings)
 
-    def set_nexus_device(self, nexus_name, nexus_ip, nexus_username, nexus_password, domain=''):
+    def set_nexus_device(self, nexus_name, nexus_ip, nexus_username, nexus_password, nexus_nxapi, domain=''):
         devices = self.get_nexus_devices()
         if devices is None:
             return False
@@ -156,6 +156,7 @@ class NexusSettings(Settings):
         new_device['ip'] = nexus_ip
         new_device['username'] = nexus_username
         new_device['password'] = nexus_password
+        new_device['nxapi'] = nexus_nxapi
         new_device['domain'] = domain
         new_devices.append(new_device)
 
@@ -220,6 +221,7 @@ class NexusSettings(Settings):
             'ip',
             'username',
             'password',
+            'nxapi',
             'domain'
         ]
 
@@ -228,6 +230,7 @@ class NexusSettings(Settings):
             'IP',
             'Username',
             'Password',
+            'NX API',
             'Domain'
         ]
 

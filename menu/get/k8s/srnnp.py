@@ -24,7 +24,7 @@ class NoResultExit(Exception):
 
 @click.command("srnnp")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--resource", default='', callback=validations.empty_string_to_none, help="Filter by resource")
 @click.option("--type", "device_type", type=click.Choice(['vfio', 'net', 'any'], case_sensitive=False), default='any', help="Device type")
@@ -59,7 +59,7 @@ def get_k8s_srnnp_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 

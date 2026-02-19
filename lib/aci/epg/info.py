@@ -1,3 +1,4 @@
+import time
 import copy
 import json
 
@@ -9,26 +10,130 @@ class EpgInfo():
     def __init__(self):
         self.epg = None
 
-    def get_epg_count(self, tenant_name=None):
+    def init_epg(self):
+        self.epg = None
+
+    def get_epg_count(self, tenant_name=None, cache_enabled=True):
         epg_filter = None
         if tenant_name is not None:
             epg_filter = ['tenant:%s' % (tenant_name)]
 
         aepgs = self.get_epgs(
-            epg_filter=epg_filter
+            epg_filter=epg_filter,
+            cache_enabled=cache_enabled
         )
         return len(aepgs)
 
-    def get_epg(self, epg_distinguished_name):
+    def get_epg_dn(
+            self,
+            epg_distinguished_name,
+            bd_info=False,
+            locale_info=False,
+            ifconn_info=False,
+            endpoint_info=False,
+            endpoint_vm_info=False,
+            endpoint_fabric_info=False,
+            contract_info=False,
+            vrf_info=False,
+            l3out_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None,
+            cache_enabled=True
+            ):
         epg_filter = ['dn:%s' % (epg_distinguished_name)]
         aepgs = self.get_epgs(
-            epg_filter=epg_filter
+            epg_filter=epg_filter,
+            bd_info=bd_info,
+            locale_info=locale_info,
+            ifconn_info=ifconn_info,
+            endpoint_info=endpoint_info,
+            endpoint_vm_info=endpoint_vm_info,
+            endpoint_fabric_info=endpoint_fabric_info,
+            contract_info=contract_info,
+            vrf_info=vrf_info,
+            l3out_info=l3out_info,
+            node_info=node_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter,
+            cache_enabled=True
         )
 
         if len(aepgs) == 1:
             return aepgs[0]
 
         return None
+
+    def get_epg(
+            self,
+            tenant_name,
+            ap_name,
+            epg_name,
+            bd_info=False,
+            locale_info=False,
+            ifconn_info=False,
+            endpoint_info=False,
+            endpoint_vm_info=False,
+            endpoint_fabric_info=False,
+            contract_info=False,
+            vrf_info=False,
+            l3out_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None,
+            cache_enabled=True
+            ):
+        epg_filter = []
+        epg_filter.append('tenant:%s' % (tenant_name))
+        epg_filter.append('profile:%s' % (ap_name))
+        epg_filter.append('name:%s' % (epg_name))
+
+        aepgs = self.get_epgs(
+            epg_filter=epg_filter,
+            bd_info=bd_info,
+            locale_info=locale_info,
+            ifconn_info=ifconn_info,
+            endpoint_info=endpoint_info,
+            endpoint_vm_info=endpoint_vm_info,
+            endpoint_fabric_info=endpoint_fabric_info,
+            contract_info=contract_info,
+            vrf_info=vrf_info,
+            l3out_info=l3out_info,
+            node_info=node_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter,
+            cache_enabled=cache_enabled
+        )
+
+        if len(aepgs) == 1:
+            return aepgs[0]
+
+        return None
+
+    def is_epg(self, tenant_name, ap_name, epg_name, cache_enabled=True):
+        if self.get_epg(tenant_name, ap_name, epg_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
 
     def get_epg_contract_info(self, managed_object, info):
         info['contractConsumed'] = []
@@ -134,29 +239,6 @@ class EpgInfo():
         return info
 
     def get_epg_static_ports_info(self, managed_object, info):
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "encap": "vlan-3000",
-        # "extMngdBy": "",
-        # "forceResolve": "yes",
-        # "instrImedcy": "lazy",
-        # "lcC": "",
-        # "lcOwn": "local",
-        # "modTs": "2023-03-06T21:44:13.066+02:00",
-        # "mode": "regular",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "primaryEncap": "unknown",
-        # "rType": "mo",
-        # "rn": "rspathAtt-[topology/pod-1/paths-2702/pathep-[eth1/19]]",
-        # "state": "unformed",
-        # "stateQual": "none",
-        # "status": "",
-        # "tCl": "fabricPathEp",
-        # "tDn": "topology/pod-1/paths-2702/pathep-[eth1/19]",
-        # "tType": "mo",
-        # "uid": "15374",
-        # "userdom": ":all:common:"
         info['staticPort'] = []
 
         for item in managed_object['fvRsPathAtt']:
@@ -195,7 +277,6 @@ class EpgInfo():
             port_info['pathEp'] = ''
             if port_info['tCl'] == 'fabricPathEp':
                 if port_info['tDn'].split('/')[2].startswith('protpaths-'):
-                    # "topology/pod-1/protpaths-2207-2208/pathep-[k8s_ocp_bm_1_PolGrp]"
                     port_info['pathType'] = 'PG'
                     port_info['podId'] = port_info['tDn'].split('/')[1][4:]
                     port_info['pathNode'] = port_info['tDn'].split('/')[2][10:]
@@ -212,7 +293,6 @@ class EpgInfo():
                     port_info['pathEp'] = port_info['tDn'].split('[')[1].split(']')[0]
 
                 if port_info['tDn'].split('/')[2].startswith('paths-'):
-                    # "topology/pod-1/paths-2207/pathep-[eth1/3/1]"
                     port_info['pathType'] = 'Intf'
                     port_info['podId'] = port_info['tDn'].split('/')[1][4:]
                     port_info['pathNode'] = port_info['tDn'].split('/')[2][6:]
@@ -244,48 +324,6 @@ class EpgInfo():
         return info
 
     def get_epg_domain_info(self, managed_object, info):
-        # "annotation": "orchestrator:terraform",
-        # "bindingType": "none",
-        # "childAction": "",
-        # "classPref": "encap",
-        # "configIssues": "",
-        # "customEpgName": "",
-        # "delimiter": "",
-        # "encap": "unknown",
-        # "encapMode": "auto",
-        # "epgCos": "Cos0",
-        # "epgCosPref": "disabled",
-        # "extMngdBy": "",
-        # "forceResolve": "yes",
-        # "instrImedcy": "lazy",
-        # "lagPolicyName": "",
-        # "lcOwn": "local",
-        # "modTs": "2023-04-05T21:31:58.171+02:00",
-        # "mode": "default",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "netflowDir": "both",
-        # "netflowPref": "disabled",
-        # "numPorts": "0",
-        # "portAllocation": "none",
-        # "primaryEncap": "unknown",
-        # "primaryEncapInner": "unknown",
-        # "rType": "mo",
-        # "resImedcy": "lazy",
-        # "rn": "rsdomAtt-[uni/phys-k8s_phys_PhysDom]",
-        # "secondaryEncapInner": "unknown",
-        # "state": "formed",
-        # "stateQual": "none",
-        # "status": "",
-        # "switchingMode": "native",
-        # "tCl": "physDomP",
-        # "tDn": "uni/phys-k8s_phys_PhysDom",
-        # "tType": "mo",
-        # "triggerSt": "not_triggerable",
-        # "txId": "7493989779975624787",
-        # "uid": "15374",
-        # "untagged": "no",
-        # "userdom": ":all:common:",
-        # "vnetOnly": "no"
         info['domain'] = []
 
         for item in managed_object['fvRsDomAtt']:
@@ -308,17 +346,14 @@ class EpgInfo():
 
             domain_info['type'] = domain_info['tCl']
             if domain_info['type'] == 'physDomP':
-                # "tDn": "uni/phys-k8s_phys_PhysDom"
                 domain_info['typeT'] = 'Physical'
                 domain_info['name'] = domain_info['tDn'].split('/')[1][5:]
 
             if domain_info['type'] == 'infraDomP':
-                # "tDn": "uni/phys-all-physical-devices"
                 domain_info['typeT'] = 'Infra'
                 domain_info['name'] = domain_info['tDn'].split('/')[1][5:]
 
             if domain_info['type'] == 'vmmDomP':
-                # "tDn": "uni/vmmp-VMware/dom-EU-SPDC-POD2B"
                 domain_info['typeT'] = 'VMM'
                 domain_info['vmmType'] = domain_info['tDn'].split('/')[1][5:]
                 domain_info['vmmName'] = domain_info['tDn'].split('/')[2][4:]
@@ -403,13 +438,16 @@ class EpgInfo():
         # Globally scoped pcTag – This pcTag is used for shared service (16-16385).
         # Locally scoped pcTag – This pcTag is locally used per VRF (range from 16386-65535).
         info['pcTagT'] = info['pcTag']
-        if 15 < int(info['pcTag']) < 16386:
-            info['pcTagT'] = '%s (global)' % (info['pcTag'])
-            info['__Output']['pcTagT'] = 'Red'
+        try:
+            if 15 < int(info['pcTag']) < 16386:
+                info['pcTagT'] = '%s (global)' % (info['pcTag'])
+                info['__Output']['pcTagT'] = 'Red'
 
-        if int(info['pcTag']) < 16:
-            info['pcTagT'] = '%s (system)' % (info['pcTag'])
-            info['__Output']['pcTagT'] = 'Red'
+            if int(info['pcTag']) < 16:
+                info['pcTagT'] = '%s (system)' % (info['pcTag'])
+                info['__Output']['pcTagT'] = 'Red'
+        except BaseException:
+            pass
 
         # Dn format
         # [0]: uni/tn-{name}/ap-{name}/epg-{name}
@@ -467,11 +505,11 @@ class EpgInfo():
 
         return info
 
-    def get_epgs_info(self):
+    def get_epgs_info(self, cache_enabled=True):
         if self.epg is not None:
             return self.epg
 
-        epgs_mo = self.get_epg_mo()
+        epgs_mo = self.get_epg_mo(cache_enabled=cache_enabled)
         if epgs_mo is None:
             return None
 
@@ -771,9 +809,15 @@ class EpgInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_epgs = self.get_epgs_info()
+
+        if not cache_enabled:
+            self.init_epg()
+            self.init_epg_mo()
+
+        all_epgs = self.get_epgs_info(cache_enabled=cache_enabled)
         if all_epgs is None:
             return None
 
@@ -894,7 +938,7 @@ class EpgInfo():
                 if epg_info['fvBD'] is not None:
                     vrf_dn = epg_info['fvBD']['fvRsCtx']['dn']
                     epg_info['fvBD']['fvCtxInfo'] = copy.deepcopy(
-                        self.get_vrf(
+                        self.get_vrf_by_dn(
                             vrf_dn
                         )
                     )
@@ -920,9 +964,8 @@ class EpgInfo():
 
             if node_info:
                 ap_node_info = self.get_bridge_domain_node(
-                    epg_info['tenant'],
-                    epg_info['application_profile'],
-                    epg_info['name']
+                    epg_info['bd_tenant_name'],
+                    epg_info['bd_name']
                 )
                 epg_info['node'] = None
                 epg_info['interface'] = None
@@ -971,3 +1014,35 @@ class EpgInfo():
         )
 
         return epgs
+
+    def wait_epg(self, tenant_name, ap_name, epg_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_epg(tenant_name, ap_name, epg_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_epg',
+                    'Max time reached: %s/%s/%s' % (tenant_name, ap_name, epg_name)
+                )
+                return False
+
+            time.sleep(5)
+
+    def wait_no_epg(self, tenant_name, ap_name, epg_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if not self.is_epg(tenant_name, ap_name, epg_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_epg',
+                    'Max time reached: %s/%s/%s' % (tenant_name, ap_name, epg_name)
+                )
+                return False
+
+            time.sleep(5)

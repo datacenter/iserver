@@ -18,7 +18,6 @@ class L2OutAuditInfo():
         info['l2outName'] = None
 
         if 'uni/tn-' in info['affected']:
-            # uni/tn-k8s/l2out-Test
             info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if '/l2out-' in info['affected']:

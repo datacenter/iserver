@@ -18,7 +18,7 @@ def sanitize_string(value):
     return value
 
 
-def get_string_chunks(value, length, separator=' ', extra_separator='-'):
+def get_string_chunks(value, length, separator=' ', extra_separator='-', fixup_newline=False):
     lines = []
 
     if value is None:
@@ -69,6 +69,13 @@ def get_string_chunks(value, length, separator=' ', extra_separator='-'):
     else:
         lines.append(line[:-1])
 
+    if fixup_newline:
+        lines_no_newline = []
+        for item in lines:
+            lines_no_newline = lines_no_newline + item.split('\n')
+        
+        return lines_no_newline
+    
     return lines
 
 
@@ -362,7 +369,7 @@ def match_integer(key, value):
     return True
 
 
-def match_string(key, value, strict=False):
+def match_string(key, value, strict=False, sub=False):
     if key is None and value is None:
         return True
 
@@ -390,6 +397,12 @@ def match_string(key, value, strict=False):
         return False
 
     key = key.lower()
+    if sub:
+        if key[0] != '*':
+            key ='*%s' % (key)
+        if key[-1] != '*':
+            key ='%s*' % (key)
+
     value = value.lower()
 
     if '*' not in key:
@@ -484,7 +497,9 @@ def match_timestamp(key, value):
     if not isinstance(value, int):
         return False
 
+    reference = None
     now = int(time.time())
+
     if key.endswith('m'):
         try:
             reference = now - int(key[:-1]) * 60
@@ -509,7 +524,7 @@ def match_timestamp(key, value):
         except BaseException:
             return False
 
-    if reference < value:
+    if reference is not None and reference < value:
         return True
 
     return False
@@ -554,17 +569,42 @@ def match_namespace_name(key, value, strict=False, delimiter='/'):
         return False
 
     (key_namespace, key_name) = get_namespace_name(key, delimiter=delimiter)
+    namespace_negative = False
+    if key_namespace is not None:
+        if len(key_namespace.split('!')) == 2:
+            namespace_negative = True
+            key_namespace = key_namespace.split('!')[1]
+
+    name_negative = False
+    if len(key_name.split('!')) == 2:
+        name_negative = True
+        key_name = key_name.split('!')[1]
+
     (value_namespace, value_name) = get_namespace_name(value, delimiter=delimiter)
 
     if key_namespace is not None:
-        if not match_string(key_namespace, value_namespace):
-            return False
-        if not match_string(key_name, value_name):
-            return False
+        if not namespace_negative:
+            if not match_string(key_namespace, value_namespace):
+                return False
+        if namespace_negative:
+            if match_string(key_namespace, value_namespace):
+                return False
+            
+        if not name_negative:
+            if not match_string(key_name, value_name):
+                return False
+        if name_negative:
+            if match_string(key_name, value_name):
+                return False
 
     if key_namespace is None:
-        if not match_string(key_name, value_name):
-            return False
+        if not name_negative:
+            if not match_string(key_name, value_name):
+                return False
+
+        if name_negative:
+            if match_string(key_name, value_name):
+                return False
 
     return True
 
@@ -581,3 +621,157 @@ def split_list_of_dict(items, key):
         )
 
     return keys
+
+
+def get_json_root_attributes(source, exceptions=None):
+    destination = {}
+    for key in source:
+        if exceptions is None or key not in exceptions:
+            if isinstance(source[key], list):
+                continue
+
+            if isinstance(source[key], dict):
+                continue
+
+        destination[key] = source[key]
+
+    return destination
+
+
+def _get_attr(value, key):
+    if value is None:
+        return '__ERROR'
+
+    if ':' in key:
+        subkey = key.split(':')[0]
+        if subkey not in value:
+            return '__ERROR'
+
+        new_key = ':'.join(key.split(':')[1:])
+        return _get_attr(value[subkey], new_key)
+
+    if key in value:
+        return value[key]
+
+    return '__ERROR'
+
+def get_attr(managed_object, key, on_error=None, on_none=None, cast=None):
+    if managed_object is None:
+        return on_error
+
+    if not isinstance(managed_object, dict):
+        if on_error is None and cast is not None:
+            return cast
+        return on_error
+
+    value = _get_attr(managed_object, key)
+    if value == '__ERROR':
+        if on_error is None and cast is not None:
+            return cast
+        return on_error
+
+    if value is None:
+        if on_none is None and cast is not None:
+            return cast
+        return on_none
+
+    return value
+
+def _get(value, key):
+    if value is None:
+        return '__ERROR'
+
+    if ':' in key:
+        subkey = key.split(':')[0]
+        if subkey not in value:
+            return '__ERROR'
+
+        new_key = ':'.join(key.split(':')[1:])
+        return _get(value[subkey], new_key)
+
+    if key in value:
+        return value[key]
+
+    return '__ERROR'
+
+def get(managed_object, key, on_error=None, on_none=None):
+    if managed_object is None:
+        return on_error
+
+    if not isinstance(managed_object, dict):
+        return on_error
+
+    value = _get(managed_object, key)
+    if value == '__ERROR':
+        return on_error
+
+    if value is None:
+        return on_none
+
+    return value
+
+
+def is_dict_in_dict(dict1, dict2):
+    if dict1 is None or dict2 is None:
+        return False
+    
+    if not isinstance(dict1, dict):
+        return False
+    
+    if not isinstance(dict2, dict):
+        return False
+
+    for key in dict1:
+        if key not in dict2:
+            return False
+        
+        if dict1[key] != dict2[key]:
+            return False
+        
+    return True
+
+
+def compare_list(list1, list2):
+    if list1 is None or list2 is None:
+        return False
+    
+    if not isinstance(list1, list):
+        return False
+    
+    if not isinstance(list2, list):
+        return False
+    
+    if len(list1) != len(list2):
+        return False
+    
+    for item in list1:
+        if item not in list2:
+            return False
+        
+    return True
+
+
+def json_fixup(output):
+    if output is None:
+        return None
+
+    if not isinstance(output, str):
+        return None
+    
+    output = output.replace('"', '\\"')
+    output = output.replace('\n', '')
+    output = output.replace('}{', '},{')
+    output = output.replace('\'', '\"')
+    output = output.replace(': None', ': null')
+    output = output.replace(': True', ': true')
+    output = output.replace(': False', ': false')
+    if len(output.split('},{')) > 0:
+        if output.startswith('[') and output.endswith(']'):
+            pass
+        else:
+            output = '[%s]' % (output)
+    
+    if len(output.replace(' ', '')) == 0:
+        output = '{}'
+        
+    return output

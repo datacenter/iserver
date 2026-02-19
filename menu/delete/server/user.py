@@ -1,14 +1,12 @@
 import sys
-import threading
 import traceback
 import click
 
-from lib.imc import endpoint as imc_endpoint
+from lib.imc.cli import endpoint as imc_endpoint
 from lib.redfish import endpoint as redfish_endpoint
 from lib.redfish import output as redfish_output
 
 from menu import validations
-from menu import progress
 
 
 class Failure(Exception):
@@ -85,7 +83,7 @@ def delete_server_user_command(ctx, endpoint_ip, admin_password, username, no_co
             to_be_deleted.append(candidate)
 
         if len(to_be_deleted) > 0:
-            imc_handler = imc_endpoint.ImcEndpoint(
+            imc_handler = imc_endpoint.ImcCliEndpoint(
                 endpoint_ip,
                 22,
                 'admin',

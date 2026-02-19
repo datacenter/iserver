@@ -33,8 +33,6 @@ class InterfaceLacpInfo():
 
         info['__Output']['id'] = 'Blue'
 
-        # Dn format
-        # topology/pod-1/node-201/sys/lacp/inst/if-[eth1/2]
         info['apic'] = self.apic_name
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]

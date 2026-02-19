@@ -22,33 +22,6 @@ class PolicyInterfaceTransceiverInfo():
         return info
 
     def get_policy_interface_transceiver_info(self, managed_object):
-        # "adminSt": "disabled",
-        # "annotation": "",
-        # "cdMax": "2400",
-        # "cdMin": "-2400",
-        # "childAction": "",
-        # "dacRate": "1x1",
-        # "descr": "",
-        # "dn": "uni/infra/zr-default",
-        # "dwdmCarrier": "100MHzFrequency",
-        # "extMngdBy": "",
-        # "fecMode": "cFEC",
-        # "frequency100MHz": "1931000",
-        # "frequency50GHz": "19310",
-        # "ituChannel50GHz": "61",
-        # "lcOwn": "local",
-        # "modTs": "2022-09-14T19:08:11.182+01:00",
-        # "modulation": "16QAM",
-        # "muxponder": "1x400",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "transmitPower": "-190",
-        # "uid": "0",
-        # "userdom": "all",
-        # "wavelength50GHz": "1552524"
         keys = [
             'adminSt',
             'annotation',
@@ -161,7 +134,7 @@ class PolicyInterfaceTransceiverInfo():
 
         return True
 
-    def get_policy_interface_transceiver(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_transceiver(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_transceiver_info()
         if all_policies is None:
             return None
@@ -204,3 +177,29 @@ class PolicyInterfaceTransceiverInfo():
         )
 
         return policy
+
+    def get_policy_interface_transceiver(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_transceiver(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_transceiver(self, policy_name):
+        if self.get_policy_interface_transceiver(policy_name) is None:
+            return False
+        return True

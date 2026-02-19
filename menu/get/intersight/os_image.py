@@ -4,7 +4,7 @@ import traceback
 import yaml
 import click
 
-from lib.intersight import os_image
+from lib.intersight.os_image import main as os_image
 from menu import defaults
 from menu import validations
 
@@ -57,7 +57,7 @@ def get_intersight_os_image_command(ctx, iaccount, output, devel):
             ctx.log_prompt = False
             return
 
-        image_handler.print(images)
+        image_handler.print(images, title=True)
         ctx.my_output.json_output(images)
 
     except ErrorExit:

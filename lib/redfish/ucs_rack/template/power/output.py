@@ -30,69 +30,35 @@ class RedfishEndpointUcsRackTemplatePowerOutput(
             title_keys=headers
         )
 
-    def print_ucsc_power_voltage_properties(self, properties):
-        order = [
-            'Name',
-            'State',
-            'Health',
-            'ReadingVolts',
-            'UpperThresholdCritical'
-        ]
-
-        headers = [
-            'Sensor Name',
-            'State',
-            'Health',
-            'Volts',
-            'Upper Threshold'
-        ]
-
-        self.my_output.my_table(
-            properties['Data']['Voltage'],
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-    def print_ucsc_power_supply_properties(self, properties):
-        order = [
-            'Name',
-            'State',
-            'Health',
-            'SerialNumber',
-            'FirmwareVersion',
-            'PowerOutputWatts',
-            'PowerInputWatts',
-            'MaximumVoltage',
-            'MinimumVoltage',
-            'MaximumFrequencyHz',
-            'MinimumFrequencyHz'
-        ]
-
-        headers = [
-            'PSU Name',
-            'State',
-            'Health',
-            'Serial',
-            'Firmware',
-            'Output (Watt)',
-            'Input (Watt)',
-            'Max (V)',
-            'Min (V)',
-            'Max (Hz)',
-            'Min (Hz)'
-        ]
-
-        self.my_output.my_table(
-            properties['Data']['PowerSupply'],
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
     def print_ucsc_power_properties(self, properties):
         self.print_ucsc_power_consumption_properties(properties)
-        self.print_ucsc_power_voltage_properties(properties)
-        self.print_ucsc_power_supply_properties(properties)
+        
+        self.my_output.my_table_ng(
+            properties['Data']['Voltage'],
+            [
+                ['Sensor Name', 'Name'],
+                ['State', 'State'],
+                ['Health', 'Health'],
+                ['Volts', 'ReadingVolts'],
+                ['Upper Threshold', 'UpperThresholdCritical']
+            ]
+        )
+
+        if 'PowerSupply' in properties:
+            self.my_output.my_table_ng(
+                properties['Data']['PowerSupply'],
+                [
+                    ['PSU Name', 'Name'],
+                    ['State', 'State'],
+                    ['Health', 'Health'],
+                    ['Serial', 'SerialNumber'],
+                    ['Firmware', 'FirmwareVersion'],
+                    ['Output (Watt)', 'PowerOutputWatts'],
+                    ['Input (Watt)', 'PowerInputWatts'],
+                    ['Max (V)', 'MaximumVoltage'],
+                    ['Min (V)', 'MinimumVoltage'],
+                    ['Max (Hz)', 'MaximumFrequencyHz'],
+                    ['Min (Hz)', 'MinimumFrequencyHz']
+                ]
+            )
+        

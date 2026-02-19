@@ -35,7 +35,7 @@ class K8sSecurityContextConstraintOutput():
         ]
 
         headers = [
-            'Name',
+            'SCC',
             'Priv Esc',
             'Priv Cont',
             'Caps',

@@ -4,6 +4,7 @@ import threading
 import traceback
 import click
 
+from lib import file_helper
 from lib.nexus import settings as nexus_settings
 from lib.nexus import output as nexus_output
 from menu import validations
@@ -24,6 +25,7 @@ class ErrorExit(Exception):
 @click.option("--ip", "device_ip", default='', callback=validations.validate_ip, help="Device IP")
 @click.option("--username", "device_username", default='', help="Device Username")
 @click.option("--password", "device_password", default='', help="Device Password")
+@click.option("--nxapi", "device_nxapi", is_flag=True, show_default=True, default=False, help="NX API vs. SSH")
 @click.option("--id", "nbr_id", default='', callback=validations.empty_string_to_none, help="Filter neighbor by device id")
 @click.option("--mac", "nbr_mac", default='', callback=validations.empty_string_to_none, help="Filter neighbor by mac address")
 @click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
@@ -36,6 +38,7 @@ def get_nx_lldp_command(
         device_ip,
         device_username,
         device_password,
+        device_nxapi,
         nbr_id,
         nbr_mac,
         view,
@@ -73,6 +76,7 @@ def get_nx_lldp_command(
             device_ip,
             device_username,
             device_password,
+            device_nxapi=device_nxapi,
             cache_enabled=cache_enabled
         )
         if device_handlers is None:
@@ -80,7 +84,7 @@ def get_nx_lldp_command(
 
         nexus_output_handler = nexus_output.NexusOutput(log_id=ctx.run_id)
 
-        if output not in ['json']:
+        if output == 'default':
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
@@ -106,6 +110,8 @@ def get_nx_lldp_command(
 
         ctx.busy = False
 
+        ctx.my_output.json_output(neighbors)
+
         if output == 'json':
             ctx.log_prompt = False
             ctx.my_output.default(
@@ -115,8 +121,6 @@ def get_nx_lldp_command(
                 )
             )
             return
-
-        ctx.my_output.json_output(neighbors)
 
         if 'state' in view:
             nexus_output_handler.print_lldps(

@@ -15,8 +15,7 @@ class K8sSriovNetworkNodePolicyOutput():
             return
 
         order = [
-            'namespace',
-            'name',
+            'namespace_nameT',
             'resource_nameT',
             'device_typeT',
             'node_selectorT',
@@ -28,8 +27,7 @@ class K8sSriovNetworkNodePolicyOutput():
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'SR-IOV Policy',
             'Resource',
             'Device Type',
             'Node',
@@ -44,7 +42,7 @@ class K8sSriovNetworkNodePolicyOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['node_selectorT', 'nic_selectorT']
+                ['namespace_nameT', 'node_selectorT', 'nic_selectorT']
             ),
             order=order,
             headers=headers,

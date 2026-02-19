@@ -52,13 +52,6 @@ class RedfishEndpointFabricInterconnectTemplateIdentityChassis():
 
         return chassis_uri
 
-    def get_identity_chassis_default_cache_name(self, properties):
-        name = 'chassis-%s-%s' % (
-            properties['Product'],
-            properties['SerialNumber'].lower()
-        )
-        return name
-
     def get_template_identity_chassis_properties(self):
         main = self.get_properties(self.identity_main_url)
         if main is None:
@@ -82,8 +75,5 @@ class RedfishEndpointFabricInterconnectTemplateIdentityChassis():
             properties['SerialNumber']
         )
         properties['Name'] = None
-
-        properties['DefaultCacheName'] = self.get_identity_chassis_default_cache_name(properties)
-        properties['CacheFileName'] = properties['UUID'].lower()
 
         return properties

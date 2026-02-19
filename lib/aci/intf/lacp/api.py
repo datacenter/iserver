@@ -31,7 +31,7 @@ class InterfaceLacpApi():
                 'get_interfaces_lacp_mo',
                 'API failed'
             )
-            return False
+            return None
 
         self.interfaces_lacp_mo[key] = []
         for managed_object in managed_objects['imdata']:

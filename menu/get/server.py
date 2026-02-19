@@ -1,3 +1,4 @@
+import os
 import json
 import sys
 import traceback
@@ -14,6 +15,7 @@ from lib.vc import vcenter
 from lib.vc import settings as vc_settings
 from lib import my_servers_helper
 from lib import context
+from lib import iaccount_helper
 
 from menu import defaults
 from menu import validations
@@ -37,6 +39,7 @@ class ErrorExit(Exception):
 @click.option("--type", "type_filter", type=click.Choice(['any', 'blade', 'rack'], case_sensitive=False), default='any', show_default=True, help="Select by type")
 @click.option("--group", "group_filter", default='', callback=validations.validate_group_serials, help="Select by group name")
 @click.option("--tag", "tag_filter", multiple=True, callback=intersight_validations.tag_filter, help="Tag filter")
+@click.option("--ocp", "ocp_filter", multiple=False, callback=intersight_validations.ocp_filter, help="Select by openshift cluster")
 @click.option("--led", "locator_filter", type=click.Choice(['any', 'on', 'off'], case_sensitive=False), default='any', show_default=True, help="Filter by locator led state")
 @click.option("--power", "power_filter", type=click.Choice(['any', 'on', 'off'], case_sensitive=False), default='any', show_default=True, help="Filter by power state")
 @click.option("--alarm", "alarm_filter", type=click.Choice(['any', 'info', 'warn', 'crit'], case_sensitive=False), default='any', show_default=True, help="Filter by alarm severity")
@@ -56,12 +59,13 @@ class ErrorExit(Exception):
 @click.option("--fan", "fan_filter", multiple=True, callback=intersight_validations.fan_filter, help="Fan filter")
 @click.option("--psu", "psu_filter", multiple=True, callback=intersight_validations.psu_filter, help="Psu filter")
 @click.option("--vc", "vcenter_name", default='', help="vCenter name")
-@click.option("--view", "-v", default=['state'], help="[state|adv|alarm|board|boot|connector|contract|cpu|env|fan|fanm|fw|gpu|hcl|hw|inv|istate|kvm|lic|mem|net|pci|power|profile|psu|sc|pd|vd|storage|sw|thermal|tpm|workflow|vc|summary]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|adv|alarm|board|boot|connector|contract|cpu|env|fan|fanm|fw|gpu|hcl|hw|inv|istate|kvm|lic|mac|mem|net|pci|power|profile|psu|sc|pd|vd|storage|sw|thermal|tpm|workflow|vc|summary]", show_default=True, multiple=True)
 @click.option("--days", default=0, type=click.INT, help="Last <n> days workflows")
 @click.option("--ttl", "user_cache_ttl", default=None, help="Cache TTL")
-@click.option("--inventory", "inventory_filename", default=None, help="Inventory CSV filename")
+@click.option("--csv", "csv", default=None, help="CSV filename supported for selected views")
 @click.option("--set", "set_group", default='', callback=validations.validate_group_oper, help="Set as group")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
+@click.option("--anonymize", is_flag=True, show_default=True, default=False, help="Anonymized output")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_server_command(
         ctx,
@@ -73,6 +77,7 @@ def get_server_command(
         type_filter,
         group_filter,
         tag_filter,
+        ocp_filter,
         locator_filter,
         power_filter,
         alarm_filter,
@@ -95,9 +100,10 @@ def get_server_command(
         view,
         days,
         user_cache_ttl,
-        inventory_filename,
+        csv,
         set_group,
         output,
+        anonymize,
         devel
         ):
     """Get server details"""
@@ -112,10 +118,10 @@ def get_server_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|adv|alarm|board|boot|connector|contract|cpu|env|fan|fanm|fw|gpu|hcl|hw|inv|istate|kvm|lic|mem|net|pci|power|profile|psu|sc|pd|vd|storage|sw|thermal|tpm|workflow|vc|summary',
+        'state|adv|alarm|board|boot|connector|contract|cpu|env|fan|fanm|fw|gpu|hcl|hw|inv|istate|kvm|lic|mac|mem|net|pci|power|profile|psu|sc|pd|vd|storage|sw|thermal|tpm|workflow|vc|summary',
         'state',
         [
-            'hw:state,board,cpu,fan,gpu,mem,pci,net,psu,storage,tpm',
+            'hw:state,board,cpu,fan,gpu,mac,mem,pci,net,psu,storage,tpm',
             'inv:board,chassis,cpu,fan,gpu,mem,pci,net,psu,storage,tpm,inventory',
             'sw:fw,boot,kvm',
             'env:power,thermal',
@@ -155,7 +161,7 @@ def get_server_command(
         settings['inventory'] = 'inventory' in view
         settings['locator'] = 'state' in view or locator_filter != 'any'
         settings['memory'] = 'mem' in view or memory_filter['info']
-        settings['net'] = 'net' in view or len(mac_filter) > 0
+        settings['net'] = 'net' in view or 'mac' in view or len(mac_filter) > 0
         settings['pci'] = 'pci' in view or 'gpu' in view or pci_filter['info'] or gpu_filter['info']
         settings['power'] = 'power' in view
         settings['profile'] = 'profile' in view
@@ -217,7 +223,7 @@ def get_server_command(
 
         # Runtime information
 
-        if output not in ['json']:
+        if output == 'default':
             if cache_ttl is None:
                 ctx.my_output.default('iaccount %s (cache: off)' % (iaccount))
             else:
@@ -232,7 +238,7 @@ def get_server_command(
 
         compute_handler = compute.Compute(iaccount, log_id=ctx.run_id)
         mo_match_rules = compute_handler.get_mo_match_rules(
-            ip_filter=ip_filter,
+            ip_filter=intersight_validations.add_ip_filter(ip_filter, ocp_filter),
             name_filter=name_filter,
             serial_filter=intersight_validations.add_group_filter(serial_filter, group_filter),
             model_filter=model_filter,
@@ -272,7 +278,7 @@ def get_server_command(
             cache_ttl=None
         )
 
-        if output not in ['json']:
+        if output == 'default':
             ctx.my_output.default('Selected servers: %s' % (len(servers_mo)))
 
         if len(servers_mo) == 0:
@@ -292,7 +298,7 @@ def get_server_command(
 
             chassiz_info = []
             if len(chassiz_moid) > 0:
-                if output not in ['json']:
+                if output == 'default':
                     ctx.my_output.default('Collect chassis api objects...')
 
                 chassis_handler = chassis.Chassis(iaccount, log_id=ctx.run_id)
@@ -329,7 +335,7 @@ def get_server_command(
 
         # Collect server information
 
-        if output not in ['json']:
+        if output == 'default':
             ctx.my_output.default('Collect server api objects...')
 
         compute_handler.set_cache(
@@ -406,15 +412,23 @@ def get_server_command(
             summary_handler.print_summary(summary)
             return
 
+        ctx.my_output.default('')
+        compute_output_handler = compute_output.ComputeOutput(log_id=ctx.run_id)
+
         if output == 'json':
-            ctx.my_output.default(json.dumps(servers_info, indent=4))
             ctx.log_prompt = False
+            ctx.my_output.default(json.dumps(servers_info, indent=4))
             return
 
         ctx.my_output.json_output(servers_info)
 
-        ctx.my_output.default('')
-        compute_output_handler = compute_output.ComputeOutput(log_id=ctx.run_id)
+        if anonymize:
+            new_servers_info = []
+            for server_info in servers_info:
+                new_servers_info.append(
+                    compute_handler.anonymize_server_info(server_info)
+                )
+            servers_info = new_servers_info
 
         if 'inventory' in view:
             compute_output_handler.print_inventory(
@@ -423,11 +437,11 @@ def get_server_command(
                 title=True
             )
 
-            if inventory_filename is not None:
+            if csv is not None:
                 compute_output_handler.print_inventory_csv(
                     servers_info,
                     chassiz_info,
-                    inventory_filename
+                    csv
                 )
 
             return
@@ -478,6 +492,12 @@ def get_server_command(
 
         if 'storage' in view or 'vd' in view:
             compute_output_handler.print_virtual_drives(
+                servers_info,
+                title=True
+            )
+
+        if 'mac' in view:
+            compute_output_handler.print_mac_addresses(
                 servers_info,
                 title=True
             )
@@ -592,6 +612,12 @@ def get_server_command(
                 servers_info,
                 title=True
             )
+
+            if csv is not None:
+                compute_output_handler.print_contract_csv(
+                    servers_info,
+                    csv
+                )
 
         if 'hcl' in view:
             compute_output_handler.print_hcl(

@@ -1,0 +1,119 @@
+from lib import output_helper
+from lib.k8s import output as k8s_output
+from lib.workflow.ocp_gpu_operator import common as local_common
+
+
+def validate(params):
+    if 'cluster' not in params or params['cluster'] is None:
+        return None, 'Cluster name required'
+    
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+    
+    if 'check-verbose' not in params:
+        params['check-verbose'] = params['verbose']
+
+    if not isinstance(params['check-verbose'], bool):
+        return None, 'check-verbose param must be true or false'
+    
+    allowed_keys = [
+        'cluster',
+        'verbose',
+        'check-verbose'
+    ]
+    return local_common.sanitize_params(params, allowed_keys), None
+
+
+def run(params, log_id=None):
+    my_output = output_helper.OutputHelper(log_id=log_id)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
+    my_output.default('OpenShift Workflow - GPU Operator - Get Information', before_newline=True, after_newline=True, double_underline=True)
+
+    params, error = validate(params)
+    if error is not None:
+        my_output.error(error)
+        return False
+
+    params = local_common.initialize(params, my_output, log_id)
+    if params is None:
+        return False
+    
+    subscription = params['k8s_handler'].get_subscription_by_package(
+        params['name'],
+        return_mo=False,
+        cache_enabled=False
+    )
+    if subscription is None:
+        my_output.default('Operator not found: %s' % (params['name']))
+        return True
+    
+    my_output.default('Operator', underline=True, before_newline=True)
+    my_output.default('- subscription: %s' % (subscription['namespace_name']))
+    my_output.default('- channel: %s' % (subscription['channel']))
+    my_output.default('- csv: %s' % (subscription['installed_csv']))
+    
+    policies = params['k8s_handler'].get_cluster_policies(ds_info=True, cache_enabled=False)
+    if policies is None:
+        my_output.error('Failed to get nvidia cluster policy')
+        return True
+    
+    for policy in policies:
+        k8s_output_handler.print_cluster_policy(policy)
+        k8s_output_handler.my_table(
+            policy['daemon_sets'],
+            [
+                ['Daemon Set', 'name'],
+                ['Scheduled', 'scheduled_summary'],
+                ['Available', 'available_summary']
+            ]
+        )
+
+    output = params['k8s_handler'].get_nvidia_smi()
+    if output is not None:
+        my_output.default(output, wrap='~~~', before_newline=True)
+
+    my_output.default('Monitoring Dashboard', underline=True, before_newline=True)
+
+    is_config_map = params['k8s_handler'].is_config_map(
+        params['monitoring']['dashboard_namespace'],
+        params['monitoring']['dashboard_name'],
+        cache_enabled=False
+    )
+    if is_config_map:
+        my_output.default(
+            '- config map: %s/%s' % (
+                params['monitoring']['dashboard_namespace'],
+                params['monitoring']['dashboard_name']
+            )
+        )
+    else:
+        my_output.default('- disabled')
+
+    daemon_set = params['k8s_handler'].get_daemon_set(
+        params['namespace'],
+        params['ds-dcgm']
+    )
+    if daemon_set is None:
+        my_output.default('- dcgm: %s' % (my_output.add_color('not found', 'Red')))
+    else:
+        if daemon_set['ready']:
+            my_output.default('- dcgm: %s' % (my_output.add_color('ready', 'Green')))
+        else:
+            my_output.default('- dcgm: %s' % (my_output.add_color('not ready', 'Red')))
+
+    daemon_set = params['k8s_handler'].get_daemon_set(
+        params['namespace'],
+        params['ds-dcgm-exporter']
+    )
+    if daemon_set is None:
+        my_output.default('- dcgm exporter: %s' % (my_output.add_color('not found', 'Red')))
+    else:
+        if daemon_set['ready']:
+            my_output.default('- dcgm exporter: %s' % (my_output.add_color('ready', 'Green')))
+        else:
+            my_output.default('- dcgm exporter: %s' % (my_output.add_color('not ready', 'Red')))
+
+    return True

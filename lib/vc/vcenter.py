@@ -2,7 +2,7 @@ from lib.vc.common import VcCommon
 from lib.vc.connect import VcConnect
 from lib.vc.datacenter import VcDatacenter
 from lib.vc.datastore import VcDatastore
-from lib.vc.helper import VcHelper
+from lib.vc.dvs import VcDvs
 from lib.vc.host.main import VcHost
 from lib.vc.network import VcNetwork
 from lib.vc.virtual_machine import VcVirtualMachine
@@ -20,8 +20,8 @@ class Vcenter(
         VcConnect,
         VcDatacenter,
         VcDatastore,
+        VcDvs,
         VcHost,
-        VcHelper,
         VcNetwork,
         VcVirtualMachine,
         VcVirtualMachineDeploymentLcm,
@@ -31,7 +31,6 @@ class Vcenter(
         ):
     def __init__(self, vcenter_ip, vcenter_username, vcenter_password, port=443, disable_ssl_verification=True, verbose=False, debug=False, log_id=None):
         VcCommon.__init__(self)
-        VcHelper.__init__(self)
         VcConnect.__init__(
             self,
             vcenter_ip,
@@ -42,6 +41,7 @@ class Vcenter(
         )
         VcDatacenter.__init__(self)
         VcDatastore.__init__(self)
+        VcDvs.__init__(self)
         VcHost.__init__(self)
         VcNetwork.__init__(self)
         VcVirtualMachine.__init__(self)

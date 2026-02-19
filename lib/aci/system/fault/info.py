@@ -73,7 +73,6 @@ class SystemFaultInfo():
                 scope['reason'] = 'Unexpected l2out dn structure'
                 return scope
 
-            # "dn": "uni/tn-k8s/l2out-Test/instP-L2Out-ext-epg"
             scope['tenant'] = scope['epgDn'].split('/')[1][3:]
             scope['l2outName'] = scope['epgDn'].split('/')[2][6:]
             scope['epgName'] = scope['epgDn'].split('/')[3][6:]
@@ -87,7 +86,6 @@ class SystemFaultInfo():
                 scope['reason'] = 'Unexpected l2out dn structure'
                 return scope
 
-            # "dn": "uni/epp/fv-[uni/tn-common/ap-privIP_TEST/epg-privIP_TEST]/node-301/polDelSt/fault-F1298"
             scope['tenant'] = scope['epgDn'].split('/')[1][3:]
             scope['application_profile'] = scope['epgDn'].split('/')[2][3:]
             scope['name'] = scope['epgDn'].split('/')[3][4:]
@@ -230,10 +228,6 @@ class SystemFaultInfo():
             40,
             separator='/'
         )
-
-        # info['scope'] = self.get_system_fault_scope(
-        #     managed_object
-        # )
 
         # "2022-04-29T13:32:45.167+02:00"
         info['timestamp'] = int(

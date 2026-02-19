@@ -52,28 +52,6 @@ class PolicySnoopMld():
         return self.policy_snoop_mld_mo[key]
 
     def get_policy_snoop_mld_info(self, managed_object):
-        # "adminSt": "disabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "ctrl": "",
-        # "descr": "",
-        # "dn": "uni/tn-k8s/mldsnoopPol-Test",
-        # "extMngdBy": "",
-        # "lastMbrIntvl": "1",
-        # "lcOwn": "local",
-        # "modTs": "2023-01-20T07:23:26.975+01:00",
-        # "name": "Test",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "queryIntvl": "125",
-        # "rspIntvl": "10",
-        # "startQueryCnt": "2",
-        # "startQueryIntvl": "31",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:",
-        # "ver": "v2"
         keys = [
             'adminSt',
             'dn',
@@ -93,7 +71,6 @@ class PolicySnoopMld():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "dn": "uni/tn-k8s/mldsnoopPol-Test"
         info['tenant'] = managed_object['dn'].split('/')[1][3:]
         info['nameTenant'] = '%s/%s' % (
             info['tenant'],

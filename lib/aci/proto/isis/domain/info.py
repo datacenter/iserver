@@ -18,7 +18,6 @@ class ProtocolIsisDomainInfo():
             )
         )
 
-        # "dn": "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1"
         info['instance'] = info['dn'].split('/')[5].split('-')[1]
 
         info['__Output']['name'] = 'Yellow'

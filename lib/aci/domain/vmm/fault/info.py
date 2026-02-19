@@ -19,14 +19,12 @@ class DomainVmmFaultInfo():
         info['controllerName'] = None
 
         if not managed_object['delegated']:
-            # "uni/vmmp-VMware/dom-EU-SPDC-CDC-22/ctrlr-EU-SPDC-CDC-22"
             if 'affected' in info:
                 if 'uni/vmmp-VMware/dom-' in info['affected']:
                     info['domainName'] = info['affected'].split('uni/vmmp-VMware/dom-')[1].split('/')[0]
                     if len(info['affected'].split('/')) == 4:
                         info['controllerName'] = info['affected'].split('uni/vmmp-VMware/dom-')[1].split('/')[1][6:]
 
-        # "dn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22/ctrlr-EU-SPDC-CDC-22/fd-[comp/prov-VMware/ctrlr-[EU-SPDC-CDC-22]-EU-SPDC-CDC-22/hv-host-3381]-fault-F2840"
         if info['domainName'] is None:
             if 'uni/vmmp-VMware/dom-' in info['dn']:
                 info['domainName'] = info['dn'].split('uni/vmmp-VMware/dom-')[1].split('/')[0]

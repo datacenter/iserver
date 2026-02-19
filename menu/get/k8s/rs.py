@@ -24,9 +24,10 @@ class NoResultExit(Exception):
 
 @click.command("rs")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--owner", default='', callback=validations.empty_string_to_none, help="Filter by owner")
 @click.option("--view", "-v", default=['state'], help="[state|metadata|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
@@ -35,6 +36,7 @@ def get_k8s_rs_command(
         cluster,
         namespace,
         name,
+        owner,
         view,
         output,
         devel
@@ -57,7 +59,7 @@ def get_k8s_rs_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -71,6 +73,11 @@ def get_k8s_rs_command(
         if name is not None:
             object_filter.append(
                 'name:%s' % (name)
+            )
+
+        if owner is not None:
+            object_filter.append(
+                'owner:%s' % (owner)
             )
 
         if output not in ['json', 'mo']:
@@ -124,7 +131,7 @@ def get_k8s_rs_command(
                 title=True
             )
 
-        ctx.my_output.default('Filter: namespace, name', before_newline=True)
+        ctx.my_output.default('Filter: namespace, name, owner', before_newline=True)
         ctx.my_output.default('View:   state (def), metadata, all')
 
     except NoResultExit:

@@ -36,7 +36,7 @@ class AssistedInstallInfraApi():
 
         return response['id']
 
-    def update_assisted_install_infra_hostname(self, infra_id, host_id, hostname):
+    def update_assisted_install_infra_hostname(self, infra_id, host_id, hostname, role=None):
         url = '%s/%s/hosts/%s' % (
             self.assisted_install_infra_url,
             infra_id,
@@ -45,6 +45,8 @@ class AssistedInstallInfraApi():
 
         data = {}
         data['host_name'] = hostname
+        if role is not None and role not in ['auto-assign']:
+            data['host_role'] = role
 
         response = self.patch_assisted_install_mo(
             url,

@@ -47,7 +47,7 @@ class K8sNetworkAttachmentDefinitionApi():
 
         return self.nad_mo
 
-    def create_nad(self, policy):
+    def create_nad_mo(self, policy):
         api_handler = self.get_api(cluster_type='ocp')
         if api_handler is None:
             return False
@@ -73,7 +73,7 @@ class K8sNetworkAttachmentDefinitionApi():
 
         return success
 
-    def delete_nad(self, namespace, name):
+    def delete_nad_mo(self, namespace, name):
         api_handler = self.get_api(cluster_type='ocp')
         if api_handler is None:
             return False

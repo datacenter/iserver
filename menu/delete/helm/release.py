@@ -122,7 +122,7 @@ def delete_helm_release_command(
             if release['day0'] is not None:
                 for item in release['day0']:
                     if ocp_handler.k8s_handler.is_pvc(item['dv']['metadata']['namespace'], item['dv']['metadata']['name'], cache_enabled=False):
-                        success = ocp_handler.k8s_handler.delete_namespaced_pvc(
+                        success = ocp_handler.k8s_handler.delete_pvc_mo(
                             item['dv']['metadata']['namespace'],
                             item['dv']['metadata']['name']
                         )

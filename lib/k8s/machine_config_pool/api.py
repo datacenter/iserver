@@ -46,3 +46,22 @@ class K8sMachineConfigPoolApi():
         )
 
         return self.machine_config_pool_mo
+
+    def patch_machine_config_pool_mo(self, body):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return None
+
+        try:
+            obj_list = api_handler.resources.get(api_version='machineconfiguration.openshift.io/v1', kind='MachineConfigPool')
+            obj_list.patch(
+                body=body,
+                content_type='application/merge-patch+json'
+            )
+
+        except BaseException:
+            self.log.error('k8s.patch_cluster_version_mo', traceback.format_exc())
+            print(traceback.format_exc())
+            return False
+
+        return True

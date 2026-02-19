@@ -22,7 +22,6 @@ class InterfaceAdjacencyLacpInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "dn": "topology/pod-1/node-205/sys/lacp/inst/if-[eth1/27]/adj"
         info['apic'] = self.apic_name
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]

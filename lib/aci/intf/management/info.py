@@ -140,16 +140,6 @@ class InterfaceMgmtInfo():
                 if not filter_helper.match_string(value, interface_info['id']):
                     return False
 
-            # if key == 'admin':
-            #     if value != 'any':
-            #         if not filter_helper.match_string(value, interface_info['adminSt']):
-            #             return False
-
-            # if key == 'oper':
-            #     if value != 'any':
-            #         if not filter_helper.match_string(value, interface_info['state']['operSt']):
-            #             return False
-
             if key == 'fault':
                 if value == 'any':
                     if not interface_info['isAnyFault']:

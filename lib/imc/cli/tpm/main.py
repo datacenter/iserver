@@ -10,7 +10,7 @@ class ImcCliTpm():
             if self.tpm_mo is not None:
                 return self.tpm_mo
 
-            self.tpm_mo = self.get_icm_cli_cache_entry(
+            self.tpm_mo = self.get_imc_cli_cache_entry(
                 'tpm'
             )
             if self.tpm_mo is not None:

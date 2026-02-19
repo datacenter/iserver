@@ -15,11 +15,11 @@ class K8sVirtualMachineRestoreOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Restore'
         ]
 
         self.my_output.my_table(

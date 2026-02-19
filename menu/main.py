@@ -147,10 +147,11 @@ def _on_close(ctx):
 
         if not no_log:
             if ctx.log_prompt:
+                print('\nVersion: %s' % ctx.log.get_version())
                 if log_analyzis['cache_hits'] > 0:
-                    print('\nInfo: finished in %s ms and logs saved in %s incl. cache hits' % (duration, ctx.log.logs_directory))
+                    print('Info: finished in %s ms and logs saved in %s incl. cache hits' % (duration, ctx.log.logs_directory))
                 else:
-                    print('\nInfo: finished in %s ms and logs saved in %s' % (duration, ctx.log.logs_directory))
+                    print('Info: finished in %s ms and logs saved in %s' % (duration, ctx.log.logs_directory))
 
                 if ctx.log.is_log('error'):
                     print(

@@ -84,7 +84,10 @@ class AssistedInstallClusterApi():
             return None
 
         filename = '/tmp/%s.kubeconfig' % (cluster_id)
-        response = ip_helper.download_url(response['url'], filename)
+        response = ip_helper.download_url(
+            response['url'], 
+            filename
+        )
         if response is None:
             return None
 

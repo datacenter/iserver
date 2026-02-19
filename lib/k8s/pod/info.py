@@ -1,7 +1,8 @@
 import time
 import json
-
 from lib import filter_helper
+from menu.common import get_confirmation
+
 
 
 class K8sPodInfo():
@@ -430,7 +431,7 @@ class K8sPodInfo():
         info.update(metadata_info)
 
         info['volume'] = []
-        for volume_mo in self.get(pod_mo, 'spec:volumes'):
+        for volume_mo in self.get(pod_mo, 'spec:volumes', on_error=[], on_none=[]):
             info['volume'].append(
                 self.get_pod_volume_info(
                     volume_mo
@@ -489,6 +490,10 @@ class K8sPodInfo():
                     None,
                     info['volume']
                 )
+
+            container_info['volume_count'] = len(container_info['volume_mount'])
+            container_info['env_count'] = len(container_info['env'])
+            container_info['cm_count'] = len(container_info['cm'])
 
             info['container_count'] = info['container_count'] + 1
             info['container_restart_count'] = info['container_restart_count'] + container_info['restart_count']
@@ -584,18 +589,58 @@ class K8sPodInfo():
         info['network'] = self.get_pod_networks_info(
             pod_mo
         )
+        info['net_count'] = len(info['network']) + 1
+        return info
+
+    def add_pod_info(self, info, services=None):
+        if services is not None:
+            info['service'] = []
+            pod_services = []
+            for label_key in info['label']:
+                service_filter = [
+                    'selector:%s:%s' % (
+                        label_key,
+                        info['label'][label_key]
+                    )
+                ]
+                services = self.get_services(
+                    object_filter=service_filter,
+                    cache_enabled=True
+                )
+                if services is not None:
+                    for pod_service_info in services:
+                        service_match = True
+                        for key in pod_service_info['selector']:
+                            if key not in info['label']:
+                                service_match = False
+                                break
+
+                            if info['label'][key] != pod_service_info['selector'][key]:
+                                service_match = False
+                                break
+
+                        if service_match:
+                            if pod_service_info['namespace_name'] not in pod_services:
+                                info['service'].append(
+                                    pod_service_info
+                                )
+                                pod_services.append(
+                                    pod_service_info['namespace_name']
+                                )
+
+            info['svc_count'] = len(info['service'])
 
         return info
 
-    def get_pods_info(self, cache_enabled=True):
+    def get_pods_info(self, namespace=None, cache_enabled=True):
         if cache_enabled:
             if self.pod is not None:
                 return self.pod
 
-        managed_objects = self.get_pod_mo(cache_enabled=cache_enabled)
+        managed_objects = self.get_pod_mo(namespace=namespace, cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
-
+            
         self.pod = []
         for managed_object in managed_objects:
             pod_info = {}
@@ -630,8 +675,21 @@ class K8sPodInfo():
                     return False
 
             if key == 'owner':
+                match = True
+                for owner_value in value.split(','):
+                    key_found = True
+                    if pod_info['owner'] is None and '!' in value:
+                        continue
+                    
+                    if not filter_helper.match_namespace_name(owner_value, pod_info['owner']):
+                        match = False
+
+                if not match:
+                    return False
+
+            if key == 'node':
                 key_found = True
-                if not filter_helper.match_namespace_name(value, pod_info['owner']):
+                if not filter_helper.match_string(value, pod_info['host_name']):
                     return False
 
             if key == 'label':
@@ -721,14 +779,27 @@ class K8sPodInfo():
 
         return True
 
-    def get_pods(self, object_filter=None, service_info=False, log_info=False, return_mo=False, cache_enabled=True):
-        all_pods = self.get_pods_info(cache_enabled=cache_enabled)
+    def get_pods(self, namespace=None, object_filter=None, service_info=False, log_info=False, return_mo=False, cache_enabled=True):
+        all_pods = self.get_pods_info(namespace=namespace, cache_enabled=cache_enabled)
         if all_pods is None:
             return None
 
-        pods = []
+        services = None
+        if service_info:
+            services = self.get_services(cache_enabled=cache_enabled)
+        
+        if namespace is not None:
+            if object_filter is None:
+                object_filter = []
+            object_filter.append('namespace:%s' % (namespace))
 
+        pods = []
         for pod_info in all_pods:
+            pod_info['info'] = self.add_pod_info(
+                pod_info['info'],
+                services=services
+            )
+
             if not self.match_pod(pod_info['info'], object_filter):
                 continue
 
@@ -738,51 +809,246 @@ class K8sPodInfo():
                 )
                 continue
 
-            if service_info:
-                pod_info['info']['service'] = []
-                pod_services = []
-                for label_key in pod_info['info']['label']:
-                    service_filter = [
-                        'selector:%s:%s' % (
-                            label_key,
-                            pod_info['info']['label'][label_key]
-                        )
-                    ]
-                    services = self.get_services(
-                        object_filter=service_filter
-                    )
-                    if services is not None:
-                        for pod_service_info in services:
-                            service_match = True
-                            for key in pod_service_info['selector']:
-                                if key not in pod_info['info']['label']:
-                                    service_match = False
-                                    break
-
-                                if pod_info['info']['label'][key] != pod_service_info['selector'][key]:
-                                    service_match = False
-                                    break
-
-                            if service_match:
-                                if pod_service_info['namespace_name'] not in pod_services:
-                                    pod_info['info']['service'].append(
-                                        pod_service_info
-                                    )
-                                    pod_services.append(
-                                        pod_service_info['namespace_name']
-                                    )
-
             if log_info:
-                pod_info['info']['log'] = self.get_pod_log_mo(
-                    pod_info['info']['namespace'],
-                    pod_info['info']['name']
-                )
+                if pod_info['info']['container'] is not None:
+                    pod_info['info']['log'] = {}
+                    for container in pod_info['info']['container']:
+                        pod_info['info']['log'][container['name']] = self.get_pod_log_mo(
+                            pod_info['info']['namespace'],
+                            pod_info['info']['name'],
+                            container=container['name'],
+                            cache_enabled=False
+                        )
 
             pods.append(
                 pod_info['info']
             )
 
         return pods
+
+    def is_pod(self, namespace, name, cache_enabled=True):
+        if self.get_pod(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+    
+    def check_pod_with_label(self, pod_info, labels):
+        if 'label' not in pod_info:
+            return False
+        
+        for label in labels:
+            if label not in pod_info['label']:
+                return False
+            
+            if pod_info['label'][label] != labels[label]:
+                return False
+            
+        return True
+
+    def get_pod_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
+        pod_mo = self.get_pod_mo(
+            namespace=namespace, 
+            name=name, 
+            cache_enabled=cache_enabled
+        )
+        if return_mo:
+            return pod_mo
+        
+        return self.get_pod_info(pod_mo)
+
+    def get_pod(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )        
+        pods = self.get_pods(object_filter=object_filter, return_mo=return_mo, cache_enabled=cache_enabled)
+        if pods is None:
+            return None
+
+        if len(pods) == 1:
+            return pods[0]
+        
+    def get_pods_daemon_set(self, namespace, daemon_set_name, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'owner:DaemonSet/%s' % (daemon_set_name)
+        )        
+        pods = self.get_pods(object_filter=object_filter, cache_enabled=cache_enabled)
+        if pods is None:
+            return None
+
+        return pods
+          
+    def get_pods_replica_set(self, namespace, replica_set_name, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'owner:ReplicaSet/%s' % (replica_set_name)
+        )        
+        pods = self.get_pods(object_filter=object_filter, cache_enabled=cache_enabled)
+        if pods is None:
+            return None
+
+        return pods
+            
+    def get_pod_block_volume_definition(self, namespace, name, pvc_name, node_name=None):
+        body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Pod'
+        body['metadata'] = dict(namespace=namespace, name=name)
+        body['spec'] = {}
+        container = {}
+        container['name'] = 'centos'
+        container['image'] = 'quay.io/centos/centos:latest'
+        container['command'] = ['/bin/sleep', 'infinity']
+        container['volumeDevices'] = [dict(name='data', devicePath='/dev/xvda')]
+        body['spec']['containers'] = [container]
+        body['spec']['volumes'] = [dict(name='data', persistentVolumeClaim=dict(claimName=pvc_name))]
+        if node_name is not None:
+            body['spec']['nodeSelector'] = {}
+            body['spec']['nodeSelector']['kubernetes.io/hostname'] = node_name
+
+        return body
+
+    def delete_pods(self, object_filter, confirmation=False, my_output=None, k8s_output=None, wait=True):
+        if my_output is None:
+            confirmation = False
+
+        if my_output is not None:
+            my_output.default('Delete PODs', before_newline=True, underline=True)
+            my_output.default('Object filter', before_newline=True)
+            for item in object_filter:
+                my_output.default('- %s' % (item))
+
+        pods = self.get_pods(
+            object_filter=object_filter,
+            cache_enabled=False
+        )
+        if pods is None:
+            if my_output is not None:
+                my_output.error('REST API failed')
+            return False
+        
+        if k8s_output is not None:
+            k8s_output.print_pods_state(pods)
+        
+        if confirmation:
+            if not get_confirmation():
+                return False
+            
+        if my_output is not None:
+            my_output.default('Delete', before_newline=True)
+
+        for pod in pods:
+            my_output.default('- %s' % (pod['name']))
+            success = self.delete_pod_mo(pod['namespace'], pod['name'])
+            if not success:
+                if my_output is not None:
+                    my_output.error('REST API failed')
+                continue
+
+            if wait:
+                if my_output is not None:
+                    my_output.default('- wait for no pod...')
+
+                if not self.wait_no_pod(pod['namespace'], pod['name']):
+                    if my_output is not None:
+                        my_output.error('Timed out')
+                    return False
+                    
+        return True
+
+    def get_pod_addresses(self, namespace, name):
+        output = self.get_pod_exec(namespace, name, 'ip a')
+        if output is None:
+            return None
+        
+        return output
+    
+    def get_pod_ping(self, namespace, name, destination):
+        output = self.get_pod_exec(namespace, name, 'ping -c 3 %s' % (destination))
+        if output is None:
+            return None
+        
+        return output
+    
+    def evict_pods(self, pods, delete_fallback=False, my_output=None, wait=True):
+        if my_output is not None:
+            my_output.default('Evict pods', before_newline=True)
+        
+        success = True
+        evicted = []
+        to_delete = []
+
+        for pod in pods:
+            if self.evict_pod_mo(pod['namespace'], pod['name']):
+                evicted.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('success', 'Green')))
+            else:
+                success = False
+                to_delete.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('failed', 'Red')))
+
+        if not wait:
+            return success
+        
+        if my_output is not None:
+            my_output.default('Wait for pod evicted', before_newline=True)
+
+        for pod in evicted:
+            if self.wait_no_pod(pod['namespace'], pod['name']):
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('success', 'Green')))
+            else:
+                to_delete.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('failed', 'Red')))
+
+        if not delete_fallback:
+            if len(to_delete) > 0:
+                return False
+            return True
+
+        leftover = []
+        deleted = []
+        if my_output is not None:
+            my_output.default('Delete pods that are left', before_newline=True)
+
+        for pod in to_delete:
+            if self.delete_pod_mo(pod['namespace'], pod['name']):
+                deleted.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('success', 'Green')))
+            else:
+                leftover.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('failed', 'Red')))
+
+        if my_output is not None:
+            my_output.default('Wait for pod deleted', before_newline=True)
+
+        for pod in deleted:
+            if self.wait_no_pod(pod['namespace'], pod['name']):
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('success', 'Green')))
+            else:
+                leftover.append(pod)
+                if my_output is not None:
+                    my_output.default('- %s/%s: %s' % (pod['namespace'], pod['name'], my_output.add_color('failed', 'Red')))
+
+        if len(leftover) > 0:
+            return False
+        
+        return True
 
     # def get_pod_replicaset_info(self, pod_id):
     #     try:
@@ -1001,71 +1267,6 @@ class K8sPodInfo():
     #     return summary
 
     # def get_pod_summary(self, pod):
-    #     '''
-    #     {
-    #         "namespace": "iks",
-    #         "labels": {
-    #             "app.kubernetes.io/component": "controller",
-    #             "app.kubernetes.io/instance": "essential-nginx-ingress",
-    #             "app.kubernetes.io/name": "ingress-nginx",
-    #             "controller-revision-hash": "794954b8c6",
-    #             "pod-template-generation": "1"
-    #         },
-    #         "name": "essential-nginx-ingress-ingress-nginx-controller-2nk8m",
-    #         "uid": "8b2bcc15-da82-4092-9381-71ffca698158",
-    #         "age": 249258,
-    #         "node": "milan-kali-worker-4078840427",
-    #         "replicaset_name": null,
-    #         "scheduled": true,
-    #         "status": "Running",
-    #         "ready": true,
-    #         "pod_ip": "<ip>",
-    #         "cni": {
-    #             "ip": "<ip>",
-    #             "ports": [
-    #                 {
-    #                     "container_port": 80,
-    #                     "host_ip": null,
-    #                     "host_port": null,
-    #                     "name": "http",
-    #                     "protocol": "TCP"
-    #                 },
-    #                 {
-    #                     "container_port": 443,
-    #                     "host_ip": null,
-    #                     "host_port": null,
-    #                     "name": "https",
-    #                     "protocol": "TCP"
-    #                 }
-    #             ]
-    #         },
-    #         "job_name": null,
-    #         "job_succeeded": false,
-    #         "healthy": true,
-    #         "containers": {
-    #             "ready": 1,
-    #             "completed": 0,
-    #             "count": 1,
-    #             "restarts": 0,
-    #             "reasons": []
-    #         },
-    #         "node_selector": [
-    #             {
-    #                 "match_expressions": null,
-    #                 "match_fields": [
-    #                     {
-    #                         "key": "metadata.name",
-    #                         "operator": "In",
-    #                         "values": [
-    #                             "milan-kali-worker-4078840427"
-    #                         ]
-    #                     }
-    #                 ]
-    #             }
-    #         ],
-    #         "scheduling_problem": null
-    #     }
-    #     '''
     #     try:
     #         summary = dict()
 

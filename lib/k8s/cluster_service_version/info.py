@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -16,6 +17,9 @@ class K8sClusterServiceVersionInfo():
             cluster_service_version_mo
         )
         info.update(metadata_info)
+
+        info['spec'] = self.get(cluster_service_version_mo, 'spec')
+        info['status'] = self.get(cluster_service_version_mo, 'status')
 
         info['phase'] = self.get(cluster_service_version_mo, 'status:phase')
         if info['phase'] is not None and info['phase'] == 'Succeeded':
@@ -131,3 +135,35 @@ class K8sClusterServiceVersionInfo():
             return cluster_service_versions[0]
 
         return None
+
+    def get_cluster_service_version_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
+        managed_object = self.get_cluster_service_version_mo(
+            namespace=namespace, 
+            name=name, 
+            cache_enabled=cache_enabled
+        )
+        if return_mo:
+            return managed_object
+        
+        return self.get_cluster_service_version_info(managed_object)
+    
+    def wait_no_cluster_service_version(self, namespace, name, max_time=60):
+        start_time = int(time.time())
+        while True:
+            cluster_service_version_info = self.get_cluster_service_version(
+                namespace,
+                name,
+                cache_enabled=False
+            )
+            if cluster_service_version_info is None:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_no_cluster_service_version',
+                    'Max time reached: %s/%s' % (namespace, name)
+                )
+                return False
+
+            time.sleep(5)

@@ -73,8 +73,8 @@ class RedfishEndpointUcsRackTemplatePsu():
 
         return self.psu
 
-    def get_template_psu_properties(self, cache_enabled=True):
-        all_properties = self.get_psus_info(cache_enabled=cache_enabled)
+    def get_template_psu_properties(self):
+        all_properties = self.get_psus_info()
         if all_properties is None:
             return None
 

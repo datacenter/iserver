@@ -13,7 +13,6 @@ class PolicyGroupAccessInterfaceVpcPortInfo():
         )
 
         if managed_object['ctxClass'] == 'l1PhysIf':
-            # topology/pod-1/node-2205/sys/phys-[eth1/11]
             port_info['port_id'] = managed_object['ctxDn'].split('phys-[')[1].rstrip(']')
             port_info['ep'] = 'pod-%s:node-%s:%s (%s)' % (
                 port_info['pod_id'],

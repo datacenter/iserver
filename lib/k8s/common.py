@@ -152,7 +152,9 @@ class K8sCommon():
                 info['namespace'],
                 info['name']
             )
+            info['namespace_nameT'] = [info['namespace'], info['name']]
 
+        info['resource_version'] = self.get(managed_object, 'metadata:resourceVersion')
         labels = self.get_metadata_label_info(
             managed_object,
             'metadata:labels',
@@ -181,6 +183,11 @@ class K8sCommon():
         if timestamp_name not in managed_object['metadata']:
             timestamp_name = 'creationTimestamp'
 
+        info['uid'] = self.get(
+            managed_object,
+            'metadata:uid'
+        )
+        
         info['age'] = self.convert_timestamp_to_age(
             self.get(
                 managed_object,
@@ -299,5 +306,28 @@ class K8sCommon():
         info['owner_kind'] = owner_kind
         info['owner_name'] = owner_name
         info['owner'] = owner
+        if owner_kind is None and owner_name is None:
+            info['ownerT'] = [None]
+        else:
+            info['ownerT'] = [owner_kind, owner_name]
 
         return info
+
+    def get_conditions(self, conditions_mo):
+        conditions = []
+
+        if conditions_mo is None:
+            return conditions
+        
+        if not isinstance(conditions_mo, list):
+            return conditions
+        
+        for condition_mo in conditions_mo:
+            if condition_mo['status'].lower() == 'true':
+                conditions.append(
+                    condition_mo['type']
+                )
+
+        conditions = sorted(conditions)
+        return conditions
+    

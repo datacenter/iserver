@@ -18,9 +18,10 @@ class ProtocolBgpNeighborInfo():
                 info['dn'].split('/')[2].split('-')[1]
             )
         )
+        info['pod_node_nameT'] = info['pod_node_name'].split('/')
 
-        # "dn": "topology/pod-1/node-201/sys/bgp/inst/dom-common:smi5Gc-cvim4-N6_VRF/peer-[<ip>/28]"
         info['bgpDomainName'] = info['dn'].split('/')[6][4:]
+        info['bgpDomainNameT'] = info['bgpDomainName'].split(':')
 
         info['__Output']['name'] = 'Yellow'
         info['__Output']['bgpDomainName'] = 'Yellow'
@@ -101,9 +102,9 @@ class ProtocolBgpNeighborInfo():
         if key in self.bgp_neighbors:
             return self.bgp_neighbors[key]
 
+        self.bgp_neighbors[key] = []
         bgp_neighbors_mo = self.get_protocol_bgp_neighbors_mo(pod_id, node_id)
         if bgp_neighbors_mo is not None:
-            self.bgp_neighbors[key] = []
             for bgp_neighbor_mo in bgp_neighbors_mo:
                 self.bgp_neighbors[key].append(
                     self.get_protocol_bgp_neighbor_info(

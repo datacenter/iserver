@@ -12,16 +12,6 @@ class RedfishEndpointFabricInterconnectTemplateThermalChassis():
 
         properties['Temperature'] = []
         for sensor in data['Temperatures']:
-            # {
-            #     "@odata.id": "/redfish/v1/Chassis/1/Thermal#/Temperatures/1",
-            #     "MemberId": "1",
-            #     "Name": "ASIC_TEMP_A",
-            #     "ReadingCelsius": 54,
-            #     "Status": {
-            #         "Health": "OK",
-            #         "State": "Enabled"
-            #     }
-            # },
             sensor_info = {}
             sensor_info['State'] = sensor['Status']['State']
             sensor_info['Name'] = sensor['Name']
@@ -35,28 +25,6 @@ class RedfishEndpointFabricInterconnectTemplateThermalChassis():
 
         properties['Fan'] = []
         for fan in data['Fans']:
-            # {
-            #     "@odata.id": "/redfish/v1/Chassis/1/Thermal#/Fans/1",
-            #     "Assembly": {
-            #         "@odata.id": "/redfish/v1/Chassis/1/Thermal/Fans/1/Assembly"
-            #     },
-            #     "HotPluggable": true,
-            #     "Location": {
-            #         "PartLocation": {
-            #             "LocationOrdinalValue": 1,
-            #             "LocationType": "Slot"
-            #         }
-            #     },
-            #     "Manufacturer": "Cisco Systems Inc",
-            #     "MemberId": "1",
-            #     "Model": "UCSX-9508-FAN",
-            #     "Name": "Fan Module 1 Fan 1",
-            #     "PartNumber": "73-19422-04 ",
-            #     "SerialNumber": "FCH2517709V",
-            #     "Status": {
-            #         "State": "Enabled"
-            #     }
-            # },
             fan_info = {}
             fan_info['Name'] = fan['Name']
             fan_info['State'] = fan['Status']['State']

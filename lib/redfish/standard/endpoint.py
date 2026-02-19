@@ -18,7 +18,6 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             redfish_username,
             redfish_password,
             system_id=None,
-            cache_filename=None,
             auto_connect=True,
             get_timeout=10,
             ssl_verify=False,
@@ -33,7 +32,6 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             redfish_username,
             redfish_password,
             system_id=system_id,
-            cache_filename=cache_filename,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
@@ -60,11 +58,8 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             pass
 
         return None
-
+    
     def connect(self):
-        if self.is_cache_enabled():
-            return True
-
         if self.session_handler is not None:
             return True
 
@@ -157,9 +152,6 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
         return True
 
     def disconnect(self):
-        if self.is_cache_enabled():
-            return True
-
         if self.session_handler is None:
             return True
 

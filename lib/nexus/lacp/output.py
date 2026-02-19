@@ -14,6 +14,14 @@ class LacpOutput():
             self.my_output.default('None')
             return
 
+        add_server = False
+        for item in info:
+            for port in item['port']:
+                if 'ServerName' in port:
+                    add_server = True
+                    if port['ServerName'] is None:
+                        port['ServerName'] = '---'
+
         order = [
             'nexus_name',
             'interface',
@@ -31,6 +39,10 @@ class LacpOutput():
             'Partner Port',
             'Partner State'
         ]
+
+        if add_server:
+            order.append('port.ServerName')
+            headers.append('Server')
 
         self.my_output.my_table(
             self.my_output.expand_lists(

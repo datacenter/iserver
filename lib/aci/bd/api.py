@@ -2,34 +2,26 @@ class BridgeDomainApi():
     def __init__(self):
         self.bridge_domain_mo = None
 
-    def get_bridge_domains_mo(self):
+    def init_bridge_domain_mo(self):
+        self.bridge_domain_mo = None
+
+    def get_bridge_domains_mo(self, cache_enabled=True):
         if self.bridge_domain_mo is not None:
             return self.bridge_domain_mo
 
-        cache = self.get_object_cache(
-            'fvBD'
-        )
-        if cache is not None:
-            self.bridge_domain_mo = cache
-            self.log.apic_mo(
-                'fvBD',
-                self.bridge_domain_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'fvBD'
             )
-            return self.bridge_domain_mo
+            if cache is not None:
+                self.bridge_domain_mo = cache
+                self.log.apic_mo(
+                    'fvBD',
+                    self.bridge_domain_mo
+                )
+                return self.bridge_domain_mo
 
         query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count'
-
-        # fvRsCtx
-        # fvRsBdToEpRet
-        # fvRsIgmpsn
-        # fvRsMldsn
-        # fvRsBDToNdP
-        # fvRsBDToOut
-        # fvRtLIfCtxToBD
-        # fvSubnet
-        # fvRtEPpInfoToBD
-        # fvRtBDDefToBD
-
         children = [
             'fvRsCtx',
             'fvRsBdToEpRet',

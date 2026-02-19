@@ -2,6 +2,7 @@ from lib import output_helper
 
 from lib.aci.ap.output import ApplicationProfileOutput
 from lib.aci.bd.output import BridgeDomainOutput
+from lib.aci.configuration.output import ConfigurationOutput
 from lib.aci.contract.output import ContractOutput
 from lib.aci.domain.output import DomainOutput
 from lib.aci.endpoint.output import EndpointOutput
@@ -13,6 +14,7 @@ from lib.aci.node.output import NodeOutput
 from lib.aci.pg.output import PolicyGroupOutput
 from lib.aci.policy.output import PolicyOutput
 from lib.aci.pool.output import PoolOutput
+from lib.aci.profile.output import ProfileOutput
 from lib.aci.proto.output import ProtocolOutput
 from lib.aci.system.output import SystemOutput
 from lib.aci.tenant.output import TenantOutput
@@ -22,6 +24,7 @@ from lib.aci.vrf.output import VrfOutput
 class ApicOutput(
     ApplicationProfileOutput,
     BridgeDomainOutput,
+    ConfigurationOutput,
     ContractOutput,
     DomainOutput,
     EndpointOutput,
@@ -33,6 +36,7 @@ class ApicOutput(
     PolicyGroupOutput,
     PolicyOutput,
     PoolOutput,
+    ProfileOutput,
     ProtocolOutput,
     SystemOutput,
     TenantOutput,
@@ -48,6 +52,7 @@ class ApicOutput(
 
         ApplicationProfileOutput.__init__(self)
         BridgeDomainOutput.__init__(self)
+        ConfigurationOutput.__init__(self)
         ContractOutput.__init__(self)
         DomainOutput.__init__(self)
         EndpointOutput.__init__(self)
@@ -59,6 +64,7 @@ class ApicOutput(
         PolicyGroupOutput.__init__(self)
         PolicyOutput.__init__(self)
         PoolOutput.__init__(self)
+        ProfileOutput.__init__(self)
         ProtocolOutput.__init__(self)
         SystemOutput.__init__(self)
         TenantOutput.__init__(self)

@@ -1,10 +1,8 @@
 import sys
-import threading
 import traceback
 import click
 
 from menu import validations
-from menu import progress
 
 
 class Failure(Exception):
@@ -17,10 +15,11 @@ class ErrorExit(Exception):
 
 @click.command("vm")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
 @click.option("--file", "vm_filename", is_flag=False, show_default=False, default='', type=click.STRING, help="VM Definition YAML")
 @click.option("--report", is_flag=True, show_default=True, default=False, help="Enable report")
 @click.option("--verbose", is_flag=True, show_default=True, default=False, help="Verbose mode")
+@click.option("--dry-run", "dry_run", is_flag=True, show_default=True, default=False, help="Dry run mode")
 @click.option("--debug", is_flag=True, show_default=True, default=False, help="Debug mode")
 def create_k8s_vm_command(
         ctx,
@@ -28,6 +27,7 @@ def create_k8s_vm_command(
         vm_filename,
         report,
         verbose,
+        dry_run,
         debug
         ):
     """Create virtual machine"""
@@ -59,16 +59,27 @@ def create_k8s_vm_command(
             ctx.busy = False
             raise ErrorExit
 
-        ctx.my_output.default('Validate ocp cluster')
-        ocp_handler = validations.validate_ocp_cluster(
-            ctx,
-            cluster_name
-        )
-        if ocp_handler is None:
-            raise ErrorExit
+        if dry_run:
+            ctx.my_output.default('Generate yaml files')
+            for key in validated_input['files']:
+                ctx.my_output.default(
+                    '---'
+                )
+                ctx.my_output.default(
+                    validated_input['files'][key]
+                )
 
-        if not ocp_handler.create_vm_deployment(validated_input, report=report):
-            raise ErrorExit
+        if not dry_run:
+            ctx.my_output.default('Validate ocp cluster')
+            ocp_handler = validations.validate_ocp_cluster(
+                ctx,
+                cluster_name
+            )
+            if ocp_handler is None:
+                raise ErrorExit
+
+            if not ocp_handler.create_vm_deployment(validated_input, report=report):
+                raise ErrorExit
 
     except ErrorExit:
         ctx.busy = False

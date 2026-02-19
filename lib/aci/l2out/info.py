@@ -49,7 +49,6 @@ class L2OutInfo():
         else:
             info['__Output']['configSt'] = 'Red'
 
-        # "rn": "instP-L2Out-ext-epg"
         info['name'] = info['rn'][6:]
 
         return info
@@ -111,7 +110,6 @@ class L2OutInfo():
             if managed_object['l2extRsL2DomAtt']['tCl'] == 'l2extDomP':
                 info['l2extDomP'] = {}
                 info['l2extDomP']['dn'] = managed_object['l2extRsL2DomAtt']['tDn']
-                # "tDn": "uni/l2dom-Infra_L2dom"
                 info['l2extDomP']['name'] = info['l2extDomP']['dn'].split('/')[1][6:]
 
         # External EPG
@@ -163,7 +161,6 @@ class L2OutInfo():
             l2out_with_path['path'] = []
             for managed_object in l2outs_with_path_mo:
                 if managed_object['tCl'] == 'fabricPathEp':
-                    # dn: "uni/tn-k8s/l2out-Test/lnodep-default/lifp-default/rspathL2OutAtt-[topology/pod-1/paths-2207/pathep-[eth1/30]]"
                     path_l2out_tenant = managed_object['dn'].split('/')[1][3:]
                     path_l2out_name = managed_object['dn'].split('/')[2][6:]
                     if path_l2out_tenant != l2out_with_path['tenant']:

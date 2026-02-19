@@ -10,24 +10,11 @@ class ImcCliPsu():
             if self.psu_mo is not None:
                 return self.psu_mo
 
-            self.psu_mo = self.get_icm_cli_cache_entry(
+            self.psu_mo = self.get_imc_cli_cache_entry(
                 'psu'
             )
             if self.psu_mo is not None:
                 return self.psu_mo
-
-        # Name PSU1:
-        #     In. Power (Watts): 150
-        #     Out. Power (Watts): 123
-        #     Firmware : 10252046
-        #     Status : Present
-        #     Product ID : UCSC-PSU1-1050W
-        # Name PSU2:
-        #     In. Power (Watts): 146
-        #     Out. Power (Watts): 122
-        #     Firmware : 10252046
-        #     Status : Present
-        #     Product ID : UCSC-PSU1-1050W
 
         self.psu_mo = self.show_list(
             'show psu detail',

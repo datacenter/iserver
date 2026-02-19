@@ -109,8 +109,7 @@ def delete_osp_vm_command(
             return
 
         osp_output_handler.print_virtual_machines(
-            vms,
-            title=True
+            vms
         )
 
         if not no_confirm:

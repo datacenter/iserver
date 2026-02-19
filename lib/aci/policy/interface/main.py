@@ -95,26 +95,6 @@ class PolicyInterface(
         return attributes
 
     def get_policy_interface_reference_attributes(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "extMngdBy": "",
-        # "forceResolve": "yes",
-        # "lcOwn": "local",
-        # "modTs": "2021-05-19T18:26:53.317+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "rType": "mo",
-        # "rn": "rsstormctrlIfPol",
-        # "state": "formed",
-        # "stateQual": "default-target",
-        # "status": "",
-        # "tCl": "stormctrlIfPol",
-        # "tContextDn": "",
-        # "tDn": "uni/infra/stormctrlifp-default",
-        # "tRn": "stormctrlifp-default",
-        # "tType": "name",
-        # "tnStormctrlIfPolName": "",
-        # "uid": "0",
-        # "userdom": "all"
         keys = [
             'state',
             'tDn',

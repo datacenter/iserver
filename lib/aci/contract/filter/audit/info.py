@@ -18,7 +18,6 @@ class ContractFilterAuditInfo():
         info['filterName'] = None
 
         if 'uni/tn-' in info['affected']:
-            # uni/tn-k8s/filter-BT-Demo
             info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if '/flt-' in info['affected']:

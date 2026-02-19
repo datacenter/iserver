@@ -24,9 +24,9 @@ class NoResultExit(Exception):
 
 @click.command("pv")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|csi]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_pv_command(
@@ -46,7 +46,7 @@ def get_k8s_pv_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state',
+        'state|csi',
         'state',
         []
     )
@@ -55,7 +55,7 @@ def get_k8s_pv_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster)
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -104,13 +104,18 @@ def get_k8s_pv_command(
             )
             return
 
-        k8s_output_handler.print_pvs(
-            pvs,
-            title=True
-        )
+        if 'state' in view:
+            k8s_output_handler.print_pvs(
+                pvs
+            )
+
+        if 'csi' in view:
+            k8s_output_handler.print_pvs_csi(
+                pvs
+            )
 
         ctx.my_output.default('Filter: name', before_newline=True)
-        ctx.my_output.default('View:   state (def)')
+        ctx.my_output.default('View:   state (def), csi')
 
     except NoResultExit:
         ctx.busy = False

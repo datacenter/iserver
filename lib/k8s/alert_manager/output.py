@@ -15,15 +15,14 @@ class K8sAlertManagerOutput():
             return
 
         order = [
-            'namespace',
-            'name',
+            'namespace_name',
             'version',
             'replicas',
             'age'
         ]
 
         headers = [
-            'Namespace',
+            'Alert Manager',
             'Name',
             'Version',
             'Replicas',

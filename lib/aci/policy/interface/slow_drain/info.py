@@ -22,24 +22,6 @@ class PolicyInterfaceSlowDrainInfo():
         return info
 
     def get_policy_interface_slow_drain_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "congClearAction": "off",
-        # "congDetectMult": "10",
-        # "descr": "",
-        # "dn": "uni/infra/qossdpol-default",
-        # "extMngdBy": "",
-        # "flushAdminSt": "disabled",
-        # "flushIntvl": "500",
-        # "lcOwn": "local",
-        # "modTs": "2020-12-09T19:07:28.202+01:00",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": ""
         keys = [
             'annotation',
             'congClearAction',
@@ -167,7 +149,7 @@ class PolicyInterfaceSlowDrainInfo():
 
         return True
 
-    def get_policy_interface_slow_drain(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_slow_drain(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_slow_drain_info()
         if all_policies is None:
             return None
@@ -227,3 +209,29 @@ class PolicyInterfaceSlowDrainInfo():
         )
 
         return policy
+
+    def get_policy_interface_slow_drain(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_slow_drain(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_slow_drain(self, policy_name):
+        if self.get_policy_interface_slow_drain(policy_name) is None:
+            return False
+        return True

@@ -20,15 +20,13 @@ class K8sServiceAccountOutput():
                 row_separator = True
 
         order = [
-            'namespace',
-            'name',
+            'namespace_nameT',
             'secret.name',
             'age'
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Service Account',
             'Secret',
             'Age'
         ]
@@ -37,7 +35,7 @@ class K8sServiceAccountOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['secret']
+                ['namespace_nameT', 'secret']
             ),
             order=order,
             headers=headers,

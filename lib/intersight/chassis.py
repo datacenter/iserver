@@ -44,11 +44,6 @@ class Chassis(ChassisMo, ChassisInfo):
         )
         self.iaccount = iaccount
 
-        self.cache_handler = intersight_cache.IntersightCache(
-            iaccount,
-            log_id=log_id
-        )
-
         self.iocard_handler = equipment_iocard.EquipmentIoCard(iaccount, log_id=log_id)
         self.expander_module_handler = equipment_expander_module.EquipmentExpanderModule(iaccount, log_id=log_id)
         self.ether_host_port_handler = ethernet_host_port.EthernetHostPort(iaccount, log_id=log_id)

@@ -14,13 +14,13 @@ class ImcCliSensor():
             if self.sensor_current_mo is not None:
                 return self.sensor_current_mo
 
-            self.sensor_current_mo = self.get_icm_cli_cache_entry(
+            self.sensor_current_mo = self.get_imc_cli_cache_entry(
                 'sensor_current'
             )
             if self.sensor_current_mo is not None:
                 return self.sensor_current_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show current detail
+        # com /sensor # show current detail
         # Name PSU1_IOUT:
         #     Sensor Status: Normal
         #     Reading: 8.00
@@ -76,13 +76,13 @@ class ImcCliSensor():
             if self.sensor_fan_mo is not None:
                 return self.sensor_fan_mo
 
-            self.sensor_fan_mo = self.get_icm_cli_cache_entry(
+            self.sensor_fan_mo = self.get_imc_cli_cache_entry(
                 'sensor_fan'
             )
             if self.sensor_fan_mo is not None:
                 return self.sensor_fan_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show fan detail
+        # com /sensor # show fan detail
         # Name PSU1_IOUT:
         #     Sensor Status: Normal
         #     Reading: 8.00
@@ -138,13 +138,13 @@ class ImcCliSensor():
             if self.sensor_psu_mo is not None:
                 return self.sensor_psu_mo
 
-            self.sensor_psu_mo = self.get_icm_cli_cache_entry(
+            self.sensor_psu_mo = self.get_imc_cli_cache_entry(
                 'sensor_psu'
             )
             if self.sensor_psu_mo is not None:
                 return self.sensor_psu_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show psu detail
+        # com /sensor # show psu detail
         # Name PSU1_POUT:
         #     Sensor Status: Normal
         #     Reading: 96
@@ -200,13 +200,13 @@ class ImcCliSensor():
             if self.sensor_temperature_mo is not None:
                 return self.sensor_temperature_mo
 
-            self.sensor_temperature_mo = self.get_icm_cli_cache_entry(
+            self.sensor_temperature_mo = self.get_imc_cli_cache_entry(
                 'sensor_temperature'
             )
             if self.sensor_temperature_mo is not None:
                 return self.sensor_temperature_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show temperature detail
+        # com /sensor # show temperature detail
         # Name MLOM_TEMP:
         #     Sensor Status: Normal
         #     Reading: 60.0
@@ -262,13 +262,13 @@ class ImcCliSensor():
             if self.sensor_voltage_mo is not None:
                 return self.sensor_voltage_mo
 
-            self.sensor_voltage_mo = self.get_icm_cli_cache_entry(
+            self.sensor_voltage_mo = self.get_imc_cli_cache_entry(
                 'sensor_voltage'
             )
             if self.sensor_voltage_mo is not None:
                 return self.sensor_voltage_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show voltage detail
+        # com /sensor # show voltage detail
         # Name PSU1_VOUT:
         #     Sensor Status: Normal
         #     Reading: 12.100

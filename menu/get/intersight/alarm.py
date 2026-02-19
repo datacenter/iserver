@@ -135,6 +135,7 @@ def get_intersight_alarm_command(
 
             output = bot_output_handler.my_output.sanitize_bot_output(
                 output,
+                None,
                 None
             )
 

@@ -21,7 +21,6 @@ class InterfaceVirtualPortChannelEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/vpc/inst/dom-278/if-687"
         info['domainId'] = None
         info['interfaceId'] = None
         if 'sys/vpc/inst/dom-' in info['affected']:

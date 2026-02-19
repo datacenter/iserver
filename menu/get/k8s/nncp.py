@@ -6,6 +6,7 @@ import click
 
 from lib.k8s import output as k8s_output
 
+from lib import file_helper
 from menu import validations
 from menu import progress
 
@@ -24,17 +25,21 @@ class NoResultExit(Exception):
 
 @click.command("nncp")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--file", "input_filename", default='', callback=validations.empty_string_to_none, help="Load managed objects from file")
 @click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
+@click.option("--wait", is_flag=True, show_default=True, default=False, help="Wait until all nncp complete")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_nncp_command(
         ctx,
         cluster,
         name,
+        input_filename,
         view,
         output,
+        wait,
         devel
         ):
     """Get k8s node network configuration policy"""
@@ -55,7 +60,7 @@ def get_k8s_nncp_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -77,6 +82,16 @@ def get_k8s_nncp_command(
             )
             raise ErrorExit
 
+        if input_filename is not None:
+            content = file_helper.get_file_json(input_filename)
+            if content is None:
+                ctx.my_output.error(
+                    'File read failed'
+                )
+                raise ErrorExit
+            
+            k8s_handlers.set_node_network_configuration_policy_mo(content)
+            
         if output == 'mo':
             policies = k8s_handlers.get_node_network_configuration_policies(
                 object_filter=object_filter,
@@ -105,6 +120,8 @@ def get_k8s_nncp_command(
             )
             return
 
+        ctx.my_output.json_output(policies)
+
         if 'state' in view:
             k8s_output_handler.print_node_network_configuration_policy(
                 policies,
@@ -113,6 +130,9 @@ def get_k8s_nncp_command(
 
         ctx.my_output.default('Filter: name', before_newline=True)
         ctx.my_output.default('View:   state (def)')
+
+        if wait:
+            k8s_handlers.wait_node_network_configuration_policy(my_output=ctx.my_output)
 
     except NoResultExit:
         ctx.busy = False

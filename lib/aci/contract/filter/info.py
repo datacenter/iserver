@@ -86,7 +86,13 @@ class ContractFilterInfo():
             'descr',
             'dn',
             'name',
-            'userdom'
+            'userdom',
+            'fwdId',
+            'revId',
+            'txId',
+            'usesIds',
+            'unsupportedEntries',
+            'unsupportedMgmtEntries'
         ]
 
         info = {}
@@ -175,12 +181,14 @@ class ContractFilterInfo():
         return True
 
     def get_contract_filter_usage_info(self, filter_info):
-        filter_filter = ['filter:%s' % (filter_info['nameTenant'])]
+        filter_filter = [
+            'filter:%s' % (filter_info['nameTenant'])
+        ]
 
         filter_info['taboo'] = []
 
-        contracts = self.get_contract_filters(
-            filter_filter=filter_filter
+        contracts = self.get_taboo_contracts(
+            taboo_filter=filter_filter
         )
         if contracts is not None:
             for contract in contracts:

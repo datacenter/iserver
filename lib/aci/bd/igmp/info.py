@@ -1,34 +1,8 @@
-from lib import log_helper
-
-
-# https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/2-x/KB/b_KB_Cisco_APIC_IGMP_Multicast.html
-
-
 class BridgeDomainIgmpInfo():
     def __init__(self):
         pass
 
     def get_bridge_domain_igmp_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "extMngdBy": "",
-        # "forceResolve": "yes",
-        # "lcOwn": "local",
-        # "modTs": "2021-10-27T15:21:50.404+01:00",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "rType": "mo",
-        # "rn": "rsigmpsn",
-        # "state": "formed",
-        # "stateQual": "default-target",
-        # "status": "",
-        # "tCl": "igmpSnoopPol",
-        # "tContextDn": "",
-        # "tDn": "uni/tn-common/snPol-default",
-        # "tRn": "snPol-default",
-        # "tType": "name",
-        # "tnIgmpSnoopPolName": "",
-        # "uid": "0",
-        # "userdom": "all"
         info = {}
         info['__Output'] = {}
 

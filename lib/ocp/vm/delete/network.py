@@ -64,7 +64,7 @@ class OcpVmDeleteNetwork():
                         )
                     )
 
-                    success = self.k8s_handler.delete_nad(
+                    success = self.k8s_handler.delete_nad_mo(
                         namespace,
                         name
                     )

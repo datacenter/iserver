@@ -1,11 +1,9 @@
 import sys
 import traceback
-import threading
 import click
 
-from lib.ocp import output as ocp_output
+from lib.workflow.ocp_container_runtime_policy import get as ocp_workflow
 
-from menu import progress
 from menu import validations
 
 
@@ -19,44 +17,27 @@ class ErrorExit(Exception):
 
 @click.command("cpolicy")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Filter by cluster name")
-@click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
+@click.option("--cluster", "cluster_name", default='', callback=validations.validate_ocp_cluster_name_no_prompt, help="Cluster name")
 def get_ocp_cpolicy_command(
         ctx,
-        cluster_name,
-        output,
-        devel
+        cluster_name
         ):
     """Get ocp container policy"""
 
-    ctx.developer = devel
-    ctx.output = output
+    ctx.developer = False
+    ctx.output = 'default'
 
     try:
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+        params = {}
+        params['cluster'] = cluster_name
 
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster_name, cluster_type='ocp', silent=True)
-        if k8s_handlers is None:
-            raise ErrorExit
-
-        ocp_output_handler = ocp_output.OcpOutput(log_id=ctx.run_id)
-        ocp_handler = validations.validate_ocp_cluster(
-            ctx,
-            cluster_name
+        success = ocp_workflow.run(
+            params,
+            log_id=ctx.run_id
         )
-        if ocp_handler is None:
+        if not success:
             raise ErrorExit
-
-        info = ocp_handler.get_ocp_container_policy_info(
-            mcp=True,
-            config=True
-        )
-        ctx.busy = False
-        ocp_output_handler.print_ocp_container_policy_info(info)
-
+        
     except ErrorExit:
         ctx.busy = False
         sys.exit(1)

@@ -6,27 +6,6 @@ class EndpointVmmVnicInfo():
         self.endpoint_vmm_vnic = None
 
     def get_endpoint_vmm_vnic_info(self, managed_object):
-        # "adapterType": "Vmxnet3",
-        # "addressType": "assigned",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-12127/vnic-00:50:56:B4:16:6D",
-        # "guid": "241",
-        # "id": "0",
-        # "ip": "<ip>",
-        # "issues": "",
-        # "lcOwn": "local",
-        # "mac": "00:50:56:B4:16:6D",
-        # "modTs": "2023-01-16T20:52:58.626+01:00",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "name": "Network adapter 1",
-        # "nameAlias": "",
-        # "oid": "4000",
-        # "operSt": "down",
-        # "status": "",
-        # "type": "virt",
-        # "uuid": "",
-        # "vmName": ""
         info = {}
         info['__Output'] = {}
 

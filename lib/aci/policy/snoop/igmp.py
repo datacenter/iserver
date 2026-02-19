@@ -52,29 +52,6 @@ class PolicySnoopIgmp():
         return self.policy_snoop_igmp_mo[key]
 
     def get_policy_snoop_igmp_info(self, managed_object):
-        # "adminSt": "enabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "ctrl": "",
-        # "descr": "",
-        # "dn": "uni/tn-k8s/snPol-Test",
-        # "extMngdBy": "",
-        # "lastMbrIntvl": "1",
-        # "lcOwn": "local",
-        # "modTs": "2023-01-20T07:23:12.364+01:00",
-        # "name": "Test",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "queryIntvl": "125",
-        # "rspIntvl": "10",
-        # "startQueryCnt": "2",
-        # "startQueryIntvl": "31",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:",
-        # "ver": "v3"
-
         keys = [
             'adminSt',
             'dn',
@@ -93,7 +70,6 @@ class PolicySnoopIgmp():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "dn": "uni/tn-k8s/snPol-Test"
         info['tenant'] = managed_object['dn'].split('/')[1][3:]
         info['nameTenant'] = '%s/%s' % (
             info['tenant'],

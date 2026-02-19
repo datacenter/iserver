@@ -4,7 +4,7 @@ import traceback
 import click
 import yaml
 
-from lib.intersight import scu
+from lib.intersight.scu import main as scu
 from menu import defaults
 from menu import validations
 
@@ -56,7 +56,7 @@ def get_intersight_scu_command(ctx, iaccount, output, devel):
             ctx.log_prompt = False
             return
 
-        scu_handler.print(scus)
+        scu_handler.print(scus, title=True)
         ctx.my_output.json_output(scus)
 
     except ErrorExit:

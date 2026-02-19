@@ -276,6 +276,12 @@ class KubevirtVirtualMachineInfo():
                     info['__Output']['failureTick'] = 'Red'
                     continue
 
+                if condition['type'] == 'NotAllDVsReady':
+                    continue
+
+                if condition['type'] == 'AllDVsReady':
+                    continue
+
                 self.log.error(
                     'get_virtual_machine_info',
                     'Unsupported condition type: %s' % (condition)

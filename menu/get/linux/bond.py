@@ -70,7 +70,7 @@ def get_linux_bond_command(
             )
 
         linux_output_handler = linux_output.LinuxOutput(log_id=ctx.run_id)
-        linux_handlers = validations.validate_linux_names(
+        linux_handlers = validations.get_linux_handlers(
             ctx,
             server,
             no_cache=no_cache

@@ -1,14 +1,25 @@
 import json
 import os
 import re
+import yaml
 import copy
 import traceback
 
 from inputimeout import inputimeout, TimeoutOccurred
 import colorama
-
 from lib import filter_helper
 from lib import ip_helper
+
+
+# https://github.com/yaml/pyyaml/issues/240
+def str_presenter(dumper, data):
+    if data.count('\n') > 0:
+        data = "\n".join([line.rstrip() for line in data.splitlines()])  # Remove any trailing spaces, then put it back together again
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+yaml.add_representer(str, str_presenter)
+yaml.representer.SafeRepresenter.add_representer(str, str_presenter) # to use with safe_dum
 
 
 class OutputHelper():
@@ -44,8 +55,6 @@ class OutputHelper():
 
         self.html_table_height_limit = False
 
-        colorama.init()
-
     def initialize(self, max_dirs=1000):
         try:
             if not os.path.isdir(self.output_directory):
@@ -80,11 +89,14 @@ class OutputHelper():
     def get_output(self):
         return self.output
 
-    def my_print(self, output, underline=False, before_newline=False, after_newline=False):
+    def my_print(self, output, underline=False, double_underline=False, before_newline=False, after_newline=False):
         if output is not None:
             if not self.flags['silent']:
                 if underline:
                     output = '%s\n%s' % (output, "".join(('-',) * len(output)))
+
+                if double_underline:
+                    output = '%s\n%s' % (output, "".join(('=',) * len(output)))
 
                 if before_newline:
                     output = '\n%s' % (output)
@@ -175,31 +187,45 @@ class OutputHelper():
         self.append(self.debug_filename, output)
 
     def error(self, output):
-        ''' Always print '''
-        output = '%s %s' % (
-            self.add_color('[ERROR]', 'Red'),
-            output
-        )
-        print(output)
-        self.append(self.default_filename, output)
-        self.append(self.verbose_filename, output)
-        self.append(self.debug_filename, output)
+        items = []
+        if isinstance(output, str):
+            items.append(output)
+
+        if isinstance(output, list):
+            items = items + output
+
+        for item in items:
+            ''' Always print '''
+            item = '%s %s' % (
+                self.add_color('[ERROR]', 'Red'),
+                item
+            )
+            print(item)
+            self.append(self.default_filename, item)
+            self.append(self.verbose_filename, item)
+            self.append(self.debug_filename, item)
 
     def files_only(self, output):
         self.append(self.default_filename, output)
         self.append(self.verbose_filename, output)
         self.append(self.debug_filename, output)
 
-    def default(self, output, underline=False, color=None, before_newline=False, after_newline=False):
+    def default(self, output, underline=False, double_underline=False, color=None, before_newline=False, after_newline=False, wrap=None):
         ''' Unless silent is set '''
         if underline:
             output = '%s\n%s' % (output, "".join(('-',) * len(output)))
+
+        if double_underline:
+            output = '%s\n%s' % (output, "".join(('=',) * len(output)))
 
         if color is not None:
             output = self.add_color(
                 output,
                 color
             )
+
+        if wrap is not None:
+            output = '%s\n%s\n%s' % (wrap, output, wrap)
 
         if before_newline:
             output = '\n%s' % (output)
@@ -219,7 +245,7 @@ class OutputHelper():
         self.append(self.verbose_filename, output)
         self.append(self.debug_filename, output)
 
-    def debug(self, output, underline=False, color=None, before_newline=False, after_newline=False):
+    def debug(self, output, underline=False, color=None, before_newline=False, after_newline=False, wrap=None):
         ''' When debug flag set '''
         if underline:
             output = '%s\n%s' % (output, "".join(('-',) * len(output)))
@@ -229,6 +255,9 @@ class OutputHelper():
                 output,
                 color
             )
+
+        if wrap is not None:
+            output = '%s\n%s\n%s' % (wrap, output, wrap)
 
         if before_newline:
             output = '\n%s' % (output)
@@ -284,13 +313,13 @@ class OutputHelper():
 
             if key in value:
                 if value[key] is None and cast_none:
-                    return ''
+                    return '---'
                 return value[key]
 
         return ''
 
-    def replace_subkey(self, value, key, new_value):
-        if '.' in key:
+    def replace_subkey(self, value, key, new_value, allow_order_subkeys=True):
+        if allow_order_subkeys and '.' in key:
             subkey = key.split('.')[0]
             if subkey not in value:
                 return value
@@ -330,19 +359,19 @@ class OutputHelper():
 
     def add_color(self, value, color):
         if color == 'Red':
-            return colorama.Fore.RED + value + colorama.Fore.RESET
+            return colorama.Fore.RED + str(value) + colorama.Fore.RESET
 
         if color == 'Green':
-            return colorama.Fore.GREEN + value + colorama.Fore.RESET
+            return colorama.Fore.GREEN + str(value) + colorama.Fore.RESET
 
         if color == 'Yellow':
-            return colorama.Fore.YELLOW + value + colorama.Fore.RESET
+            return colorama.Fore.YELLOW + str(value) + colorama.Fore.RESET
 
         if color == 'Magenta':
-            return colorama.Fore.MAGENTA + value + colorama.Fore.RESET
+            return colorama.Fore.MAGENTA + str(value) + colorama.Fore.RESET
 
         if color == 'Blue':
-            return colorama.Fore.BLUE + value + colorama.Fore.RESET
+            return colorama.Fore.BLUE + str(value) + colorama.Fore.RESET
 
         return value
 
@@ -625,13 +654,17 @@ class OutputHelper():
 
         return new_values
 
-    def expand_lists(self, values_ref, order, keys, filtering_rules=None):
+    def expand_lists(self, values_ref, order, keys, filtering_rules=None, allow_order_subkeys=True, cast_empty=False):
         # this optimizes the expand_lists by using only relevant keys
         values = []
         for value_ref in values_ref:
             item = {}
             for order_key in order:
-                key = order_key.split('.')[0]
+                if allow_order_subkeys:
+                    key = order_key.split('.')[0]
+                else:
+                    key = order_key
+
                 if key not in item:
                     if key in value_ref:
                         item[key] = value_ref[key]
@@ -667,15 +700,16 @@ class OutputHelper():
                     if key not in value or value[key] is None or len(value[key]) == 0:
                         value[key] = ''
                     else:
-                        if isinstance(value[key][0], dict):
-                            if '__Output' in value[key][0]:
-                                if '__Output' not in value:
-                                    value['__Output'] = {}
+                        if isinstance(value[key], list):
+                            if isinstance(value[key][0], dict):
+                                if '__Output' in value[key][0]:
+                                    if '__Output' not in value:
+                                        value['__Output'] = {}
 
-                                for output_key in value[key][0]['__Output']:
-                                    value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
+                                    for output_key in value[key][0]['__Output']:
+                                        value['__Output']['%s.%s' % (key, output_key)] = value[key][0]['__Output'][output_key]
 
-                        value[key] = value[key][0]
+                            value[key] = value[key][0]
 
                 value['__Last'] = True
                 new_values.append(value)
@@ -723,7 +757,8 @@ class OutputHelper():
                             new_value = self.replace_subkey(
                                 new_value,
                                 displayed_field,
-                                ''
+                                '',
+                                allow_order_subkeys=allow_order_subkeys
                             )
 
                         new_value['__Last'] = False
@@ -743,6 +778,19 @@ class OutputHelper():
                             new_value['__Last'] = True
 
                         new_values.append(new_value)
+
+        if cast_empty:
+            for item in new_values:
+                for key in keys:
+                    if isinstance(item[key], str) and len(item[key]) == 0:
+                        item[key] = {}
+                        for oname in order:
+                            if oname == key:
+                                item[key] = '---'
+                                break
+
+                            if len(oname.split('.')) == 2 and oname.split('.')[0] == key:
+                                item[key][oname.split('.')[1]] = '---'
 
         return new_values
 
@@ -859,13 +907,21 @@ class OutputHelper():
             for key in keys:
                 try:
                     if allow_order_subkeys and '.' in key:
-                        value[key] = str(
-                            self.get_subkey(value, key, cast_none=cast_none)
-                        )
+                        subkey_value = self.get_subkey(value, key, cast_none=cast_none)
+                        if subkey_value is None and cast_none: 
+                            value[key] = '---'
+                        else:
+                            value[key] = str(subkey_value)
                     else:
-                        value[key] = str(value[key])
+                        if value[key] is None and cast_none:
+                            value[key] = '---'
+                        else:
+                            value[key] = str(value[key])
                 except BaseException:
-                    value[key] = ''
+                    if cast_none:
+                        value[key] = '---'
+                    else:
+                        value[key] = ''
 
                 keys[key] = max(keys[key], len(value[key]))
 
@@ -968,6 +1024,110 @@ class OutputHelper():
         if table:
             if not row_separator:
                 self.print_stream(table_top, stream)
+
+    def add_id(self, items):
+        index = 1
+        for item in items:
+            item['__id__'] = index
+            index += 1
+        return items
+    
+    def my_table_ng(self, source, info, check=True, cast_zero=False, skip=[]):
+        items = copy.deepcopy(source)
+        if items is None:
+            items = []
+
+        headers = ['ID']
+        order = ['__id__']
+        for key in info:
+            if key[0] in skip:
+                continue
+            
+            if len(items) == 0:
+                headers.append(key[0])
+                order.append(key[1])
+                continue
+
+            if check:
+                if key[1].split('.')[0] not in items[0]:
+                    continue
+
+            headers.append(key[0])
+            order.append(key[1])
+
+        items = self.add_id(items)
+
+        if cast_zero:
+            for item in items:
+                for key in order:
+                    if key in item and isinstance(item[key], int) and item[key] == 0:
+                        item[key] = '--'
+
+        expand = []
+        if len(items) > 0:
+            for key in order:
+                if isinstance(items[0][key.split('.')[0]], list):
+                    expand.append(key.split('.')[0])
+
+        row_separator = False
+        for item in items:
+            for key in expand:
+                if item[key] is None:
+                    item[key] = []
+
+                if len(item[key]) == 0:
+                    item[key].append('---')
+
+                if len(item[key]) > 1:
+                    row_separator = True
+                    
+        if len(expand) == 0:
+            self.my_table(
+                items,
+                order=order,
+                headers=headers,
+                row_separator=False,
+                allow_order_subkeys=True,
+                cast_none=True,
+                underline=True,
+                table=True
+            )
+        else:
+            self.my_table(
+                self.expand_lists(
+                    items,
+                    order,
+                    expand
+                ),
+                order=order,
+                headers=headers,
+                row_separator=row_separator,
+                allow_order_subkeys=True,
+                cast_none=True,
+                underline=True,
+                table=True
+            )
+
+    def my_table_md(self, values, order, headers, stream='default', title=None):
+        if title is not None:
+            self.print_stream('# %s' % (title), stream)
+
+        line = ''
+        line2 = ''
+        for header in headers:
+            line = '%s%s |' % (line, header)
+            line2 = '%s --- |' % (line2)
+        line.rstrip('|')
+        line2.rstrip('|')
+        self.print_stream(line, stream)
+        self.print_stream(line2, stream)
+
+        for value in values:
+            line = ''
+            for key in order:
+                line = '%s%s |' % (line, value[key])
+            line.rstrip('|')
+            self.print_stream(line, stream)
 
     def my_table_html(self, values, order, headers, stream='output', title=None):
         if self.html_table_height_limit:
@@ -1139,11 +1299,13 @@ class OutputHelper():
                     if isinstance(items[item], list):
                         if prefix is not None:
                             body = '%s%s%s:\n' % (body, prefix, ikey)
+                            length = len(prefix) + len(ikey)
                         else:
                             body = '%s%s:\n' % (body, ikey)
+                            length = len(ikey)
 
                         for list_item in items[item]:
-                            body = '%s\t%s\n' % (body, list_item)
+                            body = '%s%s%s\n' % (body, ' ' * (length + 2), list_item)
 
                     else:
 
@@ -1175,12 +1337,34 @@ class OutputHelper():
                         ikey = ikey.ljust(longest)
 
                     if isinstance(ivalue, list):
-                        if prefix is not None:
-                            body = '%s%s%s:\n' % (body, prefix, ikey)
-                        else:
-                            body = '%s%s:\n' % (body, ikey)
+                        if len(ivalue) == 0:
+                            shift_by = 0
+                            if prefix is not None:
+                                length = len(prefix) + len(ikey)
+                                body = '%s%s%s: ---\n' % (body, prefix, ikey)
+                            else:
+                                length = len(ikey)
+                                body = '%s%s: ---\n' % (body, ikey)
 
-                        for list_item in ivalue:
+                        if len(ivalue) > 0:
+                            if isinstance(ivalue[0], dict):
+                                shift_by = 0
+                                if prefix is not None:
+                                    length = len(prefix) + len(ikey)
+                                    body = '%s%s%s:\n' % (body, prefix, ikey)
+                                else:
+                                    length = len(ikey)
+                                    body = '%s%s:\n' % (body, ikey)
+                            else:
+                                shift_by = 1
+                                if prefix is not None:
+                                    length = len(prefix) + len(ikey)
+                                    body = '%s%s%s: %s\n' % (body, prefix, ikey, ivalue[0])
+                                else:
+                                    length = len(ikey)
+                                    body = '%s%s: %s\n' % (body, ikey, ivalue[0])
+
+                        for list_item in ivalue[shift_by:]:
                             if isinstance(list_item, dict):
                                 list_item_index = 1
                                 for list_item_key in list_item:
@@ -1193,7 +1377,7 @@ class OutputHelper():
                                     else:
                                         body = '%s\t  %s: %s\n' % (body, list_item_key, list_item[list_item_key])
                             else:
-                                body = '%s\t%s\n' % (body, list_item)
+                                body = '%s%s%s\n' % (body, ' ' * (length + 2), list_item)
 
                     if isinstance(ivalue, str):
                         if '\n' in ivalue:
@@ -1228,6 +1412,25 @@ class OutputHelper():
 
         output = '%s\n%s' % (header, body)
         return output
+
+    def dictionary_ng(self, title, item, info, underline=True, start='\n\n'):
+        headers = []
+        order = []
+        for key in info:
+            headers.append(key[0])
+            order.append(key[1])
+
+        self.dictionary(
+            item,
+            title=title,
+            prefix='- ',
+            keys=order,
+            justify=True,
+            values=order,
+            title_keys=headers,
+            underline=underline,
+            start=start
+        )
 
     def columns(self, data, spacing=2, stream='default', max_length=80):
         column_width = []
@@ -1340,15 +1543,21 @@ class OutputHelper():
                     self.default(output)
                     self.default(logs[log_entry])
 
-    def get_input(self, message, timeout=None):
+    def get_input(self, message, timeout=None, empty_to_none=False):
         if timeout is None:
-            return input(message)
+            user_input = input(message)
 
-        try:
-            user_input = inputimeout(prompt=message, timeout=timeout)
-        except TimeoutOccurred:
-            user_input = None
+        if timeout is not None:
+            try:
+                user_input = inputimeout(prompt=message, timeout=timeout)
+            except TimeoutOccurred:
+                user_input = None
 
+        if user_input is not None:
+            if empty_to_none:
+                if len(user_input) == 0:
+                    return None
+            
         return user_input
 
     def wrap_bot_html_output(self, html_output, command=None, view={}, exclude_view=[]):
@@ -1397,9 +1606,49 @@ class OutputHelper():
             output = '```\n%s\n```' % (output)
         else:
             if self.log_id is not None and url is not None:
-                output = '```\n%s\n```\n\nFull <a href="%s/%s/output.html">output</a>' % (url, output, self.log_id)
+                output = '```\n%s\n```\n\nFull <a href="%s/%s/output.html">output</a>' % (output, url, self.log_id)
 
         if execution_time is not None:
             output = '%s<br>Execution time: %s ms' % (output, execution_time)
 
         return output
+
+    def select_from_list(self, title, items, underline=True, before_newline=True, default=None):
+        while True:
+            self.default(title, underline=underline, before_newline=before_newline)
+            for item in items:
+                if default is not None and item == default:
+                    self.default('- %s [default]' % (item))
+                else:
+                    self.default('- %s' % (item))
+
+            value = input('Value: ')
+            if len(value) == 0:
+                return default
+        
+            if value not in items:
+                continue
+
+            return value
+        
+    def my_list(self, items, title=None, underline=False, before_newline=False, ending_newline=False):
+        if items is None:
+            return 
+        
+        if title is not None:
+            self.default(title, underline=underline, before_newline=before_newline)
+
+        for item in items:
+            self.default('- %s' % (str(item)))
+
+        if ending_newline:
+            self.default('')
+
+    def str_presenter(dumper, data):
+        if data.count('\n') > 0:
+            data = "\n".join([line.rstrip() for line in data.splitlines()])  # Remove any trailing spaces, then put it back together again
+            return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+    
+    def my_yaml(self, content, before_newline=False, wrap=None):
+        self.default(yaml.dump(content), before_newline=before_newline, wrap=wrap)

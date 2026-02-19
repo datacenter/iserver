@@ -1,4 +1,5 @@
 from lib.aci.node.api import NodeApi
+from lib.aci.node.exec.main import NodeExec
 from lib.aci.node.info import NodeInfo
 from lib.aci.node.policy.profile.main import NodeInterfacePolicyProfile
 from lib.aci.node.power.main import NodePower
@@ -10,6 +11,7 @@ from lib.aci.node.temp.main import NodeTemp
 
 class Node(
     NodeApi,
+    NodeExec,
     NodeInfo,
     NodeInterfacePolicyProfile,
     NodePower,
@@ -20,6 +22,7 @@ class Node(
     ):
     def __init__(self):
         NodeApi.__init__(self)
+        NodeExec.__init__(self)
         NodeInfo.__init__(self)
         NodeInterfacePolicyProfile.__init__(self)
         NodePower.__init__(self)

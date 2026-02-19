@@ -18,7 +18,6 @@ class ProtocolCdpNeighborInfo():
             )
         )
 
-        # topology/pod-1/node-201/sys/cdp/inst/if-[mgmt0]/adj-1
         info['interfaceId'] = info['dn'].split('if-')[1].split(']')[0][1:]
         info['__Output']['interfaceId'] = 'Yellow'
 
@@ -32,9 +31,9 @@ class ProtocolCdpNeighborInfo():
         if key in self.cdp_neighbors:
             return self.cdp_neighbors[key]
 
+        self.cdp_neighbors[key] = []
         cdp_neighbors_mo = self.get_protocol_cdp_neighbors_mo(pod_id, node_id)
         if cdp_neighbors_mo is not None:
-            self.cdp_neighbors[key] = []
             for cdp_neighbor_mo in cdp_neighbors_mo:
                 self.cdp_neighbors[key].append(
                     self.get_protocol_cdp_neighbor_info(

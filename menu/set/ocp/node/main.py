@@ -1,9 +1,7 @@
 import click
 
-from menu.set.ocp.node.down import set_ocp_node_down
-from menu.set.ocp.node.nestedhv import set_ocp_node_nestedhv
-from menu.set.ocp.node.restart import set_ocp_node_restart
-from menu.set.ocp.node.up import set_ocp_node_up
+from menu.set.ocp.node.reboot import set_ocp_node_reboot_command
+from menu.set.ocp.node.reload import set_ocp_node_reload_command
 
 
 class Failure(Exception):
@@ -16,7 +14,5 @@ def set_ocp_node_menu(ctx):
     """OCP Node Actions and Settings"""
 
 
-set_ocp_node_menu.add_command(set_ocp_node_down)
-set_ocp_node_menu.add_command(set_ocp_node_nestedhv)
-set_ocp_node_menu.add_command(set_ocp_node_restart)
-set_ocp_node_menu.add_command(set_ocp_node_up)
+set_ocp_node_menu.add_command(set_ocp_node_reboot_command)
+set_ocp_node_menu.add_command(set_ocp_node_reload_command)

@@ -38,6 +38,14 @@ class K8sVirtualMachineInstanceInfo():
         if info['phaseT'] in ['Pending']:
             info['__Output']['phaseT'] = 'Yellow'
 
+        info['conditions'] = self.get_conditions(
+            self.get(virtual_machine_instance_mo, 'status:conditions')
+        )
+
+        if 'Paused' in info['conditions']:
+            info['phaseT'] = 'Paused'
+            info['__Output']['phaseT'] = 'Yellow'
+            
         info['running'] = False
         if info['phase'] == 'Running':
             info['running'] = True
@@ -108,7 +116,7 @@ class K8sVirtualMachineInstanceInfo():
         volumes_spec = self.get(virtual_machine_instance_mo, 'spec:volumes', on_error=[], on_none=[])
         volumes_state = self.get(virtual_machine_instance_mo, 'status:volumeStatus', on_error=[], on_none=[])
         for disk in info['disk']:
-            disk['info'] = '--'
+            disk['info'] = disk['name']
             disk['target'] = None
             disk['storage'] = None
             disk['pvc_namespace'] = None
@@ -144,6 +152,56 @@ class K8sVirtualMachineInstanceInfo():
                             disk['target'],
                             disk['storage']
                         )
+
+        return info
+
+    def add_virtual_machine_instance_info(self, info, vm_info=False, service_info=False):
+        if service_info:
+            info['service'] = []
+            vmi_services = []
+            for label_key in info['label']:
+                service_filter = [
+                    'selector:%s:%s' % (
+                        label_key,
+                        info['label'][label_key]
+                    )
+                ]
+                services = self.get_services(
+                    object_filter=service_filter,
+                    cache_enabled=True
+                )
+                if services is not None:
+                    for vmi_service_info in services:
+                        service_match = True
+                        for key in vmi_service_info['selector']:
+                            if key not in info['label']:
+                                service_match = False
+                                break
+
+                            if info['label'][key] != vmi_service_info['selector'][key]:
+                                service_match = False
+                                break
+
+                        if service_match:
+                            if vmi_service_info['namespace_name'] not in vmi_services:
+                                info['service'].append(
+                                    vmi_service_info
+                                )
+                                vmi_services.append(
+                                    vmi_service_info['namespace_name']
+                                )
+
+            info['serviceCount'] = len(
+                info['service']
+            )
+
+        if vm_info:
+            if self.is_virtual_machine(info['namespace'], info['name'], cache_enabled=True):
+                info['vmTick'] = '\u2713'
+                info['__Output']['vmTick'] = 'Green'
+            else:
+                info['vmTick'] = '\u2717'
+                info['__Output']['vmTick'] = 'Red'
 
         return info
 
@@ -216,7 +274,18 @@ class K8sVirtualMachineInstanceInfo():
 
         virtual_machine_instances = []
 
+        if service_info and not cache_enabled:
+            self.get_services(cache_enabled=False)
+
+        if vm_info and not cache_enabled:
+            self.get_virtual_machines(cache_enabled=False)
+
         for virtual_machine_instance_info in all_virtual_machine_instances:
+            virtual_machine_instance_info['info'] = self.add_virtual_machine_instance_info(
+                virtual_machine_instance_info['info'],
+                vm_info=vm_info,
+                service_info=service_info
+            )
             if not self.match_virtual_machine_instance(virtual_machine_instance_info['info'], object_filter):
                 continue
 
@@ -225,52 +294,6 @@ class K8sVirtualMachineInstanceInfo():
                     virtual_machine_instance_info['mo']
                 )
                 continue
-
-            if service_info:
-                virtual_machine_instance_info['info']['service'] = []
-                vmi_services = []
-                for label_key in virtual_machine_instance_info['info']['label']:
-                    service_filter = [
-                        'selector:%s:%s' % (
-                            label_key,
-                            virtual_machine_instance_info['info']['label'][label_key]
-                        )
-                    ]
-                    services = self.get_services(
-                        object_filter=service_filter
-                    )
-                    if services is not None:
-                        for vmi_service_info in services:
-                            service_match = True
-                            for key in vmi_service_info['selector']:
-                                if key not in virtual_machine_instance_info['info']['label']:
-                                    service_match = False
-                                    break
-
-                                if virtual_machine_instance_info['info']['label'][key] != vmi_service_info['selector'][key]:
-                                    service_match = False
-                                    break
-
-                            if service_match:
-                                if vmi_service_info['namespace_name'] not in vmi_services:
-                                    virtual_machine_instance_info['info']['service'].append(
-                                        vmi_service_info
-                                    )
-                                    vmi_services.append(
-                                        vmi_service_info['namespace_name']
-                                    )
-
-                virtual_machine_instance_info['info']['serviceCount'] = len(
-                    virtual_machine_instance_info['info']['service']
-                )
-
-            if vm_info:
-                if self.is_virtual_machine(virtual_machine_instance_info['info']['namespace'], virtual_machine_instance_info['info']['name'], cache_enabled=cache_enabled):
-                    virtual_machine_instance_info['info']['vmTick'] = '\u2713'
-                    virtual_machine_instance_info['info']['__Output']['vmTick'] = 'Green'
-                else:
-                    virtual_machine_instance_info['info']['vmTick'] = '\u2717'
-                    virtual_machine_instance_info['info']['__Output']['vmTick'] = 'Red'
 
             virtual_machine_instances.append(
                 virtual_machine_instance_info['info']

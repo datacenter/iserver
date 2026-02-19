@@ -4,6 +4,7 @@ from lib.redfish.fi.power_chassis import RedfishEndpointFabricInterconnectTempla
 from lib.redfish.fi.power_server import RedfishEndpointFabricInterconnectTemplatePowerServer
 from lib.redfish.fi.thermal_chassis import RedfishEndpointFabricInterconnectTemplateThermalChassis
 from lib.redfish.fi.thermal_server import RedfishEndpointFabricInterconnectTemplateThermalServer
+from lib.redfish.fi.net_server import RedfishEndpointFabricInterconnectTemplateNetServer
 
 
 class RedfishEndpointFabricInterconnectTemplates(
@@ -12,7 +13,8 @@ class RedfishEndpointFabricInterconnectTemplates(
     RedfishEndpointFabricInterconnectTemplatePowerChassis,
     RedfishEndpointFabricInterconnectTemplatePowerServer,
     RedfishEndpointFabricInterconnectTemplateThermalChassis,
-    RedfishEndpointFabricInterconnectTemplateThermalServer
+    RedfishEndpointFabricInterconnectTemplateThermalServer,
+    RedfishEndpointFabricInterconnectTemplateNetServer
     ):
     def __init__(self):
         RedfishEndpointFabricInterconnectTemplateIdentityChassis.__init__(
@@ -33,6 +35,9 @@ class RedfishEndpointFabricInterconnectTemplates(
         RedfishEndpointFabricInterconnectTemplateThermalServer.__init__(
             self
         )
+        RedfishEndpointFabricInterconnectTemplateNetServer.__init__(
+            self
+        )
 
     def get_template_identity_properties(self):
         if self.inventory_type == 'Chassis':
@@ -51,6 +56,10 @@ class RedfishEndpointFabricInterconnectTemplates(
             if self.inventory_type == 'Server':
                 return self.get_template_identity_server_properties()
 
+        if template_name == 'net':
+            if self.inventory_type == 'Server':
+                return self.get_template_net_properties()
+            
         if template_name == 'power':
             if self.inventory_type == 'Chassis':
                 return self.get_template_power_chassis_properties()
@@ -67,7 +76,7 @@ class RedfishEndpointFabricInterconnectTemplates(
 
         self.log.error(
             'get_template_properties',
-            'Unsupported template: %s for inventory type %s' % (template_name, self.inventory_type)
+            'Unsupported template: [%s] for inventory type [%s]' % (template_name, self.inventory_type)
         )
 
         return None
@@ -93,3 +102,7 @@ class RedfishEndpointFabricInterconnectTemplates(
 
             if self.inventory_type == 'Server':
                 self.print_template_thermal_server_properties(properties)
+
+        if template_name.lower() == 'net':
+            if self.inventory_type == 'Server':
+                self.print_template_net_properties(properties)

@@ -15,11 +15,11 @@ class K8sCustomResourceDefinitionOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'CRD'
         ]
 
         self.my_output.my_table(

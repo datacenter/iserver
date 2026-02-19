@@ -249,7 +249,7 @@ class OcpVmCreateDay0():
 
         # Step 3: create data volume
 
-        success = self.k8s_handler.create_data_volume(
+        success = self.k8s_handler.create_data_volume_mo(
             data_volume
         )
         if not success:

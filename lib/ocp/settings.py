@@ -5,6 +5,7 @@ import traceback
 
 from lib import file_helper
 from lib import filter_helper
+from lib import ip_helper
 from lib import log_helper
 from lib import output_helper
 from lib.settings_helper import Settings
@@ -59,10 +60,14 @@ class OcpSettings(Settings):
 
         settings = self.get_ocp_settings()
         for cluster in settings['Clusters']:
-            for key in ['helm', 'virtctl', 'tools', 'ssh']:
-                if key not in cluster:
+            for key in ['kubeconfig', 'helm', 'virtcl', 'tools', 'ssh', 'kubeadmin']:
+                if key in cluster:
                     fixup = True
-                    cluster[key] = None
+                    del cluster[key]
+
+            if 'domain' not in cluster:
+                fixup = True
+                cluster['domain'] = None
 
         if fixup:
             return self.set_ocp_settings(settings)
@@ -144,6 +149,11 @@ class OcpSettings(Settings):
                 if not filter_helper.match_string(value, cluster_settings['name']):
                     return False
 
+            if key == 'domain':
+                key_found = True
+                if not filter_helper.match_string(value, cluster_settings['domain']):
+                    return False
+
             if not key_found:
                 self.log.error(
                     'match_cluster',
@@ -152,7 +162,7 @@ class OcpSettings(Settings):
 
         return True
 
-    def get_ocp_clusters(self, cluster_filter=None):
+    def get_ocp_clusters(self, cluster_filter=None, files_info=False):
         settings = self.get_ocp_settings()
         if settings is None:
             return None
@@ -172,6 +182,45 @@ class OcpSettings(Settings):
             key=lambda i: i['name']
         )
 
+        for cluster in clusters:
+            cluster['__Output'] = {}
+            cluster['kubeconfig'] = os.path.join(
+                self.get_ocp_cluster_directory(cluster['name']), 
+                'kubeconfig'
+            )
+
+            if files_info:
+                cluster['isKube'] = os.path.isfile(cluster['kubeconfig'])
+                if cluster['isKube']:
+                    cluster['isKubeTick'] = '\u2713'
+                    cluster['__Output']['isKubeTick'] = 'Green'
+                else:
+                    cluster['isKubeTick'] = '\u2717'
+                    cluster['__Output']['isKubeTick'] = 'Red'
+
+                cluster['isKube'] = os.path.isfile(cluster['kubeconfig'])
+                if cluster['isKube']:
+                    cluster['isKubeTick'] = '\u2713'
+                    cluster['__Output']['isKubeTick'] = 'Green'
+                else:
+                    cluster['isKubeTick'] = '\u2717'
+                    cluster['__Output']['isKubeTick'] = 'Red'
+
+                if self.is_management_ssh_pub(cluster['name']):
+                    cluster['isSshTick'] = '\u2713'
+                    cluster['__Output']['isSshTick'] = 'Green'
+                else:
+                    cluster['isSshTick'] = '\u2717'
+                    cluster['__Output']['isSshTick'] = 'Red'
+                
+                cluster['management_ip'] = self.get_management_ip(cluster['name'])
+                if self.is_management_ip(cluster['name']):
+                    cluster['isMgmtTick'] = '\u2713'
+                    cluster['__Output']['isMgmtTick'] = 'Green'
+                else:
+                    cluster['isMgmtTick'] = '\u2717'
+                    cluster['__Output']['isMgmtTick'] = 'Red'
+                
         return clusters
 
     def get_ocp_cluster(self, ocp_name, strict_match=True):
@@ -275,13 +324,10 @@ class OcpSettings(Settings):
 
         return target_filename
 
-    def create_ocp_cluster(self, name, kubeconfig):
+    def create_ocp_cluster(self, name, kubeconfig, domain=None):
         new_cluster = {}
         new_cluster['name'] = name
-        new_cluster['kubeconfig'] = self.get_ocp_cluster_kubeconfig_filename(name)
-        for key in ['virtcl', 'helm', 'tools', 'ssh']:
-            new_cluster[key] = None
-
+        new_cluster['domain'] = domain
         clusters = self.get_ocp_clusters()
         if clusters is None:
             self.log.error(
@@ -400,6 +446,40 @@ class OcpSettings(Settings):
 
         return success
 
+    def get_ocp_cluster_filename(self, ocp_name, filename):
+        cluster = self.get_ocp_cluster(ocp_name)
+        if cluster is None:
+            self.log.error(
+                'set_ocp_cluster_kubeadmin',
+                'Cluster not found: %s' % (ocp_name)
+            )
+            return None
+
+        cluster_directory = self.get_ocp_cluster_directory(ocp_name)
+        if not os.path.isdir(cluster_directory):
+            os.makedirs(
+                cluster_directory,
+                exist_ok=True
+            )
+
+        target_filename = os.path.join(
+            cluster_directory,
+            filename
+        )
+
+        return target_filename
+
+    def get_ocp_cluster_file(self, ocp_name, filename):
+        target_filename = self.get_ocp_cluster_filename(ocp_name, filename)
+        if target_filename is None:
+            return None
+
+        content = file_helper.get_file_text(
+            target_filename
+        )
+
+        return content
+
     def set_ocp_cluster_file(self, ocp_name, filename, content):
         cluster = self.get_ocp_cluster(ocp_name)
         if cluster is None:
@@ -446,3 +526,103 @@ class OcpSettings(Settings):
             shutil.rmtree(cluster_directory)
 
         return self.set_ocp_clusters(new_clusters)
+
+    def get_domain(self, cluster_name):
+        settings = self.get_ocp_cluster(cluster_name)
+        if settings is None:
+            return None
+        
+        return settings['domain']
+
+    def is_domain(self, cluster_name):
+        domain = self.get_domain(cluster_name)
+        if domain is None:
+            return False
+        return True
+
+    def set_domain(self, cluster_name, domain_name):
+        return self.set_ocp_cluster_parameter(cluster_name, 'domain', domain_name)
+    
+    def is_kubeconfig(self, cluster_name):
+        content = self.get_ocp_cluster_file(cluster_name, 'kubeconfig')
+        if content is None:
+            return False
+        return True
+
+    def is_management_ssh_pub(self, cluster_name):
+        content = self.get_ocp_cluster_file(cluster_name, 'ssh.pub')
+        if content is None:
+            return False
+        return True
+
+    def get_management_ssh_pub(self, cluster_name):
+        return self.get_ocp_cluster_file(cluster_name, 'ssh.pub')
+    
+    def get_management_ssh_pub_filename(self, cluster_name):
+        return self.get_ocp_cluster_filename(cluster_name, 'ssh.pub')
+    
+    def set_management_ssh_pub(self, cluster_name, filename):
+        content = file_helper.get_file_text(filename)
+        if content is None:
+            return False
+
+        success = self.set_ocp_cluster_file(
+            cluster_name,
+            'ssh.pub',
+            content
+        )
+        return success
+
+    def is_management_ip(self, cluster_name):
+        content = self.get_ocp_cluster_file(cluster_name, 'management_ip')
+        if content is None:
+            return False
+        return True
+
+    def get_management_ip(self, cluster_name):
+        return self.get_ocp_cluster_file(cluster_name, 'management_ip')
+
+    def set_management_ip(self, cluster_name, ip_address):
+        success = self.set_ocp_cluster_file(
+            cluster_name,
+            'management_ip',
+            ip_address
+        )
+        return success
+
+    def is_etc_hosts(self, cluster_name):
+        content = self.get_ocp_cluster_file(cluster_name, 'etc_hosts')
+        if content is None:
+            return False
+        return True
+
+    def set_etc_hosts(self, cluster_name, content):
+        success = self.set_ocp_cluster_file(
+            cluster_name,
+            'etc_hosts',
+            content
+        )
+        return success
+
+    def check_etc_hosts(self, cluster_name):
+        content = self.get_ocp_cluster_file(cluster_name, 'etc_hosts')
+        if content is None:
+            return False, None
+
+        success = True
+        etc_hosts = []
+        for line in content.split('\n'):
+            etc_host = {}
+            (etc_host['address'], etc_host['fqdn']) = line.split('\t')
+            etc_host['resolved'] = True
+
+            address = ip_helper.get_ip(etc_host['fqdn'])
+            if address is None or address != etc_host['address']:
+                etc_host['resolved'] = False
+                success = False
+
+            etc_hosts.append(
+                etc_host
+            )
+
+        return success, etc_hosts

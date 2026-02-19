@@ -19,7 +19,6 @@ class BridgeDomainEventInfo():
 
         if 'affected' in info:
             if 'uni/tn-' in info['affected']:
-                # uni/tn-k8s/BD-bmk8s_2_BD
                 info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
             if '/BD-' in info['affected']:
@@ -27,7 +26,6 @@ class BridgeDomainEventInfo():
 
         if 'affected' not in info and 'dn' in info:
             if 'uni/tn-' in info['dn']:
-                # uni/tn-k8s/BD-bmk8s_2_BD
                 info['tenantName'] = info['dn'].split('uni/tn-')[1].split('/')[0]
 
             if '/BD-' in info['dn']:

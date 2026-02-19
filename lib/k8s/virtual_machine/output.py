@@ -2,54 +2,19 @@ class K8sVirtualMachineOutput():
     def __init__(self):
         pass
 
-    def print_virtual_machines(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Virtual Machine [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name',
-            'cores',
-            'memory',
-            'disk.info',
-            'interface.info',
-            'createdTick',
-            'readyTick',
-            'status',
-            'age'
-        ]
-
-        headers = [
-            'VM',
-            'CPU',
-            'Memory',
-            'Disks',
-            'Interfaces',
-            'Created',
-            'Ready',
-            'Status',
-            'Age'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['disk', 'interface']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+    def print_virtual_machines(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Virtual Machine', 'namespace_nameT'],
+                ['CPU', 'cpu'],
+                ['Memory', 'memory'],
+                ['Disk', 'disk.info'],
+                ['Interface', 'interface.info'],
+                ['Status', 'status'],
+                ['Restart Reqd', 'restartRequiredTick'],
+                ['Age', 'age']
+            ]
         )
 
     def print_virtual_machines_metadata(self, info, title=False):

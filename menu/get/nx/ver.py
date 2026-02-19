@@ -80,15 +80,13 @@ def get_nx_ver_command(
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        object_filter = []
         versions = []
-
         for device_handler in device_handlers:
-            device_versions = device_handler['handler'].get_versions(
-                object_filter=object_filter
-            )
-            if device_versions is not None:
-                versions = versions + device_versions
+            device_version = device_handler['handler'].get_version()
+            if device_version is not None:
+                versions.append(
+                    device_version
+                )
 
         ctx.busy = False
 

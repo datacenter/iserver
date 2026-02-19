@@ -27,7 +27,6 @@ class DomainL2NodeInfo():
                 item['nodeId']
             )
             port_info['intf_type'] = item['ctxClass']
-            # "topology/pod-1/node-2201/sys/l2s-[eth1/42]"
             port_info['intf_name'] = item['ctxDn'].split('[')[1].split(']')[0]
             info['interface'].append(
                 port_info

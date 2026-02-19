@@ -7,18 +7,32 @@ from ucsmsdk.ucscoreutils import get_meta_info
 from lib import output_helper
 from lib import log_helper
 
-from lib.ucsm.chassis import Chassis
 from lib.ucsm.blade import Blade
+from lib.ucsm.chassis import Chassis
+from lib.ucsm.fi import Fi
 from lib.ucsm.power import Power
+from lib.ucsm.rack import Rack
 from lib.ucsm.thermal import Thermal
+from lib.ucsm.networking.main import Networking
 
 
-class UcsManager(Chassis, Blade, Power, Thermal):
+class UcsManager(
+        Blade,
+        Chassis,
+        Fi,
+        Networking,
+        Power,
+        Rack,
+        Thermal
+    ):
     def __init__(self, ucsm_ip, username, password, verbose=False, debug=False, log_id=None):
-        Chassis.__init__(self, log_id=log_id)
-        Blade.__init__(self, log_id=log_id)
-        Power.__init__(self, log_id=log_id)
-        Thermal.__init__(self, log_id=log_id)
+        Blade.__init__(self)
+        Chassis.__init__(self)
+        Fi.__init__(self)
+        Networking.__init__(self)
+        Power.__init__(self)
+        Rack.__init__(self)
+        Thermal.__init__(self)
 
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
@@ -117,6 +131,16 @@ class UcsManager(Chassis, Blade, Power, Thermal):
         )
 
         return managed_objects
+
+    def get_fabric(self):
+        fabric = {}
+        fabric['vlan'] = self.get_fabric_vlan()
+        fabric['pooledVlan'] = self.get_fabric_pooled_vlan()
+        fabric['netGroup'] = self.get_fabric_net_group()
+        fabric['ethLanPc'] = self.get_fabric_eth_lan_pc()
+        fabric['ethLanPcEp'] = self.get_fabric_eth_lan_pc_ep()
+        fabric['ethVlanPc'] = self.get_fabric_eth_vlan_pc()
+        return fabric
 
     def get_inventory(self):
         inventory = {}

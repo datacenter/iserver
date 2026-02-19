@@ -1,12 +1,21 @@
+import random
+import shutil
+import traceback
 import os
 import re
 import socket
+import binascii
 import struct
 import hashlib
 import uuid
 import requests
 import validators
 import sshpubkeys
+import urllib
+
+
+def get_short_uuid():
+    return str(uuid.uuid4()).split('-')[-1]
 
 
 def generate_uuid(seed):
@@ -15,11 +24,19 @@ def generate_uuid(seed):
     return str(uuid.UUID(md5_handler.hexdigest()))
 
 
+def generate_mac():
+    address = '02:00:00:%02x:%02x:%02x' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    return address
+
+
 def normalize_mac_address(mac_address):
     return mac_address.lower().replace(':', '').replace('.', '')
 
 
 def is_mac_address(mac):
+    if mac is None:
+        return False
+
     mac = normalize_mac_address(mac)
     if len(mac) != 12:
         return False
@@ -32,8 +49,9 @@ def is_mac_address(mac):
 
 
 def is_mac_equal(mac_a, mac_b):
-    if normalize_mac_address(mac_a) == normalize_mac_address(mac_b):
-        return True
+    if mac_a is not None and mac_b is not None:
+        if normalize_mac_address(mac_a) == normalize_mac_address(mac_b):
+            return True
     return False
 
 
@@ -154,6 +172,101 @@ def is_ipv4_in_cidr(address, cidr):
     return ip_address_cidr == ip_network_cidr
 
 
+def ip_to_integer(ip_address):
+    """
+    Converts a string-represented IP address to its integer
+    representation.
+
+    Returns a tuple (ip_integer, version), where version
+    indicates the IP version (either 4 or 6).
+
+    Supports both IPv4 (e.g., '192.168.1.1') and IPv6 (e.g.,
+    '2a02:a448:ddb0::') addresses.
+    """
+
+    # Try parsing the IP address first as IPv4, then as IPv6.
+    for version in (socket.AF_INET, socket.AF_INET6):
+        try:
+            ip_hex = socket.inet_pton(version, ip_address)
+            ip_integer = int(binascii.hexlify(ip_hex), 16)
+            return (ip_integer, 4 if version == socket.AF_INET else 6)
+        except BaseException:
+            pass
+
+    return None, None
+
+
+def subnetwork_to_ip_range(subnetwork):
+    """
+    Converts a CIDR notation subnetwork string to its integer
+    bounds.
+
+    Returns a tuple (ip_lower, ip_upper, version), where:
+    - ip_lower and ip_upper are integer values of the lower and
+        upper IP addresses, respectively.
+    - version indicates the subnetwork IP version (either 4 or 6).
+
+    Accepts both IPv4 (e.g., '192.168.1.0/24') and IPv6 (e.g.,
+    '2a02:a448:ddb0::/44') subnetworks.
+    """
+
+    try:
+        fragments = subnetwork.split('/')
+        network_prefix = fragments[0]
+        netmask_len = int(fragments[1])
+
+        # Try parsing the subnetwork first as IPv4, then as IPv6.
+        for version in (socket.AF_INET, socket.AF_INET6):
+            ip_len = 32 if version == socket.AF_INET else 128
+
+            try:
+                suffix_mask = (1 << (ip_len - netmask_len)) - 1
+                netmask = ((1 << ip_len) - 1) - suffix_mask
+                ip_hex = socket.inet_pton(version, network_prefix)
+                ip_lower = int(binascii.hexlify(ip_hex), 16) & netmask
+                ip_upper = ip_lower + suffix_mask
+                return (ip_lower,
+                        ip_upper,
+                        4 if version == socket.AF_INET else 6)
+
+            except BaseException:
+                pass
+
+    except BaseException:
+        pass
+
+    return None, None, None
+
+
+def ip_in_subnetwork(ip_address, subnetwork):
+    """
+    Returns True if the provided IP address belongs to the
+    subnetwork (specified in CIDR notation); otherwise, returns
+    False. Both arguments should be strings.
+
+    Supports both IPv4 (e.g., '192.168.1.1' and '192.168.1.0/24')
+    and IPv6 (e.g., '2a02:a448:ddb0::' and '2a02:a448:ddb0::/44')
+    addresses and subnetworks.
+    """
+
+    (ip_integer, version_1) = ip_to_integer(ip_address)
+    if ip_integer is None or version_1 is None:
+        return False
+
+    (ip_lower, ip_upper, version_2) = subnetwork_to_ip_range(subnetwork)
+    if ip_lower is None or ip_upper is None or version_2 is None:
+        return False
+
+    if version_1 != version_2:
+        return False
+
+    return (ip_lower <= ip_integer <= ip_upper)
+
+
+def is_ipv6_in_cidr(address, cidr):
+    return ip_in_subnetwork(address, cidr)
+
+
 def get_network_ipv4_in_cidr(cidr):
     if not is_valid_ipv4_cidr(cidr):
         return None
@@ -169,6 +282,14 @@ def get_network_ipv4_in_cidr(cidr):
     ip_network_cidr = ip_network & (4294967295 << (32 - int(bits)))
 
     return socket.inet_ntoa(struct.pack('>L', ip_network_cidr))
+
+
+def get_network_cidr_from_cidr(cidr):
+    network = get_network_ipv4_in_cidr(cidr)
+    if network is None:
+        return None
+
+    return '%s/%s' % (network, cidr.split('/')[1])
 
 
 def get_first_ipv4_in_cidr(cidr):
@@ -313,6 +434,33 @@ def is_subnet_in_subnet(subnet_a, subnet_b):
     return False
 
 
+def is_subnet_overlap(subnet_a, subnet_b):
+    if not is_valid_ipv4_cidr(subnet_a):
+        return False
+
+    if not is_valid_ipv4_cidr(subnet_b):
+        return False
+
+    subnet_a_min = get_first_ipv4_in_cidr(subnet_a)
+    subnet_a_max = get_last_ipv4_in_cidr(subnet_a)
+    subnet_b_min = get_first_ipv4_in_cidr(subnet_b)
+    subnet_b_max = get_last_ipv4_in_cidr(subnet_b)
+
+    if is_ipv4_in_cidr(subnet_a_min, subnet_b):
+        return True
+    
+    if is_ipv4_in_cidr(subnet_a_max, subnet_b):
+        return True
+
+    if is_ipv4_in_cidr(subnet_b_min, subnet_a):
+        return True
+    
+    if is_ipv4_in_cidr(subnet_b_max, subnet_a):
+        return True
+
+    return False
+
+
 def get_next_ipv4_address(ip_address):
     return get_nth_ipv4_from_address(ip_address, 1)
 
@@ -333,17 +481,61 @@ def is_url_accessible(url, timeout=1):
     return False
 
 
-def download_url(url, filename, timeout=5):
+def download_url(url, filename, timeout=5, verify=True):
+    try:
+        response = requests.get(
+            url,
+            timeout=timeout,
+            verify=verify
+        )
+        with open(filename, "wb") as file_handler:
+            file_handler.write(response.content)
+    except BaseException:
+        print(traceback.format_exc())
+        return None
+    return filename
+
+
+def get_url_size(url):
+    try:
+        d = urllib.request.urlopen(url)
+        return d.info()['Content-Length']
+    except BaseException:
+        return None
+    
+
+def download_large_url(url, filename, timeout=5, verify=True):
+    file_size = get_url_size(url)
+    if file_size is not None:
+        print('File size: %s' % (file_size))
+
+    try:
+        response = requests.get(
+            url, 
+            stream=True,
+            timeout=timeout,
+            verify=verify
+        )
+        with open(filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+
+    except requests.exceptions.RequestException as e:
+        print("Error downloading the file:", e)
+        return False
+
+    return True
+
+
+def get_url(url, timeout=5):
     try:
         response = requests.get(
             url,
             timeout=timeout
         )
-        with open(filename, "wb") as file_handler:
-            file_handler.write(response.content)
+        return response.text
     except BaseException:
-        return None
-    return filename
+        pass
+    return None
 
 
 def is_public_key_valid(value):
@@ -367,6 +559,10 @@ def get_file_md5(filename):
             buf = file_handler.read(blocksize)
     md5 = hasher.hexdigest()
     return md5
+
+
+def get_string_md5(string):
+    return hashlib.md5(string.encode('utf-8')).hexdigest()
 
 
 def get_ip(name):

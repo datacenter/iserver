@@ -6,31 +6,6 @@ class NodeTempInfo():
         self.nodes_temp = None
 
     def get_node_temp_info(self, managed_object):
-        # "childAction": "",
-        # "cnt": "2",
-        # "currentAvg": "25",
-        # "currentLast": "26",
-        # "currentMax": "26",
-        # "currentMin": "25",
-        # "currentSpct": "0",
-        # "currentThr": "",
-        # "currentTr": "0",
-        # "currentTrBase": "25",
-        # "currentTtl": "51",
-        # "dn": "topology/pod-1/node-101/sys/ch/supslot-1/sup/sensor-1/CDeqptTemp15min",
-        # "lastCollOffset": "590",
-        # "normalizedAvg": "36",
-        # "normalizedLast": "37",
-        # "normalizedMax": "37",
-        # "normalizedMin": "36",
-        # "normalizedSpct": "0",
-        # "normalizedThr": "",
-        # "normalizedTr": "0",
-        # "normalizedTrBase": "36",
-        # "normalizedTtl": "73",
-        # "repIntvEnd": "2023-05-19T09:09:46.634+02:00",
-        # "repIntvStart": "2023-05-19T08:59:56.582+02:00",
-        # "status": ""
         info = {}
         info['__Output'] = {}
 

@@ -22,7 +22,7 @@ class OcpVmDeleteDay0():
                             name
                         )
                     )
-                    success = self.k8s_handler.delete_data_volume(
+                    success = self.k8s_handler.delete_data_volume_mo(
                         namespace,
                         name
                     )
@@ -35,7 +35,7 @@ class OcpVmDeleteDay0():
                             name
                         )
                     )
-                    success = self.k8s_handler.delete_namespaced_pvc(
+                    success = self.k8s_handler.delete_pvc_mo(
                         namespace,
                         name
                     )

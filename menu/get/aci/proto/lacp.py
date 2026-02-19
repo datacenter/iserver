@@ -4,6 +4,7 @@ import threading
 import traceback
 import click
 
+from lib import file_helper
 from lib.aci import output as aci_output
 
 from menu import validations
@@ -36,7 +37,7 @@ class NoResultExit(Exception):
 @click.option("--when", "fault_when", default='7d', show_default=True, callback=validations.validate_timestamp_filter, help="Filter faults by timestamp")
 @click.option("--view", "-v", default=['intf'], help="[inst|intf|stats|event|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_node_proto_lacp_command(
         ctx,
@@ -52,7 +53,7 @@ def get_aci_node_proto_lacp_command(
         fault_when,
         view,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci node protocol lacp"""
@@ -78,7 +79,7 @@ def get_aci_node_proto_lacp_command(
             controller_username,
             controller_password,
             show_selected=False,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit
@@ -128,7 +129,7 @@ def get_aci_node_proto_lacp_command(
                 'mac:%s' % (mac)
             )
 
-        if output not in ['json']:
+        if output == 'default':
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 

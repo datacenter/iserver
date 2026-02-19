@@ -3,7 +3,7 @@ import threading
 import traceback
 import click
 
-from lib.imc import endpoint as imc_endpoint
+from lib.imc.cli import endpoint as imc_endpoint
 from lib.redfish import endpoint as redfish_endpoint
 from lib.redfish import output as redfish_output
 
@@ -86,7 +86,7 @@ def create_server_user_command(ctx, endpoint_ip, admin_password, username, passw
         ctx.busy = True
         threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        imc_handler = imc_endpoint.ImcEndpoint(
+        imc_handler = imc_endpoint.ImcCliEndpoint(
             endpoint_ip,
             22,
             'admin',

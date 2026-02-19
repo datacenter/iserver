@@ -1,5 +1,5 @@
 class Blade():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_blade = None
 
     def get_blade_info(self, blade_object):
@@ -34,7 +34,7 @@ class Blade():
             'vendor'
         ]
         for key in keys:
-            blade_info[key] = getattr(blade_object, key)
+            blade_info[key] = getattr(blade_object, key, None)
 
         blade_info['id'] = blade_info['rn'].split('-')[1]
         blade_info['chassis_rn'] = blade_info['dn'].split('/')[1]
@@ -57,7 +57,7 @@ class Blade():
 
         return None
 
-    def get_blades(self, chassis_rn=None, power=False, thermal=False):
+    def get_blades(self, chassis_rn=None, power=False, thermal=False, net=False):
         if self.mo_blade is None:
             managed_objects = self.query_classid(
                 'ComputeBlade'
@@ -86,6 +86,28 @@ class Blade():
                 managed_object_info['thermal'] = self.get_compute_thermal_stats(
                     chassis_rn=managed_object_info['chassis_rn'],
                     blade_rn=managed_object_info['rn']
+                )
+
+            if net:
+                managed_object_info['adaptor'] = self.get_compute_adaptors(
+                    chassis_id=managed_object_info['chassis_id'],
+                    blade_id=managed_object_info['id']
+                )
+                managed_object_info['extEthIf'] = self.get_compute_ext_eth_ifs(
+                    chassis_id=managed_object_info['chassis_id'],
+                    blade_id=managed_object_info['id']
+                )
+                managed_object_info['hostEthIf'] = self.get_compute_host_eth_ifs(
+                    chassis_id=managed_object_info['chassis_id'],
+                    blade_id=managed_object_info['id']
+                )
+                managed_object_info['vif'] = self.get_compute_vifs(
+                    chassis_id=managed_object_info['chassis_id'],
+                    blade_id=managed_object_info['id']
+                )
+                managed_object_info['vlan'] = self.get_compute_vlans(
+                    chassis_id=managed_object_info['chassis_id'],
+                    blade_id=managed_object_info['id']
                 )
 
             if chassis_rn is None:

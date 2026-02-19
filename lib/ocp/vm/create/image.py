@@ -16,19 +16,20 @@ class OcpVmCreateImage():
                 yaml_content = self.user_input['files'][image_dv_filename]
                 content = yaml.safe_load(yaml_content)
 
-                if self.user_input['deployment']['image']['ip'] is None:
-                    self.log.error(
-                        'create_image',
-                        'Image repository IP not defined in deployment file'
-                    )
-                    return False
+                if self.user_input['deployment']['image']['source'] == 'file':
+                    if self.user_input['deployment']['image']['ip'] is None:
+                        self.log.error(
+                            'create_image',
+                            'Image repository IP not defined in deployment file'
+                        )
+                        return False
 
-                if self.user_input['deployment']['image']['username'] is None:
-                    self.log.error(
-                        'create_image',
-                        'Image repository username not defined in deployment file'
-                    )
-                    return False
+                    if self.user_input['deployment']['image']['username'] is None:
+                        self.log.error(
+                            'create_image',
+                            'Image repository username not defined in deployment file'
+                        )
+                        return False
 
                 success = self.create_ocp_vm_image(
                     self.user_input['deployment']['image']['source'],
@@ -157,7 +158,7 @@ class OcpVmCreateImage():
                 )
             )
 
-        success = self.k8s_handler.create_data_volume(
+        success = self.k8s_handler.create_data_volume_mo(
             data_volume
         )
         if not success:
@@ -182,7 +183,7 @@ class OcpVmCreateImage():
                 data_volume['metadata']['name']
             )
         )
-        if not self.k8s_handler.wait_pvc_bound(data_volume['metadata']['namespace'], data_volume['metadata']['name'], log_error_on_timeout=must_bound):
+        if not self.k8s_handler.wait_pvc_phase(data_volume['metadata']['namespace'], data_volume['metadata']['name'], ['Bound'], log_error_on_timeout=must_bound):
             if must_bound:
                 self.my_output.error(
                     'Image PVC did not reach bound state'

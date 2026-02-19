@@ -11,7 +11,7 @@ class ImcCliBoot():
             if self.boot_mo is not None:
                 return self.boot_mo
 
-            self.boot_mo = self.get_icm_cli_cache_entry(
+            self.boot_mo = self.get_imc_cli_cache_entry(
                 'boot'
             )
             if self.boot_mo is not None:
@@ -52,7 +52,7 @@ class ImcCliBoot():
             if self.boot_device_mo is not None:
                 return self.boot_device_mo
 
-            self.boot_device_mo = self.get_icm_cli_cache_entry(
+            self.boot_device_mo = self.get_imc_cli_cache_entry(
                 'boot_device'
             )
             if self.boot_device_mo is not None:

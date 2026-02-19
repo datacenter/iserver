@@ -30,57 +30,27 @@ class RedfishEndpointUcsRackTemplateThermalOutput(
             title_keys=headers
         )
 
-    def print_ucsc_thermal_temperature_properties(self, properties):
-        order = [
-            'Name',
-            'State',
-            'Health',
-            'PhysicalContext',
-            'ReadingCelsius',
-            'UpperThresholdCritical'
-        ]
-
-        headers = [
-            'Sensor Name',
-            'State',
-            'Health',
-            'Location',
-            'Value (Celcius)',
-            'Upper Threshold (Celcius)'
-        ]
-
-        self.my_output.my_table(
-            properties['Data']['Temperature'],
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-    def print_ucsc_thermal_fan_properties(self, properties):
-        order = [
-            'Name',
-            'State',
-            'Health',
-            'Value'
-        ]
-
-        headers = [
-            'Fan Name',
-            'State',
-            'Health',
-            'Value'
-        ]
-
-        self.my_output.my_table(
-            properties['Data']['Fan'],
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
     def print_ucsc_thermal_properties(self, properties):
         self.print_ucsc_thermal_summary_properties(properties)
-        self.print_ucsc_thermal_temperature_properties(properties)
-        self.print_ucsc_thermal_fan_properties(properties)
+
+        self.my_output.my_table_ng(
+            properties['Data']['Temperature'],
+            [
+                ['Sensor Name', 'Name'],
+                ['State', 'State'],
+                ['Health', 'Health'],
+                ['Location', 'PhysicalContext'],
+                ['Value (Celcius)', 'ReadingCelsius'],
+                ['Upper Threshold (Celcius)', 'UpperThresholdCritical']
+            ]
+        )
+
+        self.my_output.my_table_ng(
+            properties['Data']['Fan'],
+            [
+                ['Fan Name', 'Name'],
+                ['State', 'State'],
+                ['Health', 'Health'],
+                ['Value', 'Value']
+            ]
+        )

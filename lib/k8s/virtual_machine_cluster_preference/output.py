@@ -15,11 +15,11 @@ class K8sVirtualMachineClusterPreferenceOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Cluster Preference'
         ]
 
         self.my_output.my_table(

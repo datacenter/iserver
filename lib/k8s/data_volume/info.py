@@ -1,5 +1,3 @@
-import time
-
 from lib import filter_helper
 
 
@@ -19,12 +17,32 @@ class K8sDataVolumeInfo():
         )
         info.update(metadata_info)
 
-        info['access_modes'] = self.get(data_volume_mo, 'spec:pvc:accessModes', on_error=[], on_none=[])
-        info['storage'] = self.get(data_volume_mo, 'spec:pvc:resources:requests:storage')
-
         info['claim_name'] = self.get(data_volume_mo, 'status:claimName')
+        info['size'] = self.get(data_volume_mo, 'spec:storage:resources:requests:storage')
+        if info['size'] is None:
+            info['size'] = self.get(data_volume_mo, 'spec:pvc:resources:requests:storage')
+
         info['phase'] = self.get(data_volume_mo, 'status:phase')
         info['progress'] = self.get(data_volume_mo, 'status:progress')
+
+        info['cron'] = None
+        for label_key in metadata_info['label']:
+            if label_key == 'cdi.kubevirt.io/dataImportCron':
+                info['cron'] = metadata_info['label'][label_key]
+
+        info['used'] = False
+        info['usage'] = []
+        info['usage'].append('[pvc] %s' % (info['claim_name']))
+
+        if info['cron'] is not None:
+            info['usage'].append('[cron] %s' % (info['cron']))
+            info['used'] = True
+
+        if info['cron'] is None:
+            info['cronTick'] = ''
+        else:
+            info['cronTick'] = '\u2713'
+            info['__Output']['cronTick'] = 'Green'
 
         conditions = self.get(data_volume_mo, 'status:conditions', on_error=[], on_none=[])
 
@@ -68,6 +86,63 @@ class K8sDataVolumeInfo():
 
         return info
 
+    def add_data_volume_usage(self, data_volumes, cache_enabled=True):
+        pvcs = self.get_pvcs(cache_enabled=cache_enabled)
+        vms = self.get_virtual_machines(cache_enabled=cache_enabled)
+
+        for data_volume in data_volumes:
+            if vms is not None:
+                for vm in vms:
+                    for vm_volume in vm['volume']:
+                        if vm_volume['dv_namespace'] != data_volume['info']['namespace']:
+                            continue
+
+                        if vm_volume['dv_name'] != data_volume['info']['name']:
+                            continue
+
+                        data_volume['info']['usage'].append('[vm] %s' % (vm['namespace_name']))
+                        data_volume['info']['used'] = True
+
+            if data_volume['info']['ready']:
+                continue
+
+            upload_pod = None
+            for pvc in pvcs:
+                if pvc['namespace'] != data_volume['info']['namespace']:
+                    continue
+
+                if pvc['owner'] is None:
+                    continue
+
+                owner_kind, owner_name = pvc['owner'].split('/')
+                if owner_kind == 'PersistentVolumeClaim' and owner_name == data_volume['info']['name']:
+                    data_volume['info']['usage'].append('[pvc] %s' % (pvc['namespace_name']))
+                    data_volume['info']['used'] = True
+
+                if 'cdi.kubevirt.io/storage.uploadPodName' in pvc['annotation']:
+                    data_volume['info']['usage'].append('[pod] %s' % (pvc['annotation']['cdi.kubevirt.io/storage.uploadPodName']))
+                    upload_pod = pvc['annotation']['cdi.kubevirt.io/storage.uploadPodName']
+
+                if 'cdi.kubevirt.io/storage.import.importPodName' in pvc['annotation']:
+                    data_volume['info']['usage'].append('[pod] %s' % (pvc['annotation']['cdi.kubevirt.io/storage.import.importPodName']))
+
+            if upload_pod is None:
+                continue
+
+            for pvc in pvcs:
+                if pvc['namespace'] != data_volume['info']['namespace']:
+                    continue
+
+                if pvc['owner'] is None:
+                    continue
+
+                owner_kind, owner_name = pvc['owner'].split('/')
+                if owner_kind == 'Pod' and owner_name == upload_pod:
+                    data_volume['info']['usage'].append('[pvc] %s' % (pvc['namespace_name']))
+                    data_volume['info']['used'] = True
+
+        return data_volumes
+
     def get_data_volumes_info(self, cache_enabled=True):
         if cache_enabled:
             if self.data_volume is not None:
@@ -109,6 +184,45 @@ class K8sDataVolumeInfo():
                 if not filter_helper.match_namespace_name(value, '%s/%s' % (data_volume_info['namespace'], data_volume_info['name'])):
                     return False
 
+            if key == 'cron':
+                key_found = True
+                if value == 'true':
+                    if data_volume_info['cron'] is None:
+                        return False
+                    
+                if value == 'false':
+                    if data_volume_info['cron'] is not None:
+                        return False
+                    
+            if key == 'pvcs':
+                key_found = True
+                found = False
+                for item in value.split(','):
+                    if len(item.split('/')) != 2:
+                        continue
+                    
+                    if not filter_helper.match_string(item.split('/')[0], data_volume_info['namespace']):
+                        continue
+
+                    if not filter_helper.match_string(item.split('/')[1], data_volume_info['claim_name']):
+                        continue
+
+                    found = True
+                    break
+
+                if not found:
+                    return False
+
+            if key == 'used':
+                key_found = True
+                if value == 'true':
+                    if not data_volume_info['used']:
+                        return False
+                    
+                if value == 'false':
+                    if data_volume_info['used']:
+                        return False
+                                    
             if not key_found:
                 self.log.error(
                     'match_data_volume',
@@ -122,6 +236,7 @@ class K8sDataVolumeInfo():
         if all_data_volumes is None:
             return None
 
+        all_data_volumes = self.add_data_volume_usage(all_data_volumes, cache_enabled=cache_enabled)
         data_volumes = []
 
         for data_volume_info in all_data_volumes:
@@ -165,26 +280,3 @@ class K8sDataVolumeInfo():
             return data_volumes[0]
 
         return None
-
-    def wait_data_volume_upload_ready(self, namespace, name, max_time=60, log_error_on_timeout=True):
-        start_time = int(time.time())
-        while True:
-            pvc_info = self.get_data_volume(
-                namespace,
-                name,
-                cache_enabled=False
-            )
-            if pvc_info is not None:
-                if pvc_info['phase'] == 'UploadReady':
-                    return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                if log_error_on_timeout:
-                    self.log.error(
-                        'k8s.wait_data_volume_upload_ready',
-                        'Max time reached: %s/%s' % (namespace, name)
-                    )
-                return False
-
-            time.sleep(5)

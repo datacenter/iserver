@@ -6,126 +6,51 @@ class K8sPodOutput():
     def __init__(self):
         pass
 
-    def print_pods_state(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'POD [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in info:
-            item['namespace_nameT'] = []
-            item['namespace_nameT'].append(
-                item['namespace']
-            )
-            item['namespace_nameT'].append(
-                item['name']
-            )
-            item['svc_count'] = len(item['service'])
-            item['net_count'] = len(item['network'])
-            for container_info in item['container']:
-                container_info['volume_count'] = len(container_info['volume_mount'])
-                container_info['env_count'] = len(container_info['env'])
-                container_info['cm_count'] = len(container_info['cm'])
-
-        order = [
-            'namespace_nameT',
-            'container_state_summary',
-            'phaseT',
-            'condition.typeT',
-            'age',
-            'host_name',
-            'pod_ip',
-            'net_count',
-            'svc_count',
-            'container_restart_countT'
-        ]
-
-        headers = [
-            'Pod',
-            'Ready',
-            'Status',
-            'Condition',
-            'Age',
-            'Node',
-            'IP',
-            'Net',
-            'Svc',
-            'Restarts'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['namespace_nameT', 'condition']
-            ),
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+    def print_pods_state(self, info, skip=[]):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Pod', 'namespace_nameT'],
+                ['Leader', 'leaderTick'],
+                ['Ready', 'container_state_summary'],
+                ['Label', 'phaseT'],
+                ['Annotation', 'condition.typeT'],
+                ['Node', 'host_name'],
+                ['IP', 'pod_ip'],
+                ['Net', 'net_count'],
+                ['Svc', 'svc_count'],
+                ['Restart', 'container_restart_countT'],
+                ['Age', 'age'],
+            ],
+            skip=skip
         )
 
-    def print_pods_metadata(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'POD - Metadata [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in info:
-            item['namespace_nameT'] = []
-            item['namespace_nameT'].append(
-                item['namespace']
-            )
-            item['namespace_nameT'].append(
-                item['name']
-            )
-
-            if item['owner'] is None:
-                item['ownerT'] = ['--']
-            else:
-                item['ownerT'] = item['owner'].split('/')
-
-        order = [
-            'namespace_nameT',
-            'ownerT',
-            'labelT',
-            'annotationT'
-        ]
-
-        headers = [
-            'Pod',
-            'Owner',
-            'Label',
-            'Annotation'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['namespace_nameT', 'labelT', 'annotationT', 'ownerT']
-            ),
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+    def print_pods_clusterwide_private_networks(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Pod', 'namespace_nameT'],
+                ['IP', 'pod_ip'],
+                ['Node', 'host_name'],
+                ['Cilium', 'cilium_agent'],
+                ['Private Network', 'private_network.name'],
+                ['MAC', 'private_network.mac'],
+                ['IPv4', 'private_network.ipv4'],
+                ['IPv6', 'private_network.ipv6']
+            ]
         )
+
+    def print_pods_metadata(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Pod', 'namespace_nameT'],
+                ['Owner', 'ownerT'],
+                ['Label', 'labelT'],
+                ['Annotation', 'annotationT']
+            ]
+        )
+
 
     def print_pods_container(self, info, title=False):
         new_info = []
@@ -145,7 +70,6 @@ class K8sPodOutput():
                 if len(new_item['container_image']) == 2:
                     if len(new_item['container_image'][1].split(':')) == 2:
                         if new_item['container_image'][1].split(':')[0] == 'sha256':
-                            # sha256:7c63fdade857b6dc5e490037a4bab0904279eea097414e67992e5623eff2591d
                             new_item['container_image'][1] = '%s:...%s' % (
                                 new_item['container_image'][1].split(':')[0],
                                 new_item['container_image'][1].split(':')[1][-10:]
@@ -829,16 +753,17 @@ class K8sPodOutput():
 
     def print_pods_log(self, info, title=False):
         for item in info:
-            if title:
-                self.my_output.default(
-                    'POD Log - %s/%s' % (item['namespace'], item['name']),
-                    underline=True,
-                    before_newline=True
-                )
+            for container_name in item['log']:
+                if title:
+                    self.my_output.default(
+                        'POD Log - %s/%s/%s' % (item['namespace'], item['name'], container_name),
+                        underline=True,
+                        before_newline=True
+                    )
 
-            if item['log'] is None or len(item['log']) == 0:
-                self.my_output.default('None')
-                return
+                if item['log'][container_name] is None or len(item['log'][container_name]) == 0:
+                    self.my_output.default('None')
+                    return
 
-            self.my_output.default('')
-            self.my_output.default(item['log'])
+                self.my_output.default('')
+                self.my_output.default(item['log'][container_name], wrap='~~~')

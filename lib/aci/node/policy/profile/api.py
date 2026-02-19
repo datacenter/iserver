@@ -22,7 +22,6 @@ class NodeInterfacePolicyProfileApi():
             )
             return self.node_interface_policy_profile_mo[key]
 
-        # https://<apic>/api/node/mo/uni/infra/nodecfgcont/node-205.json?query-target=subtree&target-subtree-class=infraRsInterfacePolProfile,infraRsFexGrp&_dc=1684139156603
         distinguished_name = 'uni/infra/nodecfgcont/node-%s' % (
             node_id
         )

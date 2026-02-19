@@ -25,7 +25,6 @@ class EpgLocaleInfo():
         return info
 
     def get_epg_locale_fv_info(self, info):
-        # "dn": "uni/epp/fv-[uni/tn-common/ap-privIP_TEST/epg-privIP_TEST]/node-2202"
         info['type'] = 'epg'
 
         epg_dn = info['dn'].split('[')[1].split(']')[0]
@@ -41,7 +40,6 @@ class EpgLocaleInfo():
         return info
 
     def get_epg_locale_br_info(self, info):
-        # uni/epp/br-[uni/tn-k8s/l2out-Test/instP-L2Out-ext-epg]/node-2208
         info['type'] = 'l2out'
 
         epg_dn = info['dn'].split('[')[1].split(']')[0]
@@ -52,7 +50,6 @@ class EpgLocaleInfo():
         return info
 
     def get_epg_locale_rtd_info(self, info):
-        # uni/epp/rtd-[uni/tn-Ericsson_PACO/out-RAN/instP-RAN]/node-2208
         info['type'] = 'l3out'
 
         epg_dn = info['dn'].split('[')[1].split(']')[0]
@@ -63,27 +60,6 @@ class EpgLocaleInfo():
         return info
 
     def get_epg_locale_info(self, managed_object):
-        # "boostrapTriggered": "no",
-        # "childAction": "",
-        # "deployAllPorts": "no",
-        # "dn": "uni/epp/fv-[uni/tn-common/ap-privIP_TEST/epg-privIP_TEST]/node-2202",
-        # "fabricExtCtrlPeering": "no",
-        # "fabricExtIntersiteCtrlPeering": "no",
-        # "fabricExtIntersitePeering": "no",
-        # "firstUpdateDeployed": "yes",
-        # "id": "2202",
-        # "instrImedcy": "immediate",
-        # "ipv4LbAddr": "<ip>",
-        # "ipv6LbAddr": "<ip>",
-        # "lcOwn": "local",
-        # "modTs": "2023-06-12T11:29:17.382+02:00",
-        # "modeMisconfiguration": "no",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "operSt": "allocated",
-        # "rtrId": "<ip>",
-        # "rtrIdLoopBack": "yes",
-        # "status": "",
-        # "summaryNeeded": "full"
         keys = [
             'deployAllPorts',
             'dn',

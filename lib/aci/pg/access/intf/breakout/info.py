@@ -53,7 +53,7 @@ class PolicyGroupAccessInterfaceBreakoutInfo():
 
         return self.policy_group_access_interface_breakout
 
-    def match_policy_group_access_interface_breakout(self, policy_group_info, policy_group_filter):
+    def match_policy_group_access_interface_breakout(self, policy_group_info, policy_group_filter, strict=False):
         if policy_group_filter is None or len(policy_group_filter) == 0:
             return True
 
@@ -62,12 +62,12 @@ class PolicyGroupAccessInterfaceBreakoutInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             if key == 'name':
-                if not filter_helper.match_string(value, policy_group_info['name']):
+                if not filter_helper.match_string(value, policy_group_info['name'], strict=strict):
                     return False
 
         return True
 
-    def get_policy_groups_access_interface_breakout(self, policy_group_filter=None):
+    def get_policy_groups_access_interface_breakout(self, policy_group_filter=None, strict=False):
         all_policy_groups = self.get_policy_groups_access_interface_breakout_info()
         if all_policy_groups is None:
             return None
@@ -75,7 +75,7 @@ class PolicyGroupAccessInterfaceBreakoutInfo():
         policy_groups = []
 
         for policy_group_info in all_policy_groups:
-            if not self.match_policy_group_access_interface_breakout(policy_group_info, policy_group_filter):
+            if not self.match_policy_group_access_interface_breakout(policy_group_info, policy_group_filter, strict=strict):
                 continue
 
             policy_groups.append(
@@ -91,7 +91,8 @@ class PolicyGroupAccessInterfaceBreakoutInfo():
 
     def get_policy_group_access_interface_breakout(self, name):
         policy_group_info = self.get_policy_groups_access_interface_breakout(
-            policy_group_filter=['name:%s' % (name)]
+            policy_group_filter=['name:%s' % (name)],
+            strict=True
         )
 
         if policy_group_info is None:

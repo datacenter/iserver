@@ -63,7 +63,7 @@ class OcpVmCreateNetwork():
                         )
                     )
 
-                    success = self.k8s_handler.create_nad(
+                    success = self.k8s_handler.create_nad_mo(
                         content
                     )
                     if not success:

@@ -22,7 +22,6 @@ class DomainL2FaultInfo():
                 if 'uni/l2dom-' in info['affected']:
                     info['domainName'] = info['affected'].split('uni/l2dom-')[1].split('/')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/inst-overlay-1/lb-[lo0]"
         if info['domainName'] is None:
             if 'uni/l2dom-' in info['dn']:
                 info['domainName'] = info['dn'].split('uni/l2dom-')[1].split('/')[0]

@@ -1,13 +1,8 @@
 import sys
-import threading
 import traceback
 import click
-
-from lib.k8s import output as k8s_output
-
+from lib.workflow.k8s import dv_delete as workflow
 from menu import validations
-from menu import progress
-from progress.bar import Bar
 
 
 class Failure(Exception):
@@ -24,15 +19,19 @@ class NoResultExit(Exception):
 
 @click.command("dv")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--force", is_flag=True, show_default=True, default=False, help="Force delete even if used")
+@click.option("--unused", is_flag=True, show_default=True, default=False, help="Select unused data volumes")
 @click.option("--no-confirm", "no_confirm", is_flag=True, show_default=True, default=False, help="No confirmation mode")
 def delete_k8s_dv_command(
         ctx,
-        cluster,
+        cluster_name,
         namespace,
         name,
+        force,
+        unused,
         no_confirm
         ):
     """Delete k8s dv (ocp)"""
@@ -43,69 +42,25 @@ def delete_k8s_dv_command(
     ctx.output = 'default'
 
     try:
-        k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster_name, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
-        object_filter = []
-        if namespace is not None:
-            object_filter.append(
-                'namespace:%s' % (namespace)
-            )
+        params = {}
+        params['cluster'] = cluster_name
+        params['namespace'] = namespace
+        params['name'] = name
+        params['force'] = force
+        params['unused'] = unused
+        params['confirmation'] = not no_confirm
 
-        if name is not None:
-            object_filter.append(
-                'name:%s' % (name)
-            )
-
-        ctx.busy = True
-        threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
-        if k8s_handlers.get_api() is None:
-            ctx.busy = False
-            ctx.my_output.error(
-                'Connection to kubernetes cluster failed'
-            )
-            raise ErrorExit
-
-        dvs = k8s_handlers.get_data_volumes(
-            object_filter=object_filter,
-            cache_enabled=False
+        success = workflow.run(
+            params,
+            log_id=ctx.run_id
         )
-
-        ctx.busy = False
-
-        if len(dvs) == 0:
-            ctx.my_output.default('No object found')
-            return
-
-        k8s_output_handler.print_data_volumes(
-            dvs,
-            title=True
-        )
-
-        if not no_confirm:
-            value = input('Confirm (Y/N) ')
-            if value.lower() != 'y':
-                return
-
-        bar_handler = Bar('Delete objects', max=len(dvs))
-        bar_handler.goto(0)
-
-        success = True
-        for dv_info in dvs:
-            success = success and k8s_handlers.delete_data_volume(dv_info['namespace'], dv_info['name'])
-            bar_handler.next()
-
-        bar_handler.finish()
-
         if not success:
-            ctx.my_output.error('Some delete api calls failed')
             raise ErrorExit
-
-        ctx.my_output.default('Done')
-
+        
     except NoResultExit:
         ctx.busy = False
         sys.exit(666)

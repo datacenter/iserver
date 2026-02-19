@@ -10,7 +10,7 @@ class ImcCliVersion():
             if self.version_mo is not None:
                 return self.version_mo
 
-            self.version_mo = self.get_icm_cli_cache_entry(
+            self.version_mo = self.get_imc_cli_cache_entry(
                 'version'
             )
             if self.version_mo is not None:

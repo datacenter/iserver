@@ -46,3 +46,55 @@ class K8sSubscriptionApi():
         )
 
         return self.subscription_mo
+
+    def create_subscription_mo(self, subscription):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='operators.coreos.com/v1alpha1', kind='Subscription')
+            success = True
+            response = obj_list.create(
+                body=subscription,
+                namespace=subscription['metadata']['namespace'],
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.create_subscription', traceback.format_exc())
+
+        self.log.ocp(
+            'create',
+            'subscription',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success
+
+    def delete_subscription_mo(self, namespace, name):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='operators.coreos.com/v1alpha1', kind='Subscription')
+            success = True
+            response = obj_list.delete(
+                namespace=namespace,
+                name=name
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.delete_subscription', traceback.format_exc())
+
+        self.log.ocp(
+            'delete',
+            'subscription',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success

@@ -17,16 +17,16 @@ def flags_fixup(ctx, silent, verbose, debug):
     return (silent, verbose, debug)
 
 
-def get_confirmation(title=True, before_newline=False, after_newline=False):
+def get_confirmation(title=None, before_newline=False, after_newline=False):
     if before_newline:
         print('\n')
 
     answer = ""
     while answer not in ["y", "n"]:
-        if title:
-            answer = input("Continue [Y/N]? ").lower()
+        if title is not None:
+            answer = input('%s. Continue [Y/N]? ' % (title)).lower()
         else:
-            answer = input("[Y/N]? ").lower()
+            answer = input("Continue [Y/N]? ").lower()
 
     if after_newline:
         print('\n')

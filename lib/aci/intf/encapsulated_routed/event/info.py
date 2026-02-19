@@ -21,7 +21,6 @@ class InterfaceEncapsulatedRoutedEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/encrtd-[eth1/36.7]"
         info['interfaceId'] = None
         if '/encrtd-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/encrtd-[')[1].split(']')[0]

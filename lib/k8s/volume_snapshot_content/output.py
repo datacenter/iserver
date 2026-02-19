@@ -15,11 +15,11 @@ class K8sVolumeSnapshotContentOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Volume Snapshot Content'
         ]
 
         self.my_output.my_table(

@@ -45,7 +45,7 @@ class IntersightAccount(Settings):
             return False
         return True
 
-    def get_iaccounts(self):
+    def get_iaccounts(self, domain=None):
         iaccounts = []
         for name in os.listdir(self.iaccount_dir):
             if self.is_iaccount_valid(name):
@@ -55,13 +55,22 @@ class IntersightAccount(Settings):
                 for key in configuration:
                     iaccount[key] = configuration[key]
 
+                iaccount['account'] = None
+                iaccount['role'] = None
+                iaccount['domain'] = None
+
                 description = self.get_iaccount_description(name)
-                if description is None:
-                    iaccount['account'] = '--'
-                    iaccount['role'] = '--'
-                else:
-                    iaccount['account'] = description['account']
-                    iaccount['role'] = description['role']
+                if description is not None:
+                    if 'account' in description:
+                        iaccount['account'] = description['account']
+                    if 'role' in description:
+                        iaccount['role'] = description['role']
+                    if 'domain' in description:
+                        iaccount['domain'] = description['domain']
+
+                if domain is not None:
+                    if iaccount['domain'] is None or iaccount['domain'] != domain:
+                        continue
 
                 iaccounts.append(iaccount)
 
@@ -91,6 +100,29 @@ class IntersightAccount(Settings):
 
         return content
 
+    def get_iaccount_key(self, iaccount):
+        config = self.get_iaccount_configuration(iaccount)
+        if config is None:
+            return None
+        
+        if 'keyid' not in config:
+            return None
+        
+        return config['keyid']
+
+    def get_iaccount_keyfile(self, iaccount):
+        config = self.get_iaccount_configuration(iaccount)
+        if config is None:
+            return None
+        
+        if 'keyfile' not in config:
+            return None
+        
+        if not os.path.isfile(config['keyfile']):
+            return None
+        
+        return config['keyfile']
+
     def get_iaccount_description_filename(self, iaccount):
         directory = os.path.join(self.iaccount_dir, iaccount)
         return os.path.join(directory, 'description.yaml')
@@ -99,6 +131,7 @@ class IntersightAccount(Settings):
         '''
         account: EU-SPN
         role: EU-SPDC-admin
+        domain: xyz
         '''
         filename = self.get_iaccount_description_filename(iaccount)
 
@@ -115,6 +148,16 @@ class IntersightAccount(Settings):
             )
 
         return content
+
+    def set_iaccount_description(self, iaccount, description):
+        filename = self.get_iaccount_description_filename(iaccount)
+        if not file_helper.set_file_yaml(filename, description):
+            self.log.error(
+                'iaccount_helper.set_iaccount_description',
+                'Yaml write failed: %s' % (filename)
+            )
+            return False
+        return True
 
     def copy_key_file(self, iaccount, source):
         if not os.path.isfile(source):

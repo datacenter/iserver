@@ -2,20 +2,24 @@ class DomainPhyApi():
     def __init__(self):
         self.domain_phy_mo = None
 
-    def get_domain_phy_mo(self):
+    def init_domain_phy_mo(self):
+        self.domain_phy_mo = None
+
+    def get_domain_phy_mo(self, cache_enabled=True):
         if self.domain_phy_mo is not None:
             return self.domain_phy_mo
 
-        cache = self.get_object_cache(
-            'physDomP'
-        )
-        if cache is not None:
-            self.domain_phy_mo = cache
-            self.log.apic_mo(
-                'physDomP',
-                self.domain_phy_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'physDomP'
             )
-            return self.domain_phy_mo
+            if cache is not None:
+                self.domain_phy_mo = cache
+                self.log.apic_mo(
+                    'physDomP',
+                    self.domain_phy_mo
+                )
+                return self.domain_phy_mo
 
         query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=infraRsVlanNs,infraRtDomP,infraRtDomAtt,aaaDomainRef'
         managed_objects = self.get_class(

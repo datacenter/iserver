@@ -2,20 +2,24 @@ class PolicyGeneralAaeApi():
     def __init__(self):
         self.policy_global_aae_mo = None
 
-    def get_policy_global_aae_mo(self):
+    def init_policy_global_aae_mo(self):
+        self.policy_global_aae_mo = None
+
+    def get_policy_global_aae_mo(self, cache_enabled=True):
         if self.policy_global_aae_mo is not None:
             return self.policy_global_aae_mo
 
-        cache = self.get_object_cache(
-            'infraAttEntityP'
-        )
-        if cache is not None:
-            self.policy_global_aae_mo = cache
-            self.log.apic_mo(
-                'infraAttEntityP',
-                self.policy_global_aae_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'infraAttEntityP'
             )
-            return self.policy_global_aae_mo
+            if cache is not None:
+                self.policy_global_aae_mo = cache
+                self.log.apic_mo(
+                    'infraAttEntityP',
+                    self.policy_global_aae_mo
+                )
+                return self.policy_global_aae_mo
 
         query = 'rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=infraProvAcc,infraRtAttEntP,infraRsDomP'
         managed_objects = self.get_class(
@@ -66,7 +70,6 @@ class PolicyGeneralAaeApi():
 
         for managed_object in managed_objects['imdata']:
             if 'infraRsFuncToEpg' in managed_object:
-                # "dn": "uni/infra/attentp-k8s_phys_AAEP/gen-default/rsfuncToEpg-[uni/tn-k8s/ap-k8s_ANP/epg-csr1_lan]"
                 ref_dn = '/'.join(
                     managed_object['infraRsFuncToEpg']['attributes']['dn'].split('/')[:3]
                 )

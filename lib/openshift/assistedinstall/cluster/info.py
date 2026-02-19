@@ -1,7 +1,9 @@
 import time
 import json
+import traceback
 
 from lib import filter_helper
+from menu import common
 
 
 class AssistedInstallClusterInfo():
@@ -38,13 +40,12 @@ class AssistedInstallClusterInfo():
 
         if info['inventory'] is not None:
             if info['hostname'] is None:
-                info['hostname'] = info['inventory']['hostname']
+                info['hostname'] = filter_helper.get_attr(info['inventory'], 'hostname')
 
-            for disk_info in info['inventory']['disks']:
-                disk_info['target'] = False
-                disk_info['target_tick'] = ''
-                if disk_info['path'] == info['installation_disk_path']:
-                    disk_info['target_tick'] = '\u2713'
+            if 'disks' in info['inventory']:
+                for disk_info in info['inventory']['disks']:
+                    disk_info['target'] = False
+                    disk_info['target_tick'] = ''
 
         info['is_valid'] = {}
         info['is_valid']['hardware'] = True
@@ -381,19 +382,66 @@ class AssistedInstallClusterInfo():
 
         return None
 
-    def wait_assisted_install_cluster_status(self, cluster_id, status, timeout=7200):
+    def wait_assisted_install_cluster_status(self, cluster_id, status, install_action_on_ready_state=False, timeout=7200, my_output=None, attempts=5):
         start_time = int(time.time())
 
+        last_status = None
+        count = 1
         while True:
-            cluster_info = self.get_assisted_install_cluster(
-                cluster_id=cluster_id,
-                cache_enabled=False
-            )
+            try:
+                cluster_info = self.get_assisted_install_cluster(
+                    cluster_id=cluster_id,
+                    cache_enabled=False
+                )
+                if cluster_info is None:
+                    if my_output is not None:
+                        my_output.error('Failed to get cluster info')
+            except BaseException:
+                self.log.error(
+                    'wait_assisted_install_cluster_status',
+                    traceback.format_exc()
+                )
+                cluster_info = None
+
             if cluster_info is not None:
+                if cluster_info['status'] != last_status:
+                    last_status = cluster_info['status']
+                    if my_output is not None:
+                        my_output.default('Status changed to %s' % (last_status))
+
+                    if last_status == 'ready' and install_action_on_ready_state:
+                        attempt = 1
+                        while True:
+                            if my_output is not None:
+                                my_output.default('Sending installation request on ready state')
+
+                            success = self.action_assisted_install_cluster_install(
+                                cluster_id
+                            )
+                            if success:
+                                break
+
+                            my_output.error('Cluster installation start request failed #%s' % (attempt))
+                            if attempt < attempts:
+                                time.sleep(10)
+                                attempt += 1
+                                continue
+
+                            my_output.default('Continue once it is fixed manually via UI?')
+                            if not common.get_confirmation():
+                                return False
+
                 if cluster_info['status'] == status:
+                    if my_output is not None:
+                        my_output.default('Cluster reached desired state: %s' % (status))
+
                     return True
 
-            time.sleep(5)
+            if my_output is not None:
+                print('Loop [%s/%s]: %s' % (last_status, status, count), end='\r')
+
+            time.sleep(10)
+            count += 1
 
             if int(time.time()) - start_time > timeout:
                 self.log.error(
@@ -402,37 +450,86 @@ class AssistedInstallClusterInfo():
                 )
                 return False
 
-    def wait_assisted_install_cluster_hosts_discovered(self, cluster_id, bmc_addresses, timeout=3600):
+    def wait_assisted_install_cluster_hosts_discovered(self, cluster_id, bmc_addresses=None, serial_numbers=None, timeout=3600, my_output=None, openshift_output=None):
+        if my_output is not None:
+            my_output.default('Wait for all the servers discovered', before_newline=True)
+            my_output.my_list(bmc_addresses, title='Expected bmc address')
+            my_output.my_list(serial_numbers, title='Expected serial numbers')
+            my_output.default('Discovered so far... ', before_newline=True)
+            
         start_time = int(time.time())
 
+        discovered = []
         while True:
-            cluster_info = self.get_assisted_install_cluster(
-                cluster_id=cluster_id,
-                cache_enabled=False
-            )
+            try:
+                cluster_info = self.get_assisted_install_cluster(
+                    cluster_id=cluster_id,
+                    cache_enabled=False
+                )
+            except BaseException:
+                cluster_info = None
+                self.log.error(
+                    'wait_assisted_install_cluster_hosts_discovered',
+                    traceback.format_exc()
+                )
+
             if cluster_info is not None:
-                if 'hosts' in cluster_info and cluster_info['hosts'] is not None:
+                hosts = filter_helper.get(cluster_info, 'hosts', on_error=[], on_none=[])
+
+                if bmc_addresses is not None:
                     discovered_bmc_addresses = []
-                    for host_info in cluster_info['hosts']:
-                        if 'inventory' in host_info and host_info['inventory'] is not None:
-                            if host_info['inventory']['bmc_address'] in bmc_addresses:
+                    for host_info in hosts:
+                        bmc = filter_helper.get(host_info, 'inventory:bmc_address')
+                        if bmc is not None:
+                            if bmc not in discovered:
+                                discovered.append(bmc)
+                                if my_output is not None:
+                                    my_output.default('- %s' % (bmc))
+
+                            if bmc in bmc_addresses:
                                 discovered_bmc_addresses.append(
-                                    host_info['inventory']['bmc_address']
+                                    bmc
                                 )
 
                     if len(discovered_bmc_addresses) == len(bmc_addresses):
-                        return True
+                        break
+
+                if serial_numbers is not None:
+                    discovered_serial_numbers = []
+                    for host_info in hosts:
+                        host_serial = filter_helper.get(host_info, 'inventory:system_vendor:serial_number')
+                        if host_serial is not None:
+                            if host_serial not in discovered:
+                                discovered.append(host_serial)
+                                if my_output is not None:
+                                    my_output.default('- %s' % (host_serial))
+
+                            if host_serial in serial_numbers:
+                                discovered_serial_numbers.append(
+                                    host_serial
+                                )
+
+                    if len(discovered_serial_numbers) == len(serial_numbers):
+                        break
 
             time.sleep(5)
 
             if int(time.time()) - start_time > timeout:
+                if my_output is not None:
+                    my_output.error('Timed out')
                 self.log.error(
                     'wait_assisted_install_cluster_hosts_discovered',
                     'Timeout %s reached' % (timeout)
                 )
                 return False
 
-    def update_assisted_install_cluster_hosts_hostname(self, cluster_id, hostname, attempts=3):
+        if openshift_output is not None:
+            if cluster_info is not None:
+                openshift_output.print_assisted_install_cluster_hosts(cluster_info)
+
+        return True
+    
+    def update_assisted_install_cluster_hosts_hostname(self, cluster_id, server_key, hostname, role, attempts=3):
         attempt = 0
         updated_hosts = {}
         while True:
@@ -441,18 +538,59 @@ class AssistedInstallClusterInfo():
                 cache_enabled=False
             )
             if cluster_info is not None:
-                if 'hosts' in cluster_info and cluster_info['hosts'] is not None:
-                    for host_info in cluster_info['hosts']:
-                        if 'inventory' in host_info and host_info['inventory'] is not None:
-                            host_bmc = host_info['inventory']['bmc_address']
-                            if host_bmc not in updated_hosts:
-                                response = self.update_assisted_install_infra_hostname(
-                                    host_info['infra_env_id'],
-                                    host_info['id'],
-                                    hostname[host_bmc]
+                hosts = filter_helper.get(cluster_info, 'hosts', on_error=[], on_none=[])
+                for host_info in hosts:
+                    if server_key == 'bmc':
+                        host_bmc = filter_helper.get(host_info, 'inventory:bmc_address')
+                        if host_bmc not in updated_hosts:
+                            if host_bmc not in hostname:
+                                self.log.error(
+                                    'update_assisted_install_cluster_hosts_hostname',
+                                    'Hostname not defined for %s' % (host_bmc)
                                 )
-                                if response is not None:
-                                    updated_hosts[host_bmc] = True
+                                return False
+
+                            if host_bmc not in role:
+                                self.log.error(
+                                    'update_assisted_install_cluster_hosts_hostname',
+                                    'Role not defined for %s' % (host_bmc)
+                                )
+                                return False
+
+                            response = self.update_assisted_install_infra_hostname(
+                                host_info['infra_env_id'],
+                                host_info['id'],
+                                hostname[host_bmc],
+                                role=role[host_bmc]
+                            )
+                            if response is not None:
+                                updated_hosts[host_bmc] = True
+
+                    if server_key == 'serial':
+                        host_serial = filter_helper.get(host_info, 'inventory:system_vendor:serial_number')
+                        if host_serial not in updated_hosts:
+                            if host_serial not in hostname:
+                                self.log.error(
+                                    'update_assisted_install_cluster_hosts_hostname',
+                                    'Hostname not defined for %s' % (host_serial)
+                                )
+                                return False
+
+                            if host_serial not in role:
+                                self.log.error(
+                                    'update_assisted_install_cluster_hosts_hostname',
+                                    'Role not defined for %s' % (host_serial)
+                                )
+                                return False
+
+                            response = self.update_assisted_install_infra_hostname(
+                                host_info['infra_env_id'],
+                                host_info['id'],
+                                hostname[host_serial],
+                                role=role[host_serial]
+                            )
+                            if response is not None:
+                                updated_hosts[host_serial] = True
 
             if len(hostname) == len(updated_hosts):
                 return True

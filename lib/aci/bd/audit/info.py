@@ -18,7 +18,6 @@ class BridgeDomainAuditInfo():
         info['bdName'] = None
 
         if 'uni/tn-' in info['affected']:
-            # uni/tn-k8s/BD-bmk8s_2_BD
             info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if '/BD-' in info['affected']:

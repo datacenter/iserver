@@ -15,11 +15,11 @@ class K8sVirtualMachineCloneOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Clone'
         ]
 
         self.my_output.my_table(

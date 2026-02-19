@@ -6,24 +6,6 @@ class NodeSensorInfo():
         self.nodes_sensor = None
 
     def get_node_sensor_info(self, managed_object):
-        # "childAction": "",
-        # "cimcVersion": "",
-        # "descr": "Inlet",
-        # "dn": "topology/pod-1/node-101/sys/ch/supslot-1/sup/sensor-1",
-        # "id": "1",
-        # "majorThresh": "70",
-        # "mfgTm": "not-applicable",
-        # "minorThresh": "42",
-        # "modTs": "2023-05-19T09:13:06.651+02:00",
-        # "model": "Inlet",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "operSt": "normal",
-        # "rev": "n/a",
-        # "ser": "n/a",
-        # "status": "",
-        # "type": "inlet",
-        # "value": "0",
-        # "vendor": "n/a"
         info = {}
         info['__Output'] = {}
 

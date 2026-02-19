@@ -2,20 +2,24 @@ class PolicyInterfaceLinkLevelApi():
     def __init__(self):
         self.policy_interface_link_level_mo = None
 
-    def get_policy_interface_link_level_mo(self):
+    def init_policy_interface_link_level_mo(self):
+        self.policy_interface_link_level_mo = None
+
+    def get_policy_interface_link_level_mo(self, cache_enabled=True):
         if self.policy_interface_link_level_mo is not None:
             return self.policy_interface_link_level_mo
 
-        cache = self.get_object_cache(
-            'fabricHIfPol'
-        )
-        if cache is not None:
-            self.policy_interface_link_level_mo = cache
-            self.log.apic_mo(
-                'fabricHIfPol',
-                self.policy_interface_link_level_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'fabricHIfPol'
             )
-            return self.policy_interface_link_level_mo
+            if cache is not None:
+                self.policy_interface_link_level_mo = cache
+                self.log.apic_mo(
+                    'fabricHIfPol',
+                    self.policy_interface_link_level_mo
+                )
+                return self.policy_interface_link_level_mo
 
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(

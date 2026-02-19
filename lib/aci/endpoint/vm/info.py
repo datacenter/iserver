@@ -3,19 +3,6 @@ class EndpointVmInfo():
         pass
 
     def get_endpoint_vm_info(self, managed_object):
-        # "childAction": "",
-        # "forceResolve": "yes",
-        # "isBootstrapUpd": "attach",
-        # "lcOwn": "local",
-        # "modTs": "2022-12-16T15:57:06.305+01:00",
-        # "rType": "mo",
-        # "rn": "rstoVm-[comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-12062]",
-        # "state": "formed",
-        # "stateQual": "none",
-        # "status": "",
-        # "tCl": "compVm",
-        # "tDn": "comp/prov-VMware/ctrlr-[EU-SPDC-POD2B]-EU-SPDC-POD2B/vm-vm-12062",
-        # "tType": "mo"
         info = {}
         info['__Output'] = {}
 

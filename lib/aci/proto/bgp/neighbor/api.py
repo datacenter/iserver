@@ -57,7 +57,6 @@ class ProtocolBgpNeighborApi():
 
         for managed_object in managed_objects['imdata']:
             if 'bgpPeerAfEntry' in managed_object:
-                # "topology/pod-1/node-201/sys/bgp/inst/dom-overlay-1/peer-[<ip>/32]/ent-[<ip>]/af-vpnv4-ucast"
                 af_bgp_peer_dn = managed_object['bgpPeerAfEntry']['attributes']['dn'].split('/')[7]
                 af_bgp_entry_dn = managed_object['bgpPeerAfEntry']['attributes']['dn'].split('/')[8]
                 af_name = managed_object['bgpPeerAfEntry']['attributes']['dn'].split('/')[-1]
@@ -98,7 +97,6 @@ class ProtocolBgpNeighborApi():
                     if dn_mo.split('/')[5].split('-')[0] == 'vlifp':
                         # [1]: uni/tn-{name}/out-{name}/lnodep-{name}/lifp-{name}/vlifp-[{nodeDn}]-[{encap}]/infraPeerP-[{addr}]/localasn
                         # [4]: uni/tn-{name}/out-{name}/lnodep-{name}/lifp-{name}/vlifp-[{nodeDn}]-[{encap}]/peerP-[{addr}]/localasn
-                        # uni/tn-k8s/out-vk8s_1/lnodep-node-205-206/lifp-floating_svi/vlifp-[topology/pod-1/node-205]-[vlan-500]/peerP-[<ip>/28]/localasn
                         l3out_name = dn_mo.split('/')[2][4:]
                         lnodep_name = dn_mo.split('/')[3][7:]
                         lifp_name = dn_mo.split('/')[4][5:]

@@ -32,6 +32,7 @@ class ErrorExit(Exception):
 @click.option("--inventory", "inventory_filename", default=None, help="Inventory CSV filename")
 @click.option("--view", "-v", default=['state'], help="[state|adv|alarm|contract|istate|node|fi|io|exp|port|fan|psu|psuc|hw|inv]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json', 'yaml'], case_sensitive=False), default='default', show_default=True)
+@click.option("--anonymize", is_flag=True, show_default=True, default=False, help="Anonymized output")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_chassis_command(
         ctx,
@@ -43,6 +44,7 @@ def get_chassis_command(
         inventory_filename,
         view,
         output,
+        anonymize,
         devel
         ):
     """Get chassis details"""
@@ -164,6 +166,14 @@ def get_chassis_command(
             ctx.my_output.default(json.dumps(chassiz_info, indent=4))
             ctx.log_prompt = False
             return
+
+        if anonymize:
+            new_chassiz_info = []
+            for chassis_info in chassiz_info:
+                new_chassiz_info.append(
+                    chassis_handler.anonymize_chassis_info(chassis_info)
+                )
+            chassiz_info = new_chassiz_info
 
         if 'inventory' in view:
             chassis_output_handler.print_inventory(

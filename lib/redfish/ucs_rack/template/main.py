@@ -50,74 +50,48 @@ class RedfishEndpointUcsRackTemplate(
         RedfishEndpointUcsRackTemplateStorage.__init__(self)
         RedfishEndpointUcsRackTemplateThermal.__init__(self)
 
-    def get_template_properties(self, template_name, cache_enabled=True, cache_key=None, cache_ttl=0):
-        if cache_enabled and cache_key is not None:
-            self.set_system_id(
-                cache_key
-            )
-            properties = self.endpoint_handler.endpoint_settings_handler.get_endpoint_settings(
-                cache_key,
-                filename=template_name
-            )
-            if properties is not None:
-                if cache_ttl == 0:
-                    return properties['data']
-                if int(time.time()) - properties['timestamp'] < cache_ttl:
-                    return properties['data']
-
+    def get_template_properties(self, template_name):
         properties = None
         if template_name == 'account':
-            properties = self.get_template_account_properties(role_info=True, cache_enabled=cache_enabled)
+            properties = self.get_template_account_properties(role_info=True)
 
         if template_name == 'bios':
-            properties = self.get_template_bios_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_bios_properties()
 
         if template_name == 'cpu':
-            properties = self.get_template_cpu_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_cpu_properties()
 
         if template_name == 'fan':
-            properties = self.get_template_fan_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_fan_properties()
 
         if template_name == 'gpu':
-            properties = self.get_template_gpu_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_gpu_properties()
 
         if template_name == 'identity':
             properties = self.get_template_identity_properties()
 
         if template_name == 'mem':
-            properties = self.get_template_mem_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_mem_properties()
 
         if template_name == 'net':
-            properties = self.get_template_net_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_net_properties()
 
         if template_name == 'pci':
-            properties = self.get_template_pci_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_pci_properties()
 
         if template_name == 'power':
             properties = self.get_template_power_properties()
 
         if template_name == 'psu':
-            properties = self.get_template_psu_properties(cache_enabled=cache_enabled)
+            properties = self.get_template_psu_properties()
 
         if template_name == 'role':
-            properties = self.get_template_role_properties(account_info=True, cache_enabled=cache_enabled)
+            properties = self.get_template_role_properties(account_info=True)
 
         if template_name == 'storage':
             properties = self.get_template_storage_properties()
 
         if template_name == 'thermal':
             properties = self.get_template_thermal_properties()
-
-        if properties is not None:
-            if cache_enabled and cache_key is not None:
-                cache_entry = {}
-                cache_entry['timestamp'] = int(time.time())
-                cache_entry['data'] = properties
-
-                self.endpoint_handler.endpoint_settings_handler.set_endpoint_settings(
-                    cache_key,
-                    cache_entry,
-                    filename=template_name
-                )
 
         return properties

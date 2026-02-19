@@ -70,7 +70,8 @@ class OcpCommon():
         destination_filename = '/tmp/%s' % (str(uuid.uuid4()))
         self.my_output.default('Destination: %s' % (destination_filename))
 
-        if not ip_helper.download_url(source_filename, destination_filename):
+        success = ip_helper.download_url(source_filename, destination_filename)
+        if success is None:
             self.my_output.error('Web download failed')
             return None
 

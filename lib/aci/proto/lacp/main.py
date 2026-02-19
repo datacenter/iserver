@@ -65,41 +65,43 @@ class ProtocolLacp(
             )
 
         if interface_info:
+            info['interfaces'] = []
+
             interfaces_info = self.get_interface_port_channel(
                 pod_id,
                 node_id
             )
 
-            lacp_interfaces = self.get_interface_lacp(
-                pod_id,
-                node_id,
-                adjacency_info=True
-            )
-
-            for interface in interfaces_info:
-                interface['lacp'] = []
-                for lacp_interface in lacp_interfaces:
-                    if lacp_interface['id'] in interface['state']['portId']:
-                        interface['lacp'].append(
-                            lacp_interface
-                        )
-
-            info['interfaces'] = []
-            for interface in interfaces_info:
-                if not self.match_protocol_lacp_interface(interface, interface_filter):
-                    continue
-
-                info['interfaces'].append(
-                    interface
-                )
-
-            if instance_info:
-                info['instance']['summary'] = self.get_interface_port_channel_summary(
+            if interfaces_info is not None:
+                lacp_interfaces = self.get_interface_lacp(
                     pod_id,
-                    node_id
+                    node_id,
+                    adjacency_info=True
                 )
-                for key in info['instance']['summary']['__Output']:
-                    info['instance']['__Output']['summary.%s' % (key)] = info['instance']['summary']['__Output'][key]
+
+                for interface in interfaces_info:
+                    interface['lacp'] = []
+                    for lacp_interface in lacp_interfaces:
+                        if lacp_interface['id'] in interface['state']['portId']:
+                            interface['lacp'].append(
+                                lacp_interface
+                            )
+
+                for interface in interfaces_info:
+                    if not self.match_protocol_lacp_interface(interface, interface_filter):
+                        continue
+
+                    info['interfaces'].append(
+                        interface
+                    )
+
+                if instance_info:
+                    info['instance']['summary'] = self.get_interface_port_channel_summary(
+                        pod_id,
+                        node_id
+                    )
+                    for key in info['instance']['summary']['__Output']:
+                        info['instance']['__Output']['summary.%s' % (key)] = info['instance']['summary']['__Output'][key]
 
         if event_info:
             all_events = self.get_protocol_lacp_event(

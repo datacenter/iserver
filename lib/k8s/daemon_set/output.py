@@ -30,8 +30,7 @@ class K8sDaemonSetOutput():
                 item['ownerT'] = item['owner'].split('/')
 
         order = [
-            'namespace',
-            'name',
+            'namespace_nameT',
             'ownerT',
             'scheduled_summary',
             'available_summary',
@@ -40,8 +39,7 @@ class K8sDaemonSetOutput():
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Daemon Set',
             'Owner',
             'Scheduled',
             'Available',
@@ -53,7 +51,7 @@ class K8sDaemonSetOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['ownerT', 'node_selectorT']
+                ['namespace_nameT', 'ownerT', 'node_selectorT']
             ),
             order=order,
             headers=headers,

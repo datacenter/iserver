@@ -1,4 +1,5 @@
 import time
+from lib.vc import helper as vc_helper
 
 # pylint: disable=no-name-in-module
 from pyVmomi import vim
@@ -11,88 +12,26 @@ class VcHostNetworking():
         pass
 
     def get_host_pnic_info(self, pnic_obj):
-        # (vim.host.PhysicalNic) {
-        #     dynamicType = <unset>,
-        #     dynamicProperty = (vmodl.DynamicProperty) [],
-        #     key = 'key-vim.host.PhysicalNic-vmnic0',
-        #     device = 'vmnic0',
-        #     pci = '0000:0c:00.0',
-        #     driver = 'i40en',
-        #     linkSpeed = (vim.host.PhysicalNic.LinkSpeedDuplex) {
-        #        dynamicType = <unset>,
-        #        dynamicProperty = (vmodl.DynamicProperty) [],
-        #        speedMb = 10000,
-        #        duplex = true
-        #     },
-
-        #     validLinkSpecification = (vim.host.PhysicalNic.LinkSpeedDuplex) [
-        #        (vim.host.PhysicalNic.LinkSpeedDuplex) {
-        #           dynamicType = <unset>,
-        #           dynamicProperty = (vmodl.DynamicProperty) [],
-        #           speedMb = 10000,
-        #           duplex = true
-        #        }
-        #     ],
-        #     spec = (vim.host.PhysicalNic.Specification) {
-        #        dynamicType = <unset>,
-        #        dynamicProperty = (vmodl.DynamicProperty) [],
-        #        ip = (vim.host.IpConfig) {
-        #           dynamicType = <unset>,
-        #           dynamicProperty = (vmodl.DynamicProperty) [],
-        #           dhcp = false,
-        #           ipAddress = '',
-        #           subnetMask = '',
-        #           ipV6Config = <unset>
-        #        },
-        #        linkSpeed = <unset>,
-        #        enableEnhancedNetworkingStack = false,
-        #        ensInterruptEnabled = false
-        #     },
-        #     wakeOnLanSupported = false,
-        #     mac = '40:a6:b7:0b:e5:50',
-        #     fcoeConfiguration = (vim.host.FcoeConfig) {
-        #        dynamicType = <unset>,
-        #        dynamicProperty = (vmodl.DynamicProperty) [],
-        #        priorityClass = 3,
-        #        sourceMac = '40:a6:b7:0b:e5:50',
-        #        vlanRange = (vim.host.FcoeConfig.VlanRange) [
-        #           (vim.host.FcoeConfig.VlanRange) {
-        #              dynamicType = <unset>,
-        #              dynamicProperty = (vmodl.DynamicProperty) [],
-        #              vlanLow = 0,
-        #              vlanHigh = 0
-        #           }
-        #        ],
-        #        capabilities = (vim.host.FcoeConfig.FcoeCapabilities) {
-        #           dynamicType = <unset>,
-        #           dynamicProperty = (vmodl.DynamicProperty) [],
-        #           priorityClass = false,
-        #           sourceMacAddress = false,
-        #           vlanRange = false
-        #        },
-        #        fcoeActive = false
-        #     },
-        #     vmDirectPathGen2Supported = false,
-        #     vmDirectPathGen2SupportedMode = <unset>,
-        #     resourcePoolSchedulerAllowed = true,
-        #     resourcePoolSchedulerDisallowedReason = (str) [],
-        #     autoNegotiateSupported = true,
-        #     enhancedNetworkingStackSupported = true,
-        #     ensInterruptSupported = true,
-        #     rdmaDevice = <unset>
-        # },
-
         info = {}
 
         info['key'] = pnic_obj.key
         info['device'] = pnic_obj.device
+        info['_index'] = 0
+        if len(info['device'].split('vmnic')) == 2:
+            info['_index'] = int(info['device'].split('vmnic')[1])
+
         info['pci'] = pnic_obj.pci
         info['driver'] = pnic_obj.driver
 
         link_speed_obj = pnic_obj.linkSpeed
+        info['up'] = False
+        info['speedMb'] = None
+        info['speedUnit'] = None
+        info['duplex'] = None
         if link_speed_obj is not None:
+            info['up'] = True
             info['speedMb'] = link_speed_obj.speedMb
-            info['speedUnit'] = self.convert_speed(
+            info['speedUnit'] = vc_helper.convert_speed(
                 info['speedMb'] * 1000 * 1000
             )
             info['duplex'] = link_speed_obj.duplex
@@ -100,52 +39,18 @@ class VcHostNetworking():
         info['mac'] = pnic_obj.mac
         info['wakeOnLanSupported'] = pnic_obj.wakeOnLanSupported
 
+        info['autoNegotiateSupported'] = pnic_obj.autoNegotiateSupported
+        info['dpuId'] = pnic_obj.dpuId
+        info['driverVersion'] = pnic_obj.driverVersion
+        info['enhancedNetworkingStackSupported'] = pnic_obj.enhancedNetworkingStackSupported
+        info['ensInterruptSupported'] = pnic_obj.ensInterruptSupported
+        info['firmwareVersion'] = str(pnic_obj.firmwareVersion)
+        info['rdmaDevice'] = pnic_obj.rdmaDevice
+        info['resourcePoolSchedulerAllowed'] = pnic_obj.resourcePoolSchedulerAllowed
+
         return info
 
     def get_host_vnic_info(self, vnic_obj, port_group_info):
-        # (vim.host.VirtualNic) {
-        #     dynamicType = <unset>,
-        #     dynamicProperty = (vmodl.DynamicProperty) [],
-        #     device = 'vmk0',
-        #     key = 'key-vim.host.VirtualNic-vmk0',
-        #     portgroup = 'Management Network',
-        #     spec = (vim.host.VirtualNic.Specification) {
-        #        dynamicType = <unset>,
-        #        dynamicProperty = (vmodl.DynamicProperty) [],
-        #        ip = (vim.host.IpConfig) {
-        #           dynamicType = <unset>,
-        #           dynamicProperty = (vmodl.DynamicProperty) [],
-        #           dhcp = false,
-        #           ipAddress = '<ip>',
-        #           subnetMask = '<ip>',
-        #           ipV6Config = <unset>
-        #        },
-        #        mac = '3c:fd:fe:cb:f7:c0',
-        #        distributedVirtualPort = <unset>,
-        #        portgroup = 'Management Network',
-        #        mtu = 1500,
-        #        tsoEnabled = true,
-        #        netStackInstanceKey = 'defaultTcpipStack',
-        #        opaqueNetwork = <unset>,
-        #        externalId = <unset>,
-        #        pinnedPnic = <unset>,
-        #        ipRouteSpec = (vim.host.VirtualNic.IpRouteSpec) {
-        #           dynamicType = <unset>,
-        #           dynamicProperty = (vmodl.DynamicProperty) [],
-        #           ipRouteConfig = (vim.host.IpRouteConfig) {
-        #              dynamicType = <unset>,
-        #              dynamicProperty = (vmodl.DynamicProperty) [],
-        #              defaultGateway = '<ip>',
-        #              gatewayDevice = <unset>,
-        #              ipV6DefaultGateway = <unset>,
-        #              ipV6GatewayDevice = <unset>
-        #           }
-        #        },
-        #        systemOwned = <unset>
-        #     },
-        #     port = 'key-vim.host.PortGroup.Port-234881068'
-        # },
-
         info = {}
         info['key'] = vnic_obj.key
         info['device'] = vnic_obj.device
@@ -193,138 +98,6 @@ class VcHostNetworking():
         return services
 
     def get_host_port_group_config_info(self, port_group_obj):
-        # (vim.host.PortGroup) {
-        #     dynamicType = <unset>,
-        #     dynamicProperty = (vmodl.DynamicProperty) [],
-        #     key = 'key-vim.host.PortGroup-iscsi-B',
-        #     port = (vim.host.PortGroup.Port) [
-        #         (vim.host.PortGroup.Port) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             key = 'key-vim.host.PortGroup.Port-234881072',
-        #             mac = (str) [
-        #                 '00:50:56:65:15:68'
-        #             ],
-        #             type = 'host'
-        #         }
-        #     ],
-        #     vswitch = 'key-vim.host.VirtualSwitch-vSwitch0',
-        #     computedPolicy = (vim.host.NetworkPolicy) {
-        #         dynamicType = <unset>,
-        #         dynamicProperty = (vmodl.DynamicProperty) [],
-        #         security = (vim.host.NetworkPolicy.SecurityPolicy) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             allowPromiscuous = false,
-        #             macChanges = true,
-        #             forgedTransmits = true
-        #         },
-        #         nicTeaming = (vim.host.NetworkPolicy.NicTeamingPolicy) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             policy = 'loadbalance_srcid',
-        #             reversePolicy = true,
-        #             notifySwitches = true,
-        #             rollingOrder = false,
-        #             failureCriteria = (vim.host.NetworkPolicy.NicFailureCriteria) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 checkSpeed = 'minimum',
-        #                 speed = 10,
-        #                 checkDuplex = false,
-        #                 fullDuplex = false,
-        #                 checkErrorPercent = false,
-        #                 percentage = 0,
-        #                 checkBeacon = false
-        #             },
-        #             nicOrder = (vim.host.NetworkPolicy.NicOrderPolicy) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 activeNic = (str) [
-        #                 'vmnic1'
-        #                 ],
-        #                 standbyNic = (str) []
-        #             }
-        #         },
-        #         offloadPolicy = (vim.host.NetOffloadCapabilities) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             csumOffload = true,
-        #             tcpSegmentation = true,
-        #             zeroCopyXmit = true
-        #         },
-        #         shapingPolicy = (vim.host.NetworkPolicy.TrafficShapingPolicy) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             enabled = false,
-        #             averageBandwidth = <unset>,
-        #             peakBandwidth = <unset>,
-        #             burstSize = <unset>
-        #         }
-        #     },
-        #     spec = (vim.host.PortGroup.Specification) {
-        #         dynamicType = <unset>,
-        #         dynamicProperty = (vmodl.DynamicProperty) [],
-        #         name = 'iscsi-B',
-        #         vlanId = 19,
-        #         vswitchName = 'vSwitch0',
-
-        #         policy = (vim.host.NetworkPolicy) {
-        #             dynamicType = <unset>,
-        #             dynamicProperty = (vmodl.DynamicProperty) [],
-        #             security = (vim.host.NetworkPolicy.SecurityPolicy) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 allowPromiscuous = <unset>,
-        #                 macChanges = <unset>,
-        #                 forgedTransmits = <unset>
-        #             },
-        #             nicTeaming = (vim.host.NetworkPolicy.NicTeamingPolicy) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 policy = <unset>,
-        #                 reversePolicy = <unset>,
-        #                 notifySwitches = <unset>,
-        #                 rollingOrder = <unset>,
-        #                 failureCriteria = (vim.host.NetworkPolicy.NicFailureCriteria) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 checkSpeed = <unset>,
-        #                 speed = <unset>,
-        #                 checkDuplex = <unset>,
-        #                 fullDuplex = <unset>,
-        #                 checkErrorPercent = <unset>,
-        #                 percentage = <unset>,
-        #                 checkBeacon = <unset>
-        #                 },
-        #                 nicOrder = (vim.host.NetworkPolicy.NicOrderPolicy) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 activeNic = (str) [
-        #                     'vmnic1'
-        #                 ],
-        #                 standbyNic = (str) []
-        #                 }
-        #             },
-        #             offloadPolicy = (vim.host.NetOffloadCapabilities) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 csumOffload = <unset>,
-        #                 tcpSegmentation = <unset>,
-        #                 zeroCopyXmit = <unset>
-        #             },
-        #             shapingPolicy = (vim.host.NetworkPolicy.TrafficShapingPolicy) {
-        #                 dynamicType = <unset>,
-        #                 dynamicProperty = (vmodl.DynamicProperty) [],
-        #                 enabled = <unset>,
-        #                 averageBandwidth = <unset>,
-        #                 peakBandwidth = <unset>,
-        #                 burstSize = <unset>
-        #             }
-        #         }
-        #     }
-        # },
-
         info = {}
         info['key'] = getattr(port_group_obj, 'key')
         info['ports'] = []
@@ -376,20 +149,40 @@ class VcHostNetworking():
             info['pnic'].append(item)
 
         spec = getattr(vswitch_obj, 'spec')
-        info['discoveryProtocol'] = spec.bridge.linkDiscoveryProtocolConfig.protocol
+        try:
+            info['discoveryProtocol'] = spec.bridge.linkDiscoveryProtocolConfig.protocol
+        except BaseException:
+            info['discoveryProtocol'] = None
 
         return info
+
+    def normalize_dvswitch_uplink_name(self, name):
+        if 'uplink' in name.lower():
+            return name.lower().replace(' ', '')
+        return name
 
     def get_host_dvswitch_config_info(self, dvswitch_obj):
         info = {}
         info['name'] = dvswitch_obj.dvsName
+        info['key'] = dvswitch_obj.key
         info['mtu'] = dvswitch_obj.mtu
+        info['configNumPorts'] = dvswitch_obj.configNumPorts
+        info['numPorts'] = dvswitch_obj.numPorts
+        info['numPortsAvailable'] = dvswitch_obj.numPortsAvailable
+
+        keys = {}
+        for obj in dvswitch_obj.uplinkPort:
+            keys[obj.key] = self.normalize_dvswitch_uplink_name(obj.value)
 
         info['pnic'] = []
         for pnic_key in dvswitch_obj.spec.backing.pnicSpec:
             item = {}
             item['device'] = pnic_key.pnicDevice
-            item['uplink'] = pnic_key.uplinkPortKey
+            item['uplink'] = keys[pnic_key.uplinkPortKey]
+            item['uplinkId'] = 0
+            if 'uplink' in item['uplink']:
+                item['uplinkId'] = int(item['uplink'].split('uplink')[1])
+            item['uplinkPortGroup'] = pnic_key.uplinkPortgroupKey
             info['pnic'].append(item)
 
         return info
@@ -445,7 +238,7 @@ class VcHostNetworking():
 
         return info
 
-    def get_host_networking_hint_cdp_info(self, cdp_obj):
+    def get_host_networking_hint_cdp_switch_info(self, cdp_obj):
         info = {}
         info['switch_device_id'] = cdp_obj.devId
         info['switch_system_name'] = cdp_obj.systemName
@@ -455,7 +248,37 @@ class VcHostNetworking():
         info['switch_port'] = cdp_obj.portId
         return info
 
-    def get_host_networking_hint_lldp_info(self, lldp_obj):
+    def get_host_networking_hint_cdp_info(self, cdp_obj):
+        info = {}
+        info['address'] = cdp_obj.address
+        info['cdpVersion'] = cdp_obj.cdpVersion
+        info['devId'] = cdp_obj.devId
+        info['deviceCapability'] = {}
+        if cdp_obj.deviceCapability is not None:
+            info['deviceCapability']['router'] = cdp_obj.deviceCapability.router
+            info['deviceCapability']['transparentBridge'] = cdp_obj.deviceCapability.transparentBridge
+            info['deviceCapability']['sourceRouteBridge'] = cdp_obj.deviceCapability.sourceRouteBridge
+            info['deviceCapability']['networkSwitch'] = cdp_obj.deviceCapability.networkSwitch
+            info['deviceCapability']['igmpEnabled'] = cdp_obj.deviceCapability.igmpEnabled
+            info['deviceCapability']['repeater'] = cdp_obj.deviceCapability.repeater
+
+        info['fullDuplex'] = cdp_obj.fullDuplex
+        info['hardwarePlatform'] = cdp_obj.hardwarePlatform
+        info['ipPrefix'] = cdp_obj.ipPrefix
+        info['ipPrefixLen'] = cdp_obj.ipPrefixLen
+        info['location'] = cdp_obj.location
+        info['mgmtAddr'] = cdp_obj.mgmtAddr
+        info['mtu'] = cdp_obj.mtu
+        info['portId'] = cdp_obj.portId
+        info['softwareVersion'] = cdp_obj.softwareVersion
+        info['systemName'] = cdp_obj.systemName
+        info['timeout'] = cdp_obj.timeout
+        info['ttl'] = cdp_obj.ttl
+        info['vlan'] = cdp_obj.vlan
+
+        return info
+
+    def get_host_networking_hint_lldp_switch_info(self, lldp_obj):
         info = {}
         for paremeter_obj in lldp_obj.parameter:
             if paremeter_obj.key == 'Management Address':
@@ -473,6 +296,60 @@ class VcHostNetworking():
 
         return info
 
+    def get_host_networking_hint_lldp_info(self, lldp_obj):
+        info = {}
+        info['chassisId'] = lldp_obj.chassisId
+        info['portId'] = lldp_obj.portId
+        info['timeToLive'] = lldp_obj.timeToLive
+        for paremeter_obj in lldp_obj.parameter:
+            if paremeter_obj.key == 'Management Address':
+                value = paremeter_obj.value
+                if ip_helper.is_mac_address(value):
+                    info['managementMac'] = paremeter_obj.value
+                if ip_helper.is_valid_ipv4_address(value):
+                    info['managementIPv4'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'System Name':
+                info['systemName'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'System Description':
+                info['systemDescription'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'Port Description':
+                info['portDescription'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'TimeOut':
+                info['timeOut'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'Vlan ID':
+                info['vlan'] = paremeter_obj.value
+
+            if paremeter_obj.key == 'Enabled Capabilities':
+                info['deviceCapability'] = {}
+                cap_obj = paremeter_obj.value
+                if cap_obj is not None:
+                    info['deviceCapability']['router'] = cap_obj.router
+                    info['deviceCapability']['transparentBridge'] = cap_obj.transparentBridge
+                    info['deviceCapability']['sourceRouteBridge'] = cap_obj.sourceRouteBridge
+                    info['deviceCapability']['networkSwitch'] = cap_obj.networkSwitch
+                    info['deviceCapability']['igmpEnabled'] = cap_obj.igmpEnabled
+                    info['deviceCapability']['repeater'] = cap_obj.repeater
+
+        return info
+
+    def get_host_networking_hint_ip_network(self, hint_objs):
+        info = []
+
+        for hint_obj in hint_objs:
+            item = {}
+            item['vlan'] = hint_obj.vlanId
+            item['subnet'] = hint_obj.ipSubnet
+            info.append(
+                item
+            )
+
+        return info
+
     def get_host_networking_hint_info(self, hint_obj):
         info = {}
         info['device'] = hint_obj.device
@@ -480,16 +357,22 @@ class VcHostNetworking():
         cdp_obj = getattr(hint_obj, 'connectedSwitchPort', None)
         lldp_obj = getattr(hint_obj, 'lldpInfo', None)
 
+        info['hintNetwork'] = self.get_host_networking_hint_ip_network(hint_obj.subnet)
+
         nei_info = None
         info['switch_source'] = None
 
+        info['cdp'] = None
         if cdp_obj is not None:
+            info['cdp'] = self.get_host_networking_hint_cdp_info(cdp_obj)
             info['switch_source'] = 'cdp'
-            nei_info = self.get_host_networking_hint_cdp_info(cdp_obj)
+            nei_info = self.get_host_networking_hint_cdp_switch_info(cdp_obj)
 
+        info['lldp'] = None
         if lldp_obj is not None:
+            info['lldp'] = self.get_host_networking_hint_lldp_info(lldp_obj)
             info['switch_source'] = 'lldp'
-            nei_info = self.get_host_networking_hint_lldp_info(lldp_obj)
+            nei_info = self.get_host_networking_hint_lldp_switch_info(lldp_obj)
 
         if nei_info is not None:
             for key in nei_info:
@@ -552,7 +435,7 @@ class VcHostNetworking():
 
         info['pnic'] = sorted(
             info['pnic'],
-            key=lambda i: i['device']
+            key=lambda i: i['_index']
         )
 
         sriovs = self.get_host_sriov(

@@ -43,10 +43,6 @@ def get_nx_config_command(
 
     # iserver get nx ver
 
-    ctx.my_output.default('Placeholder')
-    if True:
-        return
-
     ctx.developer = devel
     ctx.output = output
     view = validations.validate_view(
@@ -87,9 +83,11 @@ def get_nx_config_command(
         configs = []
 
         for device_handler in device_handlers:
-            device_configs = device_handler['handler'].get_configs()
-            if device_configs is not None:
-                configs = configs + device_configs
+            device_config = device_handler['handler'].get_config()
+            if device_config is not None:
+                configs.append(
+                    device_config
+                )
 
         ctx.busy = False
 

@@ -4,6 +4,7 @@ from menu.get.aci.aaep import get_aci_aaep_command
 from menu.get.aci.ap import get_aci_ap_command
 from menu.get.aci.bd import get_aci_bd_command
 from menu.get.aci.cache import get_aci_cache_command
+from menu.get.aci.conf.main import get_aci_conf_menu
 from menu.get.aci.contract.main import get_aci_contract_menu
 from menu.get.aci.controller import get_aci_controller_command
 from menu.get.aci.domain.main import get_aci_domain_menu
@@ -18,10 +19,12 @@ from menu.get.aci.node import get_aci_node_command
 from menu.get.aci.pg.main import get_aci_pg_menu
 from menu.get.aci.policy.main import get_aci_policy_menu
 from menu.get.aci.pool.main import get_aci_pool_menu
+from menu.get.aci.profile.main import get_aci_profile_menu
 from menu.get.aci.proto.main import get_aci_node_proto_menu
 from menu.get.aci.psirt import get_aci_psirt_command
 from menu.get.aci.system.main import get_aci_system_menu
 from menu.get.aci.tenant import get_aci_tenant_command
+from menu.get.aci.vlan import get_aci_vlan_command
 from menu.get.aci.vrf import get_aci_vrf_command
 from menu.get.aci.server import get_aci_server_command
 
@@ -41,6 +44,7 @@ get_aci_menu.add_command(get_aci_epg_command)
 get_aci_menu.add_command(get_aci_ap_command)
 get_aci_menu.add_command(get_aci_bd_command)
 get_aci_menu.add_command(get_aci_cache_command)
+get_aci_menu.add_command(get_aci_conf_menu)
 get_aci_menu.add_command(get_aci_contract_menu)
 get_aci_menu.add_command(get_aci_controller_command)
 get_aci_menu.add_command(get_aci_domain_menu)
@@ -54,9 +58,11 @@ get_aci_menu.add_command(get_aci_node_command)
 get_aci_menu.add_command(get_aci_pg_menu)
 get_aci_menu.add_command(get_aci_policy_menu)
 get_aci_menu.add_command(get_aci_pool_menu)
+get_aci_menu.add_command(get_aci_profile_menu)
 get_aci_menu.add_command(get_aci_psirt_command)
 get_aci_menu.add_command(get_aci_node_proto_menu)
 get_aci_menu.add_command(get_aci_system_menu)
 get_aci_menu.add_command(get_aci_tenant_command)
+get_aci_menu.add_command(get_aci_vlan_command)
 get_aci_menu.add_command(get_aci_vrf_command)
 get_aci_menu.add_command(get_aci_server_command)

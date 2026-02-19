@@ -3,7 +3,7 @@ class RedfishEndpointUcsRackTemplateBiosOutput(
     def __init__(self):
         pass
 
-    def print_ucsc_bios_properties(self, info_dict, title=False):
+    def print_ucsc_bios_properties(self, info_dict):
         info = []
         for key in info_dict:
             if key not in ['__Output']:
@@ -17,34 +17,12 @@ class RedfishEndpointUcsRackTemplateBiosOutput(
             key=lambda i: i['key'].lower()
         )
 
-        if title:
-            self.my_output.default(
-                'Bios [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-
-        order = [
-            'key',
-            'value'
-        ]
-
-        headers = [
-            'Key',
-            'Value'
-        ]
-
-        self.my_output.my_table(
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            remove_empty_columns=False,
-            underline=True,
-            row_separator=True,
-            table=True
+            [
+                ['Key', 'key'],
+                ['Value', 'value']
+            ]
         )
 
     def print_ucsc_bios_diff_properties(self, info, title=False):

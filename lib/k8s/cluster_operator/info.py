@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -251,3 +252,63 @@ class K8sClusterOperatorInfo():
             )
 
         return cluster_operators
+
+    def get_cluster_operator(self, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        cluster_operators = self.get_cluster_operators(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if cluster_operators is None:
+            return None
+
+        if len(cluster_operators) == 1:
+            return cluster_operators[0]
+
+        return None
+    
+    def are_cluster_operators_available(self, operators=None, cache_enabled=True):
+        if operators is None:
+            operators = self.get_cluster_operators(cache_enabled=cache_enabled)
+
+        if operators is None:
+            return False
+        
+        for operator in operators:
+            if not operator['available']:
+                return False
+            
+        return True
+    
+    def wait_cluster_operator_available(self, name, max_time=600, my_output=None):
+        start_time = int(time.time())
+        while True:
+            info = self.get_cluster_operator(name, cache_enabled=False)
+            if info is not None and info['available']:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if my_output is not None:
+                    my_output.default('Max wait time reached, cluster operator not available: %s' % (name))
+
+                return False
+
+            time.sleep(5)
+            
+    def wait_cluster_operators_available(self, max_time=600):
+        start_time = int(time.time())
+        while True:
+            if self.are_cluster_operators_available(cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                return False
+
+            time.sleep(5)
+            

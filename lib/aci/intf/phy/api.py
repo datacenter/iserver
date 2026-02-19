@@ -2,7 +2,10 @@ class InterfacePhyApi():
     def __init__(self):
         self.interface_phy_mo = {}
 
-    def get_interface_phy_mo(self, pod_id, node_id):
+    def init_interface_phy_mo(self):
+        self.interface_phy_mo = {}
+
+    def get_interface_phy_mo(self, pod_id, node_id, cache_enabled=True):
         key = '%s.%s' % (
             pod_id,
             node_id
@@ -10,17 +13,18 @@ class InterfacePhyApi():
         if key in self.interface_phy_mo:
             return self.interface_phy_mo[key]
 
-        cache = self.get_object_cache(
-            'l1PhysIf',
-            object_selector=key
-        )
-        if cache is not None:
-            self.interface_phy_mo[key] = cache
-            self.log.apic_mo(
-                'l1PhysIf.%s' % (key),
-                self.interface_phy_mo[key]
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'l1PhysIf',
+                object_selector=key
             )
-            return self.interface_phy_mo[key]
+            if cache is not None:
+                self.interface_phy_mo[key] = cache
+                self.log.apic_mo(
+                    'l1PhysIf.%s' % (key),
+                    self.interface_phy_mo[key]
+                )
+                return self.interface_phy_mo[key]
 
         class_name = 'topology/pod-%s/node-%s/l1PhysIf' % (pod_id, node_id)
         query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count,required'

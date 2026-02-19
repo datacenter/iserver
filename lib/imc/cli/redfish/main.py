@@ -10,13 +10,13 @@ class ImcCliRedfish():
             if self.redfish_mo is not None:
                 return self.redfish_mo
 
-            self.redfish_mo = self.get_icm_cli_cache_entry(
+            self.redfish_mo = self.get_imc_cli_cache_entry(
                 'redfish'
             )
             if self.redfish_mo is not None:
                 return self.redfish_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show redfish detail
+        # com# show redfish detail
         # REDFISH Settings:
         #     Enabled: yes
         #     Active Sessions: 0
@@ -48,6 +48,11 @@ class ImcCliRedfish():
 
         for key in redfish_mo:
             info[key] = redfish_mo[key]
+
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
 
         self.log.debug(
             'get_redfish_info',

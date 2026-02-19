@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -27,19 +28,15 @@ class PolicyGeneralAaeInfo():
 
         info['domainName'] = managed_object['tDn']
         if info['tCl'] == 'vmmDomP':
-            # "tDn": "uni/vmmp-VMware/dom-EU-SPDC-CDC-22"
             info['domainName'] = managed_object['tDn'].split('/')[2][4:]
 
         if info['tCl'] == 'l3extDomP':
-            # "tDn": "uni/l3dom-vEPC_ESX"
             info['domainName'] = managed_object['tDn'].split('/')[1][6:]
 
         if info['tCl'] == 'physDomP':
-            # "tDn": "uni/phys-ESX-CDC-22_PhysDom"
             info['domainName'] = managed_object['tDn'].split('/')[1][5:]
 
         if info['tCl'] == 'l2extDomP':
-            # "tDn": "uni/l2dom-Infra_L2dom"
             info['domainName'] = managed_object['tDn'].split('/')[1][6:]
 
         return info
@@ -82,17 +79,24 @@ class PolicyGeneralAaeInfo():
 
         policy_global_aae_info['vlanPool'] = []
         policy_global_aae_info['vlanBlock'] = []
+        policy_global_aae_info['vlanIds'] = []
         for domain_info in policy_global_aae_info['infraRsDomP']:
             if domain_info['info'] is not None:
                 if domain_info['info']['vlan'] not in policy_global_aae_info['vlanPool']:
-                    policy_global_aae_info['vlanPool'].append(
-                        domain_info['info']['vlan']
-                    )
+                    if domain_info['info']['vlan'] is not None:
+                        policy_global_aae_info['vlanPool'].append(
+                            domain_info['info']['vlan']
+                        )
                     if domain_info['info']['vlan_info'] is not None:
                         for vlan_range in domain_info['info']['vlan_info']['fvnsEncapBlk']:
-                            policy_global_aae_info['vlanBlock'].append(
-                                vlan_range['blockInfo']
-                            )
+                            if vlan_range['blockInfo'] is not None:
+                                policy_global_aae_info['vlanBlock'].append(
+                                    vlan_range['blockInfo']
+                                )
+
+                        for vlan_id in domain_info['info']['vlan_info']['vlanIds']:
+                            if vlan_id not in policy_global_aae_info['vlanIds']:
+                                policy_global_aae_info['vlanIds'].append(vlan_id)
 
         policy_global_aae_info['vlanPool'] = sorted(
             policy_global_aae_info['vlanPool']
@@ -128,6 +132,11 @@ class PolicyGeneralAaeInfo():
                 managed_object['tDn']
             )
 
+        if info['tCl'] == 'fvEPg':
+            info['epgName'] = self.get_epg_name_from_dn(
+                managed_object['tDn']
+            )
+
         info['epgEncap'] = None
         if info['epgName'] is not None:
             if info['encap'] is not None and len(info['encap']) > 0:
@@ -150,15 +159,12 @@ class PolicyGeneralAaeInfo():
 
         info['name'] = managed_object['tDn']
         if info['type'] == 'infraSpAccPortGrp':
-            # "tDn": "uni/infra/funcprof/spaccportgrp-multipodL3Out_policyGroup"
             info['name'] = managed_object['tDn'].split('/')[3][13:]
 
         if info['type'] == 'infraAccPortGrp':
-            # "tDn": "uni/infra/funcprof/accportgrp-ESX-CDC-22_PolGrp"
             info['name'] = managed_object['tDn'].split('/')[3][11:]
 
         if info['type'] == 'infraAccBndlGrp':
-            # "tDn": "uni/infra/funcprof/accbundle-k8s_esx72_PolGrp"
             info['name'] = managed_object['tDn'].split('/')[3][10:]
 
         if info['type'] not in ['infraSpAccPortGrp', 'infraAccPortGrp', 'infraAccBndlGrp']:
@@ -263,20 +269,26 @@ class PolicyGeneralAaeInfo():
 
         return True
 
-    def get_policy_global_aae(
+    def get_policy_global_aaes(
             self,
             policy_global_aae_filter=None,
             domain_info=False,
             node_info=False,
+            pg_info=False,
+            vm_info=False,
             fault_info=False,
             hfault_info=False,
             event_info=False,
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_policies = self.get_policy_global_aae_mo()
+        if not cache_enabled:
+            self.init_policy_global_aae_mo()
+
+        all_policies = self.get_policy_global_aae_mo(cache_enabled=cache_enabled)
         if all_policies is None:
             return None
 
@@ -304,6 +316,16 @@ class PolicyGeneralAaeInfo():
                 if domain_node_info is not None:
                     policy_global_aae_info['node'] = domain_node_info['node']
                     policy_global_aae_info['interface'] = domain_node_info['interface']
+
+            if pg_info:
+                policy_global_aae_info['pg'] = self.get_policy_global_aae_pg(
+                    policy_global_aae_info['name']
+                )
+
+            if vm_info:
+                policy_global_aae_info['vm'] = self.get_policy_global_aae_vm(
+                    policy_global_aae_info['name']
+                )
 
             if fault_info:
                 policy_global_aae_info['faultInst'] = self.get_policy_global_aae_id_fault(
@@ -343,3 +365,66 @@ class PolicyGeneralAaeInfo():
         )
 
         return policy_global_aae
+
+    def get_policy_global_aae(
+            self,
+            policy_name,
+            domain_info=False,
+            node_info=False,
+            pg_info=False,
+            vm_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None,
+            cache_enabled=True
+            ):
+        policy_global_aae_filter = []
+        policy_global_aae_filter.append('name:%s' % (policy_name))
+
+        policies = self.get_policy_global_aaes(
+            policy_global_aae_filter=policy_global_aae_filter,
+            domain_info=domain_info,
+            node_info=node_info,
+            pg_info=pg_info,
+            vm_info=vm_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter,
+            cache_enabled=cache_enabled
+        )
+        if policies is None:
+            return None
+
+        if len(policies) != 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_global_aae(self, policy_name, cache_enabled=True):
+        if self.get_policy_global_aae(policy_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def wait_policy_global_aae(self, policy_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_policy_global_aae(policy_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_policy_global_aae',
+                    'Max time reached: %s' % (policy_name)
+                )
+                return False
+
+            time.sleep(5)

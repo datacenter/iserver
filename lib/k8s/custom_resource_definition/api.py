@@ -46,3 +46,55 @@ class K8sCustomResourceDefinitionApi():
         )
 
         return self.custom_resource_definition_mo
+
+    def create_custom_resource_definition_mo(self, body):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='apiextensions.k8s.io/v1', kind='CustomResourceDefinition')
+            success = True
+            response = obj_list.create(
+                body=body,
+                name=body['metadata']['name'],
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.create_custom_resource_definition', traceback.format_exc())
+
+        self.log.ocp(
+            'create',
+            'custom_resource_definition',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success
+
+
+    def delete_custom_resource_definition(self, crd_name):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='apiextensions.k8s.io/v1', kind='CustomResourceDefinition')
+            success = True
+            response = obj_list.delete(
+                crd_name
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.delete_custom_resource_definition', traceback.format_exc())
+
+        self.log.ocp(
+            'delete',
+            'custom_resource_definition',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success

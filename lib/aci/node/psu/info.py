@@ -12,29 +12,6 @@ class NodePsuInfo():
         return round(float(value), 2)
 
     def get_node_psu_info(self, managed_object):
-        # "almReg": "0",
-        # "cap": "4.000000",
-        # "childAction": "",
-        # "cimcVersion": "",
-        # "descr": "FRU_PSU1 (ID 4)",
-        # "dn": "topology/pod-1/node-1/sys/ch/psuslot-5/psu",
-        # "drawnCurr": "0.000000",
-        # "fanOpSt": "unknown",
-        # "hwVer": "A",
-        # "id": "1",
-        # "mfgTm": "not-applicable",
-        # "modTs": "2023-05-19T09:15:45.143+02:00",
-        # "model": "UCSC-PSU1-770W",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "operSt": "ok",
-        # "rev": "0",
-        # "ser": "APS234101KU",
-        # "status": "",
-        # "tc": "770",
-        # "vId": "",
-        # "vSrc": "unknown",
-        # "vendor": "Cisco Systems Inc",
-        # "volt": "12.000000"
         info = {}
         info['__Output'] = {}
 
@@ -75,7 +52,6 @@ class NodePsuInfo():
         info['volt'] = self.convert_node_psu_value(info['volt'])
         info['drawnCurr'] = self.convert_node_psu_value(info['drawnCurr'])
 
-        # "dn": "topology/pod-1/node-1/sys/ch/psuslot-5/psu"
         info['slotId'] = info['dn'].split('/')[5][8:]
 
         if info['operSt'] == 'ok':

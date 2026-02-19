@@ -22,41 +22,6 @@ class PolicyInterfaceStormControlInfo():
         return info
 
     def get_policy_interface_storm_control_info(self, managed_object):
-        # "annotation": "",
-        # "bcBurstPps": "unspecified",
-        # "bcBurstRate": "100.000000",
-        # "bcRate": "100.000000",
-        # "bcRatePps": "unspecified",
-        # "burstPps": "unspecified",
-        # "burstRate": "100.000000",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/stormctrlifp-default",
-        # "extMngdBy": "",
-        # "isUcMcBcStormPktCfgValid": "Invalid",
-        # "lcOwn": "local",
-        # "mcBurstPps": "unspecified",
-        # "mcBurstRate": "100.000000",
-        # "mcRate": "100.000000",
-        # "mcRatePps": "unspecified",
-        # "modTs": "2020-12-09T19:07:28.202+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "rate": "100.000000",
-        # "ratePps": "unspecified",
-        # "status": "",
-        # "stormCtrlAction": "drop",
-        # "stormCtrlSoakInstCount": "3",
-        # "type": "all",
-        # "uid": "0",
-        # "userdom": "",
-        # "uucBurstPps": "unspecified",
-        # "uucBurstRate": "100.000000",
-        # "uucRate": "100.000000",
-        # "uucRatePps": "unspecified"
         keys = [
             'annotation',
             'dn',
@@ -219,7 +184,7 @@ class PolicyInterfaceStormControlInfo():
 
         return True
 
-    def get_policy_interface_storm_control(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_storm_control(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_storm_control_info()
         if all_policies is None:
             return None
@@ -279,3 +244,29 @@ class PolicyInterfaceStormControlInfo():
         )
 
         return policy
+
+    def get_policy_interface_storm_control(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_storm_control(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_storm_control(self, policy_name):
+        if self.get_policy_interface_storm_control(policy_name) is None:
+            return False
+        return True

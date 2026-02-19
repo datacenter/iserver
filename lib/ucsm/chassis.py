@@ -1,5 +1,5 @@
 class Chassis():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_chassis = None
 
     def get_chassis_info(self, chassis_object):
@@ -20,7 +20,7 @@ class Chassis():
             'vendor'
         ]
         for key in keys:
-            chassis_info[key] = getattr(chassis_object, key)
+            chassis_info[key] = getattr(chassis_object, key, None)
 
         return chassis_info
 
@@ -87,7 +87,7 @@ class Chassis():
 
         return None
 
-    def get_chassiz(self, blade=False, power=False, thermal=False):
+    def get_chassiz(self, blade=False, power=False, thermal=False, net=False):
         if self.mo_chassis is None:
             managed_objects = self.query_classid(
                 'EquipmentChassis'
@@ -119,6 +119,29 @@ class Chassis():
                 if thermal:
                     managed_object_info['thermal_stats'] = self.get_chassis_thermal_stats(
                         chassis_rn=managed_object_info['rn']
+                    )
+
+                if net:
+                    managed_object_info['ethServerFi'] = self.get_io_cards(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethServerFi'] = self.get_ether_server_int_fis(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethServerFiPc'] = self.get_ether_server_int_fi_pcs(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethServerFiPcEp'] = self.get_ether_server_int_fi_pc_eps(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethSwitchFi'] = self.get_ether_switch_int_fis(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethSwitchFiPc'] = self.get_ether_switch_int_fi_pcs(
+                        chassis_id=managed_object_info['id']
+                    )
+                    managed_object_info['ethSwitchFiPcEp'] = self.get_ether_switch_int_fi_pc_eps(
+                        chassis_id=managed_object_info['id']
                     )
 
                 chassiz.append(managed_object_info)

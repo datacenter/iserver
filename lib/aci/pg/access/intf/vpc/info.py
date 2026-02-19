@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -5,23 +6,10 @@ class PolicyGroupAccessInterfaceVpcInfo():
     def __init__(self):
         self.policy_group_access_interface_vpc = None
 
+    def init_policy_group_access_interface_vpc(self):
+        self.policy_group_access_interface_vpc = None
+
     def get_policy_group_access_interface_vpc_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "ACI2 vEPC CL2201-2202 to ESX20 Policy Group  (Created by Ansible)",
-        # "dn": "uni/infra/funcprof/accbundle-ESX20-CDC-22_PolGrp",
-        # "extMngdBy": "",
-        # "lagT": "node",
-        # "lcOwn": "local",
-        # "modTs": "2022-07-08T15:21:38.449+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "ESX20-CDC-22_PolGrp",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:",
         info = {}
         info['__Output'] = {}
 
@@ -53,11 +41,11 @@ class PolicyGroupAccessInterfaceVpcInfo():
 
         return info
 
-    def get_policy_groups_access_interface_vpc_info(self):
+    def get_policy_groups_access_interface_vpc_info(self, cache_enabled=True):
         if self.policy_group_access_interface_vpc is not None:
             return self.policy_group_access_interface_vpc
 
-        managed_objects = self.get_policy_group_access_interface_vpc_mo()
+        managed_objects = self.get_policy_group_access_interface_vpc_mo(cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
 
@@ -83,7 +71,7 @@ class PolicyGroupAccessInterfaceVpcInfo():
 
         return self.policy_group_access_interface_vpc
 
-    def match_policy_group_access_interface_vpc(self, policy_group_info, policy_group_filter):
+    def match_policy_group_access_interface_vpc(self, policy_group_info, policy_group_filter, strict=False):
         if policy_group_filter is None or len(policy_group_filter) == 0:
             return True
 
@@ -92,7 +80,7 @@ class PolicyGroupAccessInterfaceVpcInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             if key == 'name':
-                if not filter_helper.match_string(value, policy_group_info['name']):
+                if not filter_helper.match_string(value, policy_group_info['name'], strict=strict):
                     return False
 
             if key == 'aaep':
@@ -131,42 +119,12 @@ class PolicyGroupAccessInterfaceVpcInfo():
                 if not found:
                     return False
 
-            # if key == 'policy':
-            #     if len(value.split(':')) > 2:
-            #         self.log.error(
-            #             'match_policy_group_access_interface_vpc',
-            #             'Unsupported policy filter rule: %s' % (ap_rule)
-            #         )
-            #         return False
-
-            #     if len(value.split(':')) == 1:
-            #         found = False
-            #         for policy in policy_group_info['policies']:
-            #             if policy['name'] is not None:
-            #                 if filter_helper.match_string(value, policy['name']):
-            #                     found = True
-            #                     break
-
-            #         if not found:
-            #             return False
-
-            #     if len(value.split(':')) == 2:
-            #         found = False
-            #         for policy in policy_group_info['policies']:
-            #             if policy['name'] is not None:
-            #                 if filter_helper.match_string(value.split(':', maxsplit=1)[0], policy['type']):
-            #                     if filter_helper.match_string(value.split(':')[1], policy['name']):
-            #                         found = True
-            #                         break
-
-            #         if not found:
-            #             return False
-
         return True
 
     def get_policy_groups_access_interface_vpc(
             self,
             policy_group_filter=None,
+            strict=False,
             aaep_info=False,
             node_info=False,
             vlan_info=False,
@@ -176,21 +134,26 @@ class PolicyGroupAccessInterfaceVpcInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_policy_groups = self.get_policy_groups_access_interface_vpc_info()
+        if not cache_enabled:
+            self.init_policy_group_access_interface_vpc()
+            self.init_policy_group_access_interface_vpc_mo()
+
+        all_policy_groups = self.get_policy_groups_access_interface_vpc_info(cache_enabled=cache_enabled)
         if all_policy_groups is None:
             return None
 
         policy_groups = []
 
         for policy_group_info in all_policy_groups:
-            if not self.match_policy_group_access_interface_vpc(policy_group_info, policy_group_filter):
+            if not self.match_policy_group_access_interface_vpc(policy_group_info, policy_group_filter, strict=strict):
                 continue
 
             if aaep_info:
                 policy_group_info['aaep'] = None
-                aaep = self.get_policy_global_aae(
+                aaep = self.get_policy_global_aaes(
                     policy_global_aae_filter=['name:%s' % (policy_group_info['infraRsAttEntP']['name'])],
                     domain_info=True
                 )
@@ -207,19 +170,6 @@ class PolicyGroupAccessInterfaceVpcInfo():
                 if policy_group_node_info is not None:
                     policy_group_info['node'] = policy_group_node_info['node']
                     policy_group_info['interface'] = policy_group_node_info['interface']
-
-            # if node_info:
-            #     policy_group_info['nodes'] = []
-
-            #     vpc_nodes = self.get_policy_group_access_interface_vpc_nodes(
-            #         policy_group_filter=['name:%s' % (policy_group_info['name'])],
-            #         port_info=port_info
-            #     )
-            #     if vpc_nodes is not None:
-            #         if len(vpc_nodes) == 1:
-            #             policy_group_info['nodes'] = vpc_nodes[0]['nodes']
-            #             if port_info:
-            #                 policy_group_info['ports'] = vpc_nodes[0]['ports']
 
             if vlan_info:
                 if policy_group_info['interface'] is not None:
@@ -288,9 +238,35 @@ class PolicyGroupAccessInterfaceVpcInfo():
 
         return policy_groups
 
-    def get_policy_group_access_interface_vpc(self, name):
+    def get_policy_group_access_interface_vpc(
+            self,
+            name,
+            aaep_info=False,
+            node_info=False,
+            vlan_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None,
+            cache_enabled=True
+            ):
         policy_group_info = self.get_policy_groups_access_interface_vpc(
-            policy_group_filter=['name:%s' % (name)]
+            policy_group_filter=['name:%s' % (name)],
+            strict=True,
+            aaep_info=aaep_info,
+            node_info=node_info,
+            vlan_info=vlan_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter,
+            cache_enabled=cache_enabled
         )
 
         if policy_group_info is None:
@@ -307,3 +283,24 @@ class PolicyGroupAccessInterfaceVpcInfo():
             return None
 
         return policy_group_info[0]
+
+    def is_policy_group_access_interface_vpc(self, name, cache_enabled=True):
+        if self.get_policy_group_access_interface_vpc(name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def wait_policy_group_access_interface_vpc(self, policy_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_policy_group_access_interface_vpc(policy_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_policy_group_access_interface_vpc',
+                    'Max time reached: %s' % (policy_name)
+                )
+                return False
+
+            time.sleep(5)

@@ -24,7 +24,7 @@ class NoResultExit(Exception):
 
 @click.command("vmi")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--view", "-v", default=['state'], help="[state|metadata|phase|net|svc|all]", show_default=True, multiple=True)
@@ -57,7 +57,7 @@ def get_k8s_vmi_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -110,7 +110,8 @@ def get_k8s_vmi_command(
         virtual_machine_instances = k8s_handlers.get_virtual_machine_instances(
             object_filter=object_filter,
             vm_info=vm_info,
-            service_info=service_info
+            service_info=service_info,
+            cache_enabled=False
         )
 
         ctx.busy = False
@@ -126,8 +127,7 @@ def get_k8s_vmi_command(
 
         if 'state' in view:
             k8s_output_handler.print_virtual_machine_instances(
-                virtual_machine_instances,
-                title=True
+                virtual_machine_instances
             )
 
         if 'metadata' in view:

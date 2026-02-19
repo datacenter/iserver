@@ -19,7 +19,6 @@ class ProtocolIpv4RouteApi():
             )
             return self.ipv4_routes_mo[key]
 
-        # url: https://<apic>/api/node/mo/topology/pod-1/node-201/sys/uribv4/dom-common:smi5Gc-cvim1-N6_VRF.json?query-target=subtree&target-subtree-class=uribv4Route&page=0&page-size=15
         distinguished_name = 'topology/pod-%s/node-%s/sys/uribv4/dom-%s' % (
             pod_id,
             node_id,

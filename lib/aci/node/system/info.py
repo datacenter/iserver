@@ -54,6 +54,23 @@ class NodeSystemInfo():
 
         return self.nodes_system
 
+    def get_node_mgmt_ip(self, node_id, ip_type='oob'):
+        node_filter = []
+        node_filter.append(
+            'id:%s' % (node_id)
+        )
+
+        node_system = self.get_nodes_system(
+            node_filter=node_filter
+        )
+
+        if node_system is not None and len(node_system) == 1:
+            if ip_type == 'oob':
+                return node_system[0]['oobMgmtAddr']
+            return node_system[0]['inbMgmtAddr']
+
+        return None
+
     def get_node_system(self, pod_id, node_id):
         node_filter = []
         node_filter.append(

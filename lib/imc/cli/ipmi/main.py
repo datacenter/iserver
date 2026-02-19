@@ -10,13 +10,13 @@ class ImcCliIpmi():
             if self.ipmi_mo is not None:
                 return self.ipmi_mo
 
-            self.ipmi_mo = self.get_icm_cli_cache_entry(
+            self.ipmi_mo = self.get_imc_cli_cache_entry(
                 'ipmi'
             )
             if self.ipmi_mo is not None:
                 return self.ipmi_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show ipmi detail
+        # comp# show ipmi detail
         # IPMI over LAN Settings:
         #     Enabled: no
         #     Encryption Key: 0000000000000000000000000000000000000000
@@ -48,6 +48,11 @@ class ImcCliIpmi():
 
         for key in ipmi_mo:
             info[key] = ipmi_mo[key]
+
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
 
         self.log.debug(
             'get_ipmi_info',

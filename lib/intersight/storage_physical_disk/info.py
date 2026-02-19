@@ -37,7 +37,10 @@ class StoragePhysicalDiskInfo():
         # Default value in MB
         if factor == 1:
             factor = 1024 * 1024
-            size_bytes = int(size.strip())
+            try:
+                size_bytes = int(size.strip())
+            except BaseException:
+                size_bytes = 0
 
         return size_bytes * factor
 

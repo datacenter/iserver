@@ -26,7 +26,7 @@ class GetAciCommand(Command):
         self.run_id = 'bot.%s' % (str(uuid.uuid4()).rsplit('-', maxsplit=1)[-1])
         self.log_handler = log_helper.Log(self.run_id)
         self.log_handler.initialize()
-        self.link = 'https://wwwin-github.cisco.com/emear-telcocloud/iserver/blob/master/doc/bot/GetAci.md'
+        self.link = 'tbd'
         self.url = url
         logger.info('Command initialized: get aci [%s]', self.run_id[4:])
 

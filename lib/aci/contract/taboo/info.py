@@ -111,6 +111,17 @@ class ContractTabooInfo():
                     contract_epg_info
                 )
 
+        info['vzTSubj'] = []
+        for subject_mo in managed_object['vzTSubj']:
+            taboo_subject_info = self.get_taboo_contract_subject(
+                managed_object['dn'].split('/')[1][3:],
+                subject_mo['name']
+            )
+            if taboo_subject_info is not None:
+                info['vzTSubj'].append(
+                    taboo_subject_info
+                )
+
         (info['__Output']['faults'], info['faults']) = self.get_faults_info(
             managed_object['faultCounts']
         )

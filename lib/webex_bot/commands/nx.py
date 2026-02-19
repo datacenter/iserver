@@ -25,7 +25,7 @@ class GetNexusCommand(Command):
         self.run_id = 'bot.%s' % (str(uuid.uuid4()).rsplit('-', maxsplit=1)[-1])
         self.log_handler = log_helper.Log(self.run_id)
         self.log_handler.initialize()
-        self.link = 'https://wwwin-github.cisco.com/emear-telcocloud/iserver/blob/master/doc/bot/GetNexus.md'
+        self.link = 'tbd'
         self.url = url
         logger.info('Command initialized: get nexus [%s]', self.run_id[4:])
 
@@ -192,6 +192,7 @@ class GetNexusCommand(Command):
                     device['ip'],
                     device['username'],
                     device['password'],
+                    device['nxapi'],
                     name=device['name'],
                     log_id=command_run_id,
                     debug=False,

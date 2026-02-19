@@ -1,3 +1,4 @@
+import copy
 from lib import filter_helper
 from lib import ip_helper
 
@@ -39,16 +40,20 @@ class K8sServiceInfo():
         info['load_balancer_ip'] = self.get(service_mo, 'spec:load_balancer_ip')
         info['load_balancer_ingress'] = self.get(service_mo, 'status:load_balancer:ingress')
 
+        info['ipT'] = []
         if info['type'] == 'ExternalName':
             info['cluster_ipT'] = ['--']
             info['external_ipT'] = [info['external_name']]
-
+            info['ipT'].append(
+                info['external_name']
+            )
         if info['type'] in ['ClusterIP', 'NodePort', 'LoadBalancer']:
             info['cluster_ipT'] = info['cluster_ips']
             info['external_ipT'] = info['external_ips']
+            info['ipT'] = info['ipT'] + info['cluster_ips'] + info['external_ips']
 
+        info['portT'] = []
         info['port'] = []
-        ports = []
         ports_mo = self.get(service_mo, 'spec:ports', on_error=[], on_none=[])
         for port_mo in ports_mo:
             service_keys = [
@@ -67,27 +72,37 @@ class K8sServiceInfo():
             port_info['descr'] = '--'
 
             if info['type'] in ['NodePort', 'LoadBalancer']:
-                port_info['descr'] = '%s:%s/%s' % (
+                port_info['descr'] = '%s/%s:%s' % (
+                    port_info['protocol'],
                     port_info['port'],
-                    port_info['node_port'],
-                    port_info['protocol']
+                    port_info['node_port']
                 )
+                if port_info['name'] is not None:
+                    port_info['descr'] = '%s [%s]' % (
+                        port_info['descr'],
+                        port_info['name']
+                    )
 
             if info['type'] == 'ClusterIP':
                 port_info['descr'] = '%s/%s' % (
-                    port_info['port'],
-                    port_info['protocol']
+                    port_info['protocol'],
+                    port_info['port']
                 )
-
-            ports.append(
+                if port_info['name'] is not None:
+                    port_info['descr'] = '%s [%s]' % (
+                        port_info['descr'],
+                        port_info['name']
+                    )
+                    
+            info['portT'].append(
                 port_info['descr']
             )
             info['port'].append(
                 port_info
             )
 
-        ports = sorted(ports)
-        info['ports'] = ','.join(ports)
+        info['portT'] = sorted(info['portT'])
+        info['ports'] = ','.join(info['portT'])
 
         info['special'] = None
         info['specialT'] = '--'
@@ -252,12 +267,20 @@ class K8sServiceInfo():
 
         return True
 
-    def get_services(self, object_filter=None, pod_info=False, return_mo=False, cache_enabled=True):
+    def get_services(self, object_filter=None, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True):
         all_services = self.get_services_info(cache_enabled=cache_enabled)
         if all_services is None:
             return None
 
         services = []
+
+        endpoints = None
+        if endpoint_info:
+            endpoints = self.get_endpoints(cache_enabled=cache_enabled)
+
+        pods = None
+        if not endpoint_info and pod_info:
+            pods = self.get_pods(cache_enabled=cache_enabled)
 
         for service_info in all_services:
             if not self.match_service(service_info['info'], object_filter):
@@ -269,20 +292,26 @@ class K8sServiceInfo():
                 )
                 continue
 
-            if pod_info:
+            if endpoints is not None:
+                service_info['info']['podT'] = []
+                service_info['info']['addressT'] = []
+            
+                for endpoint in endpoints:
+                    if filter_helper.is_dict_in_dict(service_info['info']['label'], endpoint['label']):
+                        service_info['info']['podT'] = copy.deepcopy(endpoint['podT'])
+                        service_info['info']['addressT'] = copy.deepcopy(endpoint['addressT'])
+
+            if pods is not None:
+                service_info['info']['podT'] = []
                 service_info['info']['pod'] = []
-                for selector_key in service_info['info']['selector']:
-                    pod_filter = [
-                        'label:%s:%s' % (
-                            selector_key,
-                            service_info['info']['selector'][selector_key]
-                        )
-                    ]
-                    pods = self.get_pods(
-                        object_filter=pod_filter
-                    )
+                if len(service_info['info']['selector']) > 0:
                     if pods is not None:
-                        service_info['info']['pod'] = service_info['info']['pod'] + pods
+                        for pod in pods:
+                            if self.check_pod_with_label(pod, service_info['info']['selector']):
+                                service_info['info']['pod'].append(pod)
+                                service_info['info']['podT'].append(
+                                    pod['name']
+                                )
 
             services.append(
                 service_info['info']
@@ -290,7 +319,35 @@ class K8sServiceInfo():
 
         return services
 
-    def get_service(self, namespace, name, return_mo=False, cache_enabled=True):
+    def is_service(self, namespace, name, cache_enabled=True):
+        if self.get_service(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+    
+    def is_service_with_special_label(self, label, cache_enabled=True):
+        services_mo = self.get_services_with_special_label(
+            label,
+            return_mo=True,
+            cache_enabled=cache_enabled
+        )
+        if services_mo is not None and len(services_mo) > 0:
+            return True
+        return False
+
+    def check_service_with_label(self, service_info, labels):
+        if 'label' not in service_info:
+            return False
+        
+        for label in labels:
+            if label not in service_info['label']:
+                return False
+            
+            if service_info['label'][label] != labels[label]:
+                return False
+            
+        return True
+
+    def get_service(self, namespace, name, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'namespace:%s' % (namespace)
@@ -300,6 +357,8 @@ class K8sServiceInfo():
         )
         services = self.get_services(
             object_filter=object_filter,
+            endpoint_info=endpoint_info,
+            pod_info=pod_info,
             return_mo=return_mo,
             cache_enabled=cache_enabled
         )
@@ -369,16 +428,22 @@ class K8sServiceInfo():
         )
         services_mo = self.get_services(
             object_filter=object_filter,
-            return_mo=return_mo
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
         )
         return services_mo
 
-    def is_service_with_special_label(self, label, cache_enabled=True):
-        services_mo = self.get_services_with_special_label(
-            label,
-            return_mo=True,
-            cache_enabled=cache_enabled
-        )
-        if services_mo is not None and len(services_mo) > 0:
-            return True
-        return False
+    def get_service_base_body(self, namespace, name, labels=None):
+        body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Service'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        if labels is not None:
+            body['metadata']['labels'] = {}
+            for key in labels:
+                body['metadata']['labels'][key] = labels[key]
+
+        body['spec'] = {}
+        return body

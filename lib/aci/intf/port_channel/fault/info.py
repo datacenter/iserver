@@ -22,7 +22,6 @@ class InterfacePortChannelFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/aggr-[po2]/aggrif
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfacePortChannelFaultInfo():
                 if 'sys/aggr-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('sys/aggr-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/aggr-[po1]/aggrif/fault-F0532"
         if info['interfaceId'] is None:
             if 'sys/aggr-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('sys/aggr-[')[1].split(']')[0]

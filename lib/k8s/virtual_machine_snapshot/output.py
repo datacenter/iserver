@@ -15,11 +15,11 @@ class K8sVirtualMachineSnapshotOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Snapshot'
         ]
 
         self.my_output.my_table(

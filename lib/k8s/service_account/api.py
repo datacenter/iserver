@@ -46,3 +46,29 @@ class K8sServiceAccountApi():
         )
 
         return self.service_account_mo
+
+    def create_service_account_mo(self, body):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='v1', kind='ServiceAccount')
+            success = True
+            response = obj_list.create(
+                namespace=body['metadata']['namespace'],
+                body=body
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.create_service_account_mo', traceback.format_exc())
+
+        self.log.ocp(
+            'create',
+            'service_account',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success

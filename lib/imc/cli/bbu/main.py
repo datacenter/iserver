@@ -10,45 +10,11 @@ class ImcCliBbu():
             if self.bbu_mo is not None:
                 return self.bbu_mo
 
-            self.bbu_mo = self.get_icm_cli_cache_entry(
+            self.bbu_mo = self.get_imc_cli_cache_entry(
                 'bbu'
             )
             if self.bbu_mo is not None:
                 return self.bbu_mo
-
-        # Controller MRAID:
-        #     BBU Type: TMM-C SuperCap
-        #     BBU Health: Good
-        #     BBU Status: Optimal
-        #     Learn Cycle Status: Successful
-        #     Charging Status: N/A
-        #     Learn Mode: Auto
-        #     Battery Present: true
-        #     Serial Number: 26487
-        #     Temperature: 20 degrees C
-        #     Temperature High: false
-        #     Retention Time: N/A
-        #     Relative State of Charge: N/A
-        #     Absolute State of Charge: N/A
-        #     Capacitance: 100 %
-        #     Manufacturer: LSI
-        #     Date of Manufacture: 2019-12-21
-        #     Firmware Version: 05668-01
-        #     Design Voltage: 9.800 V
-        #     Voltage: 9.734 V
-        #     Current: 0.000 A
-        #     Design Capacity: 374 Joules
-        #     Full Capacity: N/A
-        #     Remaining Capacity: N/A
-        #     Pack Energy: 334 Joules
-        #     Expected Margin of Error: N/A
-        #     Completed Charge Cycles: N/A
-        #     Learn Cycle Requested: false
-        #     Next Learn Cycle: 2024-06-23 03:33
-        #     Learn Cycle Active: false
-        #     Learn Cycle Failed: false
-        #     Learn Cycle Timeout: false
-        #     I2c Errors Detected: false
 
         slots = self.get_storage_adapter_slots()
         if slots is None:

@@ -6,7 +6,10 @@ class NodeInfo():
     def __init__(self):
         self.nodes = None
 
-    def get_node_count(self, pod_id=None):
+    def init_node(self):
+        self.nodes = None
+
+    def get_node_count(self, pod_id=None, cache_enabled=True):
         node_filter = None
         if pod_id is not None:
             node_filter = ['pod:%s' % (pod_id), 'role:!controller']
@@ -14,35 +17,39 @@ class NodeInfo():
             node_filter = ['role:!controller']
 
         nodes = self.get_nodes(
-            node_filter=node_filter
+            node_filter=node_filter,
+            cache_enabled=cache_enabled
         )
         return len(nodes)
 
-    def get_node_id(self, node_name, pod_id=None):
+    def get_node_id(self, node_name, pod_id=None, cache_enabled=True):
         node_info = self.get_node(
             pod_id=pod_id,
-            node_name=node_name
+            node_name=node_name,
+            cache_enabled=cache_enabled
         )
         if node_info is None:
             return None
         return node_info['id']
 
-    def get_node_name(self, node_id, pod_id=None):
+    def get_node_name(self, node_id, pod_id=None, cache_enabled=True):
         node_info = self.get_node(
             pod_id=pod_id,
-            node_id=node_id
+            node_id=node_id,
+            cache_enabled=cache_enabled
         )
         if node_info is None:
             return None
         return node_info['name']
 
-    def get_node_names(self, pod_id=None):
+    def get_node_names(self, pod_id=None, cache_enabled=True):
         node_filter = None
         if pod_id is not None:
             node_filter = ['pod:%s' % (pod_id)]
 
         nodes = self.get_nodes(
-            node_filter=node_filter
+            node_filter=node_filter,
+            cache_enabled=cache_enabled
         )
         if nodes is None:
             return None
@@ -116,11 +123,11 @@ class NodeInfo():
 
         return info
 
-    def get_nodes_info(self):
+    def get_nodes_info(self, cache_enabled=True):
         if self.nodes is not None:
             return self.nodes
 
-        nodes_mo = self.get_node_mo()
+        nodes_mo = self.get_node_mo(cache_enabled=cache_enabled)
         if nodes_mo is not None:
             self.nodes = []
             for node_mo in nodes_mo:
@@ -132,7 +139,7 @@ class NodeInfo():
 
         return self.nodes
 
-    def get_node(self, pod_id=None, node_id=None, node_name=None, node_ip=None):
+    def get_node(self, pod_id=None, node_id=None, node_name=None, node_ip=None, cache_enabled=True):
         node_filter = []
         if pod_id is not None:
             node_filter.append(
@@ -155,7 +162,8 @@ class NodeInfo():
             )
 
         nodes = self.get_nodes(
-            node_filter=node_filter
+            node_filter=node_filter,
+            cache_enabled=cache_enabled
         )
 
         if nodes is None:
@@ -242,8 +250,12 @@ class NodeInfo():
 
         return True
 
-    def get_nodes(self, node_filter=None, interfaces_summary_info=False, power_info=False, psu_info=False, sensor_info=False, system_info=False, temp_info=False):
-        all_nodes = self.get_nodes_info()
+    def get_nodes(self, node_filter=None, interfaces_summary_info=False, power_info=False, psu_info=False, sensor_info=False, system_info=False, temp_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_node()
+            self.init_node_mo()
+
+        all_nodes = self.get_nodes_info(cache_enabled=cache_enabled)
         if all_nodes is None:
             return None
 

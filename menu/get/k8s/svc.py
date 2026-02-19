@@ -25,15 +25,16 @@ class NoResultExit(Exception):
 
 @click.command("svc")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--owner", default='', callback=validations.empty_string_to_none, help="Filter by owner")
 @click.option("--type", "-t", "svc_type", type=click.Choice(['NodePort', 'ClusterIP', 'ExternalNane', 'LoadBalancer', 'any'], case_sensitive=False), default='any', show_default=True, help="Filter by type")
 @click.option("--cluster-ip", default='', callback=validations.empty_string_to_none, help="Filter by cluster IP")
 @click.option("--external-ip", default='', callback=validations.empty_string_to_none, help="Filter by external IP")
 @click.option("--port", default='', callback=validations.validate_int_oper, help="Filter by port")
 @click.option("--special", default='', callback=validations.empty_string_to_none, help="Filter by special selector")
-@click.option("--view", "-v", default=['state'], help="[state|label|pod|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|metadata|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_k8s_svc_command(
@@ -41,6 +42,7 @@ def get_k8s_svc_command(
         cluster,
         namespace,
         name,
+        owner,
         svc_type,
         cluster_ip,
         external_ip,
@@ -59,7 +61,7 @@ def get_k8s_svc_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|label|pod|all',
+        'state|metadata|all',
         'state',
         []
     )
@@ -68,7 +70,7 @@ def get_k8s_svc_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster)
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -82,6 +84,11 @@ def get_k8s_svc_command(
         if name is not None:
             object_filter.append(
                 'name:%s' % (name)
+            )
+
+        if owner is not None:
+            object_filter.append(
+                'owner:%s' % (owner)
             )
 
         if svc_type != 'any':
@@ -129,10 +136,6 @@ def get_k8s_svc_command(
                 'special:%s' % (special)
             )
 
-        pod_info = False
-        if 'pod' in view:
-            pod_info = True
-
         if output not in ['json', 'mo']:
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
@@ -159,10 +162,12 @@ def get_k8s_svc_command(
 
         services = k8s_handlers.get_services(
             object_filter=object_filter,
-            pod_info=pod_info
+            pod_info=True
         )
 
         ctx.busy = False
+
+        ctx.my_output.json_output(services)
 
         if output == 'json':
             ctx.my_output.default(
@@ -174,24 +179,13 @@ def get_k8s_svc_command(
             return
 
         if 'state' in view:
-            k8s_output_handler.print_services(
-                services,
-                title=True
-            )
+            k8s_output_handler.print_services(services)
 
-        if 'label' in view:
-            k8s_output_handler.print_services_label(
-                services,
-                title=True
-            )
+        if 'metadata' in view:
+            k8s_output_handler.print_services_metadata(services)
 
-        if 'pod' in view:
-            k8s_output_handler.print_services_pod(
-                services,
-                title=True
-            )
-        ctx.my_output.default('Filter: namespace, name, type, cluster-ip, external-ip, port, special', before_newline=True)
-        ctx.my_output.default('View:   state (def), label, pod, all')
+        ctx.my_output.default('Filter: namespace, name, owner, type, cluster-ip, external-ip, port, special', before_newline=True)
+        ctx.my_output.default('View:   state (def), metadata, all')
 
     except NoResultExit:
         ctx.busy = False

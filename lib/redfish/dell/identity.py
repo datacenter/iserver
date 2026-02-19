@@ -8,21 +8,6 @@ class RedfishEndpointDellTemplateIdentity():
         self.system_url = '/Systems/System.Embedded.1'
         self.idrac_url = '/Managers/iDRAC.Embedded.1'
 
-    def get_identity_default_cache_name(self, properties):
-        firmware = properties['Firmware']
-        if len(firmware) > 0:
-            firmware = firmware.replace('(', '.').replace(')', '')
-
-        product = properties['Product'].replace(' ', '-')
-
-        name = 'dell-%s-%s-%s-%s' % (
-            product.lower(),
-            properties['SerialNumber'].lower(),
-            firmware.lower(),
-            properties['PowerState'].lower()
-        )
-        return name
-
     def get_template_identity_properties(self):
         main = self.get_properties(self.identity_main_url)
         chassis = self.get_properties(self.chassis_url)
@@ -44,11 +29,5 @@ class RedfishEndpointDellTemplateIdentity():
         properties['SerialNumber'] = system['SerialNumber']
         properties['PowerState'] = system['PowerState']
         properties['BiosVersion'] = system['BiosVersion']
-
-        properties['DefaultCacheName'] = self.get_identity_default_cache_name(properties)
-        if properties['UUID'] == '':
-            properties['CacheFileName'] = str(uuid.uuid4()).lower()
-        else:
-            properties['CacheFileName'] = properties['UUID'].lower()
 
         return properties

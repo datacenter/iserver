@@ -15,7 +15,6 @@ class ProtocolBfdFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519092"
         info['session_id'] = None
 
         if not managed_object['delegated']:

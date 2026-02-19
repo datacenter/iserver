@@ -27,7 +27,6 @@ class DomainL3NodeInfo():
                 item['nodeId']
             )
             port_info['intf_type'] = item['ctxClass']
-            # "topology/pod-1/node-2201/sys/l3s-[eth1/43]"
             port_info['intf_name'] = item['ctxDn'].split('[')[1].split(']')[0]
             info['interface'].append(
                 port_info

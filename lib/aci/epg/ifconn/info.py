@@ -66,7 +66,6 @@ class EpgIfConnInfo():
         if not key2.startswith('tn-'):
             return None
 
-        # uni/tn-infra/out-RL-L3Out/instP-ipnInstP
         if key3.startswith('out-'):
             if key4 is None:
                 info = {}
@@ -99,7 +98,6 @@ class EpgIfConnInfo():
 
             return info
 
-        # uni/tn-k8s/l2out-Test/instP-L2Out-ext-epg
         if key3.startswith('l2out-'):
             if not key4.startswith('instP-'):
                 self.log.error(
@@ -121,8 +119,6 @@ class EpgIfConnInfo():
 
             return info
 
-        # uni/tn-mgmt/mgmtp-default/inb-default
-        # uni/tn-mgmt/mgmtp-default/oob-default
         if key3.startswith('mgmtp-'):
             if not key4.startswith('inb-') and not key4.startswith('oob-'):
                 self.log.error(
@@ -150,7 +146,6 @@ class EpgIfConnInfo():
 
             return info
 
-        # uni/tn-common/ap-privIP_TEST/epg-privIP_TEST
         if key3.startswith('ap-'):
             if not key4.startswith('epg-'):
                 self.log.error(
@@ -188,7 +183,6 @@ class EpgIfConnInfo():
         info['pathName'] = ''
 
         if target_dn.split('/')[2].startswith('protpaths-'):
-            # "topology/pod-1/protpaths-2207-2208/pathep-[k8s_ocp_bm_1_PolGrp]"
             info['pathType'] = 'Policy Group'
             info['podId'] = target_dn.split('/')[1][4:]
             info['pathNode'] = target_dn.split('/')[2][10:]
@@ -205,7 +199,6 @@ class EpgIfConnInfo():
             info['pathName'] = target_dn.split('[')[1].split(']')[0]
 
         if target_dn.split('/')[2].startswith('paths-'):
-            # "topology/pod-1/paths-2207/pathep-[eth1/3/1]"
             info['pathType'] = 'Intf'
             info['podId'] = target_dn.split('/')[1][4:]
             info['pathNode'] = target_dn.split('/')[2][6:]
@@ -354,33 +347,6 @@ class EpgIfConnInfo():
         return None
 
     def get_epg_ifconn_info(self, managed_object):
-        # "addr": "<ip>",
-        # "auto": "no",
-        # "autostate": "disabled",
-        # "bcastP": "<ip>",
-        # "childAction": "",
-        # "classPref": "encap",
-        # "descr": "",
-        # "dn": "uni/epp/fv-[uni/tn-k8s/ap-k8s_ANP/epg-vk8s_4]/node-2207/dyatt-[topology/pod-1/protpaths-2207-2208/pathep-[k8s_esx72_PolGrp]]/conndef/conn-[vlan-1368]-[<ip>]",
-        # "encap": "vlan-1368",
-        # "extEncap": "unknown",
-        # "gw": "<ip>",
-        # "ifInstT": "l3-port",
-        # "ipv6Dad": "enabled",
-        # "isMultiPodDirect": "no",
-        # "lcOwn": "local",
-        # "llAddr": "<ip>",
-        # "mac": "00:00:00:00:00:00",
-        # "mcastAddr": "<ip>",
-        # "modTs": "2022-12-16T16:55:06.272+02:00",
-        # "mode": "regular",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "mtu": "inherit",
-        # "name": "",
-        # "nameAlias": "",
-        # "resImedcy": "immediate",
-        # "status": "",
-        # "validState": "not-validated"
         keys = [
             'addr',
             'auto',

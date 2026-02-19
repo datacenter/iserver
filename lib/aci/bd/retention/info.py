@@ -1,6 +1,3 @@
-# https://www.kareemccie.com/2021/12/what-is-endpoint-retention-policy-in-aci.html
-
-
 class BridgeDomainRetentionInfo():
     def __init__(self):
         pass

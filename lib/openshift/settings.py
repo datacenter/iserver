@@ -49,8 +49,11 @@ class OpenShiftSettings(Settings):
 
         return True
 
-    def get_api_token(self):
-        return file_helper.get_file_text(self.openshift_api_token_filename)
+    def get_api_token(self, do_strip=True):
+        token = file_helper.get_file_text(self.openshift_api_token_filename)
+        if token is not None and do_strip:
+            return token.strip()
+        return token
 
     def set_api_token(self, token):
         return file_helper.set_file(self.openshift_api_token_filename, token)

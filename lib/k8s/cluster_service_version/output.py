@@ -2,46 +2,32 @@ class K8sClusterServiceVersionOutput():
     def __init__(self):
         pass
 
-    def print_cluster_service_versions(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Cluster Service Version - State [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace',
-            'name',
-            'provider_name',
-            'display_name',
-            'version',
-            'maturityT',
-            'phase',
-            'age'
-        ]
-
-        headers = [
-            'Namespace',
-            'Name',
-            'Provider',
-            'Type',
-            'Version',
-            'Maturity',
-            'Phase',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_cluster_service_versions(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=False,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Cluster Service Version', 'namespace_nameT'],
+                ['Type', 'display_name'],
+                ['Provider', 'provider_name'],
+                ['Version', 'version'],
+                ['Maturity', 'maturityT'],
+                ['Phase', 'phase'],
+                ['Age', 'age']
+            ]
+        )
+
+    def print_cluster_service_version(self, item):
+        self.my_output.dictionary_ng(
+            'Cluster Service Version',
+            item,
+            [
+                ['Namespace', 'namespace'],
+                ['Name', 'name'],
+                ['Type', 'display_name'],
+                ['Provider', 'provider_name'],
+                ['Version', 'version'],
+                ['Maturity', 'maturityT'],
+                ['Phase', 'phase'],
+                ['Age', 'age']
+            ]
         )

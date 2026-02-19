@@ -3,11 +3,7 @@ class RedfishEndpointUcsRackTemplateRole():
         self.role_uri = '/redfish/v1/AccountService/Roles'
         self.role = None
 
-    def get_role_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.role is not None:
-                return self.role
-
+    def get_role_mo(self):
         self.role = []
 
         role_uris = self.endpoint_handler.get_odata_ids(self.role_uri)
@@ -64,8 +60,8 @@ class RedfishEndpointUcsRackTemplateRole():
 
         return info
 
-    def get_template_role_properties(self, account_info=False, cache_enabled=True):
-        roles = self.get_role_mo(cache_enabled=cache_enabled)
+    def get_template_role_properties(self, account_info=False):
+        roles = self.get_role_mo()
         for role in roles:
             if account_info:
                 role['username'] = []

@@ -60,6 +60,9 @@ class Cache():
         return content['cache']
 
     def set_cmd_cache(self, cmd_name, cache, cmd_selector=None):
+        if not self.cache_enabled:
+            return True
+        
         filename = self.get_cmd_cache_filename(cmd_name)
         if filename is None:
             return False

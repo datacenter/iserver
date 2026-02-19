@@ -23,7 +23,7 @@ class NoResultExit(Exception):
 
 @click.command("srnnp")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Cluster name")
+@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
 @click.option("--namespace", default='openshift-sriov-network-operator', callback=validations.empty_string_to_none, help="Policy namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Policy name")
 @click.option("--type", "device_type", type=click.Choice(['vfio', 'net'], case_sensitive=False), help="Device type")
@@ -57,7 +57,7 @@ def create_k8s_srnnp_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster_name, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster_name, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 

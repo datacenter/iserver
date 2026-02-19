@@ -9,3 +9,29 @@ class K8sNodeNetworkConfigurationPolicyOutput():
                 underline=True,
                 before_newline=True
             )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'name',
+            'status',
+            'reason'
+        ]
+
+        headers = [
+            'NNCP',
+            'Status',
+            'Reason'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            row_separator=False,
+            allow_order_subkeys=True,
+            underline=True,
+            table=True
+        )

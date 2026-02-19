@@ -4,8 +4,9 @@ import yaml
 
 from lib.intersight.intersight_common import IntersightCommon
 from lib import ip_helper
-from lib.intersight import software_repository_catalog
-from lib.intersight import organization
+from lib import output_helper
+from lib.intersight.software_repository_catalog import main as software_repository_catalog
+from lib.intersight.organization import main as organization
 
 
 class SoftwareConfigurationUtility(IntersightCommon):
@@ -14,6 +15,63 @@ class SoftwareConfigurationUtility(IntersightCommon):
         IntersightCommon.__init__(self, iaccount, self.iobject, log_id=log_id)
         self.log_id = log_id
         self.my_output = None
+
+    def get_info(self, scu_mo, organizations=None, verify=False):
+        keys = [
+            'Moid',
+            'Name',
+            'Source',
+            'SupportedModels',
+            'Tags',
+            'Vendor',
+            'Version'
+        ]
+
+        info = {}
+        info['__Output'] = {}
+
+        for key in keys:
+            info[key] = None
+            if key in scu_mo:
+                info[key] = scu_mo[key]
+
+        if organizations is not None:
+            organization_id = None
+            for permission in scu_mo['PermissionResources']:
+                if permission['ObjectType'] == 'organization.Organization':
+                    organization_id = permission['Moid']
+
+            if organization_id is None or organization_id not in organizations:
+                # Organization ID must exist
+                return None
+
+            info['Organization'] = organizations[organization_id]
+
+        if info['Source']['ClassId'] not in ['softwarerepository.HttpServer', 'softwarerepository.NfsServer']:
+            return None
+
+        info['Link'] = None
+        info['Type'] = None
+        if verify:
+            info['Verified'] = False
+
+        if info['Source']['ClassId'] == 'softwarerepository.HttpServer':
+            info['Type'] = 'url'
+            info['Link'] = scu_mo['Source']['LocationLink']
+            if verify:
+                info['Verified'] = ip_helper.is_url_accessible(info['Link'])
+                if info['Verified']:
+                    info['__Output']['Link'] = 'Green'
+                else:
+                    info['__Output']['Link'] = 'Red'
+
+        if info['Source']['ClassId'] == 'softwarerepository.NfsServer':
+            info['Type'] = 'nfs'
+            info['Link'] = scu_mo['Source']['FileLocation']
+            if verify:
+                info['Verified'] = False
+
+        return info
 
     def get_all(self, max_errors=3, error_timeout=1):
         """Get all SCU objects
@@ -33,67 +91,26 @@ class SoftwareConfigurationUtility(IntersightCommon):
         Returns:
             list of dict: list of Intersight SCU objects
         """
-        scus = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
-        if scus is None:
-            return scus
+        scu_mos = IntersightCommon.get_all(self, max_errors=max_errors, error_timeout=error_timeout)
+        if scu_mos is None:
+            return scu_mos
 
         organization_handler = organization.Organization(self.iaccount)
         organizations = organization_handler.get_moids_dict()
 
-        verified = []
-        keys = [
-            'Moid',
-            'Name',
-            'Source',
-            'SupportedModels',
-            'Tags',
-            'Vendor',
-            'Version'
-        ]
+        scus = []
+        for scu_mo in scu_mos:
+            scu_info = self.get_info(
+                scu_mo,
+                organizations=organizations,
+                verify=True
+            )
+            if scu_info is not None:
+                scus.append(
+                    scu_info
+                )
 
-        for scu in scus:
-            info = {}
-            info['__Output'] = {}
-
-            for key in keys:
-                info[key] = scu[key]
-
-            organization_id = None
-            for permission in scu['PermissionResources']:
-                if permission['ObjectType'] == 'organization.Organization':
-                    organization_id = permission['Moid']
-
-            if organization_id is None or organization_id not in organizations:
-                # Organization ID must exist
-                continue
-
-            info['Organization'] = organizations[organization_id]
-
-            info['Verified'] = False
-            info['Link'] = None
-            info['Type'] = None
-
-            if info['Source']['ClassId'] not in ['softwarerepository.HttpServer', 'softwarerepository.NfsServer']:
-                continue
-
-            if info['Source']['ClassId'] == 'softwarerepository.HttpServer':
-                info['Type'] = 'url'
-                info['Link'] = scu['Source']['LocationLink']
-                info['Verified'] = ip_helper.is_url_accessible(info['Link'])
-
-                if info['Verified']:
-                    info['__Output']['Link'] = 'Green'
-                else:
-                    info['__Output']['Link'] = 'Red'
-
-            if info['Source']['ClassId'] == 'softwarerepository.NfsServer':
-                info['Type'] = 'nfs'
-                info['Link'] = scu['Source']['FileLocation']
-                info['Verified'] = False
-
-            verified.append(info)
-
-        return verified
+        return scus
 
     def validate_add(self, scu, name_unique=True):
         """Validate SCU create attributes
@@ -325,3 +342,41 @@ class SoftwareConfigurationUtility(IntersightCommon):
                 update_attributes = '%s --%s=\'%s\'' % (update_attributes, 'Source', json.dumps(source))
 
         return IntersightCommon.update(self, moid, update_attributes)
+
+    def print(self, info, title=False):
+        if self.my_output is None:
+            self.my_output = output_helper.OutputHelper(log_id=self.log_id)
+
+        if title:
+            self.my_output.default(
+                'Intersight OS Vendor [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+                return
+
+        order = [
+            'Name',
+            'SupportedModels',
+            'Link'
+        ]
+
+        headers = [
+            'Name',
+            'Supported Models',
+            'Link'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            remove_empty_columns=True,
+            row_separator=True,
+            underline=True,
+            table=True
+        )

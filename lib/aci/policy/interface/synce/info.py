@@ -22,33 +22,6 @@ class PolicyInterfaceSynceInfo():
         return info
 
     def get_policy_interface_synce_info(self, managed_object):
-        # "adminSt": "disabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/synceEthIfP-default",
-        # "extMngdBy": "",
-        # "lcOwn": "local",
-        # "modTs": "2021-09-01T11:35:59.198+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "qloptype": "none",
-        # "qlrcvexactval": "fsync-ql-common-none",
-        # "qlrcvhval": "fsync-ql-common-none",
-        # "qlrcvlval": "fsync-ql-common-none",
-        # "qltxexactval": "fsync-ql-common-none",
-        # "qltxhval": "fsync-ql-common-none",
-        # "qltxlval": "fsync-ql-common-none",
-        # "selinput": "no",
-        # "srcpriority": "100",
-        # "ssm": "yes",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": "all",
-        # "wtr": "5"
         keys = [
             'adminSt',
             'annotation',
@@ -194,7 +167,7 @@ class PolicyInterfaceSynceInfo():
 
         return True
 
-    def get_policy_interface_synce(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_synce(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_synce_info()
         if all_policies is None:
             return None
@@ -254,3 +227,29 @@ class PolicyInterfaceSynceInfo():
         )
 
         return policy
+
+    def get_policy_interface_synce(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_synce(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_synce(self, policy_name):
+        if self.get_policy_interface_synce(policy_name) is None:
+            return False
+        return True

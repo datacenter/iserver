@@ -22,14 +22,12 @@ class InterfaceSviFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2228224]/bd-[vxlan-15597460]/svi-[vlan33]"
         info['interfaceId'] = None
         if not managed_object['delegated']:
             if 'affected' in info:
                 if '/svi-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/svi-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/ctx-[vxlan-2293761]/bd-[vxlan-15237056]/svi-[vlan30]/fault-F112128"
         if info['interfaceId'] is None:
             if '/svi-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/svi-[')[1].split(']')[0]

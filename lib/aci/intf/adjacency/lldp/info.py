@@ -38,7 +38,6 @@ class InterfaceAdjacencyLldpInfo():
         if info['portVlan'] == 'unspecified':
             info['portVlan'] = ''
 
-        # topology/pod-1/node-201/sys/lldp/inst/if-[mgmt0]/adj-1
         info['apic'] = self.apic_name
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
@@ -62,13 +61,15 @@ class InterfaceAdjacencyLldpInfo():
         if info['portIdT'] != 'mac' and ip_helper.is_mac_address(info['chassisIdV']):
             info['mac'] = info['chassisIdV']
 
-        (info['__Output']['health'], info['health']) = self.get_health_info(
-            managed_object['healthInst']['cur']
-        )
+        if 'healthInst' in managed_object and managed_object['healthInst'] is not None:
+            (info['__Output']['health'], info['health']) = self.get_health_info(
+                managed_object['healthInst']['cur']
+            )
 
-        (info['__Output']['faults'], info['faults']) = self.get_faults_info(
-            managed_object['faultCounts']
-        )
+        if 'faultCounts' in managed_object:
+            (info['__Output']['faults'], info['faults']) = self.get_faults_info(
+                managed_object['faultCounts']
+            )
 
         return info
 

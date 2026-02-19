@@ -20,7 +20,6 @@ class TenantFaultInfo():
         if not managed_object['delegated']:
             if 'affected' in info:
                 if 'uni/tn-' in info['affected']:
-                    # uni/tn-k8s/ap-k8s_ANP/epg-vk8s_1
                     info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if info['tenantName'] is None:

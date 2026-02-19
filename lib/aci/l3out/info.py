@@ -5,6 +5,9 @@ class L3OutInfo():
     def __init__(self):
         self.l3out = None
 
+    def init_l3out(self):
+        self.l3out = None
+
     def get_l3out_count(self, tenant_name=None, mpls=None):
         l3out_filter = []
 
@@ -14,11 +17,18 @@ class L3OutInfo():
             )
 
         if mpls is not None:
-            if mpls:
+            if mpls not in ['yes', 'no']:
+                self.log.error(
+                    'get_l3out_count',
+                    'Unexpected mpls value'
+                )
+
+            if mpls == 'yes':
                 l3out_filter.append(
                     'mpls:enabled'
                 )
-            else:
+
+            if mpls == 'no':
                 l3out_filter.append(
                     'mpls:disabled'
                 )
@@ -32,10 +42,14 @@ class L3OutInfo():
     def get_l3out_name_from_dn(self, l3out_dn):
         # [0]: uni/tn-{name}/l3out-{name}
         tenant = l3out_dn.split('/')[1][3:]
+        name = None
+
         if '/l3out-' in l3out_dn:
             name = l3out_dn.split('/')[2][6:]
+
         if '/out-' in l3out_dn:
             name = l3out_dn.split('/')[2][4:]
+
         l3out_name = '%s/%s' % (
             tenant,
             name
@@ -156,11 +170,11 @@ class L3OutInfo():
 
         return info
 
-    def get_l3outs_info(self):
+    def get_l3outs_info(self, cache_enabled=True):
         if self.l3out is not None:
             return self.l3out
 
-        managed_objects = self.get_l3out_mo()
+        managed_objects = self.get_l3out_mo(cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
 
@@ -319,9 +333,13 @@ class L3OutInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_outs = self.get_l3outs_info()
+        if not cache_enabled:
+            self.init_l3out()
+            self.init_l3out_mo()
+        all_outs = self.get_l3outs_info(cache_enabled=cache_enabled)
         if all_outs is None:
             return None
 
@@ -368,3 +386,40 @@ class L3OutInfo():
         )
 
         return l3outs
+
+    def get_l3out(self, tenant_name, l3out_name, cache_enabled=True):
+        l3out_filter = []
+        l3out_filter.append('name:%s' % (l3out_name))
+        l3out_filter.append('tenant:%s' % (tenant_name))
+        l3outs = self.get_l3outs(
+            l3out_filter=l3out_filter,
+            cache_enabled=cache_enabled
+        )
+
+        if len(l3outs) == 1:
+            return l3outs[0]
+
+        return None
+
+    def is_l3out(self, tenant_name, l3out_name, cache_enabled=True):
+        if self.get_l3out(tenant_name, l3out_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def is_l3out_external_epg(self, tenant_name, l3out_name, external_epg_name, cache_enabled=True):
+        info = self.get_l3out(
+            tenant_name,
+            l3out_name,
+            cache_enabled=cache_enabled
+        )
+        if info is None:
+            return False
+
+        if info['l3extInstP'] is None:
+            return False
+
+        for item in info['l3extInstP']:
+            if item['name'] == external_epg_name:
+                return True
+
+        return False

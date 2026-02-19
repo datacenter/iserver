@@ -113,7 +113,7 @@ def create_ocp_migrate_command(
             ctx.my_output.error('Virtctl not defined for cluster %s' % (settings['name']))
             raise ErrorExit
 
-        k8s_handlers = validations.validate_kubernetes_name(ctx, ocp_cluster_name, cluster_type='ocp')
+        k8s_handlers = validations.validate_kubernetes_name(ctx, ocp_cluster_name, cluster_type='ocp', log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 
@@ -139,8 +139,7 @@ def create_ocp_migrate_command(
             )
 
             k8s_output_handler.print_virtual_machine_instances(
-                virtual_machine_instances,
-                title=True
+                virtual_machine_instances
             )
 
             vmi = input('Target virtual machine name (empty to autogenerate): ')
@@ -256,8 +255,7 @@ def create_ocp_migrate_command(
         )
 
         k8s_output_handler.print_virtual_machine_instances(
-            virtual_machine_instances,
-            title=False
+            virtual_machine_instances
         )
 
         k8s_output_handler.print_virtual_machine_instances_phase(

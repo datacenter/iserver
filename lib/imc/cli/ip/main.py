@@ -3,6 +3,7 @@ import json
 
 class ImcCliIp():
     def __init__(self):
+        self.ip_scope_set = False
         self.network_mo = None
         self.icmp_mo = None
         self.blocking_mo = None
@@ -13,7 +14,7 @@ class ImcCliIp():
             if self.network_mo is not None:
                 return self.network_mo
 
-            self.network_mo = self.get_icm_cli_cache_entry(
+            self.network_mo = self.get_imc_cli_cache_entry(
                 'network'
             )
             if self.network_mo is not None:
@@ -26,6 +27,10 @@ class ImcCliIp():
         #     IPv4 Netmask: <mask>
 
         if keep_scope:
+            if not self.ip_scope_set:
+                self.ip_scope_set = True
+                self.set_scope('cimc,network')
+
             self.network_mo = self.show_dict(
                 'show detail',
                 start='Network Setting:',
@@ -71,18 +76,22 @@ class ImcCliIp():
             if self.icmp_mo is not None:
                 return self.icmp_mo
 
-            self.icmp_mo = self.get_icm_cli_cache_entry(
+            self.icmp_mo = self.get_imc_cli_cache_entry(
                 'icmp'
             )
             if self.icmp_mo is not None:
                 return self.icmp_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/network # show icmp-configuration detail
+        # comp /cimc/network # show icmp-configuration detail
         # ICMP Settings:
         #     Destination Unreachable Enabled: no
         #     Redirect Enabled: no
 
         if keep_scope:
+            if not self.ip_scope_set:
+                self.ip_scope_set = True
+                self.set_scope('cimc,network')
+
             self.icmp_mo = self.show_dict(
                 'show icmp-configuration detail',
                 start='ICMP Settings',
@@ -128,13 +137,13 @@ class ImcCliIp():
             if self.blocking_mo is not None:
                 return self.blocking_mo
 
-            self.blocking_mo = self.get_icm_cli_cache_entry(
+            self.blocking_mo = self.get_imc_cli_cache_entry(
                 'blocking'
             )
             if self.blocking_mo is not None:
                 return self.blocking_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/network # show ipblocking detail
+        # comp /cimc/network # show ipblocking detail
         # IP Blocking Setting:
         #     Enabled: no
         #     Fail Count: 3
@@ -142,6 +151,10 @@ class ImcCliIp():
         #     Blocking Time: 300
 
         if keep_scope:
+            if not self.ip_scope_set:
+                self.ip_scope_set = True
+                self.set_scope('cimc,network')
+
             self.blocking_mo = self.show_dict(
                 'show ipblocking detail',
                 start='IP Blocking Setting:',
@@ -187,13 +200,13 @@ class ImcCliIp():
             if self.filtering_mo is not None:
                 return self.filtering_mo
 
-            self.filtering_mo = self.get_icm_cli_cache_entry(
+            self.filtering_mo = self.get_imc_cli_cache_entry(
                 'filtering'
             )
             if self.filtering_mo is not None:
                 return self.filtering_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/network # show ipfiltering detail
+        # comp /cimc/network # show ipfiltering detail
         # IP Filter Service Settings:
         #     Enabled: no
         #     Filter 1:
@@ -202,6 +215,10 @@ class ImcCliIp():
         #     Filter 4:
 
         if keep_scope:
+            if not self.ip_scope_set:
+                self.ip_scope_set = True
+                self.set_scope('cimc,network')
+
             self.filtering_mo = self.show_dict(
                 'show ipfiltering detail',
                 start='IP Filter Service Settings:',
@@ -233,8 +250,14 @@ class ImcCliIp():
         info['__Output'] = {}
         info['__IP'] = self.endpoint_ip
 
-        for key in filtering_mo:
-            info[key] = filtering_mo[key]
+        info['Enabled'] = filtering_mo['Enabled']
+        info['Filter'] = []
+        for index in range(1, 4):
+            filter_id = 'Filter %s' % (index)
+            if filter_id in filtering_mo and len(filtering_mo[filter_id]) > 0:
+                info['Filter'].append(
+                    filtering_mo[filter_id]
+                )
 
         self.log.debug(
             'get_filtering_info',
@@ -245,7 +268,7 @@ class ImcCliIp():
     def get_ip(self, network_info=False, icmp_info=False, blocking_info=False, filtering_info=False, cache_enabled=True):
         ip_info = {}
 
-        self.set_scope('cimc,network')
+        self.ip_scope_set = False
 
         if network_info:
             network_mo = self.get_network_mo(

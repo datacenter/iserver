@@ -23,6 +23,7 @@ class ErrorExit(Exception):
 @click.option("--port", "vc_port", default=443, help="vcenter port")
 @click.option("--username", "vc_username", default='', help="vcenter username")
 @click.option("--password", "vc_password", default='', help="vcenter password")
+@click.option("--domain", "vc_domain", default='', help="vcenter domain")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def set_vc_instance_command(
         ctx,
@@ -31,6 +32,7 @@ def set_vc_instance_command(
         vc_port,
         vc_username,
         vc_password,
+        vc_domain,
         devel
         ):
     """Set vcenter access details"""
@@ -76,7 +78,8 @@ def set_vc_instance_command(
             vc_ip,
             vc_port,
             vc_username,
-            vc_password
+            vc_password,
+            vc_domain=vc_domain
         )
         if not success:
             ctx.my_output.error('Failed to define vcenter entry')

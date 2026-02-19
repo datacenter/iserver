@@ -67,8 +67,6 @@ class InterfaceLoopbackInfo():
 
         info['iod'] = int(info['id'].strip('lo'))
 
-        # Dn format
-        # topology/pod-1/node-201/sys/inst-overlay-1/lb-[lo0]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 

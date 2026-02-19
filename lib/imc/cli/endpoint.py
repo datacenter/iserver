@@ -35,6 +35,7 @@ from lib.imc.cli.sol.main import ImcCliSol
 from lib.imc.cli.ssh.main import ImcCliSsh
 from lib.imc.cli.storageadapter.main import ImcCliStorageAdapter
 from lib.imc.cli.syslog.main import ImcCliSyslog
+from lib.imc.cli.tls.main import ImcCliTls
 from lib.imc.cli.tpm.main import ImcCliTpm
 from lib.imc.cli.user import ImcCliUser
 from lib.imc.cli.utilization.main import ImcCliUtilization
@@ -78,6 +79,7 @@ class ImcCliEndpoint(
         ImcCliSsh,
         ImcCliStorageAdapter,
         ImcCliSyslog,
+        ImcCliTls,
         ImcCliTpm,
         ImcCliUser,
         ImcCliUtilization,
@@ -121,6 +123,7 @@ class ImcCliEndpoint(
         ImcCliSsh.__init__(self)
         ImcCliStorageAdapter.__init__(self)
         ImcCliSyslog.__init__(self)
+        ImcCliTls.__init__(self)
         ImcCliTpm.__init__(self)
         ImcCliUser.__init__(self)
         ImcCliUtilization.__init__(self)

@@ -18,7 +18,6 @@ class VrfAuditInfo():
         info['vrfName'] = None
 
         if 'uni/tn-' in info['affected']:
-            # uni/tn-k8s/ctx-k8s_VRF
             info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
         if '/ctx-' in info['affected']:

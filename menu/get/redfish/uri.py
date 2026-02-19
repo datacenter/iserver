@@ -4,11 +4,8 @@ import threading
 import traceback
 import click
 
-from lib.redfish import endpoint
-from lib.redfish import endpoint_settings
 from lib.redfish import output as redfish_output
-from lib import ip_helper
-
+from menu.get.redfish import common as redfish_common
 from menu import common
 from menu import progress
 from menu import validations
@@ -43,7 +40,6 @@ class ErrorExit(Exception):
 @click.option("--no-exclusions", is_flag=True, show_default=True, default=False, help="No uri exclusions in deep search")
 @click.option("--max", "tree_max_execution_time", is_flag=False, type=click.INT, default=120, help="Max execution time in seconds")
 @click.option("--timeout", "get_timeout", is_flag=False, show_default=True, default=10, type=click.INT, help="Get uri timeout")
-@click.option("--cache", "cache_name", callback=validations.empty_string_to_none, default='', help="Cache name")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_redfish_uri_command(
@@ -67,7 +63,6 @@ def get_redfish_uri_command(
         no_exclusions,
         tree_max_execution_time,
         get_timeout,
-        cache_name,
         output,
         devel
         ):
@@ -80,125 +75,18 @@ def get_redfish_uri_command(
     try:
         common.flags_fixup(ctx, False, False, False)
 
-        if cache_name is None:
-            if len(endpoint_ip) == 0:
-                endpoint_ip = input('Redfish endpoint IP address: ')
-                if not ip_helper.is_valid_ipv4_address(endpoint_ip):
-                    ctx.my_output.error('IPv4 address invalid')
-                    raise ErrorExit
+        params = {}
+        params['endpoint_type'] = endpoint_type
+        params['endpoint_ip'] = endpoint_ip
+        params['endpoint_port'] = endpoint_port
+        params['username'] = username
+        params['password'] = password
+        params['inventory_type'] = inventory_type
+        params['inventory_id'] = inventory_id
 
-            endpoint_settings_handler = endpoint_settings.RedfishEndpointSettings(
-                log_id=ctx.run_id
-            )
-
-            endpoint_id = endpoint_settings_handler.get_endpoint_id_with_ip(
-                endpoint_ip
-            )
-            if endpoint_id is None:
-                ctx.my_output.default('Endpoint not found in internal redfish database. Provide full access details.')
-                system_id = None
-
-                endpoint_port = input('Redfish endpoint port [def. 443]: ')
-                if len(endpoint_port) == 0:
-                    endpoint_port = 443
-                else:
-                    try:
-                        endpoint_port = int(endpoint_port)
-                    except BaseException:
-                        ctx.my_output.error('Port (int) value expected')
-                        endpoint_port = None
-
-                if endpoint_port is None:
-                    raise ErrorExit
-
-                username = input('Redfish authentication username: ')
-                if len(username) == 0:
-                    raise ErrorExit
-
-                password = input('Redfish authentication password: ')
-                if len(password) == 0:
-                    raise ErrorExit
-
-                handler_endpoint_type = input('Endpoint type [ucsc, fi, dell, hp]: ')
-                if len(handler_endpoint_type) == 0 or handler_endpoint_type not in ['ucsc', 'fi', 'dell', 'hp']:
-                    raise ErrorExit
-
-                if handler_endpoint_type == 'fi':
-                    inventory_type = input('Inventory type: ')
-                    if len(inventory_type) == 0:
-                        raise ErrorExit
-
-                    inventory_id = input('Inventory id: ')
-                    if len(inventory_id) == 0:
-                        raise ErrorExit
-
-                redfish_settings = None
-            else:
-                redfish_settings = endpoint_settings_handler.get_redfish_endpoint_settings(endpoint_id)
-                if redfish_settings is None:
-                    ctx.my_output.default('Selected server in internal redfish database and is not configured with Redfish access')
-                    raise ErrorExit
-
-                ctx.my_output.default('Endpoint found in internal redfish database.')
-
-                if redfish_settings['endpoint']['type'] == 'generic':
-                    ctx.my_output.error(
-                        'Endpoint properties template not supported on generic endpoint type'
-                    )
-                    raise ErrorExit
-
-                system_id = endpoint_id
-                handler_endpoint_type = redfish_settings['endpoint']['type']
-                endpoint_ip = redfish_settings['endpoint']['ip']
-                endpoint_port = redfish_settings['endpoint']['port']
-
-                update_requested = False
-                if len(username) == 0:
-                    username = redfish_settings['endpoint']['username']
-                else:
-                    update_requested = True
-                if len(password) == 0:
-                    password = redfish_settings['endpoint']['password']
-                else:
-                    update_requested = True
-                if len(inventory_type) == 0:
-                    inventory_type = redfish_settings['endpoint']['inventory_type']
-                else:
-                    update_requested = True
-                if len(inventory_id) == 0:
-                    inventory_id = redfish_settings['endpoint']['inventory_id']
-                else:
-                    update_requested = True
-
-
-                if update_requested:
-                    ctx.my_output.default('Update redfish endpoint settings?')
-                    if common.get_confirmation():
-                        redfish_endpoint_settings = {}
-                        redfish_endpoint_settings['type'] = handler_endpoint_type
-                        redfish_endpoint_settings['ip'] = endpoint_ip
-                        redfish_endpoint_settings['port'] = endpoint_port
-                        redfish_endpoint_settings['username'] = username
-                        redfish_endpoint_settings['password'] = password
-                        redfish_endpoint_settings['inventory_type'] = inventory_type
-                        redfish_endpoint_settings['inventory_id'] = inventory_id
-
-                        success = endpoint_settings_handler.set_redfish_endpoint_access(
-                            redfish_endpoint_settings,
-                            endpoint_id
-                        )
-                        if success:
-                            ctx.my_output.default('Updated')
-                            redfish_settings = endpoint_settings_handler.get_redfish_endpoint_settings(endpoint_id)
-                            if redfish_settings is None:
-                                ctx.my_output.default('Something went wrong after update...')
-                                raise ErrorExit
-                        else:
-                            ctx.my_output.error('Update failed')
-
-        if cache_name is not None:
-            system_id = None
-            handler_endpoint_type = 'cache'
+        params = redfish_common.input_params(ctx, params)
+        if params is None:
+            raise ErrorExit
 
         ctx.my_output.default('Requested URI: %s' % (redfish_path))
 
@@ -206,35 +94,13 @@ def get_redfish_uri_command(
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx,)).start()
 
-        redfish_handler = endpoint.RedfishEndpoint(
-            handler_endpoint_type,
-            endpoint_ip,
-            endpoint_port,
-            username,
-            password,
-            system_id=system_id,
-            cache_name=cache_name,
-            get_timeout=get_timeout,
-            auto_connect=True,
-            ssl_verify=False,
-            deep_search_exlusions=not no_exclusions,
-            tree_max_execution_time=tree_max_execution_time,
-            log_id=ctx.run_id
-        )
+        params['deep_search_exlusions'] = not no_exclusions
+        params['tree_max_execution_time'] = tree_max_execution_time
 
-        if endpoint_type == 'fi':
-            redfish_handler.endpoint_handler.set_inventory(
-                inventory_type,
-                inventory_id
-            )
-
-        if not redfish_handler.is_connected():
-            ctx.busy = False
-            ctx.my_output.error(
-                'Redfish access failed'
-            )
+        redfish_handler = redfish_common.get_redfish_handler(ctx, params, get_timeout=get_timeout)
+        if redfish_handler is None:
             raise ErrorExit
-
+        
         output_handler = redfish_output.RedfishOutput(log_id=ctx.run_id)
 
         # --children option handler with optional --deep

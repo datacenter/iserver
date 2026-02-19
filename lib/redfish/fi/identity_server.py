@@ -7,21 +7,6 @@ class RedfishEndpointFabricInterconnectTemplateIdentityServer():
         self.identity_system_url = '/Systems/SYSTEM_ID'
         self.identity_firmware_url = '/UpdateService/FirmwareInventory/CIMC'
 
-    def get_identity_server_default_cache_name(self, properties):
-        firmware = properties['Firmware']
-        if len(firmware) > 0:
-            firmware = firmware.replace('(', '.').replace(')', '')
-
-        product = properties['Product'].replace('UCSC-', '').replace('UCSS-', '')
-
-        name = 'ucsc-%s-%s-%s-%s' % (
-            product.lower(),
-            properties['SerialNumber'].lower(),
-            firmware.lower(),
-            properties['PowerState'].lower()
-        )
-        return name
-
     def get_template_identity_server_properties(self):
         main = self.get_properties(self.identity_main_url)
         if main is None:
@@ -59,11 +44,5 @@ class RedfishEndpointFabricInterconnectTemplateIdentityServer():
         if firmware is not None:
             if 'Version' in firmware:
                 properties['Firmware'] = firmware['Version']
-
-        properties['DefaultCacheName'] = self.get_identity_server_default_cache_name(properties)
-        if properties['UUID'] == '':
-            properties['CacheFileName'] = str(uuid.uuid4()).lower()
-        else:
-            properties['CacheFileName'] = properties['UUID'].lower()
 
         return properties

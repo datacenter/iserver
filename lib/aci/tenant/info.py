@@ -149,3 +149,43 @@ class TenantInfo():
         )
 
         return tenants
+
+    def get_tenant(self,
+            tenant_name,
+            count_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None
+            ):
+
+        tenant_filter = []
+        tenant_filter.append('name:%s' % (tenant_name))
+
+        tenants = self.get_tenants(
+            tenant_filter=tenant_filter,
+            count_info=count_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter
+        )
+
+        if tenants is None:
+            return None
+
+        if len(tenants) != 1:
+            return None
+
+        return tenants[0]
+
+    def is_tenant(self, tenant_name):
+        if self.get_tenant(tenant_name) is None:
+            return False
+        return True

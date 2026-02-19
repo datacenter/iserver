@@ -1,10 +1,6 @@
-from lib import output_helper
-
-
 class ServerPower():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_compute_stats = None
-        self.my_output = output_helper.OutputHelper(log_id=log_id)
 
     def get_compute_power_stats_info(self, managed_object):
         info = {}
@@ -14,7 +10,7 @@ class ServerPower():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['blade_rn'] = info['dn'].split('/')[2]
@@ -22,19 +18,19 @@ class ServerPower():
         for suffix in ['', '_avg', '_min', '_max']:
             info['consumed_power%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'consumed_power%s' % (suffix))
+                    getattr(managed_object, 'consumed_power%s' % (suffix), None)
                 ),
                 2
             )
             info['input_current%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'input_current%s' % (suffix))
+                    getattr(managed_object, 'input_current%s' % (suffix), None)
                 ),
                 2
             )
             info['input_voltage%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'input_voltage%s' % (suffix))
+                    getattr(managed_object, 'input_voltage%s' % (suffix), None)
                 ),
                 2
             )

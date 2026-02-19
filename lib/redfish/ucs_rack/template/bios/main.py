@@ -30,8 +30,8 @@ class RedfishEndpointUcsRackTemplateBios():
             info[key] = bios_mo[key]
         return info
 
-    def get_template_bios_properties(self, cache_enabled=True):
-        bios_mo = self.get_bios_mo(cache_enabled=cache_enabled)
+    def get_template_bios_properties(self):
+        bios_mo = self.get_bios_mo()
         if bios_mo is None:
             return None
 

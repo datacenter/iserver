@@ -21,7 +21,6 @@ class InterfaceFcPcEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/fcpc-[lo0]"
         info['interfaceId'] = None
         if '/fcpc-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/fcpc-[')[1].split(']')[0]

@@ -3,13 +3,11 @@ class ImcCliSmtpOutput():
         pass
 
     def print_imc_smtp(self, info):
-        self.print_list_dict(
+        self.print_list_table(
             info,
-            'SMTP'
-        )
-
-    def print_imc_smtp_compare(self, info):
-        self.print_compare(
-            info,
-            'SMTP'
+            title='SMTP',
+            add_endpoint_ip=True,
+            allow_order_subkeys=False,
+            exclude=['Recipient'],
+            expand=['Recipients']
         )

@@ -25,7 +25,6 @@ class ProtocolBgpNeighborStatsApi():
             )
             return self.bgp_nbr_stats_mo[key]
 
-        # https://<apic>/api/node/mo/topology/pod-1/node-201/sys/bgp/inst/dom-common:smi5Gc-cvim4-N3-N4_VRF/peer-[<ip>/32]/ent-[<ip>]/peerstats.json
         distinguished_name = 'topology/pod-%s/node-%s/sys/bgp/inst/dom-%s/peer-[%s]/ent-[%s]/peerstats' % (
             pod_id,
             node_id,

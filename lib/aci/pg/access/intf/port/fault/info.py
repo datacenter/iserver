@@ -15,7 +15,6 @@ class PolicyGroupAccessInterfacePortFaultInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "affected": "uni/infra/funcprof/accportgrp-ESX-R7DC_PolGrp/rsqosDppIfPol"
         info['pgName'] = None
 
         if not managed_object['delegated']:

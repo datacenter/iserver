@@ -1,5 +1,6 @@
 import time
 
+from lib import filter_helper
 from lib import info_helper
 
 from lib.intersight import cache as intersight_cache
@@ -445,10 +446,23 @@ class ComputeExtraAttributes():
             )
         else:
             for managed_object in managed_objects:
+                cimc_info = self.management_interface_handler.get_info(
+                    managed_object
+                )
+
                 self.server_info['CimcInfo'].append(
-                    self.management_interface_handler.get_info(
-                        managed_object
-                    )
+                    cimc_info
+                )
+
+                mac_info = {}
+                mac_info['InterfaceDn'] = 'imc'
+                mac_info['InterfaceName'] = 'imc'
+                mac_info['MacAddress'] = cimc_info['MacAddress'].lower()
+                mac_info['AdapterModel'] = 'Cisco IMC'
+                mac_info['AdapterPciSlot'] = None
+
+                self.server_info['MacAddressInfo'].append(
+                    mac_info
                 )
 
     def add_adapters_info(self):
@@ -2364,6 +2378,8 @@ class ComputeExtraAttributes():
         for key in keys:
             self.server_info[key] = server_mo[key]
 
+        self.server_info['RegisteredDeviceMoid'] = filter_helper.get(server_mo, 'RegisteredDevice:Moid')
+
         self.server_info['Cpu'] = '%sS %sC %sT' % (
             self.server_info['NumCpus'],
             self.server_info['NumCpuCores'],
@@ -2608,15 +2624,6 @@ class ComputeExtraAttributes():
                     del self.server_info['PciDevicesInfo']
 
         if 'net' in settings and settings['net']:
-            if server_mo['ObjectType'] == 'compute.RackUnit':
-                start_time = int(time.time() * 1000)
-                self.add_cimc_info()
-                duration = int(time.time() * 1000) - start_time
-                self.log.debug(
-                    'get_server_info',
-                    'Duration (cimc): %s' % (duration)
-                )
-
             start_time = int(time.time() * 1000)
             self.add_adapters_info()
             duration = int(time.time() * 1000) - start_time
@@ -2648,6 +2655,15 @@ class ComputeExtraAttributes():
                 'get_server_info',
                 'Duration (fc): %s' % (duration)
             )
+
+            if server_mo['ObjectType'] == 'compute.RackUnit':
+                start_time = int(time.time() * 1000)
+                self.add_cimc_info()
+                duration = int(time.time() * 1000) - start_time
+                self.log.debug(
+                    'get_server_info',
+                    'Duration (cimc): %s' % (duration)
+                )
 
         if 'power' in settings and settings['power']:
             start_time = int(time.time() * 1000)

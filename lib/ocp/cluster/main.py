@@ -12,9 +12,9 @@ class OcpCluster(
     OcpClusterManager,
     OcpClusterVcenter
     ):
-    def __init__(self):
+    def __init__(self, log_id=None):
         OcpClusterCnv.__init__(self)
-        OcpClusterConsole.__init__(self)
-        OcpClusterKubeconfig.__init__(self)
+        OcpClusterConsole.__init__(self, log_id=log_id)
+        OcpClusterKubeconfig.__init__(self, log_id=log_id)
         OcpClusterManager.__init__(self)
         OcpClusterVcenter.__init__(self)

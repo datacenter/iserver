@@ -15,15 +15,13 @@ class K8sConfigMapOutput():
             return
 
         order = [
-            'namespace',
-            'name',
+            'namespace_name',
             'dataCount',
             'age'
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Config Map',
             'Data',
             'Age'
         ]

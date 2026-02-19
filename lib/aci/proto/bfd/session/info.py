@@ -29,7 +29,6 @@ class ProtocolBfdSessionInfo():
             )
         )
 
-        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519058"
         info['session_id'] = None
         if len(info['dn'].split('/')) == 7:
             if info['dn'].split('/')[6].startswith('session-'):

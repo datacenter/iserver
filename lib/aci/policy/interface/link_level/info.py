@@ -7,6 +7,9 @@ class PolicyInterfaceLinkLevelInfo():
     def __init__(self):
         self.policy_interface_link_level = None
 
+    def init_policy_interface_link_level(self):
+        self.policy_interface_link_level = None
+
     def get_policy_interface_link_level_reln_info(self, managed_object):
         info = {}
         info['class'] = 'fabricHIfPol'
@@ -22,29 +25,6 @@ class PolicyInterfaceLinkLevelInfo():
         return info
 
     def get_policy_interface_link_level_info(self, managed_object):
-        # "annotation": "",
-        # "autoNeg": "on",
-        # "childAction": "",
-        # "creator": "USER",
-        # "descr": "Auto Speed and Auto FEC",
-        # "dfeDelayMs": "0",
-        # "dn": "uni/infra/hintfpol-25G-auto",
-        # "emiRetrain": "disable",
-        # "extMngdBy": "",
-        # "fecMode": "auto-fec",
-        # "lcOwn": "local",
-        # "linkDebounce": "100",
-        # "modTs": "2022-01-28T14:41:55.292+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "25G-auto",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "portPhyMediaType": "auto",
-        # "speed": "inherit",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:"
         keys = [
             'annotation',
             'autoNeg',
@@ -97,11 +77,11 @@ class PolicyInterfaceLinkLevelInfo():
 
         return info
 
-    def get_policies_interface_link_level_info(self):
+    def get_policies_interface_link_level_info(self, cache_enabled=True):
         if self.policy_interface_link_level is not None:
             return self.policy_interface_link_level
 
-        managed_objects = self.get_policy_interface_link_level_mo()
+        managed_objects = self.get_policy_interface_link_level_mo(cache_enabled=cache_enabled)
         if managed_objects is not None:
             self.policy_interface_link_level = []
             for managed_object in managed_objects:
@@ -172,8 +152,12 @@ class PolicyInterfaceLinkLevelInfo():
 
         return True
 
-    def get_policy_interface_link_level(self, policy_filter=None, reln_info=True, attachment_info=False):
-        all_policies = self.get_policies_interface_link_level_info()
+    def get_policies_interface_link_level(self, policy_filter=None, reln_info=True, attachment_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_policy_interface_link_level()
+            self.init_policy_interface_link_level_mo()
+
+        all_policies = self.get_policies_interface_link_level_info(cache_enabled=cache_enabled)
         if all_policies is None:
             return None
 
@@ -232,3 +216,30 @@ class PolicyInterfaceLinkLevelInfo():
         )
 
         return policy
+
+    def get_policy_interface_link_level(self, policy_name, reln_info=True, attachment_info=False, cache_enabled=True):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_link_level(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info,
+            cache_enabled=cache_enabled
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_link_level(self, policy_name, cache_enabled=True):
+        if self.get_policy_interface_link_level(policy_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

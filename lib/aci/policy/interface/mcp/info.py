@@ -22,27 +22,6 @@ class PolicyInterfaceMcpInfo():
         return info
 
     def get_policy_interface_mcp_info(self, managed_object):
-        # "adminSt": "enabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/mcpIfP-default",
-        # "extMngdBy": "",
-        # "gracePeriod": "3",
-        # "gracePeriodMsec": "0",
-        # "lcOwn": "local",
-        # "mcpMode": "off",
-        # "modTs": "2020-12-09T19:07:28.202+01:00",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "strictInitDelayTime": "0",
-        # "strictTxFreq": "0",
-        # "strictTxFreqMsec": "500",
-        # "uid": "0",
-        # "userdom": ""
         keys = [
             'adminSt',
             'annotation',
@@ -183,7 +162,7 @@ class PolicyInterfaceMcpInfo():
 
         return True
 
-    def get_policy_interface_mcp(self, policy_filter=None, reln_info=True, attachment_info=False):
+    def get_policies_interface_mcp(self, policy_filter=None, reln_info=True, attachment_info=False):
         all_policies = self.get_policies_interface_mcp_info()
         if all_policies is None:
             return None
@@ -243,3 +222,29 @@ class PolicyInterfaceMcpInfo():
         )
 
         return policy
+
+    def get_policy_interface_mcp(self, policy_name, reln_info=True, attachment_info=False):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_mcp(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_mcp(self, policy_name):
+        if self.get_policy_interface_mcp(policy_name) is None:
+            return False
+        return True

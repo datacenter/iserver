@@ -23,26 +23,6 @@ class Common():
         return False
 
     def get_faults_info(self, faults):
-        # "childAction": "",
-        # "crit": "0",
-        # "critAcked": "0",
-        # "critAckedandDelegated": "0",
-        # "critDelegated": "0",
-        # "maj": "0",
-        # "majAcked": "0",
-        # "majAckedandDelegated": "0",
-        # "majDelegated": "0",
-        # "minor": "0",
-        # "minorAcked": "0",
-        # "minorAckedandDelegated": "0",
-        # "minorDelegated": "0",
-        # "rn": "fltCnts",
-        # "status": "",
-        # "warn": "0",
-        # "warnAcked": "0",
-        # "warnAckedandDelegated": "0",
-        # "warnDelegated": "0"
-
         info = ''
         color = ':'
 

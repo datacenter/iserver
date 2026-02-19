@@ -1,5 +1,7 @@
 from lib.aci.l3out.api import L3OutApi
 from lib.aci.l3out.bgp import L3OutBgp
+from lib.aci.l3out.create import L3OutCreate
+from lib.aci.l3out.delete import L3OutDelete
 from lib.aci.l3out.domain import L3OutDomain
 from lib.aci.l3out.eigrp import L3OutEigrp
 from lib.aci.l3out.epg import L3OutEpg
@@ -9,6 +11,8 @@ from lib.aci.l3out.ospf import L3OutOspf
 from lib.aci.l3out.pim import L3OutPim
 from lib.aci.l3out.vrf import L3OutVrf
 from lib.aci.l3out.audit.main import L3OutAudit
+from lib.aci.l3out.external_epg.main import L3OutExternalEpg
+from lib.aci.l3out.external_ip.main import L3OutExternalIp
 from lib.aci.l3out.event.main import L3OutEvent
 from lib.aci.l3out.fault.main import L3OutFault
 from lib.aci.l3out.node.main import L3OutNode
@@ -17,6 +21,8 @@ from lib.aci.l3out.node.main import L3OutNode
 class L3Out(
         L3OutApi,
         L3OutBgp,
+        L3OutCreate,
+        L3OutDelete,
         L3OutDomain,
         L3OutEigrp,
         L3OutEpg,
@@ -26,6 +32,8 @@ class L3Out(
         L3OutPim,
         L3OutVrf,
         L3OutAudit,
+        L3OutExternalEpg,
+        L3OutExternalIp,
         L3OutEvent,
         L3OutFault,
         L3OutNode
@@ -33,6 +41,8 @@ class L3Out(
     def __init__(self):
         L3OutApi.__init__(self)
         L3OutBgp.__init__(self)
+        L3OutCreate.__init__(self)
+        L3OutDelete.__init__(self)
         L3OutDomain.__init__(self)
         L3OutEigrp.__init__(self)
         L3OutEpg.__init__(self)
@@ -42,6 +52,8 @@ class L3Out(
         L3OutPim.__init__(self)
         L3OutVrf.__init__(self)
         L3OutAudit.__init__(self)
+        L3OutExternalEpg.__init__(self)
+        L3OutExternalIp.__init__(self)
         L3OutEvent.__init__(self)
         L3OutFault.__init__(self)
         L3OutNode.__init__(self)

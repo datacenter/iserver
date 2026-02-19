@@ -1,5 +1,8 @@
 import sys
 
+import colorama
+colorama.init()
+
 from lib import output_helper
 from lib import settings_helper
 from lib import my_servers_helper

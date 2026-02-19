@@ -11,16 +11,11 @@ class ImcCliNet():
             if self.net_mo is not None:
                 return self.net_mo
 
-            self.net_mo = self.get_icm_cli_cache_entry(
+            self.net_mo = self.get_imc_cli_cache_entry(
                 'net'
             )
             if self.net_mo is not None:
                 return self.net_mo
-
-        # Network Adapter:
-        #     Slot: 1
-        #     Product Name: Cisco(R) Ethernet Converged NIC XXV710-DA2
-        #     No Of Interfaces: 2
 
         self.net_mo = self.show_list(
             'show network-adapter detail',
@@ -48,7 +43,7 @@ class ImcCliNet():
             if slot_id in self.net_mac_mo and self.net_mac_mo[slot_id] is not None:
                 return self.net_mac_mo[slot_id]
 
-            self.net_mac_mo[slot_id] = self.get_icm_cli_cache_entry(
+            self.net_mac_mo[slot_id] = self.get_imc_cli_cache_entry(
                 'net_mac_%s' % (slot_id)
             )
             if self.net_mac_mo[slot_id] is not None:
@@ -69,9 +64,9 @@ class ImcCliNet():
             return None
 
         # Interface ID: 1
-        # MAC Address: 5c:71:0d:26:37:b2
+        # MAC Address: aa:aa:aa:aa:aa:aa
         # Interface ID: 2
-        # MAC Address: 5c:71:0d:26:37:b3
+        # MAC Address: aa:aa:aa:aa:aa:ab
 
         self.net_mac_mo[slot_id] = []
         for line in output['show mac-list detail'].split('\n'):

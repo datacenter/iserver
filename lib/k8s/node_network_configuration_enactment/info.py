@@ -17,6 +17,34 @@ class K8sNodeNetworkConfigurationEnactmentInfo():
         )
         info.update(metadata_info)
 
+        conditions_mo = self.get(node_network_configuration_enactment_mo, 'status:conditions')
+
+        info['status'] = None
+        info['reason'] = None
+        if conditions_mo is not None:
+            for condition_mo in conditions_mo:
+                if condition_mo['status'] == 'True':
+                    info['status'] = condition_mo['type']
+                    info['reason'] = condition_mo['reason']
+
+        info['available'] = False
+        info['degraded'] = False
+        info['progressing'] = False
+
+        if info['status'] is not None:
+            if info['status'] == 'Available':
+                info['available'] = True
+
+            if info['status'] == 'Degraded':
+                info['degraded'] = True
+
+            if info['status'] == 'Progressing':
+                info['progressing'] = True
+
+        if info['status'] is None:
+            info['status'] = 'Unknown'
+            info['reason'] = 'N/A'
+
         return info
 
     def get_node_network_configuration_enactments_info(self, cache_enabled=True):

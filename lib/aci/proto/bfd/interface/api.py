@@ -3,8 +3,6 @@ class ProtocolBfdInterfaceApi():
         self.bfd_interfaces_mo = {}
 
     def set_protocol_bfd_interface_mo(self, managed_object):
-        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/if-[vlan27]"
-
         interface_dn = managed_object['bfdIf']['attributes']['dn']
         pod_id = interface_dn.split('/')[1][4:]
         node_id = interface_dn.split('/')[2][5:]
@@ -51,7 +49,6 @@ class ProtocolBfdInterfaceApi():
             )
             return self.bfd_interfaces_mo[key]
 
-        # url: https://<apic>/api/node/mo/topology/pod-1/node-201/sys/bfd/inst.json?query-target=children&target-subtree-class=bfdIf&subscription=yes
         distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst' % (pod_id, node_id)
         query = 'query-target=children&target-subtree-class=bfdIf'
         managed_objects = self.get_managed_object(

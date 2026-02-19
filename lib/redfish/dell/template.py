@@ -17,21 +17,7 @@ class RedfishEndpointDellTemplate(RedfishEndpointDellTemplateIdentity, RedfishEn
             self
         )
 
-    def get_template_properties(self, template_name, cache_enabled=True, cache_key=None, cache_ttl=0):
-        if cache_enabled and cache_key is not None:
-            self.set_system_id(
-                cache_key
-            )
-            properties = self.endpoint_handler.endpoint_settings_handler.get_endpoint_settings(
-                cache_key,
-                filename=template_name
-            )
-            if properties is not None:
-                if cache_ttl == 0:
-                    return properties['data']
-                if int(time.time()) - properties['timestamp'] < cache_ttl:
-                    return properties['data']
-
+    def get_template_properties(self, template_name):
         properties = None
 
         if template_name == 'identity':
@@ -42,17 +28,5 @@ class RedfishEndpointDellTemplate(RedfishEndpointDellTemplateIdentity, RedfishEn
 
         if template_name == 'thermal':
             properties = self.get_template_thermal_properties()
-
-        if properties is not None:
-            if cache_enabled and cache_key is not None:
-                cache_entry = {}
-                cache_entry['timestamp'] = int(time.time())
-                cache_entry['data'] = properties
-
-                self.endpoint_handler.endpoint_settings_handler.set_endpoint_settings(
-                    cache_key,
-                    cache_entry,
-                    filename=template_name
-                )
 
         return properties

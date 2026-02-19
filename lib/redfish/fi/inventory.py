@@ -197,9 +197,6 @@ class RedfishEndpointFabricInterconnectInventory():
         if self.inventory is not None:
             return self.inventory
 
-        if self.is_cache_enabled():
-            return self.cache['extra']['Inventory']
-
         self.inventory = {}
         self.inventory['chassis'] = self.get_chassis_info()
         self.inventory['servers'] = self.get_servers_info()

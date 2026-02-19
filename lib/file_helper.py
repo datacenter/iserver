@@ -25,6 +25,49 @@ def get_main_dir():
     return main_dir
 
 
+def get_subdirs(directory, return_full_name=False, must_include=[]):
+    subdirs = []
+    if not os.path.isdir(directory):
+        return subdirs
+    
+    for filename in os.listdir(directory):
+        full_filename = os.path.join(
+            directory,
+            filename
+        )
+        if os.path.isdir(full_filename):
+            has_mandatory_files = True
+            for mandatory in must_include:
+                mandatory_path = os.path.join(full_filename, mandatory)
+                if not os.path.isfile(mandatory_path):
+                    has_mandatory_files = False
+                    break
+            
+            if not has_mandatory_files:
+                continue
+
+            if return_full_name:
+                subdirs.append(full_filename)
+            else:
+                subdirs.append(filename)
+
+    return subdirs
+
+
+def get_local_file_location(filename, subdir=None):
+    main_dir = get_main_dir()
+    if main_dir is None:
+        return None
+
+    if subdir is None:
+        return os.path.join(main_dir, filename)
+
+    for item in subdir.split(':'):
+        main_dir = os.path.join(main_dir, item)
+
+    return os.path.join(main_dir, filename)
+
+
 def get_file(filename):
     if not os.path.isfile(filename):
         return None
@@ -59,16 +102,56 @@ def get_file_text(filename):
     return content
 
 
+def get_files_text(location, yaml_only=False):
+    filenames = []
+    files = {}
+
+    if os.path.isfile(location):
+        filenames.append(location)
+
+    if os.path.isdir(location):
+        for filename in os.listdir(location):
+            filenames.append(
+                os.path.join(
+                    location,
+                    filename
+                )
+            )
+
+    for filename in filenames:
+        content = get_file_text(filename)
+
+        if yaml_only:
+            try:
+                ycontent = yaml.safe_load(content)
+            except BaseException:
+                content = None
+
+        if content is not None:
+            files[filename] = content
+
+    return files
+
+
 def get_file_json(filename):
     if not os.path.isfile(filename):
         return None
 
+    content = None
     try:
-        with open(filename, 'r', encoding='utf-8') as file_handler:
+        with open(filename, 'r', encoding='utf-8', errors='ignore') as file_handler:
             content = json.loads(file_handler.read())
 
     except BaseException:
-        return None
+        pass
+
+    if content is None:
+        try:
+            with open(filename, 'rb') as file_handler:
+                content = json.loads(file_handler.read())
+
+        except BaseException:
+            pass
 
     return content
 
@@ -85,6 +168,64 @@ def get_file_yaml(filename):
         return None
 
     return content
+
+
+def get_file_format(filename):
+    if not os.path.isfile(filename):
+        return None, None
+    
+    content = get_file_json(filename)
+    if content is not None:
+        return 'json', content
+    
+    content = get_file_yaml(filename)
+    if content is not None:
+        return 'yaml', content
+    
+    content = get_file_text(filename)
+    if content is not None:
+        return 'text', content
+    
+    return 'other', content
+
+
+def is_kube_kind(content, kind=None, namespace=None, name=None, spec=False):
+    if not isinstance(content, dict):
+        return False
+    
+    if 'apiVersion' not in content:
+        return False
+    
+    if 'kind' not in content:
+        return False
+    
+    if kind is not None and content['kind'] != kind:
+        return False
+    
+    if 'metadata' not in content:
+        return False
+    
+    if not isinstance(content['metadata'], dict):
+        return False
+    
+    if namespace is not None:
+        if 'namespace' not in content['metadata']:
+            return False
+
+        if content['metadata']['namespace'] != namespace:
+            return False
+        
+    if 'name' not in content['metadata']:
+        return False
+    
+    if name is not None and content['metadata']['name'] != name:
+        return False
+    
+    if spec:
+        if 'spec' not in content:
+            return False
+        
+    return True
 
 
 def set_file(filename, content):
@@ -107,6 +248,22 @@ def set_file_json(filename, content):
         return False
 
     return True
+
+
+def set_file_yaml(filename, content):
+    try:
+        # content in JSON
+        with open(filename, 'w', encoding='utf-8') as file_handler:
+            yaml.dump(content, file_handler)
+
+    except BaseException:
+        return False
+
+    return True
+
+
+def get_tmp_filename():
+    return '/tmp/%s' % (str(uuid.uuid4()))
 
 
 def set_tmp_file(content):
@@ -186,3 +343,7 @@ def get_md5(filename):
             buf = file_handler.read(blocksize)
     md5 = hasher.hexdigest()
     return md5
+
+
+def get_string_md5(string):
+    return hashlib.md5(string.encode('utf-8')).hexdigest()

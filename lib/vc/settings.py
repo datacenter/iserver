@@ -107,6 +107,20 @@ class VcSettings(Settings):
 
         return None
 
+    def get_vc_domain_instances(self, domain_name):
+        instances = self.get_vc_instances()
+        if instances is None:
+            return None
+
+        domain_instances = []
+        for instance in instances:
+            if instance['domain'] == domain_name:
+                domain_instances.append(
+                    instance
+                )
+
+        return domain_instances
+
     def set_vc_instances(self, instances):
         settings = self.get_vc_settings()
         if settings is None:
@@ -115,7 +129,7 @@ class VcSettings(Settings):
         settings['Instances'] = instances
         return self.set_vc_settings(settings)
 
-    def set_vc_instance(self, vc_name, vc_ip, vc_port, vc_username, vc_password):
+    def set_vc_instance(self, vc_name, vc_ip, vc_port, vc_username, vc_password, vc_domain=''):
         instances = self.get_vc_instances()
         if instances is None:
             return False
@@ -131,6 +145,7 @@ class VcSettings(Settings):
         new_instance['port'] = vc_port
         new_instance['username'] = vc_username
         new_instance['password'] = vc_password
+        new_instance['domain'] = vc_domain
         new_instances.append(new_instance)
 
         return self.set_vc_instances(new_instances)
@@ -155,6 +170,7 @@ class VcSettings(Settings):
 
         order = [
             'name',
+            'domain',
             'ip',
             'port',
             'username',
@@ -163,6 +179,7 @@ class VcSettings(Settings):
 
         headers = [
             'Name',
+            'Domain',
             'IP',
             'Port',
             'Username',

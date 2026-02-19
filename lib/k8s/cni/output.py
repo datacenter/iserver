@@ -2,18 +2,7 @@ class K8sCniOutput():
     def __init__(self):
         pass
 
-    def print_cnis(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'K8s Cluster CNI [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
+    def print_cnis(self, info):
         order = [
             'cni',
             'cluster.cidr',
@@ -22,7 +11,7 @@ class K8sCniOutput():
         ]
 
         headers = [
-            'Network Type',
+            'CNI Network Type',
             'Cluster CIDR',
             'Cluster Host Prefix',
             'Service CIDR'

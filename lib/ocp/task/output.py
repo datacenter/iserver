@@ -1,13 +1,10 @@
-from lib.ocp.task.chrony.output import OcpTaskChronyOutput
-from lib.ocp.task.container_policy.output import OcpTaskContainerPolicyOutput
+from lib.ocp.task.helm.output import OcpTaskHelmOutput
 
 class OcpTaskOutput(
-        OcpTaskChronyOutput,
-        OcpTaskContainerPolicyOutput
+        OcpTaskHelmOutput
         ):
     def __init__(self):
-        OcpTaskChronyOutput.__init__(self)
-        OcpTaskContainerPolicyOutput.__init__(self)
+        OcpTaskHelmOutput.__init__(self)
 
     def print_ocp_ssh_authorized_keys(self, info):
         order = [

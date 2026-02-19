@@ -21,7 +21,6 @@ class InterfaceVfcEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/vfc-[lo0]"
         info['interfaceId'] = None
         if '/vfc-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/vfc-[')[1].split(']')[0]

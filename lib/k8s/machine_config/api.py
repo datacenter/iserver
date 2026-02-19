@@ -47,6 +47,38 @@ class K8sMachineConfigApi():
 
         return self.machine_config_mo
 
+    def create_machine_config_mo(self, body):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='machineconfiguration.openshift.io/v1', kind='MachineConfig')
+            response = obj_list.create(
+                body=body,
+                name=body['metadata']['name']
+            )
+            self.log.k8s(
+                'create',
+                'machine_config',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+
+        except BaseException:
+            self.log.error('k8s.get_machine_config_mo', traceback.format_exc())
+            self.log.k8s(
+                'create',
+                'machine_config',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True
+
     def set_machine_config_mo(self, body):
         api_handler = self.get_api(cluster_type='ocp')
         if api_handler is None:

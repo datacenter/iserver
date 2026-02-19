@@ -21,13 +21,11 @@ class ProtocolLldpEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/lldp/inst/if-[eth1/4/3]/adj-1"
         info['interface_id'] = None
         if 'affected' in info:
             if 'sys/lldp/inst/if-' in info['affected']:
                 info['interface_id'] = info['affected'].split('sys/lldp/inst/if-[')[1].split(']')[0]
 
-        # "dn": "subj-[topology/pod-1/node-2208/sys/lldp/inst/if-[eth1/4/3]/adj-1]/rec-12886869434",
         if 'affected' not in info:
             if 'sys/lldp/inst/if-' in info['dn']:
                 info['interface_id'] = info['dn'].split('sys/lldp/inst/if-[')[1].split(']')[0]

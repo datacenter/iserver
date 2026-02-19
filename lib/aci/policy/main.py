@@ -1,3 +1,4 @@
+from lib.aci import helper as aci_helper
 from lib.aci.policy.general.main import PolicyGeneral
 from lib.aci.policy.interface.main import PolicyInterface
 from lib.aci.policy.monitoring.main import PolicyMonitoring
@@ -23,21 +24,7 @@ class Policy(
         PolicyTroubleshooting.__init__(self)
 
     def get_policy_type_from_tcl(self, policy_type):
-        mapping = {}
-        mapping['infraInfra'] = 'Access Infra'
-        mapping['infraAccNodePGrp'] = 'Access Switch'
-        mapping['infraSpineAccNodePGrp'] = 'Spine Switch'
-        mapping['infraSpAccPortGrp'] = 'Spine Access Port'
-        mapping['infraAccPortGrp'] = 'Leaf Access Port'
-        mapping['infraAccBndlGrp'] = 'PC/VPC Interface'
-        mapping['infraBrkoutPortGrp'] = 'Breakout'
-        mapping['vmmDomP'] = 'VMM Domain'
-        mapping['vmmVSwitchPolicyCont'] = 'VMM Virtual Switch'
-
-        if policy_type in mapping:
-            return mapping[policy_type]
-
-        return policy_type
+        return aci_helper.get_policy_type_from_tcl(policy_type)
 
     def get_policy_name_from_tdn(self, policy_name):
         if policy_name.startswith('uni/infra/funcprof/'):

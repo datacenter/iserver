@@ -66,7 +66,7 @@ class PolicyGroupAccessInterfacePortInfo():
 
         return self.policy_group_access_interface_port
 
-    def match_policy_group_access_interface_port(self, policy_group_info, policy_group_filter):
+    def match_policy_group_access_interface_port(self, policy_group_info, policy_group_filter, strict=False):
         if policy_group_filter is None or len(policy_group_filter) == 0:
             return True
 
@@ -75,7 +75,7 @@ class PolicyGroupAccessInterfacePortInfo():
             value = ':'.join(ap_rule.split(':')[1:])
 
             if key == 'name':
-                if not filter_helper.match_string(value, policy_group_info['name']):
+                if not filter_helper.match_string(value, policy_group_info['name'], strict=strict):
                     return False
 
             if key == 'aaep':
@@ -119,6 +119,7 @@ class PolicyGroupAccessInterfacePortInfo():
     def get_policy_groups_access_interface_port(
             self,
             policy_group_filter=None,
+            strict=False,
             aaep_info=False,
             node_info=False,
             vlan_info=False,
@@ -137,12 +138,12 @@ class PolicyGroupAccessInterfacePortInfo():
         policy_groups = []
 
         for policy_group_info in all_policy_groups:
-            if not self.match_policy_group_access_interface_port(policy_group_info, policy_group_filter):
+            if not self.match_policy_group_access_interface_port(policy_group_info, policy_group_filter, strict=strict):
                 continue
 
             if aaep_info:
                 policy_group_info['aaep'] = None
-                aaep = self.get_policy_global_aae(
+                aaep = self.get_policy_global_aaes(
                     policy_global_aae_filter=['name:%s' % (policy_group_info['infraRsAttEntP']['name'])],
                     domain_info=True
                 )
@@ -229,7 +230,8 @@ class PolicyGroupAccessInterfacePortInfo():
 
     def get_policy_group_access_interface_port(self, name):
         policy_group_info = self.get_policy_groups_access_interface_port(
-            policy_group_filter=['name:%s' % (name)]
+            policy_group_filter=['name:%s' % (name)],
+            strict=True
         )
 
         if policy_group_info is None:

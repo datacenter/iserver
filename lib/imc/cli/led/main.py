@@ -10,13 +10,13 @@ class ImcCliLed():
             if self.led_mo is not None:
                 return self.led_mo
 
-            self.led_mo = self.get_icm_cli_cache_entry(
+            self.led_mo = self.get_imc_cli_cache_entry(
                 'led'
             )
             if self.led_mo is not None:
                 return self.led_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /sensor # show led detail
+        # com /sensor # show led detail
         # LEDs:
         #     LED Name: LED_PSU_STATUS
         #     LED State: ON

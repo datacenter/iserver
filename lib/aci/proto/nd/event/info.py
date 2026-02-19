@@ -14,7 +14,6 @@ class ProtocolNdEventInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # topology/pod-1/node-2205/sys/nd/inst
         info['podId'] = info['affected'].split('/')[1].split('-')[1]
         info['nodeId'] = info['affected'].split('/')[2].split('-')[1]
         info['pod_node_name'] = 'pod-%s/%s' % (

@@ -1,5 +1,6 @@
 import time
 import traceback
+import kubernetes.client
 
 
 class K8sNamespaceApi():
@@ -50,3 +51,164 @@ class K8sNamespaceApi():
         )
 
         return self.namespace_mo
+
+    def create_namespace_mo(self, name):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return None
+
+        start_time = int(time.time() * 1000)
+
+        try:
+            body = kubernetes.client.V1Namespace(metadata=kubernetes.client.V1ObjectMeta(name=name))
+            api_response = api_handler.create_namespace(
+                body
+            )
+
+        except BaseException:
+            api_response = None
+            self.log.error(
+                'k8s.create_namespace',
+                'Namespace create failed: %s' % (name)
+            )
+            self.log.error(
+                'k8s.create_namespace',
+                traceback.format_exc()
+            )
+
+        if api_response is None:
+            self.log.k8s(
+                'create',
+                'namespace',
+                False,
+                int(time.time() * 1000) - start_time
+            )
+            return False
+
+        self.log.k8s(
+            'create',
+            'namespace',
+            True,
+            int(time.time() * 1000) - start_time
+        )
+
+        return True
+
+    def create_namespace_mo_from_body(self, body):
+        success = self.create_namespace_mo(body['metadata']['name'])
+        if not success:
+            return False
+        
+        success = self.set_namespace_mo(body)
+        if not success:
+            return False
+        
+        return True
+
+    def set_namespace_mo(self, body):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return False
+
+        try:
+            response = api_handler.patch_namespace(
+                body['metadata']['name'],
+                body
+            )
+
+        except BaseException:
+            self.log.error('set_namespace_mo', traceback.format_exc())
+            return False
+
+        return True
+
+    def add_namespace_label(self, namespace, key, value):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return False
+
+        try:
+            labels = {
+                'metadata': {
+                    'labels': {
+                        key:value
+                    }
+                }
+            }
+
+            response = api_handler.patch_namespace(
+                namespace,
+                labels
+            )
+
+        except BaseException:
+            self.log.error('k8s_nodes.add_namespace_label', traceback.format_exc())
+            return False
+
+        return True
+    
+    def delete_namespace_label(self, namespace, key):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return False
+
+        try:
+            labels = {
+                'metadata': {
+                    'labels': {
+                        key:None
+                    }
+                }
+            }
+
+            response = api_handler.patch_namespace(
+                namespace,
+                labels
+            )
+
+        except BaseException:
+            self.log.error('k8s_nodes.add_namespace_label', traceback.format_exc())
+            return False
+
+        return True
+    
+    def delete_namespace_mo(self, name):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return None
+
+        start_time = int(time.time() * 1000)
+
+        try:
+            api_response = api_handler.delete_namespace(
+                name
+            )
+
+        except BaseException:
+            api_response = None
+            self.log.error(
+                'k8s.delete_namespace',
+                'Namespace delete failed: %s' % (name)
+            )
+            self.log.error(
+                'k8s.delete_namespace',
+                traceback.format_exc()
+            )
+
+        if api_response is None:
+            self.log.k8s(
+                'delete',
+                'namespace',
+                False,
+                int(time.time() * 1000) - start_time
+            )
+            return False
+
+        self.log.k8s(
+            'delete',
+            'namespace',
+            True,
+            int(time.time() * 1000) - start_time
+        )
+
+        return True

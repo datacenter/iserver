@@ -3,10 +3,9 @@ class ImcCliXmlOutput():
         pass
 
     def print_imc_xml(self, info):
-        self.print_list_dict(
+        self.print_list_table(
             info,
-            'XML API',
+            title='XML API',
             add_endpoint_ip=True,
-            underline=False,
             allow_order_subkeys=False
         )

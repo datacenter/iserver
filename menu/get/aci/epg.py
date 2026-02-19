@@ -47,7 +47,7 @@ class NoResultExit(Exception):
 @click.option("--view", "-v", default=['state'], help="[state|prop|bd|contract|ep|node|stport|domain|member|fault|hfault|event|audit|diag|all|verbose]", show_default=True, multiple=True)
 @click.option("--pivot", is_flag=True, show_default=True, default=False, help="Pivot view")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_epg_command(
         ctx,
@@ -74,7 +74,7 @@ def get_aci_epg_command(
         view,
         pivot,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci epg"""
@@ -104,7 +104,7 @@ def get_aci_epg_command(
             controller_port,
             controller_username,
             controller_password,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit

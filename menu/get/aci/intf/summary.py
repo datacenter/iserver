@@ -28,7 +28,7 @@ class ErrorExit(Exception):
 @click.option("--pod", "pod_id", default='', callback=validations.empty_string_to_none, help="Pod ID")
 @click.option("--node", "node_name", default='', callback=validations.empty_string_to_none, help="Node name")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_node_intf_summary_command(
         ctx,
@@ -40,7 +40,7 @@ def get_aci_node_intf_summary_command(
         pod_id,
         node_name,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci node interface summary"""
@@ -59,7 +59,7 @@ def get_aci_node_intf_summary_command(
             controller_port,
             controller_username,
             controller_password,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit

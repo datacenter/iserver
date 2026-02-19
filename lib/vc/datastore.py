@@ -1,6 +1,7 @@
 import os
 import traceback
 import requests
+from lib.vc import helper as vc_helper
 
 # pylint: disable=no-name-in-module
 from pyVmomi import vim
@@ -35,19 +36,19 @@ class VcDatastore():
             if getattr(datastore_obj.info, 'nas', None) is not None:
                 info['type'] = datastore_obj.info.nas.type
                 info['capacity'] = datastore_obj.info.nas.capacity
-                info['capacity_unit'] = self.convert_storage(datastore_obj.info.nas.capacity)
+                info['capacity_unit'] = vc_helper.convert_storage(datastore_obj.info.nas.capacity)
             if getattr(datastore_obj.info, 'vmfs', None) is not None:
                 info['type'] = datastore_obj.info.vmfs.type
                 info['capacity'] = datastore_obj.info.vmfs.capacity
-                info['capacity_unit'] = self.convert_storage(datastore_obj.info.vmfs.capacity)
+                info['capacity_unit'] = vc_helper.convert_storage(datastore_obj.info.vmfs.capacity)
             info['free'] = datastore_obj.info.freeSpace
-            info['free_unit'] = self.convert_storage(datastore_obj.info.freeSpace)
+            info['free_unit'] = vc_helper.convert_storage(datastore_obj.info.freeSpace)
             info['used'] = info['capacity'] - info['free']
             info['usage_pct'] = round(
                 info['used'] * 100 / info['capacity'],
                 2
             )
-            info['usage_unit'] = self.convert_pct(info['usage_pct'])
+            info['usage_unit'] = vc_helper.convert_storage(info['usage_pct'])
         except BaseException:
             info = None
 
@@ -184,7 +185,7 @@ class VcDatastore():
                     folder_details['filename']
                 )
                 folder_details['size'] = folder_info.fileSize
-                folder_details['size_unit'] = self.convert_storage(folder_details['size'])
+                folder_details['size_unit'] = vc_helper.convert_storage(folder_details['size'])
                 folder_details['owner'] = folder_info.owner
                 folder_details['modification'] = folder_info.modification
                 folders.append(folder_details)
@@ -322,23 +323,6 @@ class VcDatastore():
 
         files = []
         for search_result in search_results:
-            # <class 'pyVmomi.VmomiSupport.vim.host.DatastoreBrowser.SearchResults'>
-
-            # dynamicType = <unset>,
-            # dynamicProperty = (vmodl.DynamicProperty) [],
-            # datastore = 'vim.Datastore:datastore-1013',
-            # folderPath = '[datastore1] catalog/tidy/',
-            # file = (vim.host.DatastoreBrowser.FileInfo) [
-            #     (vim.host.DatastoreBrowser.FolderInfo) {
-            #         dynamicType = <unset>,
-            #         dynamicProperty = (vmodl.DynamicProperty) [],
-            #         path = 'v1',
-            #         friendlyName = <unset>,
-            #         fileSize = <unset>,
-            #         modification = <unset>,
-            #         owner = <unset>
-            #     }
-            # ]
             for file_info in search_result.file:
                 file_folder = self.fixup_datastore_path(
                     search_result.folderPath
@@ -357,7 +341,7 @@ class VcDatastore():
                     file_details['filename']
                 )
                 file_details['size'] = file_info.fileSize
-                file_details['size_unit'] = self.convert_storage(file_details['size'])
+                file_details['size_unit'] = vc_helper.convert_storage(file_details['size'])
                 file_details['owner'] = file_info.owner
                 file_details['modification'] = file_info.modification
                 files.append(file_details)

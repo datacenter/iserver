@@ -17,22 +17,27 @@ class Ocp(OcpCluster, OcpNode, OcpTask, OcpVm):
         self.verbose = verbose
         self.debug = debug
         self.log_id = log_id
+        self.log = log_helper.Log(log_id=log_id)
 
         self.my_output = output_helper.OutputHelper(
             log_id=log_id,
             verbose=verbose,
             debug=debug
         )
-        self.log = log_helper.Log(log_id=log_id)
-        self.log_id = log_id
 
         self.settings_handler = settings.OcpSettings(log_id=log_id)
         self.ocp_cluster_settings = self.settings_handler.get_ocp_cluster(ocp_cluster_name)
+
         if self.ocp_cluster_settings is None:
             raise ValueError('OCP cluster handler initialization failed')
 
+        self.ocp_node_ssh_username = 'core'
+        self.ocp_node_ssh_password = None
+        self.ocp_node_ssh_public_key_filename = self.settings_handler.get_ocp_cluster_filename(ocp_cluster_name, 'ssh.pub')
+        
+        kubeconfig_filename = self.settings_handler.get_ocp_cluster_filename(ocp_cluster_name, 'kubeconfig')
         self.k8s_handler = k8s.K8s(
-            self.ocp_cluster_settings['kubeconfig'],
+            kubeconfig_filename,
             cluster_type='ocp',
             verbose=verbose,
             debug=debug,
@@ -40,13 +45,13 @@ class Ocp(OcpCluster, OcpNode, OcpTask, OcpVm):
         )
 
         self.kubevirt_handler = kubevirt.Kubevirt(
-            self.ocp_cluster_settings['kubeconfig'],
+            kubeconfig_filename,
             verbose=verbose,
             debug=debug,
             log_id=log_id
         )
 
-        OcpCluster.__init__(self)
+        OcpCluster.__init__(self, log_id=log_id)
         OcpNode.__init__(self)
         OcpTask.__init__(self)
         OcpVm.__init__(self)

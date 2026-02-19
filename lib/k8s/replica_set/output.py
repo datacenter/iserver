@@ -15,8 +15,7 @@ class K8sReplicaSetOutput():
             return
 
         order = [
-            'namespace',
-            'name',
+            'namespace_name',
             'replicas',
             'availableReplicas',
             'readyReplicas',
@@ -24,8 +23,7 @@ class K8sReplicaSetOutput():
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Replica Set',
             'Desired',
             'Current',
             'Ready',

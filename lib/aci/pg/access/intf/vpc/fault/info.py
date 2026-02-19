@@ -15,7 +15,6 @@ class PolicyGroupAccessInterfaceVpcFaultInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "affected": "uni/infra/funcprof/accbundle-ESX-R7DC_PolGrp/rsqosDppIfPol"
         info['pgName'] = None
         if not managed_object['delegated']:
             if 'uni/infra/funcprof/accbundle-' in info['affected']:

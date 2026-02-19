@@ -26,20 +26,24 @@ class PolicyGroupAccessInterfaceVpcApi():
             'infraRsMacsecIfPol'
         ]
 
-    def get_policy_group_access_interface_vpc_mo(self):
+    def init_policy_group_access_interface_vpc_mo(self):
+        self.policy_group_access_interface_vpc_mo = None
+
+    def get_policy_group_access_interface_vpc_mo(self, cache_enabled=True):
         if self.policy_group_access_interface_vpc_mo is not None:
             return self.policy_group_access_interface_vpc_mo
 
-        cache = self.get_object_cache(
-            'infraAccBndlGrp'
-        )
-        if cache is not None:
-            self.policy_group_access_interface_vpc_mo = cache
-            self.log.apic_mo(
-                'infraAccBndlGrp',
-                self.policy_group_access_interface_vpc_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'infraAccBndlGrp'
             )
-            return self.policy_group_access_interface_vpc_mo
+            if cache is not None:
+                self.policy_group_access_interface_vpc_mo = cache
+                self.log.apic_mo(
+                    'infraAccBndlGrp',
+                    self.policy_group_access_interface_vpc_mo
+                )
+                return self.policy_group_access_interface_vpc_mo
 
         distinguished_name = 'uni/infra/funcprof'
         query = 'query-target=subtree&target-subtree-class=%s&rsp-subtree=children&rsp-subtree-include=fault-count&rsp-subtree-class=%s' % (

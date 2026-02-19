@@ -65,8 +65,7 @@ def get_aci_mo_command(
             controller_ip,
             controller_port,
             controller_username,
-            controller_password,
-            no_cache=True
+            controller_password
         )
         if apic_handlers is None:
             raise ErrorExit

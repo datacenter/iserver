@@ -3,10 +3,9 @@ class ImcCliSshOutput():
         pass
 
     def print_imc_ssh(self, info):
-        self.print_list_dict(
+        self.print_list_table(
             info,
-            'SSH',
+            title='SSH',
             add_endpoint_ip=True,
-            underline=False,
             allow_order_subkeys=False
         )

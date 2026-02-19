@@ -36,7 +36,7 @@ class OcpClusterManager():
                 password=info['ssh']['password'],
                 log_id=self.log_id
             )
-            info['ssh']['validated'] = ssh_handler.is_ssh()
+            info['ssh']['validated'], info['ssh']['exception'], info['ssh']['error'] = ssh_handler.is_ssh()
             if info['ssh']['validated']:
                 info['ssh']['tick'] = '\u2713'
                 info['__Output']['ssh.tick'] = 'Green'

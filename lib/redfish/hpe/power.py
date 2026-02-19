@@ -12,59 +12,11 @@ class RedfishEndpointHpeTemplatePower():
         properties['Data'] = {}
         properties['Data']['PowerControl'] = {}
 
-        # {
-        #     "PhysicalContext": "PowerSupply",
-        #     "PowerMetrics": {
-        #         "MinConsumedWatts": 186,
-        #         "AverageConsumedWatts": 349,
-        #         "MaxConsumedWatts": 495
-        #     },
-        #     "MemberId": "1",
-        #     "PowerLimit": {
-        #         "LimitException": "NoAction"
-        #     },
-        #     "PowerConsumedWatts": 360,
-        #     "@odata.id": "/redfish/v1/Chassis/1/Power#/PowerControl/1"
-        # }
         power_control_data = data['PowerControl'][0]
         properties['Data']['PowerControl']['PowerConsumedWatts'] = power_control_data['PowerConsumedWatts']
         for key in power_control_data['PowerMetrics']:
             properties['Data']['PowerControl'][key] = power_control_data['PowerMetrics'][key]
 
-        # {
-        #     "@odata.id": "/redfish/v1/Chassis/1/Power#PowerSupplies/0",
-        #     "FirmwareVersion": "1.00",
-        #     "LastPowerOutputWatts": 89,
-        #     "LineInputVoltage": 206,
-        #     "LineInputVoltageType": "ACHighLine",
-        #     "Manufacturer": "DELTA",
-        #     "MemberId": "0",
-        #     "Model": "865438-B21",
-        #     "Name": "HpeServerPowerSupply",
-        #     "Oem": {
-        #         "Hpe": {
-        #             "@odata.context": "/redfish/v1/$metadata#HpeServerPowerSupply.HpeServerPowerSupply",
-        #             "@odata.type": "#HpeServerPowerSupply.v2_0_0.HpeServerPowerSupply",
-        #             "AveragePowerOutputWatts": 89,
-        #             "BayNumber": 1,
-        #             "HotplugCapable": true,
-        #             "MaxPowerOutputWatts": 96,
-        #             "Mismatched": false,
-        #             "PowerSupplyStatus": {
-        #                 "State": "Ok"
-        #             },
-        #             "iPDUCapable": false
-        #         }
-        #     },
-        #     "PowerCapacityWatts": 800,
-        #     "PowerSupplyType": "AC",
-        #     "SerialNumber": "5WBYE0D4DEF1FM",
-        #     "SparePartNumber": "866793-001",
-        #     "Status": {
-        #         "Health": "OK",
-        #         "State": "Enabled"
-        #     }
-        # },
         properties['Data']['PowerSupply'] = []
         for power_supply in data['PowerSupplies']:
             power_supply_info = {}

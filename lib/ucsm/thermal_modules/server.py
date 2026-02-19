@@ -2,11 +2,10 @@ from lib import output_helper
 
 
 class ServerThermal():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_compute_motherboard_stats = None
         self.mo_compute_cpu_stats = None
         self.mo_compute_memory_stats = None
-        self.my_output = output_helper.OutputHelper(log_id=log_id)
 
     def get_compute_thermal_data(self):
         if self.mo_compute_motherboard_stats is None:
@@ -35,7 +34,7 @@ class ServerThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['blade_rn'] = info['dn'].split('/')[2]
@@ -45,13 +44,13 @@ class ServerThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'fm_temp_sen_io%s' % (suffix))
+                    getattr(managed_object, 'fm_temp_sen_io%s' % (suffix), None)
                 ),
                 2
             )
             info['fm_temp_sen_rear%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'fm_temp_sen_rear%s' % (suffix))
+                    getattr(managed_object, 'fm_temp_sen_rear%s' % (suffix), None)
                 ),
                 2
             )
@@ -66,7 +65,7 @@ class ServerThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['blade_rn'] = info['dn'].split('/')[2]
@@ -76,7 +75,7 @@ class ServerThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'fm_temp_sen_rear%s' % (suffix))
+                    getattr(managed_object, 'fm_temp_sen_rear%s' % (suffix), None)
                 ),
                 2
             )
@@ -144,7 +143,7 @@ class ServerThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['blade_rn'] = info['dn'].split('/')[2]
@@ -155,7 +154,7 @@ class ServerThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'temperature%s' % (suffix))
+                    getattr(managed_object, 'temperature%s' % (suffix), None)
                 ),
                 2
             )
@@ -199,7 +198,7 @@ class ServerThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['blade_rn'] = info['dn'].split('/')[2]
@@ -211,7 +210,7 @@ class ServerThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'temperature%s' % (suffix))
+                    getattr(managed_object, 'temperature%s' % (suffix), None)
                 ),
                 2
             )

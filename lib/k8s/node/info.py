@@ -1,3 +1,5 @@
+import time
+import yaml
 from lib import filter_helper
 from lib import ip_helper
 
@@ -94,14 +96,14 @@ class K8sNodeInfo():
                 info['cnvTick'] = '\u2713'
                 info['__Output']['cnvTick'] = 'Green'
 
-        annotations_mo = self.get(node_mo, 'metadata:annotations', on_error={}, on_none={})
+        info['annotations'] = self.get(node_mo, 'metadata:annotations', on_error={}, on_none={})
         info['mcp_current_config'] = None
         info['mcp_desired_config'] = None
         info['mcpTick'] = '--'
-        if 'machineconfiguration.openshift.io/currentConfig' in annotations_mo:
-            info['mcp_current_config'] = annotations_mo['machineconfiguration.openshift.io/currentConfig']
-        if 'machineconfiguration.openshift.io/desiredConfig' in annotations_mo:
-            info['mcp_desired_config'] = annotations_mo['machineconfiguration.openshift.io/desiredConfig']
+        if 'machineconfiguration.openshift.io/currentConfig' in info['annotations']:
+            info['mcp_current_config'] = info['annotations']['machineconfiguration.openshift.io/currentConfig']
+        if 'machineconfiguration.openshift.io/desiredConfig' in info['annotations']:
+            info['mcp_desired_config'] = info['annotations']['machineconfiguration.openshift.io/desiredConfig']
         if info['mcp_current_config'] is not None and info['mcp_desired_config'] is not None:
             if info['mcp_current_config'] == info['mcp_desired_config']:
                 info['mcpTick'] = '\u2713'
@@ -182,10 +184,48 @@ class K8sNodeInfo():
         if info['external_ip'] is None:
             info['ssh_ip'] = info['internal_ip']
 
+        # NoExecute
+        # NoSchedule
+        # PreferNoSchedule
+        info['taint'] = []
+        info['taint_key'] = []
+        taints_mo = self.get(node_mo, 'spec:taints', on_error=[], on_none=[])
+        for taint_mo in taints_mo:
+            effect = self.get(taint_mo, 'effect')
+            if effect is not None and effect not in info['taint']:
+                info['taint'].append(
+                    effect
+                )
+
+            key = self.get(taint_mo, 'key')
+            if key is not None:
+                if key.split('/')[-1] not in info['taint_key']:
+                    info['taint_key'].append(
+                        key.split('/')[-1]
+                    )
+
         info['age'] = self.convert_timestamp_to_age(
             self.get(node_mo, 'metadata:creation_timestamp'),
             on_error='--'
         )
+
+        info['node_status'] = []
+
+        if info['ready']:
+            info['node_status'].append('Ready')
+        else:
+            info['node_status'].append('Not Ready')
+
+        if info['memory_pressure']:
+            info['node_status'].append('Memory Pressure')
+
+        if info['disk_pressure']:
+            info['node_status'].append('Disk Pressure')
+            
+        if info['pid_pressure']:
+            info['node_status'].append('PID Pressure')
+
+        info['node_status'] = info['node_status'] + info['taint'] + info['taint_key']
 
         return info
 
@@ -216,6 +256,9 @@ class K8sNodeInfo():
 
         if len(label_filter.split(':')) > 2:
             return new_labels
+
+        label_filter_key = None
+        label_filter_value = None
 
         if len(label_filter.split(':')) == 1:
             label_filter_key = label_filter
@@ -345,16 +388,22 @@ class K8sNodeInfo():
 
         return nodes
 
-    def get_node(self, node_name):
+    def get_node(self, node_name, cache_enabled=True):
         node_filter = ['name:%s' % (node_name)]
         nodes = self.get_nodes(
-            object_filter=node_filter
+            object_filter=node_filter,
+            cache_enabled=cache_enabled
         )
 
         if nodes is None or len(nodes) != 1:
             return None
 
         return nodes[0]
+
+    def is_node(self, node_name, cache_enabled=True):
+        if self.get_node(node_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
 
     def get_node_name(self, ip_address):
         node_info = self.get_node_with_ip(ip_address)
@@ -396,7 +445,7 @@ class K8sNodeInfo():
         if node_info is None:
             return None
 
-        if len(node_info['external_ip']) == 0:
+        if node_info['external_ip'] is None or len(node_info['external_ip']) == 0:
             return None
 
         for external_ip in node_info['external_ip']:
@@ -409,8 +458,9 @@ class K8sNodeInfo():
 
         return None
 
-    def get_node_ip(self, node_name, address_type='ipv4'):
-        node_info = self.get_node(node_name)
+    def get_node_ip(self, node_name, node_info=None, address_type='ipv4'):
+        if node_info is None:
+            node_info = self.get_node(node_name)
         if node_info is None:
             return None
 
@@ -426,6 +476,32 @@ class K8sNodeInfo():
                     return ip_address
 
         return None
+
+    def get_nodes_name(self):
+        names = []
+
+        nodes = self.get_nodes()
+        if nodes is not None:
+            for node in nodes:
+                names.append(
+                    node['name']
+                )
+
+        return sorted(names)
+
+    def get_nodes_ip(self, address_type='ipv4'):
+        node_ip = {}
+
+        nodes = self.get_nodes()
+        if nodes is not None:
+            for node in nodes:
+                node_ip[node['name']] = self.get_node_ip(
+                    node['name'],
+                    node_info=node,
+                    address_type=address_type
+                )
+
+        return node_ip
 
     def get_master_nodes(self):
         node_filter = ['master:true']
@@ -445,7 +521,10 @@ class K8sNodeInfo():
 
     def get_worker_nodes_ip(self, ready=True):
         node_ips = []
-        for node_info in self.get_worker_nodes():
+        worker_nodes = self.get_worker_nodes()
+        if worker_nodes is None:
+            return None
+        for node_info in worker_nodes:
             if ready and not node_info['ready']:
                 continue
             node_ips = node_ips + node_info['ip']
@@ -454,7 +533,7 @@ class K8sNodeInfo():
 
     def get_any_worker_node_ip(self):
         node_ips = self.get_worker_nodes_ip()
-        if len(node_ips) == 0:
+        if node_ips is None or len(node_ips) == 0:
             return None
         return node_ips[0]
 
@@ -465,6 +544,240 @@ class K8sNodeInfo():
                 node_info['name']
             )
         return names
+
+    def get_node_count(self, cache_enabled=True):
+        nodes = self.get_nodes(cache_enabled=cache_enabled)
+        if nodes is None:
+            return 0
+        return len(nodes)
+    
+    def wait_node_annotations(self, node_name, annotations, max_time=360):
+        start_time = int(time.time())
+        while True:
+            node_info = self.get_node(
+                node_name,
+                cache_enabled=False
+            )
+            if node_info is None:
+                continue
+
+            if 'annotations' not in node_info or node_info['annotations'] is None:
+                continue
+
+            match = True
+            for annotation in annotations:
+                if annotation not in node_info['annotations']:
+                    match = False
+                    break
+
+            if match:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_node_wait_node_annotationsnetwork_state',
+                    'Max time reached'
+                )
+                return False
+
+            time.sleep(5)
+
+    def wait_nodes_annotations(self, annotations, max_time=360, my_output=None, worker_only=False, master_only=False):
+        if worker_only:
+            node_filter = ['worker:true']
+            nodes = self.get_nodes(
+                object_filter=node_filter,
+                cache_enabled=False
+            )
+            if nodes is None:
+                return False
+
+            if my_output is not None:
+                my_output.default('Wait for annotations on all worker nodes')
+
+        if master_only:
+            node_filter = ['master:true']
+            nodes = self.get_nodes(
+                object_filter=node_filter,
+                cache_enabled=False
+            )
+            if nodes is None:
+                return False
+
+            if my_output is not None:
+                my_output.default('Wait for annotations on all master nodes')
+
+        if not worker_only and not master_only:
+            nodes = self.get_nodes()
+            if nodes is None:
+                return False
+
+            if my_output is not None:
+                my_output.default('Wait for annotations on all cluster nodes')
+
+        for node in nodes:
+            success = self.wait_node_annotations(node['name'], annotations, max_time=max_time)
+            if not success:
+                if my_output is not None:
+                    my_output.error('Node [%s] annotations not found' % (node['name']))
+                return False
+
+            my_output.default('Node [%s] annotations found' % (node['name']))
+
+        return True
+
+    def is_node_ready(self, node_name, cache_enabled=True):
+        node = self.get_node(node_name, cache_enabled=cache_enabled)
+        if node is None:
+            return False
+        return node['ready']
+    
+    def are_nodes_ready(self, cache_enabled=True):
+        nodes = self.get_nodes(cache_enabled=cache_enabled)
+        if nodes is None:
+            return False
+        
+        for node in nodes:
+            if not node['ready']:
+                return False
+            
+        return True
+    
+    def wait_nodes_not_ready(self, max_time=180, my_output=None):
+        nodes = self.get_nodes(cache_enabled=False)
+        if nodes is None:
+            if my_output is None:
+                my_output.default('Failed to get nodes state')
+
+            return True
+
+        start_time = int(time.time())
+        while True:
+            nodes = self.get_nodes(cache_enabled=False)
+            if nodes is None:
+                if my_output is None:
+                    my_output.default('Failed to get nodes state')
+
+                return True
+
+            for node in nodes:
+                if not node['ready']:
+                    if my_output is None:
+                        my_output.default('Node not ready: %s' % (node['name']))
+                        return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if my_output is not None:
+                    my_output.default('Max wait time reached, all cluster nodes ready')
+
+                return False
+
+            time.sleep(5)
+
+    def wait_node_ready(self, node_name, max_time=600):
+        start_time = int(time.time())
+        while True:
+            node = self.get_node(node_name, cache_enabled=False)
+            if node is not None:
+                if node['ready']:
+                    return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                return False
+
+            time.sleep(5)
+
+    def wait_nodes_ready(self, max_time=600, my_output=None):
+        start_time = int(time.time())
+        while True:
+            nodes = self.get_nodes(cache_enabled=False)
+            if nodes is not None:
+                ready = True
+                for node in nodes:
+                    ready = ready and node['ready']
+
+                if ready:
+                    return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if my_output is not None:
+                    my_output.default('Max wait time reached, cluster nodes not ready')
+
+                return False
+
+            time.sleep(5)
+
+    def is_node_cordon(self, node_name, cache_enabled=True):
+        node_info = self.get_node(node_name, cache_enabled=cache_enabled)
+        if node_info is None:
+            return False
+        
+        if 'NoSchedule' in node_info['taint']:
+            return True
+        
+        return False
+    
+    def set_node_cordon(self, node_name, my_output=None):
+        if not self.is_node(node_name):
+            return False
+        
+        if my_output is not None:
+            my_output.default('Cordone node: %s' % (node_name))
+
+        if self.is_node_cordon(node_name, cache_enabled=False):
+            if my_output is not None:
+                my_output.default('Already cordoned')
+            return True
+        
+        body = {}
+        body['spec'] = {}
+        body['spec']['unschedulable'] = True
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), wrap='~~~', before_newline=True)
+
+        success = self.patch_node_mo(node_name, body)
+        if success:
+            if my_output is not None:
+                my_output.default('Node patched')
+        else:
+            if my_output is not None:
+                my_output.error('Node patch failed')
+
+        return success
+
+    def set_node_uncordon(self, node_name, my_output=None):
+        if not self.is_node(node_name):
+            return False
+        
+        if my_output is not None:
+            my_output.default('Uncordon node: %s' % (node_name))
+
+        if not self.is_node_cordon(node_name, cache_enabled=False):
+            if my_output is not None:
+                my_output.default('Already uncordoned')
+            return True
+        
+        body = {}
+        body['spec'] = {}
+        body['spec']['unschedulable'] = None
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), wrap='~~~', before_newline=True)
+
+        success = self.patch_node_mo(node_name, body)
+        if success:
+            if my_output is not None:
+                my_output.default('Node patched')
+        else:
+            if my_output is not None:
+                my_output.error('Node patch failed')
+
+        return success
 
     # def get_node_pods(self, node_name):
     #     try:
@@ -614,11 +927,6 @@ class K8sNodeInfo():
 
     # def is_node_bm(self, node):
     #     return False
-
-    # def is_node(self, node_name):
-    #     if self.get_node_mo(node_name) is None:
-    #         return False
-    #     return True
 
     # def get_worker_nodes_name(self):
     #     if not self.get_nodes():

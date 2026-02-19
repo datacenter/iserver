@@ -11,13 +11,13 @@ class ImcCliSyslog():
             if self.syslog_mo is not None:
                 return self.syslog_mo
 
-            self.syslog_mo = self.get_icm_cli_cache_entry(
+            self.syslog_mo = self.get_imc_cli_cache_entry(
                 'syslog'
             )
             if self.syslog_mo is not None:
                 return self.syslog_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/log # show detail
+        # com /cimc/log # show detail
         # LOG:
         #     Local Syslog Severity: debug
         #     Remote Syslog Severity: warning
@@ -48,13 +48,13 @@ class ImcCliSyslog():
             if self.syslog_server_mo is not None:
                 return self.syslog_server_mo
 
-            self.syslog_server_mo = self.get_icm_cli_cache_entry(
+            self.syslog_server_mo = self.get_imc_cli_cache_entry(
                 'syslog_server'
             )
             if self.syslog_server_mo is not None:
                 return self.syslog_server_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc/log # show server detail
+        # com /cimc/log # show server detail
         # Syslog Server 1:
         #     Syslog Server Address: <ip>
         #     Syslog Server Port: 5140

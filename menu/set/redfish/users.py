@@ -7,7 +7,7 @@ from progress.bar import IncrementalBar
 
 from lib import file_helper
 from lib import filter_helper
-from lib.imc import endpoint as imc_endpoint
+from lib.imc.cli import endpoint as imc_endpoint
 from lib.redfish import endpoint as redfish_endpoint
 from lib.redfish import endpoint_settings as redfish_endpoint_settings
 from lib.redfish import output as redfish_output
@@ -233,7 +233,7 @@ def set_redfish_users_command(
                 server_admin_password = None
 
                 ctx.my_output.default('Verify current admin password...')
-                imc_handler = imc_endpoint.ImcEndpoint(
+                imc_handler = imc_endpoint.ImcCliEndpoint(
                     server_mo['ManagementIp'],
                     22,
                     content['admin_username'],
@@ -248,7 +248,7 @@ def set_redfish_users_command(
                     ctx.my_output.default('Current admin password: %s' % (server_admin_password))
 
                 if version is None:
-                    imc_handler = imc_endpoint.ImcEndpoint(
+                    imc_handler = imc_endpoint.ImcCliEndpoint(
                         server_mo['ManagementIp'],
                         22,
                         content['admin_username'],
@@ -270,7 +270,7 @@ def set_redfish_users_command(
                     continue
 
             ctx.my_output.default('Enable redfish access...')
-            imc_handler = imc_endpoint.ImcEndpoint(
+            imc_handler = imc_endpoint.ImcCliEndpoint(
                 server_mo['ManagementIp'],
                 22,
                 content['admin_username'],
@@ -383,7 +383,7 @@ def set_redfish_users_command(
                     log_id=ctx.run_id
                 )
 
-                imc_handler = imc_endpoint.ImcEndpoint(
+                imc_handler = imc_endpoint.ImcCliEndpoint(
                     server_mo['ManagementIp'],
                     22,
                     content['admin_username'],
@@ -497,7 +497,7 @@ def set_redfish_users_command(
                     log_id=ctx.run_id
                 )
 
-                imc_handler = imc_endpoint.ImcEndpoint(
+                imc_handler = imc_endpoint.ImcCliEndpoint(
                     server_mo['ManagementIp'],
                     22,
                     content['admin_username'],
@@ -626,7 +626,7 @@ def set_redfish_users_command(
                     log_id=ctx.run_id
                 )
 
-                imc_handler = imc_endpoint.ImcEndpoint(
+                imc_handler = imc_endpoint.ImcCliEndpoint(
                     server_mo['ManagementIp'],
                     22,
                     content['admin_username'],
@@ -809,7 +809,7 @@ def set_redfish_users_command(
             iaccount,
             ip_filter=ip_filter,
             name_filter=name_filter,
-            serial_filter=new_serial_filter,
+            serial_filter=intersight_validations.add_group_filter(serial_filter, group_filter),
             include_rack=True,
             include_blade=False,
             show_progress=False

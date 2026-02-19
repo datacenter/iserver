@@ -2,95 +2,40 @@ class K8sDeploymentOutput():
     def __init__(self):
         pass
 
-    def print_deployments(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Deployment [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace',
-            'name',
-            'readyT',
-            'updatedReplicas',
-            'availableReplicas',
-            'age'
-        ]
-
-        headers = [
-            'Namespace',
-            'Name',
-            'Ready',
-            'Up-To-Date',
-            'Available',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_deployments(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=False,
-            table=True
+            [
+                ['Deployment', 'namespace_nameT'],
+                ['Ready', 'readyT'],
+                ['Up-To-Date', 'updatedReplicas'],
+                ['Available', 'availableReplicas'],
+                ['Age', 'age']
+            ]
         )
 
-    def print_deployments_metadata(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Deployment - Metadata [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
+    def print_deployments_metadata(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Deployment', 'namespace_nameT'],
+                ['Owner', 'ownerT'],
+                ['Label', 'labelT'],
+                ['Annotation', 'annotationT']
+            ]
+        )
 
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in info:
-            item['namespace_nameT'] = []
-            item['namespace_nameT'].append(
-                item['namespace']
-            )
-            item['namespace_nameT'].append(
-                item['name']
-            )
-            if item['owner'] is None:
-                item['ownerT'] = ['--']
-            else:
-                item['ownerT'] = item['owner'].split('/')
-
-        order = [
-            'namespace_nameT',
-            'ownerT',
-            'labelT',
-            'annotationT'
-        ]
-
-        headers = [
+    def print_deployment(self, item):
+        self.my_output.dictionary_ng(
             'Deployment',
-            'Owner',
-            'Label',
-            'Annotation'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['namespace_nameT', 'labelT', 'annotationT', 'ownerT']
-            ),
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            item, 
+            [
+                ['Namespace', 'namespace'],
+                ['Name', 'name'],
+                ['Owner', 'owner'],
+                ['Ready', 'readyT'],
+                ['Up-To-Date', 'updatedReplicas'],
+                ['Available', 'availableReplicas'],
+                ['Age', 'age']
+            ]
         )

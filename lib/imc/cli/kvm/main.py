@@ -10,13 +10,13 @@ class ImcCliKvm():
             if self.kvm_mo is not None:
                 return self.kvm_mo
 
-            self.kvm_mo = self.get_icm_cli_cache_entry(
+            self.kvm_mo = self.get_imc_cli_cache_entry(
                 'kvm'
             )
             if self.kvm_mo is not None:
                 return self.kvm_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show kvm detail
+        # com# show kvm detail
         # KVM Settings:
         #     Max Sessions: 4
         #     Local Video: yes

@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -23,19 +24,15 @@ class PoolVlanInfo():
         info['domainName'] = info['tDn']
 
         if info['tCl'] == 'l2extDomP':
-            # "tDn": "uni/l2dom-Infra_L2dom"
             info['domainName'] = info['tDn'].split('uni/l2dom-')[1]
 
         if info['tCl'] == 'l3extDomP':
-            # "tDn": "uni/l3dom-UCSB1_L3Dom"
             info['domainName'] = info['tDn'].split('uni/l3dom-')[1]
 
         if info['tCl'] == 'physDomP':
-            # "tDn": "uni/phys-UCSB1_PhysDom"
             info['domainName'] = info['tDn'].split('uni/phys-')[1]
 
         if info['tCl'] == 'vmmDomP':
-            # "tDn": "uni/vmmp-VMware/dom-EU-SPDC-R7DC"
             info['domainName'] = info['tDn'].split('uni/vmmp-VMware/dom-')[1]
 
         return info
@@ -78,7 +75,10 @@ class PoolVlanInfo():
             'allocMode',
             'descr',
             'dn',
-            'name'
+            'name',
+            'VlanNsToInterface',
+            'VlanNsToVirtualMachines',
+            'VlanNsToVmmPortGroups'
         ]
 
         info = {}
@@ -89,8 +89,15 @@ class PoolVlanInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
+        if info['VlanNsToInterface'] is not None:
+            for item in info['VlanNsToInterface']:
+                item['interface_name'] = None
+                if item['ctxClass'] == 'l1PhysIf':
+                    item['interface_name'] = item['ctxDn'].split('phys-[')[1].split(']')[0]
+
         info['fvnsEncapBlk'] = []
         info['vlanCount'] = 0
+        info['vlanIds'] = []
 
         domain_vmm_epg_filter = ['pool:%s' % (info['name'])]
         for block_managed_object in managed_object['fvnsEncapBlk']:
@@ -107,6 +114,9 @@ class PoolVlanInfo():
             )
 
             info['vlanCount'] = info['vlanCount'] + int(block_info['toVlan']) - int(block_info['fromVlan']) + 1
+
+            for vlan_id in range(int(block_info['toVlan']), int(block_info['fromVlan']) + 1):
+                info['vlanIds'].append(vlan_id)
 
             info['fvnsEncapBlk'].append(
                 block_info
@@ -187,15 +197,20 @@ class PoolVlanInfo():
             self,
             pool_vlan_filter=None,
             vlan_usage_info=False,
+            node_info=False,
             fault_info=False,
             hfault_info=False,
             event_info=False,
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_pools = self.get_pool_vlan_mo()
+        if not cache_enabled:
+            self.init_pool_vlan_mo()
+
+        all_pools = self.get_pool_vlan_mo(node_info=node_info, cache_enabled=cache_enabled)
         if all_pools is None:
             return None
 
@@ -263,7 +278,7 @@ class PoolVlanInfo():
 
         return pool_vlans
 
-    def get_pool_vlan(self, pool_vlan_name, vlan_usage_info=False, domain_name=None):
+    def get_pool_vlan(self, pool_vlan_name, vlan_usage_info=False, node_info=False, domain_name=None, cache_enabled=True):
         pool_vlan_filter = ['name:%s' % (pool_vlan_name)]
         if domain_name is not None:
             pool_vlan_filter.append(
@@ -272,7 +287,9 @@ class PoolVlanInfo():
 
         vlans = self.get_pool_vlans(
             pool_vlan_filter=pool_vlan_filter,
-            vlan_usage_info=vlan_usage_info
+            vlan_usage_info=vlan_usage_info,
+            node_info=node_info,
+            cache_enabled=cache_enabled
         )
 
         if vlans is None or len(vlans) == 0:
@@ -282,3 +299,43 @@ class PoolVlanInfo():
             return None
 
         return vlans[0]
+
+    def is_pool_vlan(self, pool_vlan_name, cache_enabled=True):
+        if self.get_pool_vlan(pool_vlan_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def wait_pool_vlan(self, pool_vlan_name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            if self.is_pool_vlan(pool_vlan_name, cache_enabled=False):
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'aci.wait_pool_vlan',
+                    'Max time reached: %s' % (pool_vlan_name)
+                )
+                return False
+
+            time.sleep(5)
+
+    def check_pool_vlan_consistency(self, blocks, values):
+        requested = filter_helper.get_range_from_values(values)
+
+        vlans = []
+        for block in blocks:
+            if block['fromVlan'] == block['toVlan']:
+                vlans.append(block['fromVlan'])
+            else:
+                vlans.append('%s-%s' % (block['fromVlan'], block['toVlan']))
+
+        configured = filter_helper.get_range_from_values(vlans)
+
+        inconsistent = []
+        for vlan in vlans:
+            if vlan not in configured:
+                inconsistent.append(vlan)
+
+        return inconsistent

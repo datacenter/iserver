@@ -19,7 +19,6 @@ class ContractFilterEventInfo():
 
         if 'affected' in info:
             if 'uni/tn-' in info['affected']:
-                # uni/tn-k8s/flt-BT-Demo
                 info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
             if '/flt-' in info['affected']:
@@ -27,7 +26,6 @@ class ContractFilterEventInfo():
 
         if 'affected' not in info and 'dn' in info:
             if 'uni/tn-' in info['dn']:
-                # uni/tn-k8s/flt-BT-Demo
                 info['tenantName'] = info['dn'].split('uni/tn-')[1].split('/')[0]
 
             if '/flt-' in info['dn']:

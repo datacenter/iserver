@@ -191,56 +191,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_chassis_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_chassis_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.fan_module_handler.set_get_filter(
-            #         "EquipmentChassis/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan module miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan module miss wout filter'
-            #     )
-
-            # managed_objects = self.fan_module_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan module failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['EquipmentChassis']['Moid'] == chassis_moid:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'fan_module',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            #     self.fan_module_moids[chassis_moid] = []
-            #     for managed_object in chassis_managed_objects:
-            #         self.fan_module_moids[chassis_moid].append(
-            #             managed_object['Moid']
-            #         )
-
-            # return
-
         if key == 'fan':
             cache_hits = []
             target_moids = []
@@ -326,51 +276,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for target_chassis_moid in target_chassis_moids:
-            #         for fan_module_moid in self.fan_module_moids[target_chassis_moid]:
-            #             moids_list.append('\'%s\'' % (fan_module_moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.fan_handler.set_get_filter(
-            #         "Parent/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan miss wout filter'
-            #     )
-
-            # managed_objects = self.fan_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'fan failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['Parent']['Moid'] in self.fan_module_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'fan',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'power_control':
             cache_hits = []
@@ -704,50 +609,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.iocard_handler.set_get_filter(
-            #         "EquipmentChassis/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard miss wout filter'
-            #     )
-
-            # managed_objects = self.iocard_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['EquipmentChassis']['Moid'] == chassis_moid:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'iocard',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'expander_module':
             cache_hits = []
             target_moids = []
@@ -832,50 +693,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.iocard_handler.set_get_filter(
-            #         "EquipmentChassis/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard miss wout filter'
-            #     )
-
-            # managed_objects = self.iocard_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'iocard failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['EquipmentChassis']['Moid'] == chassis_moid:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'iocard',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'ether_host_port':
             cache_hits = []
@@ -962,50 +779,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.ether_host_port_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether host port miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether host port miss wout filter'
-            #     )
-
-            # managed_objects = self.ether_host_port_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether host port failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'ether_host_port',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'ether_network_port':
             cache_hits = []
             target_moids = []
@@ -1090,50 +863,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.ether_network_port_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether network port miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether network port miss wout filter'
-            #     )
-
-            # managed_objects = self.ether_network_port_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether network port failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'ether_network_port',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'ether_physical_port':
             cache_hits = []
@@ -1220,50 +949,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.ether_physical_port_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether phy port miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether phy port miss wout filter'
-            #     )
-
-            # managed_objects = self.ether_physical_port_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'ether phy port failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'ether_physical_port',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'blade':
             cache_hits = []
             target_moids = []
@@ -1348,50 +1033,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.blade_handler.set_get_filter(
-            #         "EquipmentChassis/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'blade miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'blade miss wout filter'
-            #     )
-
-            # managed_objects = self.blade_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'blade failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['EquipmentChassis']['Moid'] == chassis_moid:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'blade',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'adapter':
             cache_hits = []
@@ -1478,50 +1119,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.adapter_unit_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'adapter miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'adapter miss wout filter'
-            #     )
-
-            # managed_objects = self.adapter_unit_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'adapter failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'adapter',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'interface':
             cache_hits = []
             target_moids = []
@@ -1606,50 +1203,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.adapter_ext_eth_interface_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'interface miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'interface miss wout filter'
-            #     )
-
-            # managed_objects = self.adapter_ext_eth_interface_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'interface failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'interface',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'alarm':
             cache_hits = []
@@ -1736,50 +1289,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.cond_alarm_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'alarm miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'alarm miss wout filter'
-            #     )
-
-            # managed_objects = self.cond_alarm_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'alarm failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'alarm',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'advisory':
             cache_hits = []
             target_moids = []
@@ -1864,50 +1373,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.tam_advisory_instance_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'advisory miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'advisory miss wout filter'
-            #     )
-
-            # managed_objects = self.tam_advisory_instance_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'advisory failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'advisory',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'contract':
             cache_hits = []
@@ -1994,50 +1459,6 @@ class ChassisCache():
 
             return
 
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.asset_device_contract_information_handler.set_get_filter(
-            #         "DeviceId in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'compute_info.set_intersight_cache',
-            #         'contract cache miss w/filter: %s' % (target_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'compute_info.set_intersight_cache',
-            #         'contract cache miss wout filter'
-            #     )
-
-            # managed_objects = self.asset_device_contract_information_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'compute.set_intersight_cache',
-            #         'contract failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if serial[chassis_moid] == managed_object['DeviceId']:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'contract',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
-
         if key == 'fi':
             cache_hits = []
             target_moids = []
@@ -2122,50 +1543,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.network_element_summary_handler.set_get_filter(
-            #         "RegisteredDevice/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fi miss w/filter: %s' % (target_chassis_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'chassis_info.set_intersight_cache',
-            #         'fi miss wout filter'
-            #     )
-
-            # managed_objects = self.network_element_summary_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'chassis_info.set_intersight_cache',
-            #         'fi failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if managed_object['RegisteredDevice']['Moid'] == device_moids[chassis_moid]:
-            #             chassis_managed_objects.append(
-            #                 managed_object
-            #             )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'fi',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         if key == 'profile':
             cache_hits = []
@@ -2254,51 +1631,6 @@ class ChassisCache():
                 )
 
             return
-
-            # if len(target_moids) < filter_length_threshold:
-            #     moids_list = []
-            #     for moid in target_moids:
-            #         moids_list.append('\'%s\'' % (moid))
-            #     moids_filter = ', '.join(moids_list)
-
-            #     self.chassis_profile_handler.set_get_filter(
-            #         "AssignedChassis/Moid in (%s)" % (moids_filter)
-            #     )
-
-            #     self.log_handler.debug(
-            #         'compute_info.set_intersight_cache',
-            #         'profile cache miss w/filter: %s' % (target_moids)
-            #     )
-            # else:
-            #     self.log_handler.debug(
-            #         'compute_info.set_intersight_cache',
-            #         'profile cache miss wout filter'
-            #     )
-
-            # managed_objects = self.chassis_profile_handler.get_all()
-            # if managed_objects is None:
-            #     self.log_handler.error(
-            #         'compute.set_intersight_cache',
-            #         'profile failed'
-            #     )
-            #     return
-
-            # for chassis_moid in target_chassis_moids:
-            #     chassis_managed_objects = []
-            #     for managed_object in managed_objects:
-            #         if 'AssignedChassis' in managed_object and managed_object['AssignedChassis'] is not None:
-            #             if chassis_moid == managed_object['AssignedChassis']['Moid']:
-            #                 chassis_managed_objects.append(
-            #                     managed_object
-            #                 )
-
-            #     self.cache_handler.set_intersight_cache_entry(
-            #         'profile',
-            #         chassis_managed_objects,
-            #         subdirectory=chassis_moid
-            #     )
-
-            # return
 
         self.log_handler.error(
             'set_intersight_cache',

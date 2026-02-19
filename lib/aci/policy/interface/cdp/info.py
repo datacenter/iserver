@@ -7,6 +7,9 @@ class PolicyInterfaceCdpInfo():
     def __init__(self):
         self.policy_interface_cdp = None
 
+    def init_policy_interface_cdp(self):
+        self.policy_interface_cdp = None
+
     def get_policy_interface_cdp_reln_info(self, managed_object):
         info = {}
         info['class'] = 'cdpIfPol'
@@ -22,22 +25,6 @@ class PolicyInterfaceCdpInfo():
         return info
 
     def get_policy_interface_cdp_info(self, managed_object):
-        # "adminSt": "disabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "descr": "",
-        # "dn": "uni/infra/portcdppol-default",
-        # "extMngdBy": "",
-        # "hostMode": "single-host",
-        # "lcOwn": "local",
-        # "modTs": "2020-12-09T19:07:28.202+01:00",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": ""
         keys = [
             'adminSt',
             'annotation',
@@ -87,11 +74,11 @@ class PolicyInterfaceCdpInfo():
 
         return info
 
-    def get_policies_interface_cdp_info(self):
+    def get_policies_interface_cdp_info(self, cache_enabled):
         if self.policy_interface_cdp is not None:
             return self.policy_interface_cdp
 
-        managed_objects = self.get_policy_interface_cdp_mo()
+        managed_objects = self.get_policy_interface_cdp_mo(cache_enabled=cache_enabled)
         if managed_objects is not None:
             self.policy_interface_cdp = []
             for managed_object in managed_objects:
@@ -162,8 +149,12 @@ class PolicyInterfaceCdpInfo():
 
         return True
 
-    def get_policy_interface_cdp(self, policy_filter=None, reln_info=True, attachment_info=False):
-        all_policies = self.get_policies_interface_cdp_info()
+    def get_policies_interface_cdp(self, policy_filter=None, reln_info=True, attachment_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_policy_interface_cdp()
+            self.init_policy_interface_cdp_mo()
+
+        all_policies = self.get_policies_interface_cdp_info(cache_enabled=cache_enabled)
         if all_policies is None:
             return None
 
@@ -222,3 +213,30 @@ class PolicyInterfaceCdpInfo():
         )
 
         return policy
+
+    def get_policy_interface_cdp(self, policy_name, reln_info=True, attachment_info=False, cache_enabled=True):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_cdp(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info,
+            cache_enabled=cache_enabled
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_cdp(self, policy_name, cache_enabled=True):
+        if self.get_policy_interface_cdp(policy_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

@@ -17,24 +17,6 @@ class RedfishEndpointHpeTemplateThermal():
         properties['Summary']['SmallestGap'] = None
         properties['Summary']['OverThreshold'] = 0
 
-        # {
-        #     "RelatedItem": [
-        #         {
-        #             "@odata.id": "/redfish/v1/Chassis/1"
-        #         }
-        #     ],
-        #     "@odata.id": "/redfish/v1/Chassis/1/Thermal#/Temperatures/MLOM_TEMP",
-        #     "Status": {
-        #         "State": "Enabled",
-        #         "Health": "OK"
-        #     },
-        #     "SensorNumber": 60,
-        #     "Name": "MLOM_TEMP",
-        #     "PhysicalContext": "NetworkingDevice",
-        #     "MemberId": "1",
-        #     "UpperThresholdCritical": 90,
-        #     "ReadingCelsius": 55
-        # },
         properties['Data']['Temperature'] = []
         for sensor in data['Temperatures']:
             sensor_info = {}
@@ -83,23 +65,6 @@ class RedfishEndpointHpeTemplateThermal():
 
         properties['Data']['Temperature'] = sorted(properties['Data']['Temperature'], key=lambda i: i['Name'])
 
-        # {
-        #     "RelatedItem": [
-        #         {
-        #             "@odata.id": "/redfish/v1/Chassis/1"
-        #         }
-        #     ],
-        #     "@odata.id": "/redfish/v1/Chassis/1/Thermal#/Fans/MOD1_FAN1",
-        #     "ReadingUnits": "RPM",
-        #     "Reading": 7070,
-        #     "PhysicalContext": "Fan",
-        #     "MemberId": "1",
-        #     "Name": "MOD1_FAN1_SPEED",
-        #     "Status": {
-        #         "State": "Enabled",
-        #         "Health": "OK"
-        #     }
-        # },
         properties['Data']['Fan'] = []
         for fan in data['Fans']:
             fan_info = {}

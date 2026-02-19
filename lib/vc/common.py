@@ -8,6 +8,44 @@ class VcCommon():
     def __init__(self):
         pass
 
+    def fixup_datastore_folder_name(self, folder):
+        if folder == '':
+            return '/'
+
+        if not folder.startswith('/'):
+            folder = '/%s' % (folder)
+
+        if not folder.endswith('/'):
+            folder = '%s/' % (folder)
+
+        return folder
+
+    def fixup_datastore_path(self, path):
+        path = path.strip()
+        if len(path.split(' ')) == 1:
+            return '%s /' % (path)
+
+        items = path.split(' ')
+        datastore_name = items[0]
+        file_name = ' '.join(items[1:])
+        if not file_name.startswith('/'):
+            file_name = '/%s' % (file_name)
+
+        return '%s %s' % (datastore_name, file_name)
+
+    def get_parent_folder_name(self, folder_name):
+        folder_name = self.fixup_datastore_folder_name(folder_name)
+
+        if folder_name == '/':
+            return folder_name
+
+        subfolders = folder_name.lstrip('/').rstrip('/').split('/')[:-1]
+        return '/%s/' % ('/'.join(subfolders))
+
+    def get_datastore_file_path(self, folder_name, file_name):
+        folder_name = self.fixup_datastore_folder_name(folder_name)
+        return '%s%s' % (folder_name, file_name.lstrip('/'))
+
     def get_filter_spec(self, container_view, obj_type, path):
         traverse_spec = vmodl.query.PropertyCollector.TraversalSpec()
         traverse_spec.name = 'traverse'

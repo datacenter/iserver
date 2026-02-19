@@ -10,13 +10,13 @@ class ImcCliSmtp():
             if self.smtp_mo is not None:
                 return self.smtp_mo
 
-            self.smtp_mo = self.get_icm_cli_cache_entry(
+            self.smtp_mo = self.get_imc_cli_cache_entry(
                 'smtp'
             )
             if self.smtp_mo is not None:
                 return self.smtp_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061 /smtp # show detail
+        # com /smtp # show detail
         # SMTP Setting:
         #     Enabled: no
         #     Port Number: 25
@@ -85,7 +85,34 @@ class ImcCliSmtp():
         info['__IP'] = self.endpoint_ip
 
         for key in smtp_mo:
-            info[key] = smtp_mo[key]
+            if key not in ['Recipient']:
+                info[key] = smtp_mo[key]
+
+        if info['Enabled'] == 'yes':
+            info['__Output']['Enabled'] = 'Green'
+        else:
+            info['__Output']['Enabled'] = 'Red'
+
+        info['Recipient'] = []
+        info['Recipients'] = []
+        for item in smtp_mo['Recipient']:
+            if len(item['Mail-ID']) > 0:
+                recipient_info = {}
+                for key in item:
+                    if key not in ['Recipient']:
+                        recipient_info[key] = item[key]
+
+                info['Recipient'].append(
+                    recipient_info
+                )
+
+                info['Recipients'].append(
+                    '%s Severity:%s Reachable:%s' % (
+                        recipient_info['Mail-ID'],
+                        recipient_info['Reachable'],
+                        recipient_info['Minimum Severity to Report']
+                    )
+                )
 
         self.log.debug(
             'get_smtp_info',

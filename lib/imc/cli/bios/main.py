@@ -12,22 +12,11 @@ class ImcCliBios():
             if self.bios_mo is not None:
                 return self.bios_mo
 
-            self.bios_mo = self.get_icm_cli_cache_entry(
+            self.bios_mo = self.get_imc_cli_cache_entry(
                 'bios'
             )
             if self.bios_mo is not None:
                 return self.bios_mo
-
-        # BIOS:
-        #     BIOS Version: C220M5.4.2.2b.0.0613220203
-        #     Backup BIOS Version: C220M5.4.1.3i.0.0713210713
-        #     Boot Order: HDD
-        #     FW Update Status: None, OK
-        #     UEFI Secure Boot: disabled
-        #     Configured Boot Mode: Uefi
-        #     Actual Boot Mode: Uefi
-        #     Last Configured Boot Order Source: CIMC
-        #     One time boot device: (none)
 
         self.bios_mo = self.show_dict(
             'show bios detail',
@@ -54,7 +43,7 @@ class ImcCliBios():
             if self.bios_params_mo is not None:
                 return self.bios_params_mo
 
-            self.bios_params_mo = self.get_icm_cli_cache_entry(
+            self.bios_params_mo = self.get_imc_cli_cache_entry(
                 'bios_params'
             )
             if self.bios_params_mo is not None:

@@ -1,6 +1,6 @@
+import sys
 import datetime
 import os
-import glob
 import time
 import json
 import shutil
@@ -42,8 +42,8 @@ class Log():
         self.vcenter_filename = os.path.join(self.logs_directory, 'vcenter.debug')
         self.nexus_filename = os.path.join(self.logs_directory, 'nexus.debug')
         self.apic_filename = os.path.join(self.logs_directory, 'apic.debug')
+        self.cnc_filename = os.path.join(self.logs_directory, 'cnc.debug')
         self.openshift_filename = os.path.join(self.logs_directory, 'openshift.debug')
-        self.iwo_filename = os.path.join(self.logs_directory, 'iwo.debug')
         self.ssh_filename = os.path.join(self.logs_directory, 'ssh.debug')
         self.devel_filename = os.path.join(self.logs_directory, 'devel.debug')
         self.lcm_report_filename = os.path.join(self.logs_directory, 'lcm.report')
@@ -70,8 +70,8 @@ class Log():
         self.mapping['vcenter'] = self.vcenter_filename
         self.mapping['nexus'] = self.nexus_filename
         self.mapping['apic'] = self.apic_filename
+        self.mapping['cnc'] = self.cnc_filename
         self.mapping['openshift'] = self.openshift_filename
-        self.mapping['iwo'] = self.iwo_filename
         self.mapping['ssh'] = self.ssh_filename
 
     def initialize(self, max_dirs=100):
@@ -182,13 +182,16 @@ class Log():
         for line in content.split('\n'):
             if len(line) > 0:
                 result['calls'] = result['calls'] + 1
-                (when, success, duration, count, command) = line.split('\t')
-                if success == 'True':
-                    result['success'] = result['success'] + 1
-                else:
-                    result['failed'] = result['failed'] + 1
+                try:
+                    (when, success, duration, count, command) = line.split('\t')
+                    if success == 'True':
+                        result['success'] = result['success'] + 1
+                    else:
+                        result['failed'] = result['failed'] + 1
 
-                result['total_time'] = result['total_time'] + int(duration)
+                    result['total_time'] = result['total_time'] + int(duration)
+                except BaseException:
+                    pass
 
         return result
 
@@ -281,7 +284,7 @@ class Log():
 
         return result
 
-    def analyze_openshift(self):
+    def analyze_cnc(self):
         result = {}
         result['read'] = False
         result['success'] = 0
@@ -294,7 +297,7 @@ class Log():
         result['mo_time'] = 0
         result['total_time'] = 0
 
-        content = self.get_file(self.openshift_filename)
+        content = self.get_file(self.cnc_filename)
         if content is None:
             return result
 
@@ -327,7 +330,7 @@ class Log():
 
         return result
 
-    def analyze_iwo(self):
+    def analyze_openshift(self):
         result = {}
         result['read'] = False
         result['success'] = 0
@@ -340,14 +343,17 @@ class Log():
         result['mo_time'] = 0
         result['total_time'] = 0
 
-        content = self.get_file(self.iwo_filename)
+        content = self.get_file(self.openshift_filename)
         if content is None:
             return result
 
         result['read'] = True
         for line in content.split('\n'):
             if len(line) > 0:
-                (when, success, duration, count, command, url, body) = line.split('\t')
+                if len(line.split('\t')) != 4:
+                    print(line)
+
+                (success, duration, count, command) = line.split('\t')
                 if success == 'True':
                     result['success'] = result['success'] + 1
                 else:
@@ -755,13 +761,13 @@ class Log():
         if info['read']:
             result['apic'] = info
 
+        info = self.analyze_cnc()
+        if info['read']:
+            result['cnc'] = info
+
         info = self.analyze_openshift()
         if info['read']:
             result['openshift'] = info
-
-        info = self.analyze_iwo()
-        if info['read']:
-            result['iwo'] = info
 
         info = self.analyze_ssh()
         if info['read']:
@@ -833,7 +839,7 @@ class Log():
 
     def get_logs(self, files=None):
         if files is None:
-            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'osp', 'psirt', 'nso', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'openshift', 'iwo']
+            files = ['debug', 'info', 'error', 'isctl', 'ssh', 'redfish', 'ucsm', 'nexus', 'k8s', 'osp', 'psirt', 'nso', 'ocapi', 'ocp', 'kubevirt', 'vcenter', 'apic', 'cnc', 'openshift']
 
         content = {}
         for filename in files:
@@ -1078,6 +1084,61 @@ class Log():
         except BaseException:
             pass
 
+    def cnc(self, command, success, duration, item_count=None):
+        try:
+            count = '-'
+            if item_count is not None:
+                count = int(item_count)
+
+            msg = "%s\t%s\t%s\t%s\n" % (
+                success,
+                duration,
+                count,
+                command
+            )
+
+            success = self.safe_append(
+                self.cnc_filename,
+                msg
+            )
+            if not success:
+                print('CNC log failed...')
+
+        except BaseException:
+            pass
+
+    def get_cnc_mo(self, name):
+        filename = os.path.join(
+            self.logs_directory,
+            'cnc.mo.%s' % (name)
+        )
+
+        content = self.get_file(filename)
+        if content is not None:
+            content = json.loads(content)
+
+        return content
+
+    def cnc_mo(self, name, managed_object, overwrite=False):
+        try:
+            name = name.replace('/', '_')
+            filename = os.path.join(
+                self.logs_directory,
+                'cnc.mo.%s' % (name)
+            )
+
+            if overwrite or not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            pass
+
     def openshift(self, command, success, duration, item_count=None):
         try:
             count = '-'
@@ -1141,65 +1202,6 @@ class Log():
         except BaseException:
             pass
 
-    def iwo(self, command, url, body, success, duration, item_count=None):
-        try:
-            current_time = datetime.datetime.now()
-
-            count = '-'
-            if item_count is not None:
-                count = int(item_count)
-
-            msg = "%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
-                current_time,
-                success,
-                duration,
-                count,
-                command,
-                url,
-                body
-            )
-
-            success = self.safe_append(
-                self.iwo_filename,
-                msg
-            )
-            if not success:
-                print('Iwo log failed...')
-
-        except BaseException:
-            pass
-
-    def get_iwo_mo(self, name):
-        filename = os.path.join(
-            self.logs_directory,
-            'iwo.mo.%s' % (name)
-        )
-
-        content = self.get_file(filename)
-        if content is not None:
-            content = json.loads(content)
-
-        return content
-
-    def iwo_mo(self, name, managed_object):
-        try:
-            filename = os.path.join(
-                self.logs_directory,
-                'iwo.mo.%s' % (name)
-            )
-
-            if not os.path.isfile(filename):
-                self.safe_write(
-                    filename,
-                    json.dumps(
-                        managed_object,
-                        indent=4
-                    )
-                )
-
-        except BaseException:
-            pass
-
     def k8s_mo(self, name, managed_object):
         try:
             filename = os.path.join(
@@ -1237,6 +1239,44 @@ class Log():
             )
             if not success:
                 print('K8s log failed...')
+
+        except BaseException:
+            pass
+
+    def linux_mo(self, name, managed_object):
+        try:
+            filename = os.path.join(
+                self.logs_directory,
+                'linux.mo.%s' % (name)
+            )
+
+            if not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
+
+        except BaseException:
+            pass
+
+    def linux_info(self, name, managed_object):
+        try:
+            filename = os.path.join(
+                self.logs_directory,
+                'linux.info.%s' % (name)
+            )
+
+            if not os.path.isfile(filename):
+                self.safe_write(
+                    filename,
+                    json.dumps(
+                        managed_object,
+                        indent=4
+                    )
+                )
 
         except BaseException:
             pass
@@ -1804,3 +1844,21 @@ class Log():
                     return my_dir['directory']
 
         return None
+
+    def get_version(self):
+        if getattr(sys, 'frozen', False):
+            bundle_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+            version_filename = os.path.abspath(os.path.join(bundle_dir, 'version'))
+        else:
+            bundle_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+            main_dir = os.path.dirname(bundle_dir)
+            version_filename = os.path.abspath(os.path.join(main_dir, 'version'))
+
+        try:
+            with open(version_filename, 'r', encoding='utf-8') as file_handler:
+                version = file_handler.read()
+
+        except BaseException:
+            version = 'unknown'
+
+        return version

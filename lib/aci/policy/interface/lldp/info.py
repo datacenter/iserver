@@ -7,6 +7,9 @@ class PolicyInterfaceLldpInfo():
     def __init__(self):
         self.policy_interface_lldp = None
 
+    def init_policy_interface_lldp(self):
+        self.policy_interface_lldp = None
+
     def get_policy_interface_lldp_reln_info(self, managed_object):
         info = {}
         info['class'] = 'lldpIfPol'
@@ -22,24 +25,6 @@ class PolicyInterfaceLldpInfo():
         return info
 
     def get_policy_interface_lldp_info(self, managed_object):
-        # "adminRxSt": "enabled",
-        # "adminTxSt": "enabled",
-        # "annotation": "",
-        # "childAction": "",
-        # "creator": "USER",
-        # "descr": "",
-        # "dn": "uni/fabric/lldpIfP-default",
-        # "extMngdBy": "",
-        # "lcOwn": "local",
-        # "modTs": "2020-12-09T19:07:28.320+01:00",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "default",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "0",
-        # "userdom": ""
         keys = [
             'adminRxSt',
             'adminTxSt',
@@ -95,11 +80,11 @@ class PolicyInterfaceLldpInfo():
 
         return info
 
-    def get_policies_interface_lldp_info(self):
+    def get_policies_interface_lldp_info(self, cache_enabled=True):
         if self.policy_interface_lldp is not None:
             return self.policy_interface_lldp
 
-        managed_objects = self.get_policy_interface_lldp_mo()
+        managed_objects = self.get_policy_interface_lldp_mo(cache_enabled=cache_enabled)
         if managed_objects is not None:
             self.policy_interface_lldp = []
             for managed_object in managed_objects:
@@ -170,8 +155,12 @@ class PolicyInterfaceLldpInfo():
 
         return True
 
-    def get_policy_interface_lldp(self, policy_filter=None, reln_info=True, attachment_info=False):
-        all_policies = self.get_policies_interface_lldp_info()
+    def get_policies_interface_lldp(self, policy_filter=None, reln_info=True, attachment_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_policy_interface_lldp()
+            self.init_policy_interface_lldp_mo()
+
+        all_policies = self.get_policies_interface_lldp_info(cache_enabled=cache_enabled)
         if all_policies is None:
             return None
 
@@ -230,3 +219,30 @@ class PolicyInterfaceLldpInfo():
         )
 
         return policy
+
+    def get_policy_interface_lldp(self, policy_name, reln_info=True, attachment_info=False, cache_enabled=True):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_lldp(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info,
+            cache_enabled=cache_enabled
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_lldp(self, policy_name, cache_enabled=True):
+        if self.get_policy_interface_lldp(policy_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

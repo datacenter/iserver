@@ -10,23 +10,11 @@ class ImcCliFw():
             if self.fw_mo is not None:
                 return self.fw_mo
 
-            self.fw_mo = self.get_icm_cli_cache_entry(
+            self.fw_mo = self.get_imc_cli_cache_entry(
                 'fw'
             )
             if self.fw_mo is not None:
                 return self.fw_mo
-
-        # comp-7-p2b-eu-spdc-WMP24040061 /cimc # show firmware detail
-        # Firmware Image Information:
-        #     Update Stage: NONE
-        #     Update Progress: 0
-        #     Current FW Version: 4.2(2a)
-        #     FW Image 1 Version: 4.2(2a)
-        #     FW Image 1 State: RUNNING ACTIVATED
-        #     FW Image 2 Version: 4.1(3d)
-        #     FW Image 2 State: BACKUP INACTIVATED
-        #     Boot-loader Version: 4.2(2a)
-        #     Secure Boot: ENABLED
 
         self.fw_mo = self.show_dict(
             'show firmware detail',

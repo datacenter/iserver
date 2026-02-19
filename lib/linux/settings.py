@@ -205,3 +205,101 @@ class LinuxSettings(Settings):
                 shutil.rmtree(server_directory)
 
         return self.set_linux_servers(new_servers)
+    
+    def get_cli_default_server(self):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return None
+
+        try:
+            default_server = settings['cli']['address']
+        except BaseException:
+            default_server = None
+
+        return default_server
+
+    def set_cli_default_server(self, address):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return False
+
+        if 'cli' not in settings:
+            settings['cli'] = {}
+
+        settings['cli']['address'] = address
+        return self.set_linux_settings(settings)
+
+    def get_cli_default_ssh_pub(self, address):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return None
+
+        try:
+            default_ssh_pub = settings['cli']['ssh_public_key'][address]
+        except BaseException:
+            default_ssh_pub = None
+
+        if default_ssh_pub is None:
+            try:
+                default_ssh_pub = settings['cli']['ssh_public_key']['__default__']
+            except BaseException:
+                default_ssh_pub = None
+
+        return default_ssh_pub
+
+    def set_cli_default_ssh_pub(self, address, filename):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return False
+
+        if 'cli' not in settings:
+            settings['cli'] = {}
+        
+        if 'ssh_public_key' not in settings['cli']:
+            settings['cli']['ssh_public_key'] = {}
+        
+        if address in settings['cli']['ssh_public_key']:
+            settings['cli']['ssh_public_key'][address] = filename
+        else:
+            settings['cli']['ssh_public_key'][address] = filename
+            settings['cli']['ssh_public_key']['__default__'] = filename
+
+        return self.set_linux_settings(settings)
+    
+    def get_cli_default_username(self, server_name):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return None
+
+        try:
+            default_username = settings['cli']['username'][server_name]
+        except BaseException:
+            default_username = None
+
+        if default_username is None:
+            try:
+                default_username = settings['cli']['username']['__default__']
+            except BaseException:
+                default_username = None
+
+        return default_username
+
+    def set_cli_default_username(self, server_name, username):
+        settings = self.get_linux_settings()
+        if settings is None:
+            return False
+
+        if 'cli' not in settings:
+            settings['cli'] = {}
+
+        if 'username' not in settings:
+            settings['cli']['username'] = {}
+        
+        if server_name in settings['cli']['username']:
+            settings['cli']['username'][server_name] = username
+        else:
+            settings['cli']['username'][server_name] = username
+            settings['cli']['username']['__default__'] = username
+
+        return self.set_linux_settings(settings)
+    

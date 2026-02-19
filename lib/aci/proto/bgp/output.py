@@ -281,64 +281,24 @@ class ProtocolBgpOutput():
                     )
 
     def print_proto_bgp_neighbors(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Protocol BGP - Neighbor [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            if title:
-                self.my_output.default('None')
-            return
-
-        order = [
-            'pod_node_name',
-            'bgpDomainName',
-            'state.addr',
-            'state.rtrId',
-            'adminSt',
-            'state.operSt',
-            'bfdTick',
-            'asn',
-            'state.type',
-            'ttl',
-            'srcIf',
-            'state.localIp',
-            'state.connSummary',
-            'paths'
-        ]
-
-        headers = [
-            'Node',
-            'Domain (VRF)',
-            'Nbr Address',
-            'Router Id',
-            'Admin',
-            'Session',
-            'BFD',
-            'ASN',
-            'Type',
-            'TTL',
-            'Src Intf',
-            'Local IP',
-            'Conns (A/D/E)',
-            'Paths'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['paths']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            remove_empty_columns=True,
-            underline=True,
-            table=True
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Node', 'pod_node_nameT'],
+                ['Domain (VRF)', 'bgpDomainNameT'],
+                ['Nbr Address', 'state.addr'],
+                ['Router Id', 'state.rtrId'],
+                ['Admin', 'adminSt'],
+                ['Session', 'state.operSt'],
+                ['BFD', 'bfdTick'],
+                ['ASN', 'asn'],
+                ['Type', 'state.type'],
+                ['TTL', 'ttl'],
+                ['Src Intf', 'srcIf'],
+                ['Local IP', 'state.localIp'],
+                ['Conns (A/D/E)', 'state.connSummary'],
+                ['Paths', 'paths']
+            ]
         )
 
     def print_proto_bgp_fault_inst(self, info, title=False):

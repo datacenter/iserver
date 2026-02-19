@@ -30,7 +30,6 @@ class DomainVmmInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # No clue why I get unknown value while APIC UI gets vlan value...
         if info['encapMode'] == 'unknown':
             info['encapMode'] = 'vlan'
 
@@ -74,8 +73,6 @@ class DomainVmmInfo():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         info['aaep_names'].append(
                             item['tDn'].split('/')[2][8:]
@@ -109,8 +106,6 @@ class DomainVmmInfo():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']

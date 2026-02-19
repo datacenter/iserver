@@ -291,7 +291,7 @@ class VrfInfo():
 
         return True
 
-    def get_vrf(self, vrf_distinguished_name):
+    def get_vrf_by_dn(self, vrf_distinguished_name):
         vrf_filter = ['dn:%s' % (vrf_distinguished_name)]
         vrfs = self.get_vrfs(
             vrf_filter=vrf_filter
@@ -301,6 +301,24 @@ class VrfInfo():
             return vrfs[0]
 
         return None
+
+    def get_vrf(self, tenant_name, vrf_name):
+        vrf_filter = []
+        vrf_filter.append('tenant:%s' % tenant_name)
+        vrf_filter.append('name:%s' % vrf_name)
+        vrfs = self.get_vrfs(
+            vrf_filter=vrf_filter
+        )
+
+        if len(vrfs) == 1:
+            return vrfs[0]
+
+        return None
+
+    def is_vrf(self, tenant_name, vrf_name):
+        if self.get_vrf(tenant_name, vrf_name) is None:
+            return False
+        return True
 
     def get_vrfs(
             self,

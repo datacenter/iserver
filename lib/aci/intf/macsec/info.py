@@ -79,8 +79,6 @@ class InterfaceMacSecInfo():
 
         info['iod'] = int(info['id'].split('/')[1])
 
-        # Dn format
-        # topology/pod-1/node-201/sys/macsec/inst/if-[eth1/97]
         info['podId'] = info['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = info['dn'].split('/')[2].split('-')[1]
 

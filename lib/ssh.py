@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import select
 import time
 import hashlib
 import traceback
@@ -44,16 +45,25 @@ class Ssh():
                 if self.load_system_host_keys:
                     session.load_system_host_keys()
                 session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            except BaseException:
+                self.log_handler.error(
+                    'create_session',
+                    traceback.format_exc()
+                )
+                return None, 'SshClientInitializationFailed', 'SSH client initialization failed'
 
-                if self.endpoint_type not in ['standard', 'cisco']:
-                    self.log_handler.error(
-                        'create_session',
-                        'Unsupported endpoint type: %s' % (self.endpoint_type)
-                    )
-                    return None
+            if self.endpoint_type not in ['standard', 'cisco']:
+                self.log_handler.error(
+                    'create_session',
+                    'Unsupported endpoint type: %s' % (self.endpoint_type)
+                )
+                return None, 'UnsupportedEndpointType', 'Unsupported endpoint type: %s' % (self.endpoint_type)
 
+            exception_name = None
+            try:
                 if self.endpoint_type == 'standard':
                     if self.password is not None:
+                        self.log_handler.debug('create_session', 'Open ssh connection: %s:%s for %s' % (self.ip_address, self.port, self.username))
                         session.connect(
                             self.ip_address,
                             port=self.port,
@@ -63,6 +73,7 @@ class Ssh():
                         )
 
                     if self.key_filename is not None:
+                        self.log_handler.debug('create_session', 'Open ssh connection: %s:%s for %s' % (self.ip_address, self.port, self.username))
                         session.connect(
                             self.ip_address,
                             port=self.port,
@@ -72,6 +83,7 @@ class Ssh():
                         )
 
                 if self.endpoint_type == 'cisco':
+                    self.log_handler.debug('create_session', 'Open ssh connection: %s:%s for %s' % (self.ip_address, self.port, self.username))
                     session.connect(
                         self.ip_address,
                         port=self.port,
@@ -82,11 +94,12 @@ class Ssh():
                         look_for_keys=False
                     )
 
-            except BaseException:
+            except BaseException as exception:
                 self.log_handler.error(
                     'create_session',
                     traceback.format_exc()
                 )
+                exception_name = type(exception).__name__
                 success = False
                 if session is not None:
                     session.close()
@@ -96,26 +109,36 @@ class Ssh():
                     'create_session',
                     'Session created at %s' % (self.ip_address)
                 )
-                return session
+                return session, None, None
 
             if attempt == max_attempts:
-                return None
+                if exception_name == 'timeout':
+                    return None, exception_name, 'SSH connection timed out: %s' % (self.ip_address)
+                
+                if self.password is not None:
+                    return None, exception_name, 'SSH connection failed: %s@%s with password %s' % (self.username, self.ip_address, self.password)
 
+                if self.key_filename is not None:
+                    return None, exception_name, 'SSH connection failed: %s@%s with key %s' % (self.username, self.ip_address, self.key_filename)
+                
+                return None, exception_name, 'SSH connection failed: %s@%s' % (self.username, self.ip_address)
+                
             time.sleep(1)
             attempt = attempt + 1
 
     def is_ssh(self):
-        session = self.create_session(max_attempts=1)
+        session, exception_name, error = self.create_session(max_attempts=1)
         if session is None:
-            return False
+            return False, exception_name, error
 
         session.close()
-        return True
+        return True, None, None
 
     def wait_ssh(self, timeout):
         start_time = int(time.time())
         while True:
-            if self.is_ssh():
+            success, exception_name, error = self.is_ssh()
+            if success:
                 return True
 
             if int(time.time()) - start_time > timeout:
@@ -284,6 +307,17 @@ class Ssh():
             )
             return False
 
+    def scp_content(self, content, destination, path_fixup=True):
+        source = file_helper.set_tmp_file(content)
+        if source is None:
+            return False
+        success = self.scp_file(source, destination, path_fixup=path_fixup)
+        try:
+            os.remove(source)
+        except BaseException:
+            pass
+        return success
+    
     def scp_file(self, source, destination, put=True, retry=1, path_fixup=True):
         try:
             if path_fixup:
@@ -377,18 +411,24 @@ class Ssh():
             )
             return False
 
-    def run_cmd(self, command, live_output=False, timeout=3600, max_attempts=1):
-        session = None
+    def run_cmd(self, command, live_output=False, timeout=3600, max_attempts=1, pre=None, debug=False, paranoid=False, session=None):
+        error = None
         start_time = int(time.time())
         self.log_handler.debug(
             'run_cmd',
             'Command: %s' % (command)
         )
 
+        new_session = False
+        if session is None:
+            new_session = True
+
         try:
             success = True
 
-            session = self.create_session(max_attempts=max_attempts)
+            if session is None:
+                session, exception_name, error = self.create_session(max_attempts=max_attempts)
+
             if session is None:
                 success = False
                 output = None
@@ -398,22 +438,109 @@ class Ssh():
                 self.log_handler.error('run_cmd', 'Username: %s' % (self.username))
                 self.log_handler.error('run_cmd', 'Password: %s' % (self.password))
                 self.log_handler.error('run_cmd', 'Key: %s' % (self.key_filename))
-            else:
+
+            if session is not None:
+                try:
+                    transport = session.get_transport()
+                    transport.send_ignore()
+                    if debug:
+                        print('ssh tranport confirmed')
+
+                except EOFError as e:
+                    success = False
+                    output = None
+                    error = 'SSH access failed'
+
+            if session is not None:
+                if pre is not None:
+                    if debug:
+                        print('%s with timeout %s (paranoid: %s)' % (pre, timeout, paranoid))
+
+                    stdin, stdout, stderr = session.exec_command(
+                        pre,
+                        timeout=timeout,
+                        get_pty=live_output
+                    )
+
+                    if paranoid:
+                        output = ''
+                        while not stdout.channel.exit_status_ready():
+                            time.sleep(1)
+                            if stdout.channel.recv_ready():
+                                rl, wl, xl = select.select([stdout.channel], [], [], timeout)
+                                if len(rl) > 0:
+                                    output = '%s%s' % (
+                                        output,
+                                        stdout.channel.recv(1024).decode("utf-8")
+                                    )
+
+                        for line in iter(stdout.readline, ""):
+                            output = '%s%s' % (
+                                output,
+                                line
+                            )
+
+                        stdin.flush()
+                        error = stderr.read().decode('utf-8')
+
+                    if not paranoid:
+                        if stdout.channel.recv_exit_status() > 0:
+                            success = False
+                        stdin.flush()
+
+                    if debug:
+                        print('Completed')
+
+                if debug:
+                    print('%s with timeout %s (paranoid: %s)' % (command, timeout, paranoid))
+
                 stdin, stdout, stderr = session.exec_command(
                     command,
                     timeout=timeout,
                     get_pty=live_output
                 )
-                if live_output:
+                if debug:
+                    print('Collect output...')
+
+                if paranoid:
+                    output = ''
+                    while not stdout.channel.exit_status_ready():
+                        time.sleep(1)
+                        if int(time.time()) - start_time > timeout:
+                            break
+                        
+                        if stdout.channel.recv_ready():
+                            rl, wl, xl = select.select([stdout.channel], [], [], timeout)
+                            if len(rl) > 0:
+                                output = '%s%s' % (
+                                    output,
+                                    stdout.channel.recv(1024).decode("utf-8")
+                                )
+
                     for line in iter(stdout.readline, ""):
-                        print(line, end="")
+                        output = '%s%s' % (
+                            output,
+                            line
+                        )
 
-                if stdout.channel.recv_exit_status() > 0:
-                    success = False
+                    stdin.flush()
+                    error = stderr.read().decode('utf-8')
 
-                stdin.flush()
-                output = stdout.read().decode('utf-8')
-                error = stderr.read().decode('utf-8')
+                if not paranoid:
+                    if live_output:
+                        for line in iter(stdout.readline, ""):
+                            print(line, end="")
+
+                    if stdout.channel.recv_exit_status() > 0:
+                        success = False
+
+                    stdin.flush()
+
+                    output = stdout.read().decode('utf-8')
+                    error = stderr.read().decode('utf-8')
+
+                if debug:
+                    print('Completed')
 
         except BaseException:
             success = False
@@ -421,7 +548,8 @@ class Ssh():
             error = traceback.format_exc()
 
         finally:
-            if session is not None:
+            if session is not None and new_session:
+                self.log_handler.debug('run_cmd', 'Close ssh session')
                 session.close()
             end_time = int(time.time())
             self.log_handler.debug('run_cmd', 'Duration: %s seconds' % (end_time - start_time))
@@ -435,7 +563,7 @@ class Ssh():
         try:
             success = True
 
-            session = self.create_session(max_attempts=max_attempts)
+            session, exception_name, error = self.create_session(max_attempts=max_attempts)
             if session is None:
                 success = False
             else:
@@ -470,17 +598,36 @@ class Ssh():
 
         return destination_filename
 
-    def create_directory(self, directory_name, path_fixup=True):
+    def is_directory(self, directory_name, path_fixup=True):
         if path_fixup:
             directory_name = self.path_fixup(directory_name)
 
-        cmd = 'mkdir -p %s' % (directory_name)
+        cmd = 'file %s' % (directory_name)
         success, output, error = self.run_cmd(cmd)
         if not success:
             return False
+        
+        if 'No such file or directory' in output:
+            return False
+        
         return True
 
-    def delete_directory(self, directory_name, path_fixup=True):
+    def create_directory(self, directory_name, path_fixup=True, sudo=False):
+        if path_fixup:
+            directory_name = self.path_fixup(directory_name)
+
+        if not self.is_directory(directory_name):
+            cmd = 'mkdir -p %s' % (directory_name)
+            if sudo:
+                cmd = 'sudo %s' % (cmd)
+
+            success, output, error = self.run_cmd(cmd)
+            if not success:
+                return False
+
+        return True
+
+    def delete_directory(self, directory_name, path_fixup=True, sudo=False):
         if path_fixup:
             directory_name = self.path_fixup(directory_name)
 
@@ -491,10 +638,15 @@ class Ssh():
             )
             return False
 
-        cmd = 'rm -rf %s' % (directory_name)
-        success, output, error = self.run_cmd(cmd)
-        if not success:
-            return False
+        if self.is_directory(directory_name):
+            cmd = 'rm -rf %s' % (directory_name)
+            if sudo:
+                cmd = 'sudo %s' % (cmd)
+
+            success, output, error = self.run_cmd(cmd)
+            if not success:
+                return False
+
         return True
 
     def get_directories(self, path, path_fixup=True):

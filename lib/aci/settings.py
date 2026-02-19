@@ -36,7 +36,7 @@ class ApicSettings(Settings):
     def get_apic_offline_cache_settings(self):
         settings = {}
         settings['enabled'] = True
-        settings['ttl'] = -1
+        settings['ttl'] = 0
         settings['ttlT'] = '--'
         settings['object'] = []
         return settings
@@ -338,7 +338,7 @@ class ApicSettings(Settings):
             return False
         return controller['online']
 
-    def get_apic_controller_label(self, apic_name):
+    def get_apic_controller_label(self, apic_name, requested_ttl=-1):
         controller = self.get_apic_controller(apic_name)
         if controller is None:
             return 'Apic: %s (adhoc, mode:online, cache:off)' % (apic_name)
@@ -349,10 +349,16 @@ class ApicSettings(Settings):
         else:
             label = '%smode:offline, ' % (label)
 
-        if self.is_cache_enabled(apic_name):
-            label = '%scache:on)' % (label)
+        if requested_ttl < 0:
+            if self.is_cache_enabled(apic_name):
+                label = '%scache:on)' % (label)
+            else:
+                label = '%scache:off)' % (label)
         else:
-            label = '%scache:off)' % (label)
+            if requested_ttl == 0:
+                label = '%scache:on, ttl:any)' % (label)
+            else:
+                label = '%scache:on, ttl:%s)' % (label, requested_ttl)
 
         return label
 

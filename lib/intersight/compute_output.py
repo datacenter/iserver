@@ -1,6 +1,9 @@
+import os
 import csv
+import json
 
 from lib import filter_helper
+from lib import file_helper
 from lib import output_helper
 
 from lib.intersight.compute_aci_output import ComputeAciOutput
@@ -575,6 +578,68 @@ class ComputeOutput(
             table=True
         )
 
+    def print_contract_csv(self, servers, filename):
+        info = []
+        for server in servers:
+            if 'ContractInfo' in server:
+                item = server['ContractInfo']
+                item['ServerName'] = server['Name']
+                item['ServerModel'] = server['Model']
+                item['ServerSerial'] = server['Serial']
+                info.append(
+                    item
+                )
+
+        fields = [
+            'Server',
+            'Model',
+            'Serial',
+            'Contract Status',
+            'Contract Number',
+            'Start Date',
+            'End Date',
+            'Last Updated',
+            'Service Description',
+            'Service Level',
+            'Service Sku',
+            'Purchase Order Number',
+            'Sales Order Number'
+        ]
+
+        order = [
+            'ServerName',
+            'ServerModel',
+            'ServerSerial',
+            'ContractStatus',
+            'ContractNumber',
+            'ServiceStartDate',
+            'ServiceEndDate',
+            'ContractUpdatedTime',
+            'ServiceDescription',
+            'ServiceLevel',
+            'ServiceSku',
+            'PurchaseOrderNumber',
+            'SalesOrderNumber'
+        ]
+
+        rows = []
+
+        for item in info:
+            row = []
+
+            for key in order:
+                row.append(item[key])
+
+            rows.append(
+                row
+            )
+
+        with open(filename, 'w', newline='') as file_handler:
+            write = csv.writer(file_handler)
+            write.writerow(fields)
+            for row in rows:
+                write.writerow(row)
+
     def print_cpu(self, servers, title=False):
         info = []
         for server in servers:
@@ -1050,37 +1115,6 @@ class ComputeOutput(
             row_separator=True
         )
 
-        # order = [
-        #     'Status',
-        #     'HardwareStatus',
-        #     'SoftwareStatus',
-        #     'Reason',
-        #     'HclModel',
-        #     'HclCimcVersion',
-        #     'HclDriverName',
-        #     'HclDriverVersion',
-        #     'HclFirmwareVersion'
-        # ]
-
-        # headers = [
-        #     'Status',
-        #     'Hardware',
-        #     'Software',
-        #     'Reason',
-        #     'Model',
-        #     'Cimc Version',
-        #     'Driver Name',
-        #     'Driver Version',
-        #     'Firmware Version'
-        # ]
-
-        # self.my_output.my_table(
-        #     server['HclInfo']['Details'],
-        #     order=order,
-        #     headers=headers,
-        #     underline=True,
-        #     table=True
-        # )
 
     def print_hcl(self, servers, title=True):
         self.print_hcl_summary(servers, title=title)
@@ -1517,6 +1551,61 @@ class ComputeOutput(
         self.print_ext_eth(servers, title=title)
         self.print_host_eth(servers, title=title)
         self.print_host_fc(servers, title=title)
+
+    def print_mac_addresses(self, servers, title=False):
+        info = []
+        for server in servers:
+            if 'MacAddressInfo' in server:
+                for item in server['MacAddressInfo']:
+                    if '__show' in item and not item['__show']:
+                        continue
+
+                    new_item = {}
+                    new_item['ServerName'] = server['Name']
+                    new_item['ServerMoid'] = server['Moid']
+                    new_item['ManagementIp'] = server['ManagementIp']
+                    for key in ['MacAddress', 'AdapterModel', 'InterfaceDn']:
+                        new_item[key] = item[key]
+
+                    info.append(
+                        new_item
+                    )
+
+        order = [
+            'ServerName',
+            'ManagementIp',
+            'MacAddress',
+            'AdapterModel',
+            'InterfaceDn'
+        ]
+
+        headers = [
+            'Server',
+            'IP',
+            'MAC',
+            'Adapter',
+            'Interface'
+        ]
+
+        if title:
+            self.my_output.default(
+                'MAC Addresses [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            if title:
+                self.my_output.default('None')
+                return
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            underline=True,
+            table=True
+        )
 
     def print_mac(self, server, title=False):
         if 'MacAddressInfo' not in server:

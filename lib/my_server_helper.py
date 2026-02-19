@@ -35,12 +35,6 @@ class MyServer(Settings):
         return True
 
     def get_my_server_names(self, iaccount):
-        '''
-            [
-                "milan-kali",
-                "milan-kali-bgp"
-            ]
-        '''
         try:
             clusters = self.get_my_server()
             if clusters is not None:
@@ -56,18 +50,6 @@ class MyServer(Settings):
         return None
 
     def get_my_server(self):
-        '''
-            [
-                {
-                    "iaccount": "isctl",
-                    "cluster_name": "milan-kali"
-                },
-                {
-                    "iaccount": "isctl",
-                    "cluster_name": "milan-kali-bgp"
-                }
-            ]
-        '''
         if self.is_my_server():
             try:
                 with open(self.my_server_filename, 'r', encoding='utf-8') as file_handler:

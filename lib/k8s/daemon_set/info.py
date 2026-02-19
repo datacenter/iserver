@@ -1,3 +1,4 @@
+import datetime
 from lib import filter_helper
 
 
@@ -47,10 +48,14 @@ class K8sDaemonSetInfo():
             info['numberReady'],
             info['numberAvailable']
         )
-        if info['numberAvailable'] == info['numberAvailable']:
-            info['__Output']['available_summary'] = 'Green'
-        else:
-            info['__Output']['available_summary'] = 'Red'
+        info['__Output']['available_summary'] = 'Red'
+        if info['numberReady'] == info['numberAvailable']:
+            if info['numberAvailable'] == info['desiredNumberScheduled']:
+                info['__Output']['available_summary'] = 'Green'
+
+        info['ready'] = False
+        if info['desiredNumberScheduled'] > 0 and info['desiredNumberScheduled'] == info['numberAvailable']:
+            info['ready'] = True
 
         info['node_selector'] = self.get(
             daemon_set_mo,
@@ -138,3 +143,66 @@ class K8sDaemonSetInfo():
             )
 
         return daemon_sets
+
+    def get_daemon_set(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        daemon_sets = self.get_daemon_sets(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if daemon_sets is None:
+            return None
+
+        if len(daemon_sets) == 1:
+            return daemon_sets[0]
+
+        return None
+
+    def is_daemon_set(self, namespace, name, cache_enabled=True):
+        if self.get_daemon_set(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+    
+    def is_daemon_set_ready(self, namespace, name, cache_enabled=True):
+        ds_info = self.get_daemon_set(namespace, name, cache_enabled=cache_enabled)
+        if ds_info is None:
+            return False
+        
+        return ds_info['ready']
+
+    def restart_daemon_set(self, namespace, name, my_output=None):
+        if not self.is_daemon_set(namespace, name, cache_enabled=False):
+            if my_output is not None:
+                my_output.error('Daemon set [%s/%s] not found' % (namespace, name))
+            return False
+
+        now = datetime.datetime.utcnow()
+        now = str(now.isoformat("T") + "Z")
+        body = {
+            'spec': {
+                'template':{
+                    'metadata': {
+                        'annotations': {
+                            'kubectl.kubernetes.io/restartedAt': now
+                        }
+                    }
+                }
+            }
+        }
+
+        if not self.patch_daemon_set_mo(namespace, name, body):
+            if my_output is not None:
+                my_output.error('Daemon set [%s/%s] patch failed' % (namespace, name))
+            return False
+
+        if my_output is not None:
+            my_output.default('Daemon set [%s/%s] patch successful' % (namespace, name))
+
+        return True

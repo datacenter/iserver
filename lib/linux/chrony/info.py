@@ -9,13 +9,6 @@ class LinuxChronyInfo():
 
         chrony_config_mo = self.get_chrony_config_cmd()
 
-        # pool 0.rhel.pool.ntp.org iburst
-        # driftfile /var/lib/chrony/drift
-        # makestep 1.0 3
-        # rtcsync
-        # logdir /var/log/chrony
-        # server <fqdn> iburst prefer
-
         self.chrony_config = {}
         self.chrony_config['configuration'] = self.get_lines(chrony_config_mo)
         self.chrony_config['server'] = []
@@ -42,20 +35,6 @@ class LinuxChronyInfo():
             return self.chrony_tracking
 
         chrony_tracking_mo = self.get_chrony_tracking_cmd()
-
-        # Reference ID    : AD26C943 (fqdn)
-        # Stratum         : 2
-        # Ref time (UTC)  : Fri Apr 19 11:48:32 2024
-        # System time     : 0.000012511 seconds fast of NTP time
-        # Last offset     : -0.000027058 seconds
-        # RMS offset      : 0.000115619 seconds
-        # Frequency       : 13.625 ppm slow
-        # Residual freq   : -0.000 ppm
-        # Skew            : 0.031 ppm
-        # Root delay      : 0.020759970 seconds
-        # Root dispersion : 0.001136309 seconds
-        # Update interval : 1028.0 seconds
-        # Leap status     : Normal
 
         self.chrony_tracking = {}
         self.chrony_tracking['__Output'] = {}

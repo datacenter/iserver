@@ -3108,41 +3108,6 @@ class ComputeBotOutput():
 
         return output, html_output
 
-        # if len(info) > 0:
-        #     if title:
-        #         self.my_output.default(
-        #             'Advisory Url [#%s]' % (len(info)),
-        #             underline=True,
-        #             before_newline=True
-        #         )
-
-        #     order = [
-        #         'Server',
-        #         'NameT',
-        #         'Urls'
-        #     ]
-
-        #     headers = [
-        #         'Server',
-        #         'Name',
-        #         'Urls'
-        #     ]
-
-        #     self.my_output.my_table(
-        #         self.my_output.expand_lists(
-        #             info,
-        #             order,
-        #             ['Server', 'NameT', 'Urls']
-        #         ),
-        #         order=order,
-        #         headers=headers,
-        #         remove_empty_columns=True,
-        #         allow_order_subkeys=True,
-        #         row_separator=True,
-        #         underline=True,
-        #         table=True
-        #     )
-
     def print_tag(self, servers, title=False):
         self.my_output.clear_output()
 

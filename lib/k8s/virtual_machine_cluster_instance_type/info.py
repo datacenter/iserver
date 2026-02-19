@@ -17,6 +17,11 @@ class K8sVirtualMachineClusterInstanceTypeInfo():
         )
         info.update(metadata_info)
 
+        info['cpu'] = self.get(virtual_machine_cluster_instance_type_mo, 'metadata:labels:instancetype.kubevirt.io/cpu')
+        info['hugepages'] = self.get(virtual_machine_cluster_instance_type_mo, 'metadata:labels:instancetype.kubevirt.io/hugepages')
+        info['memory'] = self.get(virtual_machine_cluster_instance_type_mo, 'metadata:labels:instancetype.kubevirt.io/memory')
+        info['numa'] = self.get(virtual_machine_cluster_instance_type_mo, 'metadata:labels:instancetype.kubevirt.io/numa')
+        info['size'] = self.get(virtual_machine_cluster_instance_type_mo, 'metadata:labels:instancetype.kubevirt.io/size')
         return info
 
     def get_virtual_machine_cluster_instance_types_info(self, cache_enabled=True):

@@ -63,7 +63,7 @@ class K8sPerformanceProfileOutput():
         ]
 
         headers = [
-            'Name',
+            'Performance Profile',
             'Available',
             'Upgradable',
             'Upgrading',

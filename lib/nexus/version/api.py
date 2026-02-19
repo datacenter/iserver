@@ -12,7 +12,7 @@ class VersionApi():
         if cache_enabled:
             cached_mo = self.get_command_cache(command)
             if cached_mo is not None:
-                return [cached_mo]
+                return cached_mo
 
         if not self.connect():
             self.log.error(
@@ -33,6 +33,6 @@ class VersionApi():
             return None
 
         self.set_command_cache(command, response)
-        self.version_mo = [response]
+        self.version_mo = response
 
         return self.version_mo

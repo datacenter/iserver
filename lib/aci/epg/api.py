@@ -2,20 +2,24 @@ class EpgApi():
     def __init__(self):
         self.epg_mo = None
 
-    def get_epg_mo(self):
+    def init_epg_mo(self):
+        self.epg_mo = None
+
+    def get_epg_mo(self, cache_enabled=True):
         if self.epg_mo is not None:
             return self.epg_mo
 
-        cache = self.get_object_cache(
-            'fvAEPg'
-        )
-        if cache is not None:
-            self.epg_mo = cache
-            self.log.apic_mo(
-                'fvAEPg',
-                self.epg_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'fvAEPg'
             )
-            return self.epg_mo
+            if cache is not None:
+                self.epg_mo = cache
+                self.log.apic_mo(
+                    'fvAEPg',
+                    self.epg_mo
+                )
+                return self.epg_mo
 
         query = 'rsp-subtree=children&rsp-subtree-include=health,fault-count&rsp-subtree-class=fvRsBd,fvRsCons,fvRsProv,fvRsProtBy,fvRtMatchEPg,fvRsPathAtt,fvRsDomAtt'
         managed_objects = self.get_class(

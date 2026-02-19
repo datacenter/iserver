@@ -10,22 +10,11 @@ class ImcCliChassis():
             if self.chassis_mo is not None:
                 return self.chassis_mo
 
-            self.chassis_mo = self.get_icm_cli_cache_entry(
+            self.chassis_mo = self.get_imc_cli_cache_entry(
                 'chassis'
             )
             if self.chassis_mo is not None:
                 return self.chassis_mo
-
-        # Chassis:
-        #     Power: on
-        #     Serial Number: WMP24040061
-        #     Product Name: UCS C220 M5SX
-        #     PID : UCSC-C220-M5SX
-        #     UUID: B947D1F9-F0A0-4D6F-AF63-16A48DD0A96E
-        #     Locator LED: off
-        #     Description: comp-7-p2b-eu-spdc-WMP24040061
-        #     Asset Tag: 022C32A
-        #     Post Completion Status: Completed
 
         self.chassis_mo = self.show_dict(
             'show chassis detail',

@@ -5,6 +5,7 @@ from menu.settings.iaccounts.cache import settings_iaccount_cache_command
 from menu.settings.iaccounts.get import settings_iaccount_get_command
 from menu.settings.iaccounts.delete import settings_iaccount_delete_command
 from menu.settings.iaccounts.default import settings_iaccount_default_command
+from menu.settings.iaccounts.set import settings_iaccount_set_command
 
 
 @click.group("iaccounts")
@@ -18,3 +19,4 @@ settings_iaccounts_menu.add_command(settings_iaccount_cache_command)
 settings_iaccounts_menu.add_command(settings_iaccount_get_command)
 settings_iaccounts_menu.add_command(settings_iaccount_delete_command)
 settings_iaccounts_menu.add_command(settings_iaccount_default_command)
+settings_iaccounts_menu.add_command(settings_iaccount_set_command)

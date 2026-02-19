@@ -45,7 +45,7 @@ class NoResultExit(Exception):
 @click.option("--view", "-v", default=['state'], help="[state|fault|hfault|event|audit|diag|all]", show_default=True, multiple=True)
 @click.option("--resolve", "-r", is_flag=True, show_default=True, default=False, help="Resolve identifiers")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_node_intf_tun_command(
         ctx,
@@ -70,7 +70,7 @@ def get_aci_node_intf_tun_command(
         view,
         resolve,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get aci node tunnel interface"""
@@ -103,7 +103,7 @@ def get_aci_node_intf_tun_command(
             node_names,
             node_role,
             pod_id=pod_id,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handlers is None:
             raise ErrorExit

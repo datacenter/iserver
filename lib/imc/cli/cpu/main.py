@@ -11,7 +11,7 @@ class ImcCliCpu():
             if self.cpu_mo is not None:
                 return self.cpu_mo
 
-            self.cpu_mo = self.get_icm_cli_cache_entry(
+            self.cpu_mo = self.get_imc_cli_cache_entry(
                 'cpu'
             )
             if self.cpu_mo is not None:
@@ -64,7 +64,7 @@ class ImcCliCpu():
             if self.cpu_pid_mo is not None:
                 return self.cpu_pid_mo
 
-            self.cpu_pid_mo = self.get_icm_cli_cache_entry(
+            self.cpu_pid_mo = self.get_imc_cli_cache_entry(
                 'cpu_pid'
             )
             if self.cpu_pid_mo is not None:

@@ -21,7 +21,6 @@ class InterfaceTunnelEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/tunnel-[lo0]"
         info['interfaceId'] = None
         if '/tunnel-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/tunnel-[')[1].split(']')[0]

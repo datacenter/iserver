@@ -38,7 +38,11 @@ class K8sVirtualMachineInfo():
         info['cores'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:cores')
         info['sockets'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:sockets')
         info['threads'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:threads')
+        info['cpu'] = info['cores'] * info['sockets'] * info['threads']
+        
         info['memory'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:resources:requests:memory')
+        if info['memory'] is None:
+            info['memory'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:memory:guest')
 
         info['interface'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:devices:interfaces', on_error=[], on_none=[])
         for interface in info['interface']:
@@ -48,9 +52,30 @@ class K8sVirtualMachineInfo():
             if 'sriov' in interface:
                 interface['info'] = '%s (sriov)' % (interface['name'])
 
+        info['volume'] = self.get(virtual_machine_mo, 'spec:template:spec:volumes', on_error=[], on_none=[])
+        for volume in info['volume']:
+            volume['pvc'] = self.get(volume, 'persistentVolumeClaim:claimName')
+            volume['dv_name'] = self.get(volume, 'dataVolume:name')
+            volume['dv_namespace'] = self.get(volume, 'dataVolume:namespace')
+            if volume['dv_name'] is not None and volume['dv_namespace'] is None:
+                volume['dv_namespace'] = info['namespace']
+
         info['disk'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:devices:disks', on_error=[], on_none=[])
         for disk in info['disk']:
             disk['info'] = disk['name']
+            disk['pvc'] = None
+            for volume in info['volume']:
+                if volume['name'] == disk['name']:
+                    disk['pvc'] = volume['pvc']
+        
+            if disk['pvc'] is not None:
+                disk['info'] = '%s (pvc:%s)' % (
+                    disk['name'],
+                    disk['pvc']
+                )
+
+        info['run_strategy'] = self.get(virtual_machine_mo, 'spec:runStrategy')
+        info['running'] = self.get(virtual_machine_mo, 'spec:running')
 
         info['created'] = self.get(virtual_machine_mo, 'status:ready', on_error=False, on_none=False)
         if info['created']:
@@ -74,8 +99,40 @@ class K8sVirtualMachineInfo():
         if info['status'] == 'Provisioning':
             info['__Output']['status'] = 'Yellow'
 
+        info['restartRequired'] = False
+        info['restartRequiredTick'] = '\u2717'
+        info['restartRequiredMessage'] = None
+
+        conditions_mo = self.get(virtual_machine_mo, 'status:conditions', on_error=[], on_none=[])
+        for condition_mo in conditions_mo:
+            condition_type = self.get(condition_mo, 'type')
+            condition_status = self.get(condition_mo, 'status')
+            condition_message = self.get(condition_mo, 'message')
+            if condition_type == 'RestartRequired' and condition_status == 'True':
+                info['restartRequired'] = True
+                info['restartRequiredTick'] = '\u2713'
+                info['__Output']['restartRequiredTick'] = 'Green'
+                info['restartRequiredMessage'] = condition_message
+
         return info
 
+    def add_virtual_machine_info(self, info, pvcs):
+        if pvcs is not None:
+            for disk in info['disk']:
+                if disk['pvc'] is not None:
+                    for pvc in pvcs:
+                        if pvc['name'] == disk['pvc']:
+                            disk['size'] = self.get(pvc, 'capacity:storage')
+                            if disk['size'] is not None:
+                                disk['info'] = '%s (pvc:%s:%s:%s)' % (
+                                    disk['name'],
+                                    disk['pvc'],
+                                    disk['size'],
+                                    pvc['phase']
+                                )
+
+        return info
+    
     def get_virtual_machines_info(self, cache_enabled=True):
         if cache_enabled:
             if self.virtual_machine is not None:
@@ -126,14 +183,22 @@ class K8sVirtualMachineInfo():
 
         return True
 
-    def get_virtual_machines(self, object_filter=None, return_mo=False, cache_enabled=True):
+    def get_virtual_machines(self, object_filter=None, pvc_info=False, return_mo=False, cache_enabled=True):
         all_virtual_machines = self.get_virtual_machines_info(cache_enabled=cache_enabled)
         if all_virtual_machines is None:
             return None
 
         virtual_machines = []
 
+        pvcs = None
+        if pvc_info:
+            pvcs = self.get_pvcs(cache_enabled=cache_enabled)
+
         for virtual_machine_info in all_virtual_machines:
+            virtual_machine_info['info'] = self.add_virtual_machine_info(
+                virtual_machine_info['info'],
+                pvcs
+            )
             if not self.match_virtual_machine(virtual_machine_info['info'], object_filter):
                 continue
 

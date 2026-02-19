@@ -9,7 +9,6 @@ class ProtocolIsisRouteInfo():
             if key == 'isisNexthop':
                 info['isisNexthop'] = []
                 for next_hop in managed_object['isisNexthop']:
-                    # "topology/pod-1/node-201/sys/isis/inst-default/dom-overlay-1/db-nh/nh-[eth1/107.7]-[<ip>]",
                     nh_info = {}
                     nh_info['interface'] = next_hop.split('nh-[')[1].split(']')[0]
                     nh_info['address'] = next_hop.split(']-[')[1].split(']')[0]

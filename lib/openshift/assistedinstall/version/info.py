@@ -21,7 +21,7 @@ class AssistedInstallVersionInfo():
 
         return info
 
-    def get_assisted_install_openshift_versions_info(self, cache_enabled=True):
+    def get_assisted_install_openshift_versions_info(self, support=None, cache_enabled=True):
         if cache_enabled and self.assisted_install_openshift_version is not None:
             return self.assisted_install_openshift_version
 
@@ -31,10 +31,16 @@ class AssistedInstallVersionInfo():
 
         self.assisted_install_openshift_version = []
         for key in managed_objects:
+            info = self.get_assisted_install_openshift_version_info(
+                managed_objects[key]
+            )
+
+            if support is not None:
+                if info['support_level'] != support:
+                    continue
+
             self.assisted_install_openshift_version.append(
-                self.get_assisted_install_openshift_version_info(
-                    managed_objects[key]
-                )
+                info
             )
 
         self.log.openshift_mo(
@@ -91,15 +97,9 @@ class AssistedInstallVersionInfo():
 
         return True
 
-    def get_assisted_install_versions(self, cache_enabled=True):
-        versions = {}
-        versions['openshift'] = self.get_assisted_install_openshift_versions_info(cache_enabled=cache_enabled)
-        versions['component'] = self.get_assisted_install_component_versions_info(cache_enabled=cache_enabled)
-        return versions
-
     def get_assisted_install_versions_latest(self, support_level='production', cache_enabled=True):
         versions = self.get_assisted_install_openshift_versions_info(cache_enabled=cache_enabled)
-        if len(versions) == 0:
+        if versions is None or len(versions) == 0:
             return None
 
         if support_level == 'any':

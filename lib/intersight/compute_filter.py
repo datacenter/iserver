@@ -229,7 +229,7 @@ class ComputeFilter():
                     return False
 
                 for cpu_info in server['CpuInfo']:
-                    if cpu_info['VendorName'] == cpu_filter[key]:
+                    if filter_helper.match_string(cpu_filter[key], cpu_info['Vendor'], sub=True):
                         found = True
 
                 if not found:
@@ -749,8 +749,9 @@ class ComputeFilter():
 
                 for pd_info in server['PhysicalDiskInfo']:
                     if pd_info['Pid'] is not None:
-                        if pd_filter[key].lower() in pd_info['Pid'].lower():
-                            found = True
+                        for item in pd_filter[key].lower().split(','):
+                            if item in pd_info['Pid'].lower():
+                                found = True
 
                 if not found:
                     return False
@@ -822,8 +823,13 @@ class ComputeFilter():
                     pd_info['__show'] = False
                     continue
 
-                if not filter_helper.match_string(filter_helper.format_subtring_match(pd_filter['pid']), pd_info['Pid']):
-                    pd_info['__show'] = False
+                to_show = False
+                for item in pd_filter['pid'].split(','):
+                    if filter_helper.match_string(filter_helper.format_subtring_match(item), pd_info['Pid']):
+                        to_show = True
+
+                pd_info['__show'] = to_show
+                if not to_show:
                     continue
 
             if 'model' in pd_filter:

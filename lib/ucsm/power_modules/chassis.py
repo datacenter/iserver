@@ -4,10 +4,9 @@ from lib import output_helper
 
 
 class ChassisPower():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_equipment_chassis_stats = None
         self.mo_equipment_psu_stats = None
-        self.my_output = output_helper.OutputHelper(log_id=log_id)
 
     def get_chassis_power_data(self):
         if self.mo_equipment_chassis_stats is None:
@@ -30,20 +29,20 @@ class ChassisPower():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
 
         for suffix in ['', '_avg', '_min', '_max']:
             info['input_power%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'input_power%s' % (suffix))
+                    getattr(managed_object, 'input_power%s' % (suffix), None)
                 ),
                 2
             )
             info['output_power%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'output_power%s' % (suffix))
+                    getattr(managed_object, 'output_power%s' % (suffix), None)
                 ),
                 2
             )
@@ -75,7 +74,7 @@ class ChassisPower():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['psu_rn'] = info['dn'].split('/')[2]
@@ -88,7 +87,7 @@ class ChassisPower():
             for suffix in ['', '_avg', '_min', '_max']:
                 info['%s%s' % (prefix, suffix)] = round(
                     float(
-                        getattr(managed_object, '%s%s' % (prefix, suffix))
+                        getattr(managed_object, '%s%s' % (prefix, suffix), None)
                     ),
                     2
                 )

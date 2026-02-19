@@ -6,7 +6,10 @@ class EndpointInfo():
     def __init__(self):
         self.endpoints = None
 
-    def get_endpoint_count(self, tenant_name=None):
+    def init_endpoint(self):
+        self.endpoints = None
+
+    def get_endpoint_count(self, tenant_name=None, cache_enabled=True):
         endpoint_filter = []
         if tenant_name is not None:
             endpoint_filter.append(
@@ -14,7 +17,8 @@ class EndpointInfo():
             )
 
         endpoints = self.get_endpoints(
-            endpoint_filter=endpoint_filter
+            endpoint_filter=endpoint_filter,
+            cache_enabled=cache_enabled
         )
         return len(endpoints)
 
@@ -133,11 +137,11 @@ class EndpointInfo():
 
         return info
 
-    def get_endpoints_info(self):
+    def get_endpoints_info(self, cache_enabled=True):
         if self.endpoints is not None:
             return self.endpoints
 
-        managed_objects = self.get_endpoints_mo()
+        managed_objects = self.get_endpoints_mo(cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
 
@@ -292,8 +296,12 @@ class EndpointInfo():
 
         return True
 
-    def get_endpoints(self, endpoint_filter=None, vm_info=False, fabric_info=False):
-        all_endpoints = self.get_endpoints_info()
+    def get_endpoints(self, endpoint_filter=None, vm_info=False, fabric_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_endpoint()
+            self.init_endpoint_mo()
+
+        all_endpoints = self.get_endpoints_info(cache_enabled=cache_enabled)
         if all_endpoints is None:
             return None
 

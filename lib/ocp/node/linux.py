@@ -28,9 +28,9 @@ class OcpNodeLinux():
         for k8s_node in self.k8s_nodes:
             node_access = {}
             node_access['ip'] = k8s_node['ssh_ip']
-            node_access['username'] = self.ocp_cluster_settings['ssh']['username']
-            node_access['password'] = self.ocp_cluster_settings['ssh']['password'],
-            node_access['key_filename'] = self.ocp_cluster_settings['ssh']['key_filename']
+            node_access['username'] = self.ocp_node_ssh_username
+            node_access['password'] = self.ocp_node_ssh_password
+            node_access['key_filename'] = self.ocp_node_ssh_public_key_filename
             node_access['name'] = k8s_node['name']
 
             nodes.append(

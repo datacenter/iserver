@@ -68,6 +68,20 @@ class UcsmSettings(Settings):
 
         return settings['Managers']
 
+    def get_ucsm_domain_managers(self, domain_name):
+        all_managers = self.get_ucsm_managers()
+        managers = []
+        if all_managers is None:
+            return managers
+
+        for manager in all_managers:
+            if manager['domain'] is not None and manager['domain'] == domain_name:
+                managers.append(
+                    manager
+                )
+
+        return managers
+
     def get_ucsm_manager(self, ucsm_name):
         managers = self.get_ucsm_managers()
         if managers is None:
@@ -87,7 +101,7 @@ class UcsmSettings(Settings):
         settings['Managers'] = managers
         return self.set_ucsm_settings(settings)
 
-    def set_ucsm_manager(self, ucsm_name, ucsm_ip, ucsm_username, ucsm_password):
+    def set_ucsm_manager(self, ucsm_name, ucsm_ip, ucsm_username, ucsm_password, ucsm_domain=None):
         managers = self.get_ucsm_managers()
         if managers is None:
             return False
@@ -102,6 +116,7 @@ class UcsmSettings(Settings):
         new_manager['ip'] = ucsm_ip
         new_manager['username'] = ucsm_username
         new_manager['password'] = ucsm_password
+        new_manager['domain'] = ucsm_domain
         new_managers.append(new_manager)
 
         return self.set_ucsm_managers(new_managers)
@@ -135,14 +150,16 @@ class UcsmSettings(Settings):
             'name',
             'ip',
             'username',
-            'password'
+            'password',
+            'domain'
         ]
 
         headers = [
             'Name',
             'IP',
             'Username',
-            'Password'
+            'Password',
+            'Domain'
         ]
 
         self.my_output.my_table(

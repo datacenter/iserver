@@ -21,16 +21,14 @@ class K8sTunedOutput():
                 item['ownerT'] = item['owner'].split('/')
 
         order = [
-            'namespace',
-            'name',
+            'namespace_nameT',
             'ownerT',
             'profile_names',
             'age'
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Tuned',
             'Owner',
             'Profile',
             'Age'
@@ -40,7 +38,7 @@ class K8sTunedOutput():
             self.my_output.expand_lists(
                 info,
                 order,
-                ['profile_names', 'ownerT']
+                ['namespace_nameT', 'profile_names', 'ownerT']
             ),
             order=order,
             headers=headers,

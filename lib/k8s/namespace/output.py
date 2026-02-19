@@ -30,7 +30,7 @@ class K8sNamespaceOutput():
         ]
 
         headers = headers + [
-            'Name',
+            'Namespace',
             'Status',
             'Age'
         ]

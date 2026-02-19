@@ -15,15 +15,13 @@ class K8sOperatorGroupOutput():
             return
 
         order = [
-            'namespace',
-            'name',
+            'namespace_name',
             'nsCount',
             'age'
         ]
 
         headers = [
-            'Namespace',
-            'Name',
+            'Operator Group',
             'Target Namespaces',
             'Age'
         ]

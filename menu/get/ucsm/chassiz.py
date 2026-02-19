@@ -23,6 +23,7 @@ class ErrorExit(Exception):
 @click.option("--power", is_flag=True, show_default=True, default=False, help="Power state information")
 @click.option("--thermal", is_flag=True, show_default=True, default=False, help="Thermal state information")
 @click.option("--env", is_flag=True, show_default=True, default=False, help="Environmental state information")
+@click.option("--net", is_flag=True, show_default=True, default=False, help="Networking state information")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_ucsm_chassiz_command(
@@ -32,6 +33,7 @@ def get_ucsm_chassiz_command(
         power,
         thermal,
         env,
+        net,
         output,
         devel
         ):
@@ -60,7 +62,8 @@ def get_ucsm_chassiz_command(
         chassiz_info = ucsm_handler.get_chassiz(
             blade=blade,
             power=power,
-            thermal=thermal
+            thermal=thermal,
+            net=net
         )
         if chassiz_info is None:
             ctx.my_output.error('Chassis info get failed')

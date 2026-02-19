@@ -20,16 +20,16 @@ class ErrorExit(Exception):
 
 @click.command("version")
 @click.pass_obj
+@click.option("--type", "support_type", type=click.Choice(['latest', 'production', 'beta', 'maintenance', 'end-of-life'], case_sensitive=False), default='latest', show_default=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_openshift_ai_version_command(
         ctx,
-        output,
-        devel
+        support_type,
+        output
         ):
     """Get openshift assisted installer supported versions"""
 
-    ctx.developer = devel
+    ctx.developer = False
     ctx.output = output
 
     try:
@@ -40,7 +40,14 @@ def get_openshift_ai_version_command(
             ctx.busy = True
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
-        versions = console_handler.get_assisted_install_versions()
+        if support_type == 'latest':
+            versions = console_handler.get_assisted_install_openshift_versions_info(
+                support='production'
+            )[:1]
+        else:
+            versions = console_handler.get_assisted_install_openshift_versions_info(
+                support=support_type
+            )
 
         ctx.busy = False
 
@@ -55,12 +62,11 @@ def get_openshift_ai_version_command(
 
         ctx.my_output.json_output(versions)
 
-        openshift_output_handler.print_assisted_install_versions(
-            versions['openshift'],
-            title=True
+        openshift_output_handler.print_assisted_install_openshift_versions(
+            versions
         )
 
-        ctx.my_output.default('The latest production version: %s' % (console_handler.get_assisted_install_versions_latest()))
+        ctx.my_output.default('Support level filter (--type): latest (def), production, beta, maintenance, end-of-life', before_newline=True)
 
     except ErrorExit:
         ctx.busy = False

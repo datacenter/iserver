@@ -151,6 +151,87 @@ class OsInstall(IntersightCommon):
         )
         return response
 
+    def create_custom(self, attributes):
+        create_attributes = ''
+        create_attributes = '%s --InstallMethod vMedia' % (create_attributes)
+        create_attributes = '%s --Server="MoRef:ComputeRackUnitRelationship[Moid:%s]"' % (create_attributes, attributes['server_id'])
+        create_attributes = '%s --Image=MoRef[Moid:%s]' % (create_attributes, attributes['image']['id'])
+        create_attributes = '%s --ConfigurationFile=MoRef[Moid:%s]' % (create_attributes, attributes['configuration_file_id'])
+        create_attributes = '%s --OsduImage=MoRef[Moid:%s]' % (create_attributes, attributes['scu_id'])
+        create_attributes = '%s --Organization=MoRef[Moid:%s]' % (create_attributes, attributes['organization_id'])
+
+        install_target = {}
+        install_target['ObjectType'] = 'os.VirtualDrive'
+        install_target['StorageControllerSlotId'] = attributes['storage_controller_slot']
+        install_target['Id'] = attributes['virtual_drive_id']
+        install_target['Name'] = attributes['virtual_drive_name']
+        create_attributes = '%s --InstallTarget=\'%s\'' % (create_attributes, json.dumps(install_target))
+
+        answers = {}
+        answers['Source'] = 'Template'
+        create_attributes = '%s --Answers=\'%s\'' % (create_attributes, json.dumps(answers))
+
+        if attributes['values'] is not None:
+            additional = []
+            for key in attributes['values']:
+                item = {
+                    'ClassId': 'os.PlaceHolder',
+                    'IsValueSet': True,
+                    'ObjectType': 'os.PlaceHolder',
+                    'Type': {
+                        'ClassId': 'workflow.PrimitiveDataType',
+                        'Default': {
+                            'ClassId': 'workflow.DefaultValue',
+                            'IsValueSet': False,
+                            'ObjectType': 'workflow.DefaultValue',
+                            'Override': False,
+                            'Value': None},
+                        'Description': '',
+                        'DisplayMeta': {
+                            'ClassId': 'workflow.DisplayMeta',
+                            'InventorySelector': True,
+                            'ObjectType': 'workflow.DisplayMeta',
+                            'WidgetType': 'None'},
+                        'InputParameters': None,
+                        'Label': key,
+                        'Name': key,
+                        'ObjectType': 'workflow.PrimitiveDataType',
+                        'Properties': {
+                            'ClassId': 'workflow.PrimitiveDataProperty',
+                            'Constraints': {
+                                'ClassId': 'workflow.Constraints',
+                                'EnumList': [],
+                                'Max': 0,
+                                'Min': 0,
+                                'ObjectType': 'workflow.Constraints',
+                                'Regex': ''},
+                            'InventorySelector': [],
+                            'ObjectType': 'workflow.PrimitiveDataProperty',
+                            'Secure': False,
+                            'Type': 'string'},
+                        'Required': False},
+                    'Value': attributes['values'][key]}
+
+                additional.append(
+                    item
+                )
+
+            create_attributes = '%s --AdditionalParameters=\'%s\'' % (create_attributes, json.dumps(additional))
+
+        command = 'isctl create os install %s' % (create_attributes.replace(' --', '\n\t--'))
+        self.my_output.info(command)
+        if self.dry_run:
+            self.my_output.default(command)
+            return dict(success=True)
+
+        response = IntersightCommon.create(
+            self,
+            create_attributes,
+            get_response=True,
+            json_conversion=True
+        )
+        return response
+
     def create_os_install(self, attributes):
         """Create os install object in Intersight to trigger bare metal OS installation
 
@@ -165,5 +246,8 @@ class OsInstall(IntersightCommon):
                 return self.create_template_dhcp(attributes)
             if attributes['ip_config'] == 'static':
                 return self.create_template_static(attributes)
+
+        if attributes['type'] == 'custom':
+            return self.create_custom(attributes)
 
         return dict(success=False, response=None)

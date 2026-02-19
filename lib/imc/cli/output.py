@@ -33,6 +33,7 @@ from lib.imc.cli.sol.output import ImcCliSolOutput
 from lib.imc.cli.ssh.output import ImcCliSshOutput
 from lib.imc.cli.storageadapter.output import ImcCliStorageAdapterOutput
 from lib.imc.cli.syslog.output import ImcCliSyslogOutput
+from lib.imc.cli.tls.output import ImcCliTlsOutput
 from lib.imc.cli.tpm.output import ImcCliTpmOutput
 from lib.imc.cli.utilization.output import ImcCliUtilizationOutput
 from lib.imc.cli.version.output import ImcCliVersionOutput
@@ -73,6 +74,7 @@ class ImcCliOutput(
         ImcCliSshOutput,
         ImcCliStorageAdapterOutput,
         ImcCliSyslogOutput,
+        ImcCliTlsOutput,
         ImcCliTpmOutput,
         ImcCliUtilizationOutput,
         ImcCliVersionOutput,
@@ -118,6 +120,7 @@ class ImcCliOutput(
         ImcCliSshOutput.__init__(self)
         ImcCliStorageAdapterOutput.__init__(self)
         ImcCliSyslogOutput.__init__(self)
+        ImcCliTlsOutput.__init__(self)
         ImcCliTpmOutput.__init__(self)
         ImcCliUtilizationOutput.__init__(self)
         ImcCliVersionOutput.__init__(self)
@@ -210,7 +213,7 @@ class ImcCliOutput(
             allow_order_subkeys=allow_order_subkeys
         )
 
-    def print_list_table(self, info, title=None, allow_order_subkeys=False, add_endpoint_ip=True):
+    def print_list_table(self, info, title=None, allow_order_subkeys=False, add_endpoint_ip=True, add_title_endpoint_ip=True, row_separator=False, exclude=[], expand=None):
         if isinstance(info, dict):
             info = [info]
 
@@ -232,16 +235,18 @@ class ImcCliOutput(
         if title is not None:
             if len(endpoints) == 1:
                 add_endpoint_ip = False
+            else:
+                add_title_endpoint_ip = False
 
-            if add_endpoint_ip:
+            if add_title_endpoint_ip:
                 self.my_output.default(
-                    title,
+                    '%s [%s]' % (title, info[0]['__IP']),
                     underline=True,
                     before_newline=True
                 )
             else:
                 self.my_output.default(
-                    '%s [%s]' % (title, info[0]['__IP']),
+                    title,
                     underline=True,
                     before_newline=True
                 )
@@ -258,6 +263,9 @@ class ImcCliOutput(
                 if key in ['__Output', '__IP', '__Key', '__Value']:
                     continue
 
+                if key in exclude:
+                    continue
+
                 if key not in order:
                     order.append(
                         key
@@ -268,19 +276,40 @@ class ImcCliOutput(
 
         for item in info:
             for key in order:
-                if key not in item or item[key] is None or len(item[key]) == 0:
+                if expand is not None and key in expand:
+                    if len(item[key]) == 0:
+                        item[key].append('--')
+
+                if key not in item or item[key] is None or isinstance(item[key], str) and len(item[key]) == 0:
                     item[key] = '--'
 
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            remove_empty_columns=False,
-            underline=True,
-            row_separator=False,
-            allow_order_subkeys=allow_order_subkeys,
-            table=True
-        )
+        if expand is None:
+            self.my_output.my_table(
+                info,
+                order=order,
+                headers=headers,
+                remove_empty_columns=False,
+                underline=True,
+                row_separator=row_separator,
+                allow_order_subkeys=allow_order_subkeys,
+                table=True
+            )
+        else:
+            self.my_output.my_table(
+                self.my_output.expand_lists(
+                    info,
+                    order,
+                    expand,
+                    allow_order_subkeys=allow_order_subkeys
+                ),
+                order=order,
+                headers=headers,
+                remove_empty_columns=False,
+                underline=True,
+                row_separator=row_separator,
+                allow_order_subkeys=allow_order_subkeys,
+                table=True
+            )
 
     def print_list_dict(self, info, title, allow_order_subkeys=True, add_endpoint_ip=True, underline=False):
         if isinstance(info, dict):

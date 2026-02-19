@@ -21,7 +21,6 @@ class ProtocolBfdEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519092"
         info['session_id'] = None
         if len(info['affected'].split('/')) == 7:
             if info['affected'].split('/')[6].startswith('session-'):

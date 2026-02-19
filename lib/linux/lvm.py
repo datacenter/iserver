@@ -6,24 +6,6 @@ class LinuxLvm():
         self.lvm = None
 
     def get_lvms_info(self, output):
-        # --- Logical volume ---
-        # LV Path                /dev/vg1/18af6b30-a3a2-4420-abd5-d42e2d5633eb
-        # LV Name                18af6b30-a3a2-4420-abd5-d42e2d5633eb
-        # VG Name                vg1
-        # LV UUID                Gc7Wes-8Eh3-6cdf-9TD2-tPey-rdEA-j26ntX
-        # LV Write Access        read/write
-        # LV Creation host, time ocp-bm2, 2023-06-01 12:41:24 +0000
-        # LV Pool name           thin-pool-1
-        # LV Status              available
-        # # open                 2
-        # LV Size                10.00 GiB
-        # Mapped size            93.44%
-        # Current LE             2560
-        # Segments               1
-        # Allocation             inherit
-        # Read ahead sectors     auto
-        # - currently set to     8192
-        # Block device           253:37
         lvms = []
 
         lvm_section = False

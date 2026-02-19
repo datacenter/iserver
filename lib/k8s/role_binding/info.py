@@ -1,4 +1,6 @@
+import yaml
 from lib import filter_helper
+from menu.common import get_confirmation
 
 
 class K8sRoleBindingInfo():
@@ -117,3 +119,84 @@ class K8sRoleBindingInfo():
             )
 
         return role_bindings
+
+    def is_role_binding(self, namespace, name, cache_enabled=True):
+        if self.get_role_binding(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+    
+    def get_role_binding(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        role_bindings = self.get_role_bindings(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if role_bindings is None:
+            return None
+
+        if len(role_bindings) == 1:
+            return role_bindings[0]
+
+        return None
+
+    def create_service_account_role_binding(self, namespace, name, cluster_role_name, sa_namespace, sa_name, my_output=None, confirmation=False):
+        if my_output is not None:
+            my_output.default('Create role binding', before_newline=True, underline=True)
+            my_output.default('- namespace: %s' % (namespace))
+            my_output.default('- name: %s' % (name))
+            my_output.default('- cluster role: %s' % (cluster_role_name))
+            my_output.default('- service account namespace: %s' % (sa_namespace))
+            my_output.default('- service account name: %s' % (sa_name))
+            
+        if my_output is None:
+            confirmation = False
+        
+        if self.is_role_binding(namespace, name, cache_enabled=False):
+            if my_output is not None:
+                my_output.default('- already created')
+            return True
+        
+        body = {}
+        body['apiVersion'] = 'rbac.authorization.k8s.io/v1'
+        body['kind'] = 'RoleBinding'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        body['roleRef'] = {}
+        body['roleRef']['apiGroup'] = 'rbac.authorization.k8s.io'
+        body['roleRef']['kind'] = 'ClusterRole'
+        body['roleRef']['name'] = cluster_role_name
+        body['subjects'] = []
+
+        subject = {}
+        subject['kind'] = 'ServiceAccount'
+        subject['name'] = sa_name
+        subject['namespace'] = sa_namespace
+        body['subjects'].append(
+            subject
+        )
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+
+        if confirmation:
+            if not get_confirmation():
+                return False
+            
+        success = self.create_role_binding_mo(body)
+        if not success:
+            if my_output is not None:
+                my_output.error('rest api failed')
+            return False
+
+        if my_output is not None:
+            my_output.default('Role binding created', before_newline=True)
+
+        return True

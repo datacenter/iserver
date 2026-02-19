@@ -19,7 +19,6 @@ class L3OutEventInfo():
 
         if 'affected' in info:
             if 'uni/tn-' in info['affected']:
-                # uni/tn-k8s/l3out-bmk8s_3_BD
                 info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
             if '/l3out-' in info['affected']:
@@ -30,7 +29,6 @@ class L3OutEventInfo():
 
         if 'affected' not in info and 'dn' in info:
             if 'uni/tn-' in info['dn']:
-                # uni/tn-k8s/l3out-bmk8s_3_BD
                 info['tenantName'] = info['dn'].split('uni/tn-')[1].split('/')[0]
 
             if '/l3out-' in info['dn']:

@@ -18,7 +18,6 @@ class RedfishEndpointUcsRack(
             redfish_username,
             redfish_password,
             system_id=None,
-            cache_filename=None,
             auto_connect=True,
             get_timeout=10,
             ssl_verify=False,
@@ -33,7 +32,6 @@ class RedfishEndpointUcsRack(
             redfish_username,
             redfish_password,
             system_id=system_id,
-            cache_filename=cache_filename,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
             ssl_verify=ssl_verify,
@@ -52,6 +50,28 @@ class RedfishEndpointUcsRack(
 
     def __del__(self):
         self.disconnect()
+
+    def get_chassis_type(self):
+        uri = '/redfish/v1/Chassis'
+        children = self.endpoint_handler.get_odata_ids(uri)
+        if children is None:
+            self.log.error(
+                'get_chassis_type',
+                'Failed to discover Chassis: %s' % (uri)
+            )
+            return None
+
+        for child in children:
+            if child == uri:
+                continue
+
+            properties = self.get_properties(child)
+            if properties is not None:
+                if 'ChassisType' in properties:
+                    if properties['ChassisType'] in ['Blade', 'Enclosure']:
+                        return 'Blade'
+
+        return 'Rack'
 
     def get_chassis_uri(self):
         if self.chassis_uri is not None:
@@ -158,16 +178,38 @@ class RedfishEndpointUcsRack(
         url = 'https://%s:%s/redfish/v1/Managers/CIMC/VirtualMedia/%s/Actions/VirtualMedia.EjectMedia' % (self.endpoint_ip, self.endpoint_port, virtual_media_id)
         return self.post(url)
 
-    def set_one_time_boot_source(self, target):
+    def get_boot_properties(self):
+        system_id = self.get_system_id()
+        path = 'Systems/%s' % (system_id)
+        response = self.get_properties(path)
+        if response is None or 'Boot' not in response:
+            return None
+        return response['Boot']
+
+    def set_one_time_boot_source(self, target, enabled='Once'):
         system_id = self.get_system_id()
         url = 'https://%s:%s/redfish/v1/Systems/%s' % (self.endpoint_ip, self.endpoint_port, system_id)
 
         data = {}
         data['Boot'] = {}
         data['Boot']['BootSourceOverrideTarget'] = target
-        data['Boot']['BootSourceOverrideEnabled'] = 'Once'
+        data['Boot']['BootSourceOverrideEnabled'] = enabled
 
         return self.patch(url, data=data)
+
+    def get_power_state(self):
+        path = 'Systems/%s' % (self.get_system_id())
+        response = self.get_properties(path)
+        if response is None or 'PowerState' not in response:
+            return None
+
+        return response['PowerState']
+
+    def is_power_on(self):
+        power_state = self.get_power_state()
+        if power_state is None or power_state != "On":
+            return False
+        return True
 
     def power_cycle(self):
         system_id = self.get_system_id()
@@ -175,5 +217,47 @@ class RedfishEndpointUcsRack(
 
         data = {}
         data['ResetType'] = 'PowerCycle'
+
+        return self.post(url, data=data)
+
+    def get_system_actions(self):
+        system_id = self.get_system_id()
+        path = 'Systems/%s' % (system_id)
+        response = self.get_properties(path)
+        if response is None or 'Actions' not in response:
+            return None
+        return response['Actions']
+
+    def power_restart(self, graceful=False):
+        system_id = self.get_system_id()
+        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+
+        data = {}
+        if graceful:
+            data['ResetType'] = 'GracefulRestart'
+        else:
+            data['ResetType'] = 'ForceRestart'
+
+        return self.post(url, data=data)
+
+    def power_on(self):
+        system_id = self.get_system_id()
+        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+
+        data = {}
+        data['ResetType'] = 'On'
+
+        return self.post(url, data=data)
+
+    def power_off(self, gracefull=False):
+        system_id = self.get_system_id()
+        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+
+        data = {}
+
+        if gracefull:
+            data['ResetType'] = 'GracefulShutdown'
+        else:
+            data['ResetType'] = 'ForceOff'
 
         return self.post(url, data=data)

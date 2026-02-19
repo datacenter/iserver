@@ -10,19 +10,11 @@ class ImcCliFlex():
             if self.flex_mo is not None:
                 return self.flex_mo
 
-            self.flex_mo = self.get_icm_cli_cache_entry(
+            self.flex_mo = self.get_imc_cli_cache_entry(
                 'flex'
             )
             if self.flex_mo is not None:
                 return self.flex_mo
-
-        # comp-7-p2b-eu-spdc-WMP24040061 /chassis # show flexutil detail
-        # Controller Flexutil:
-        #     Product Name: Cisco Flexutil
-        #     Internal State: Failed
-        #     Controller Status: Card is Absent
-        #     Physical Drive Count: 0
-        #     Virtual Drive Count: 0
 
         self.flex_mo = self.show_dict(
             'show flexutil detail',

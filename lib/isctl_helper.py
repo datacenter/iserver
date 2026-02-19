@@ -6,25 +6,66 @@ import time
 import platform
 
 from lib import log_helper
+from lib import file_helper
 from lib import iaccount_helper
 
 
 class Isctl():
     def __init__(self, iaccount, log_id=None):
         self.log = log_helper.Log(log_id=log_id)
+        self.log_id=log_id
         self.iaccount = iaccount
 
         self.ia_handler = iaccount_helper.IntersightAccount()
         self.configuration = self.ia_handler.get_iaccount_configuration_filename(iaccount)
+
+    def command_fixup_windows_body(self, command):
+        main = command.split('--')[0]
+        main = main.replace('isctl ', 'isctl --config %s ' % (self.configuration))
+        self.log.error('isctl_helper.command_fixup_windows_body', main)
+
+        body = {}
+        args = '--%s' % ('--'.join(command.split('--')[1:]))
+        args = args.split('-o json')[0]
+        for arg in args.split('--'):
+            arg = arg.strip()
+            if len(arg) > 0:
+                if len(arg.split('=')) == 2:
+                    (key, value) = arg.split('=')
+                else:
+                    key = arg.split(' ')[0]
+                    value = ' '.join(arg.split(' ')[1:])
+
+                try:
+                    if value.startswith("'") and value.endswith("'"):
+                        value = value[1:][:-1]
+                    value = json.loads(value)
+                except BaseException:
+                    pass
+
+                body[key] = value
+
+        file_helper.set_file_json('/tmp/body.json', body)
+
+        command = 'Powershell.exe %s --bodyformat json -o json < /tmp/body.json' % (
+            main
+        )
+
+        self.log.debug('isctl_helper.command_fixup_windows_body', command)
+        return command
 
     def command_fixup_windows(self, command):
         escape_create = False
         escape_update = False
         if command.startswith('isctl create'):
             escape_create = True
+            if len(command) > 8000:
+                return self.command_fixup_windows_body(command)
 
         if command.startswith('isctl update'):
             escape_update = True
+            if len(command) > 8000:
+                return self.command_fixup_windows_body(command)
 
         command = command.replace('isctl ', 'isctl --config %s ' % (self.configuration))
 
@@ -47,6 +88,8 @@ class Isctl():
     def isctl_exec_windows(self, command, json_conversion=False, retry=3):
         try:
             command = self.command_fixup_windows(command)
+            self.log.debug('isctl_helper.isctl_exec_windows', command)
+
             for i in range(0, retry):
                 start = int(time.time() * 1000)
                 with subprocess.Popen(
@@ -77,6 +120,7 @@ class Isctl():
             return False, 'Exception', 0
 
     def command_fixup_linux(self, command):
+        command = command.replace('$', '\\$')
         if 'isctl --config' not in command:
             command = command.replace('isctl ', 'isctl --config %s ' % (self.configuration))
         return command
@@ -119,18 +163,19 @@ class Isctl():
             return self.isctl_exec_windows(command, json_conversion=json_conversion, retry=retry)
         return self.isctl_exec_linux(command, json_conversion=json_conversion, retry=retry)
 
-    def get(self, command, json_conversion=True, api_debug=False):
+    def get(self, command, json_conversion=True, api_debug=False, log_error=True):
         success, response, duration = self.isctl_exec(
             command,
             json_conversion=json_conversion
         )
         if not success:
             self.log.cli(command, False, duration)
-            try:
-                self.log.error('isctl_helper.get', command)
-                self.log.error('isctl_helper.get', response)
-            except BaseException:
-                pass
+            if log_error:
+                try:
+                    self.log.error('isctl_helper.get', command)
+                    self.log.error('isctl_helper.get', response)
+                except BaseException:
+                    pass
             return None
 
         item_count = None

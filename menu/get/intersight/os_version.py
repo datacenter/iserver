@@ -4,8 +4,8 @@ import traceback
 import yaml
 import click
 
-from lib.intersight import hcl_operating_system
-from lib.intersight import hcl_operating_system_vendor
+from lib.intersight.hcl_operating_system import main as hcl_operating_system
+from lib.intersight.hcl_operating_system_vendor import main as hcl_operating_system_vendor
 from menu import defaults
 from menu import validations
 
@@ -35,6 +35,11 @@ def get_intersight_os_version_command(ctx, iaccount, vendor_name, output, devel)
         version_handler = hcl_operating_system.HclOperatingSystem(iaccount, log_id=ctx.run_id)
         if vendor_name == '':
             versions = version_handler.get_all()
+            if versions is not None:
+                versions = sorted(
+                    versions,
+                    key=lambda i: i['Version']
+                )
         else:
             vendor_handler = hcl_operating_system_vendor.HclOperatingSystemVendor(iaccount, log_id=ctx.run_id)
             vendor_attributes = vendor_handler.get_by_name(vendor_name)
@@ -59,7 +64,7 @@ def get_intersight_os_version_command(ctx, iaccount, vendor_name, output, devel)
             ctx.log_prompt = False
             return
 
-        version_handler.print(versions)
+        version_handler.print(versions, title=True)
 
     except ErrorExit:
         sys.exit(1)

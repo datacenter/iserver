@@ -5,14 +5,18 @@ class ApplicationProfileInfo():
     def __init__(self):
         self.application_profile = None
 
-    def get_application_profile_count(self, tenant_name=None):
+    def init_application_profile(self):
+        self.application_profile = None
+
+    def get_application_profile_count(self, tenant_name=None, cache_enabled=True):
         application_profile_filter = None
         if tenant_name is not None:
             application_profile_filter = ['tenant:%s' % (tenant_name)]
 
         application_profiles = self.get_application_profiles(
             application_profile_filter=application_profile_filter,
-            epg_info=False
+            epg_info=False,
+            cache_enabled=cache_enabled
         )
         return len(application_profiles)
 
@@ -55,11 +59,11 @@ class ApplicationProfileInfo():
 
         return info
 
-    def get_application_profiles_info(self):
+    def get_application_profiles_info(self, cache_enabled=True):
         if self.application_profile is not None:
             return self.application_profile
 
-        managed_objects = self.get_application_profile_mo()
+        managed_objects = self.get_application_profile_mo(cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
 
@@ -144,9 +148,15 @@ class ApplicationProfileInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_profiles = self.get_application_profiles_info()
+
+        if not cache_enabled:
+            self.init_application_profile()
+            self.init_application_profile_mo()
+
+        all_profiles = self.get_application_profiles_info(cache_enabled=cache_enabled)
         if all_profiles is None:
             return None
 
@@ -219,3 +229,49 @@ class ApplicationProfileInfo():
         )
 
         return application_profiles
+
+    def get_application_profile(
+            self,
+            name,
+            tenant_name=None,
+            epg_info=False,
+            node_info=False,
+            fault_info=False,
+            hfault_info=False,
+            event_info=False,
+            audit_info=False,
+            hfault_filter=None,
+            event_filter=None,
+            audit_filter=None,
+            cache_enabled=True
+            ):
+        application_profile_filter = []
+        application_profile_filter.append('name:%s' % (name))
+        if tenant_name is not None:
+            application_profile_filter.append('tenant:%s' % (tenant_name))
+
+        application_profiles = self.get_application_profiles(
+            application_profile_filter=application_profile_filter,
+            epg_info=epg_info,
+            node_info=node_info,
+            fault_info=fault_info,
+            hfault_info=hfault_info,
+            event_info=event_info,
+            audit_info=audit_info,
+            hfault_filter=hfault_filter,
+            event_filter=event_filter,
+            audit_filter=audit_filter,
+            cache_enabled=cache_enabled
+        )
+        if application_profiles is None:
+            return None
+
+        if len(application_profiles) != 1:
+            return None
+
+        return application_profiles[0]
+
+    def is_application_profile(self, name, tenant_name=None, cache_enabled=True):
+        if self.get_application_profile(name, tenant_name=tenant_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

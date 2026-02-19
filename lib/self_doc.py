@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import shutil
 import traceback
 
 from lib import file_helper
@@ -20,8 +19,8 @@ def get_doc_directory():
 
 def get_templates_directory():
     return os.path.join(
-        file_helper.get_main_dir(),
-        'doc-templates'
+        get_doc_directory(),
+        'templates'
     )
 
 
@@ -52,21 +51,48 @@ def get_keywords(template_content):
     return keywords
 
 
-def get_template_names(template_names, include_redfish=False):
+def get_all_template_names():
+    templates = []
+    templates_directory = get_templates_directory()
+    for template_subdirectory in os.listdir(templates_directory):
+        templates.append(
+            template_subdirectory
+        )
+    return templates
+
+
+def get_template_names(template_names):
     templates = {}
     templates_directory = get_templates_directory()
     for template_subdirectory in os.listdir(templates_directory):
-        if template_subdirectory.startswith('redfish') and not include_redfish:
-            continue
-
         if len(template_names) > 0 and template_subdirectory not in template_names:
             continue
 
         templates[template_subdirectory] = []
         for template_filename in os.listdir(os.path.join(templates_directory, template_subdirectory)):
             if template_filename.endswith('.md'):
-                if 'Template' not in template_filename:
-                    templates[template_subdirectory].append(template_filename)
+                if 'Template' in template_filename:
+                    continue
+                if template_filename == 'HowTo.md':
+                    continue
+                templates[template_subdirectory].append(template_filename)
+                continue
+
+            full_name = os.path.join(
+                os.path.join(templates_directory, template_subdirectory),
+                template_filename
+            )
+            if os.path.isdir(full_name):
+                for subtemplate_filename in os.listdir(full_name):
+                    if subtemplate_filename.startswith('.'):
+                        continue
+
+                    templates[template_subdirectory].append(
+                        '%s:%s' % (
+                            template_filename,
+                            subtemplate_filename
+                        )
+                    )
 
     return templates
 
@@ -78,13 +104,31 @@ def match_templates_with_results(all_templates, results):
         templates[template_group] = []
 
         for template_name in all_templates[template_group]:
-            template_filename = os.path.join(
-                os.path.join(
-                    templates_directory,
-                    template_group
-                ),
-                template_name
-            )
+            if len(template_name.split(':')) == 1:
+                template_subdir=None
+                template_filename = os.path.join(
+                    os.path.join(
+                        templates_directory,
+                        template_group
+                    ),
+                    template_name
+                )
+            else:
+                template_subdir=template_name.split(':')[0]
+                template_filename = os.path.join(
+                    os.path.join(
+                        templates_directory,
+                        template_group
+                    ),
+                    template_subdir
+                )
+                template_filename = os.path.join(
+                    template_filename,
+                    template_name.split(':')[1]
+                )
+
+            if template_filename.endswith('.png'):
+                continue
 
             print('Checking template: %s' % (template_filename))
             template_content = get_template(template_filename)
@@ -95,6 +139,7 @@ def match_templates_with_results(all_templates, results):
                 templates[template_group].append(
                     dict(
                         filename=template_filename,
+                        subdir=template_subdir,
                         content=template_content,
                         keywords=template_keywords
                     )
@@ -114,6 +159,7 @@ def match_templates_with_results(all_templates, results):
                     templates[template_group].append(
                         dict(
                             filename=template_filename,
+                            subdir=template_subdir,
                             content=template_content,
                             keywords=template_keywords
                         )
@@ -272,7 +318,7 @@ def replace_keywords(template_content, results_base_directory):
     return new_content
 
 
-def get_results(results_directory):
+def get_results(results_directory, allow_failed=False):
     if not os.path.isdir(results_directory):
         print('Results directory not found: %s' % (results_directory))
         return None
@@ -286,7 +332,7 @@ def get_results(results_directory):
                 with open(result_filename, 'r', encoding='utf-8') as file_handler:
                     content = json.loads(file_handler.read())
 
-                if content['success']:
+                if content['success'] or allow_failed:
                     results.append(result_directory)
 
             except BaseException:
@@ -303,434 +349,19 @@ def get_templates_count(templates):
     return count
 
 
-def get_redfish_test_endpoints():
-    templates_directory = get_templates_directory()
-    redfish_templates_directory = os.path.join(templates_directory, 'redfish')
-    redfish_test_templates_directory = os.path.join(redfish_templates_directory, 'tests')
-    tests_filename = os.path.join(redfish_test_templates_directory, 'tests.yaml')
-    if not os.path.isfile(tests_filename):
-        print('Redfish tests definition not found: %s' % (tests_filename))
-        return None
-
-    tests = file_helper.get_file_yaml(
-        tests_filename
-    )
-    if tests is None:
-        print('Redfish tests definition read failed: %s' % (tests_filename))
-        return None
-
-    tests = sorted(tests, key=lambda i: (i['vendor'], i['model']))
-    return tests
-
-
-def get_redfish_test_table_content(tests):
-    endpoint_map = {}
-    endpoint_map['standard'] = 'EndpointStandard.md'
-    endpoint_map['ucsc'] = 'EndpointUcsc.md'
-    endpoint_map['fi'] = 'EndpointFi.md'
-    endpoint_map['hpe'] = 'EndpointHpe.md'
-    endpoint_map['dell'] = 'EndpointDell.md'
-
-    content = ''
-    for test in tests:
-        resource = '[link](../redfish-tests-%s-%s/Resource.md)' % (
-            test['vendor'].lower(),
-            test['model'].lower()
-        )
-        oem = ''
-        if test['oem']:
-            oem = '[link](../redfish-tests-%s-%s/Oem.md)' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        action = ''
-        if test['action']:
-            action = '[link](../redfish-tests-%s-%s/Action.md)' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        identity = ''
-        if test['identity']:
-            identity = '[link](../redfish-tests-%s-%s/Identity.md)' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        power = ''
-        if test['power']:
-            power = '[link](../redfish-tests-%s-%s/Power.md)' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        thermal = ''
-        if test['thermal']:
-            thermal = '[link](../redfish-tests-%s-%s/Thermal.md)' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-
-        line = '%s | %s | [%s](./%s) | %s | %s | %s | %s | %s | %s' % (
-            test['vendor'],
-            test['model'],
-            test['endpoint'],
-            endpoint_map[test['endpoint']],
-            resource,
-            oem,
-            action,
-            identity,
-            power,
-            thermal
-        )
-        content = '%s%s\n' % (content, line)
-
-    return content
-
-
-def generate_redfish_readme_no_tests():
-    redfish_templates_directory = os.path.join(
-        get_templates_directory(),
-        'redfish'
-    )
-    redfish_readme_template_filename = os.path.join(
-        redfish_templates_directory,
-        'README.template_no_tests'
-    )
-    redfish_readme_filename = os.path.join(
-        redfish_templates_directory,
-        'README.md'
-    )
-
-    if not os.path.isfile(redfish_readme_template_filename):
-        print('Redfish readme template not found:%s' % (redfish_readme_template_filename))
-        return False
-
-    try:
-        with open(redfish_readme_template_filename, 'r', encoding='utf-8') as file_handler:
-            content = file_handler.read()
-    except BaseException:
-        print('Redfish readme read failed:%s' % (redfish_readme_template_filename))
-        print(traceback.format_exc())
-        return False
-
-    try:
-        with open(redfish_readme_filename, 'w', encoding='utf-8') as file_handler:
-            file_handler.write(str(content))
-
-    except BaseException:
-        print('Redfish readme file write failed:%s' % (redfish_readme_filename))
-        return False
-
-    print('Readme generated: %s' % (redfish_readme_filename))
-    return True
-
-
-def generate_redfish_readme_tests(tests):
-    table_content = get_redfish_test_table_content(tests)
-    if table_content is None:
-        print('Redfish endpoints test table content generation failed')
-        return False
-
-    redfish_templates_directory = os.path.join(
-        get_templates_directory(),
-        'redfish'
-    )
-    redfish_readme_template_filename = os.path.join(
-        redfish_templates_directory,
-        'README.template_tests'
-    )
-    redfish_readme_filename = os.path.join(
-        redfish_templates_directory,
-        'README.md'
-    )
-
-    if not os.path.isfile(redfish_readme_template_filename):
-        print('Redfish readme template not found:%s' % (redfish_readme_template_filename))
-        return False
-
-    try:
-        with open(redfish_readme_template_filename, 'r', encoding='utf-8') as file_handler:
-            content = file_handler.read()
-    except BaseException:
-        print('Redfish readme read failed:%s' % (redfish_readme_template_filename))
-        print(traceback.format_exc())
-        return False
-
-    new_content = ''
-    replaced = False
-    for line in content.split('\n'):
-        if line == 'REDFISH_TESTED_ENDPOINTS_TABLE':
-            replaced = True
-            new_content = '%s\n%s' % (new_content, table_content)
-            continue
-
-        new_content = '%s\n%s' % (new_content, line)
-
-    if not replaced:
-        print('Redfish readme table replacement failed')
-        return False
-
-    try:
-        with open(redfish_readme_filename, 'w', encoding='utf-8') as file_handler:
-            file_handler.write(str(new_content))
-
-    except BaseException:
-        print('Redfish readme file write failed:%s' % (redfish_readme_filename))
-        return False
-
-    print('Readme generated: %s' % (redfish_readme_filename))
-    return True
-
-
-def clean_redfish_test_templates():
-    base_directory = get_templates_directory()
-    for item in os.listdir(base_directory):
-        if item.startswith('redfish-tests-'):
-            dirname = os.path.join(
-                base_directory,
-                item
-            )
-            if os.path.isdir(dirname):
-                shutil.rmtree(dirname)
-
-
-def clean_redfish_test_doc():
-    base_directory = get_doc_directory()
-    for item in os.listdir(base_directory):
-        if item.startswith('redfish-tests-'):
-            dirname = os.path.join(
-                base_directory,
-                item
-            )
-            if os.path.isdir(dirname):
-                shutil.rmtree(dirname)
-
-
-def get_redfish_tree(test, results_directory):
-    result = get_result(
-        results_directory,
-        '%s.tree' % (test['result']),
-        'iserver.output.default'
-    )
-    if result is None:
-        print('No result found: %s' % ('%s.tree' % (test['result'])))
-        sys.exit(1)
-
-    try:
-        tree = json.loads(result)
-    except BaseException:
-        print('JSON format expected: %s' % ('%s.tree' % (test['result'])))
-        sys.exit(1)
-
-    return tree
-
-
-def get_redfish_root_children(test, results_directory):
-    result = get_result(
-        results_directory,
-        '%s.children' % (test['result']),
-        'iserver.output.default'
-    )
-    return json.loads(result)
-
-
-def get_redfish_root_children_links(test, results_directory):
-    children = get_redfish_root_children(test, results_directory)
-
-    children_names = []
-    links = []
-    for child in children:
-        if test['base_uri'] not in child:
-            continue
-
-        if child == test['base_uri']:
-            continue
-
-        child_name = child.lstrip(test['base_uri']).split('/')[0]
-        if child_name in children_names:
-            continue
-
-        children_names.append(child_name)
-        links.append(
-            dict(
-                uri=child,
-                name=child_name
-            )
-        )
-
-    return links
-
-
-def get_redfish_root_children_links_content(test, results_directory):
-    links = get_redfish_root_children_links(test, results_directory)
-
-    content = ''
-    for link in links:
-        line = '- [%s](./Uri%s.md)' % (
-            link['uri'],
-            link['name']
-        )
-        content = '%s%s\n' % (content, line)
-
-    return content
-
-
-def generate_redfish_test_template(redfish_test_templates_directory, test_directory_name, template_name, test, results_directory):
-    template_handler = template_helper.TemplateHelper()
-
-    template_filename = os.path.join(
-        redfish_test_templates_directory,
-        '%s.template' % (template_name)
-    )
-    if not os.path.isfile(template_filename):
-        print('Template file not found: %s' % (template_filename))
-        return False
-
-    try:
-        with open(template_filename, 'r', encoding='utf-8') as file_handler:
-            content = file_handler.read()
-    except BaseException:
-        print('Redfish readme read failed:%s' % (template_filename))
-        print(traceback.format_exc())
-        return False
-
-    variables = {}
-    variables['TEST_VENDOR'] = test['vendor']
-    variables['TEST_MODEL'] = test['model']
-    variables['TEST_RESULT'] = test['result']
-    variables['ROOT_CHILDREN_LINKS'] = get_redfish_root_children_links_content(test, results_directory)
-
-    new_content = template_handler.replace_variables(content, variables)
-
-    target_template_filename = os.path.join(
-        test_directory_name,
-        '%s.md' % (template_name)
-    )
-    try:
-        with open(target_template_filename, 'w', encoding='utf-8') as file_handler:
-            file_handler.write(str(new_content))
-
-    except BaseException:
-        print('Template file write failed:%s' % (target_template_filename))
-        return False
-
-    print('Template created: %s' % (target_template_filename))
-    return True
-
-
-def generate_redfish_resource_template(test_template_directory_name, test, results_directory):
-    links = get_redfish_root_children_links(test, results_directory)
-    tree = get_redfish_tree(test, results_directory)
-    for link in links:
-        target_template_filename = os.path.join(
-            test_template_directory_name,
-            'Uri%s.md' % (link['name'])
-        )
-        try:
-            content = '# Resource: %s\n\n' % (link['uri'])
-            content = '%s%s\n' % (content, 'Vendor | Model')
-            content = '%s%s\n' % (content, '--- | ---')
-            content = '%s%s\n\n' % (content, '%s | %s' % (test['vendor'], test['model']))
-            for branch in tree:
-                if branch.startswith(link['uri']):
-                    content = '%s%s\n\n' % (content, '## %s' % (branch))
-                    content = '%s%s\n' % (content, '```')
-                    content = '%s%s\n' % (content, 'ODATA_DEBUG:%s.tree:%s' % (test['result'], branch))
-                    content = '%s%s\n\n' % (content, '```')
-
-            with open(target_template_filename, 'w', encoding='utf-8') as file_handler:
-                file_handler.write(content)
-
-        except BaseException:
-            print('Template file write failed:%s' % (target_template_filename))
-            print(traceback.format_exc())
-            return False
-
-        print('Template created: %s' % (target_template_filename))
-
-    return True
-
-
-def generate_redfish_tests(tests, results_directory):
-    redfish_templates_directory = os.path.join(
-        get_templates_directory(),
-        'redfish'
-    )
-    redfish_test_templates_directory = os.path.join(
-        redfish_templates_directory,
-        'tests'
-    )
-
-    for test in tests:
-        test_template_directory_name = os.path.join(
-            get_templates_directory(),
-            'redfish-tests-%s-%s' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        )
-        if os.path.isdir(test_template_directory_name):
-            print('Test template not expected to exist: %s' % (test_template_directory_name))
-            return False
-
-        os.mkdir(test_template_directory_name)
-
-        test_doc_directory_name = os.path.join(
-            get_doc_directory(),
-            'redfish-tests-%s-%s' % (
-                test['vendor'].lower(),
-                test['model'].lower()
-            )
-        )
-
-        if os.path.isdir(test_doc_directory_name):
-            print('Test doc directory not expected to exist: %s' % (test_doc_directory_name))
-            return False
-
-        os.mkdir(test_doc_directory_name)
-
-        for template_name in ['Resource', 'Oem', 'Action', 'Identity', 'Power', 'Thermal']:
-            if not generate_redfish_test_template(redfish_test_templates_directory, test_template_directory_name, template_name, test, results_directory):
-                print('Generating test %s template %s failed' % (
-                    test['model'],
-                    template_name
-                ))
-                return False
-
-        if not generate_redfish_resource_template(test_template_directory_name, test, results_directory):
-            print('Generating test %s resources failed' % (
-                test['model']
-            ))
-            return False
-
-    return True
-
-
-def generate_redfish_test_templates(results_directory):
-    tests = get_redfish_test_endpoints()
-    if tests is None:
-        return False
-
-    if not generate_redfish_readme_tests(tests):
-        return False
-
-    if not generate_redfish_tests(tests, results_directory):
-        return False
-
-    return True
-
-
-def generate_docs_from_templates(results_directory, template_names, include_redfish=False, replace={}):
+def generate_docs_from_templates(results_directory, template_names, replace={}, allow_failed=False):
     results_directory = os.path.join(
         file_helper.get_main_dir(),
         results_directory
     )
-    results = get_results(results_directory)
+    results = get_results(results_directory, allow_failed=allow_failed)
     if results is None:
         return False
 
     selected_templates = get_template_names(
-        template_names,
-        include_redfish=include_redfish
+        template_names
     )
+    
     selected_templates_count = get_templates_count(
         selected_templates
     )
@@ -749,15 +380,32 @@ def generate_docs_from_templates(results_directory, template_names, include_redf
             print('- %s' % (template_info['filename']))
 
             content = replace_keywords(template_info['content'], results_directory)
-            filename = os.path.join(
-                os.path.join(
-                    get_doc_directory(),
-                    template_group
-                ),
-                os.path.basename(template_info['filename'])
-            )
             for key in replace:
                 content = content.replace(key, replace[key])
+
+            if template_info['subdir'] is None:
+                filename = os.path.join(
+                    os.path.join(
+                        get_doc_directory(),
+                        template_group
+                    ),
+                    os.path.basename(template_info['filename'])
+                )
+            else:
+                subdir = os.path.join(
+                    os.path.join(
+                        get_doc_directory(),
+                        template_group
+                    ),
+                    template_info['subdir']
+                )
+                if not os.path.isdir(subdir):
+                    os.makedirs(subdir, exist_ok=True)
+
+                filename = os.path.join(
+                    subdir,
+                    os.path.basename(template_info['filename'])
+                )
 
             with open(filename, 'w', encoding='utf-8') as file_handler:
                 file_handler.write(str(content))
@@ -794,18 +442,8 @@ def generate_docs_from_templates(results_directory, template_names, include_redf
     return True
 
 
-def generate_docs(results_directory, template_names=[], include_redfish=False, redfish_tests=False, replace={}):
-    if include_redfish:
-        clean_redfish_test_templates()
-        clean_redfish_test_doc()
-        if redfish_tests:
-            if not generate_redfish_test_templates(results_directory):
-                print('Redfish tests templates generation failed...')
-                return False
-        else:
-            generate_redfish_readme_no_tests()
-
-    if not generate_docs_from_templates(results_directory, template_names, include_redfish=include_redfish, replace=replace):
+def generate_docs(results_directory, template_names=[], replace={}, allow_failed=False):
+    if not generate_docs_from_templates(results_directory, template_names, replace=replace, allow_failed=allow_failed):
         print('Not all docs generated from templates...')
         return False
 

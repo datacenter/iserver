@@ -21,7 +21,6 @@ class InterfaceCloudSecEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/cloudsec-[lo0]"
         info['interfaceId'] = None
         if '/cloudsec-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/cloudsec-[')[1].split(']')[0]

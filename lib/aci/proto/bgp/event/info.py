@@ -14,7 +14,6 @@ class ProtocolBgpEventInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # topology/pod-1/node-2205/sys/bgp/inst
         info['podId'] = info['affected'].split('/')[1].split('-')[1]
         info['nodeId'] = info['affected'].split('/')[2].split('-')[1]
         info['pod_node_name'] = 'pod-%s/%s' % (
@@ -23,7 +22,8 @@ class ProtocolBgpEventInfo():
                 info['nodeId']
             )
         )
-
+        info['pod_node_nameT'] = info['pod_node_name'].split('/')
+        
         info['domainName'] = None
         info['nei'] = None
 

@@ -37,7 +37,6 @@ class K8sNodeNetworkStateApi():
                 True,
                 int(time.time() * 1000) - start_time
             )
-            print(traceback.format_exc())
             return None
 
         self.log.k8s_mo(

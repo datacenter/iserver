@@ -15,11 +15,11 @@ class K8sVirtualMachineInstanceTypeOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Instance Type'
         ]
 
         self.my_output.my_table(

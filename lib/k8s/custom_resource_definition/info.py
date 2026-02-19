@@ -12,6 +12,11 @@ class K8sCustomResourceDefinitionInfo():
         info = {}
         info['__Output'] = {}
 
+        metadata_info = self.get_metadata_info(
+            custom_resource_definition_mo
+        )
+        info.update(metadata_info)
+
         return info
 
     def get_custom_resource_definitions_info(self, cache_enabled=True):
@@ -46,6 +51,11 @@ class K8sCustomResourceDefinitionInfo():
 
             key_found = False
 
+            if key == 'name':
+                key_found = True
+                if not filter_helper.match_string(value, custom_resource_definition_info['name']):
+                    return False
+                
             if not key_found:
                 self.log.error(
                     'match_custom_resource_definition',
@@ -76,3 +86,27 @@ class K8sCustomResourceDefinitionInfo():
             )
 
         return custom_resource_definitions
+
+    def get_custom_resource_definition(self, name, return_mo=False, cache_enabled=True):
+        custom_resource_definition_filter = []
+        custom_resource_definition_filter.append('name:%s' % (name))
+
+        custom_resource_definitions = self.get_custom_resource_definitions(
+            object_filter=custom_resource_definition_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+
+        if custom_resource_definitions is None or len(custom_resource_definitions) != 1:
+            return None
+
+        return custom_resource_definitions[0]
+
+    def is_custom_resource_definition(self, name, cache_enabled=True):
+        custom_resource_definition = self.get_custom_resource_definition(
+            name,
+            cache_enabled=cache_enabled
+        )
+        if custom_resource_definition is None:
+            return False
+        return True

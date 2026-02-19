@@ -14,9 +14,8 @@ class ProtocolBgpFaultInfo():
                 info['dn'].split('/')[2].split('-')[1]
             )
         )
-
-        # "dn": "topology/pod-1/node-2208/sys/bgp/inst/dom-vEPC_demo:ACC_VRF/peer-[<ip>/32]/ent-[<ip>]/fault-F0299"
-
+        info['pod_node_nameT'] = info['pod_node_name'].split('/')
+        
         info['domainName'] = None
         info['nei'] = None
 

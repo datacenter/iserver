@@ -15,11 +15,11 @@ class K8sVirtualMachineInstancePresetOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Instance Preset'
         ]
 
         self.my_output.my_table(

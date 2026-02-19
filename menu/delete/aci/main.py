@@ -1,6 +1,7 @@
 import click
 
 from menu.delete.aci.controller import delete_aci_controller_command
+from menu.delete.aci.configuration import delete_aci_configuration
 
 
 class Failure(Exception):
@@ -14,3 +15,4 @@ def delete_aci_menu(ctx):
 
 
 delete_aci_menu.add_command(delete_aci_controller_command)
+delete_aci_menu.add_command(delete_aci_configuration)

@@ -6,21 +6,6 @@ class PolicyInterfaceStormControlAttachmentInfo():
         self.policy_interface_storm_control_attachment = None
 
     def get_policy_interface_storm_control_attachment_info(self, managed_object):
-        # "childAction": "",
-        # "dn": "topology/pod-1/node-2101/sys/phys-[eth1/33]/rsstormctrlIfPolCons",
-        # "forceResolve": "yes",
-        # "lcOwn": "local",
-        # "modTs": "2023-03-02T20:36:22.878+02:00",
-        # "parentSKey": "eth1/33",
-        # "rType": "mo",
-        # "selectorType": "none",
-        # "sourceRelStateQual": "none",
-        # "state": "formed",
-        # "stateQual": "none",
-        # "status": "",
-        # "tCl": "stormctrlIfPol",
-        # "tDn": "uni/infra/storm_controlIfP-default",
-        # "tType": "mo"
         info = {}
         info['podId'] = managed_object['dn'].split('/')[1].split('-')[1]
         info['nodeId'] = managed_object['dn'].split('/')[2].split('-')[1]

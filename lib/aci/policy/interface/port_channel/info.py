@@ -7,6 +7,9 @@ class PolicyInterfacePortChannelInfo():
     def __init__(self):
         self.policy_interface_port_channel = None
 
+    def init_policy_interface_port_channel(self):
+        self.policy_interface_port_channel = None
+
     def get_policy_interface_port_channel_reln_info(self, managed_object):
         info = {}
         info['class'] = 'lacpLagPol'
@@ -22,26 +25,6 @@ class PolicyInterfacePortChannelInfo():
         return info
 
     def get_policy_interface_port_channel_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "creator": "USER",
-        # "ctrl": "fast-sel-hot-stdby,graceful-conv,susp-individual",
-        # "descr": "",
-        # "dn": "uni/infra/lacplagp-LACP-passive",
-        # "extMngdBy": "",
-        # "lcOwn": "local",
-        # "maxLinks": "16",
-        # "minLinks": "1",
-        # "modTs": "2020-12-22T18:45:43.441+01:00",
-        # "mode": "passive",
-        # "monPolDn": "uni/fabric/monfab-default",
-        # "name": "LACP-passive",
-        # "nameAlias": "",
-        # "ownerKey": "",
-        # "ownerTag": "",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:"
         keys = [
             'annotation',
             'ctrl',
@@ -97,11 +80,11 @@ class PolicyInterfacePortChannelInfo():
 
         return info
 
-    def get_policies_interface_port_channel_info(self):
+    def get_policies_interface_port_channel_info(self, cache_enabled=True):
         if self.policy_interface_port_channel is not None:
             return self.policy_interface_port_channel
 
-        managed_objects = self.get_policy_interface_port_channel_mo()
+        managed_objects = self.get_policy_interface_port_channel_mo(cache_enabled=cache_enabled)
         if managed_objects is not None:
             self.policy_interface_port_channel = []
             for managed_object in managed_objects:
@@ -172,8 +155,12 @@ class PolicyInterfacePortChannelInfo():
 
         return True
 
-    def get_policy_interface_port_channel(self, policy_filter=None, reln_info=True, attachment_info=False):
-        all_policies = self.get_policies_interface_port_channel_info()
+    def get_policies_interface_port_channel(self, policy_filter=None, reln_info=True, attachment_info=False, cache_enabled=True):
+        if not cache_enabled:
+            self.init_policy_interface_port_channel()
+            self.init_policy_interface_port_channel_mo()
+
+        all_policies = self.get_policies_interface_port_channel_info(cache_enabled=cache_enabled)
         if all_policies is None:
             return None
 
@@ -232,3 +219,30 @@ class PolicyInterfacePortChannelInfo():
         )
 
         return policy
+
+    def get_policy_interface_port_channel(self, policy_name, reln_info=True, attachment_info=False, cache_enabled=True):
+        policy_filter = []
+        policy_filter.append(
+            'name:%s' % (policy_name)
+        )
+        policies = self.get_policies_interface_port_channel(
+            policy_filter=policy_filter,
+            reln_info=reln_info,
+            attachment_info=attachment_info,
+            cache_enabled=cache_enabled
+        )
+        if policies is None:
+            return None
+
+        if len(policies) == 0:
+            return None
+
+        if len(policies) > 1:
+            return None
+
+        return policies[0]
+
+    def is_policy_interface_port_channel(self, policy_name, cache_enabled=True):
+        if self.get_policy_interface_port_channel(policy_name, cache_enabled=cache_enabled) is None:
+            return False
+        return True

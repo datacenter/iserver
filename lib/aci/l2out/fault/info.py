@@ -21,7 +21,6 @@ class L2OutFaultInfo():
         if not managed_object['delegated']:
             if 'affected' in info:
                 if 'uni/tn-' in info['affected']:
-                    # uni/tn-k8s/l2out-bmk8s_2_BD
                     info['tenantName'] = info['affected'].split('uni/tn-')[1].split('/')[0]
 
                 if '/l2out-' in info['affected']:
@@ -29,7 +28,6 @@ class L2OutFaultInfo():
 
         if info['tenantName'] is None:
             if 'uni/tn-' in info['dn']:
-                # uni/tn-k8s/l2out-bmk8s_2_BD
                 info['tenantName'] = info['dn'].split('uni/tn-')[1].split('/')[0]
 
             if '/l2out-' in info['dn']:

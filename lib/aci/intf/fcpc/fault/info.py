@@ -22,7 +22,6 @@ class InterfaceFcPcFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/fcpc-[lo0]"
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfaceFcPcFaultInfo():
                 if '/fcpc-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/fcpc-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/inst-overlay-1/fcpc-[lo0]"
         if info['interfaceId'] is None:
             if '/fcpc-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/fcpc-[')[1].split(']')[0]

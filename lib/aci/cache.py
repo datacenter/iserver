@@ -9,7 +9,7 @@ from lib.aci import settings
 
 
 class Cache():
-    def __init__(self, apic_name, no_cache=False):
+    def __init__(self, apic_name, requested_ttl=-1):
         if apic_name is None:
             self.cache_enabled = False
             self.cache_write_enabled = False
@@ -28,9 +28,9 @@ class Cache():
         if not self.apic_online_mode:
             self.cache_enabled = True
             self.cache_write_enabled = False
+            self.ttl = 0
             self.cache_settings = settings_handler.get_apic_offline_cache_settings()
-            if self.cache_enabled:
-                self.import_logs_to_cache()
+            self.import_logs_to_cache()
             return
 
         self.cache_settings = settings_handler.get_apic_cache_settings(
@@ -38,13 +38,23 @@ class Cache():
         )
         self.cache_enabled = self.cache_settings['enabled']
         self.cache_write_enabled = True
-        if no_cache:
-            self.cache_enabled = False
 
-        if self.cache_enabled:
-            self.import_logs_to_cache()
+        if requested_ttl >= 0:
+            self.cache_enabled = True
+            self.ttl = requested_ttl
+
+        if requested_ttl < 0:
+            if self.cache_enabled:
+                self.ttl = self.cache_settings['ttl']
+            else:
+                self.ttl = -1
+
+        self.import_logs_to_cache()
 
     def import_logs_to_cache(self):
+        if not self.cache_enabled:
+            return
+
         logs_directory = os.path.join(
             self.cache_directory,
             'log'
@@ -134,18 +144,38 @@ class Cache():
         except BaseException:
             return None
 
-        ttl = self.get_object_cache_ttl(object_name)
+        cache_hit = False
+        effective_ttl = 0
         age = int(time.time()) - content['timestamp']
-        if ttl > 0:
-            if age > ttl:
-                return None
+        if self.ttl == 0:
+            cache_hit = True
+            effective_ttl = self.ttl
+
+        if self.ttl > 0:
+            ttl = self.get_object_cache_ttl(object_name)
+            if age <= ttl:
+                cache_hit = True
+                effective_ttl = self.ttl
+
+        if self.ttl < 0:
+            ttl = self.get_object_cache_ttl(object_name)
+            if ttl == 0:
+                cache_hit = True
+                effective_ttl = ttl
+
+            if ttl > 0 and age <= ttl:
+                cache_hit = True
+                effective_ttl = ttl
+
+        if not cache_hit:
+            return None
 
         self.log.cache_hit(
             'aci',
             self.apic_name,
             object_name,
             filename,
-            ttl,
+            effective_ttl,
             age
         )
 

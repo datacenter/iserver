@@ -192,19 +192,19 @@ class ChassisExtraAttributes():
             )
 
         if critical_count != self.chassis_info['AlarmSummary']['Critical']:
-            self.log.error(
+            self.log_handler.error(
                 'add_alarm_info',
                 'Critical alarms do not match count: %s' % (self.chassis_info['Moid'])
             )
 
         if warning_count != self.chassis_info['AlarmSummary']['Warning']:
-            self.log.error(
+            self.log_handler.error(
                 'add_alarm_info',
                 'Warning alarms do not match count: %s' % (self.chassis_info['Moid'])
             )
 
         if info_count != self.chassis_info['AlarmSummary']['Info']:
-            self.log.error(
+            self.log_handler.error(
                 'add_alarm_info',
                 'Info alarms do not match count: %s' % (self.chassis_info['Moid'])
             )

@@ -15,11 +15,11 @@ class K8sVirtualMachineExportOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Export'
         ]
 
         self.my_output.my_table(

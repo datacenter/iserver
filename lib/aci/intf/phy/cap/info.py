@@ -15,7 +15,6 @@ class InterfacePhyCapInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "dn": "topology/pod-1/node-205/sys/phys-[eth1/33]/phys/portcap"
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = None

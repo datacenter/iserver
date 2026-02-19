@@ -6,46 +6,6 @@ class PolicyGroupAccessInterfaceVpcNodesInfo():
         self.policy_group_access_interface_vpc_nodes = None
 
     def get_policy_group_access_interface_vpc_nodes_info(self, managed_object):
-        # {
-        #     "annotation": "orchestrator:terraform",
-        #     "childAction": "",
-        #     "descr": "k8s ESX72 vPC",
-        #     "dn": "uni/infra/funcprof/accbundle-k8s_esx72_PolGrp",
-        #     "extMngdBy": "",
-        #     "lagT": "node",
-        #     "lcOwn": "local",
-        #     "modTs": "2022-12-12T20:45:32.634+01:00",
-        #     "monPolDn": "uni/fabric/monfab-default",
-        #     "name": "k8s_esx72_PolGrp",
-        #     "nameAlias": "kali",
-        #     "ownerKey": "",
-        #     "ownerTag": "",
-        #     "status": "",
-        #     "uid": "15374",
-        #     "userdom": ":all:common:",
-        #     "pconsNodeDeployCtx": [
-        #         {
-        #             "childAction": "deleteNonPresent",
-        #             "count": "0",
-        #             "deployStatus": "deployed",
-        #             "lcOwn": "local",
-        #             "modTs": "never",
-        #             "nodeId": "2208",
-        #             "rn": "nctx-2208",
-        #             "status": ""
-        #         },
-        #         {
-        #             "childAction": "deleteNonPresent",
-        #             "count": "0",
-        #             "deployStatus": "deployed",
-        #             "lcOwn": "local",
-        #             "modTs": "never",
-        #             "nodeId": "2207",
-        #             "rn": "nctx-2207",
-        #             "status": ""
-        #         }
-        #     ]
-        # }
         info = {}
         info['__Output'] = {}
 

@@ -1,4 +1,7 @@
+import yaml
+import time
 from lib import filter_helper
+from menu.common import get_confirmation
 
 
 class K8sConfigMapInfo():
@@ -96,7 +99,9 @@ class K8sConfigMapInfo():
         return True
 
     def get_config_maps(self, object_filter=None, pod_info=False, return_mo=False, cache_enabled=True):
-        all_config_maps = self.get_config_maps_info(cache_enabled=cache_enabled)
+        all_config_maps = self.get_config_maps_info(
+            cache_enabled=cache_enabled
+        )
         if all_config_maps is None:
             return None
 
@@ -146,16 +151,33 @@ class K8sConfigMapInfo():
 
         return config_maps
 
-    def get_config_map(self, namespace, name):
+    def get_config_map(self, namespace, name, return_mo=False, cache_enabled=True, optimize=False):
+        if optimize:
+            if not cache_enabled or cache_enabled and self.config_map is None:
+                config_map_mo = self.get_config_map_namespace_name_mo(namespace, name)
+                return self.get_config_map_info(config_map_mo)
+                    
         config_map_filter = []
         config_map_filter.append('namespace:%s' % (namespace))
         config_map_filter.append('name:%s' % (name))
 
         config_maps = self.get_config_maps(
-            object_filter=config_map_filter
+            object_filter=config_map_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
         )
 
         if config_maps is None or len(config_maps) != 1:
             return None
 
         return config_maps[0]
+
+    def is_config_map(self, namespace, name, cache_enabled=True):
+        config_map = self.get_config_map(
+            namespace,
+            name,
+            cache_enabled=cache_enabled
+        )
+        if config_map is None:
+            return False
+        return True

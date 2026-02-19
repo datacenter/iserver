@@ -2,62 +2,21 @@ class K8sVirtualMachineInstanceOutput():
     def __init__(self):
         pass
 
-    def print_virtual_machine_instances(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Virtual Machine Instance [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in info:
-            if item['node_name'] is None:
-                item['node_name'] = '--'
-
-        order = [
-            'namespace_name',
-            'vmTick',
-            'node_name',
-            'cores',
-            'memory',
-            'disk.info',
-            'disk.pvc_namespace_name',
-            'interface.info',
-            'serviceCount',
-            'phaseT',
-            'age'
-        ]
-
-        headers = [
-            'VMI',
-            'VM',
-            'Node',
-            'CPU',
-            'Mem',
-            'Disk',
-            'PVC',
-            'Interface',
-            'Svc',
-            'State',
-            'Age'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['disk', 'interface', 'labelT']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+    def print_virtual_machine_instances(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['VM Instance', 'namespace_nameT'],
+                ['Node', 'node_name'],
+                ['CPU', 'cores'],
+                ['Mem', 'memory'],
+                ['Disk', 'disk.info'],
+                ['PVC', 'disk.pvc_name'],
+                ['Interface', 'interface.info'],
+                ['Svc', 'serviceCount'],
+                ['State', 'phaseT'],
+                ['Age', 'age']
+            ]
         )
 
     def print_virtual_machine_instances_metadata(self, info, title=False):

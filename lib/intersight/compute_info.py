@@ -1,4 +1,5 @@
 import time
+import random
 
 import concurrent.futures
 from concurrent.futures import ProcessPoolExecutor
@@ -175,3 +176,204 @@ class ComputeInfo(ComputeCache, ComputeFilter, ComputesWorkflow):
         )
 
         return servers_info
+
+    def anonymize_server_info(self, server_info):
+        server_info['Name'] = 'Server%s' % (random.randint(100, 999))
+        server_info['Moid'] = 'Moid-value'
+
+        new_tags = []
+        for tag in server_info['Tags']:
+            if tag['Key'] == 'Intersight.LicenseTier':
+                new_tags.append(tag)
+        server_info['Tags'] = new_tags
+
+        server_info['Serial'] = 'SN-%s' % (random.randint(10, 99))
+        server_info['ManagementIp'] = '10.%s.%s.%s' % (
+            random.randint(1, 254),
+            random.randint(1, 254),
+            random.randint(1, 254)
+        )
+
+        if 'AdaptersInfo' in server_info:
+            for item in server_info['AdaptersInfo']:
+                item['BaseMacAddress'] = 'aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+                item['PartNumber'] = 'PN-%s' % (random.randint(10, 99))
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'AlarmInfo' in server_info:
+            for item in server_info['AlarmInfo']:
+                item['Description'] = '--- Anonymized ---'
+                item['AffectedName'] = '--- Anonymized ---'
+
+        if 'CimcInfo' in server_info:
+            for item in server_info['CimcInfo']:
+                item['IpAddress'] = '10.1.1.%s' % (random.randint(1, 253))
+                item['Ipv4Address'] = item['IpAddress']
+                item['HostName'] = 'hostname'
+                item['Gateway'] = '10.1.1.254'
+                item['Ipv4Gateway'] = item['Gateway']
+                item['Mask'] = '255.255.255.0'
+                item['Ipv4Mask'] = item['Mask']
+                item['MacAddress'] = 'aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+
+        if 'ConnectorInfo' in server_info:
+            server_info['ConnectorInfo']['ClaimedByUserName'] = 'user@domain.com'
+            server_info['ConnectorInfo']['ConnectorVersion'] = 'Version-Number'
+            server_info['ConnectorInfo']['DeviceExternalIpAddress'] = '66.%s.%s.%s' % (
+                random.randint(1, 254),
+                random.randint(1, 254),
+                random.randint(1, 254)
+            )
+            server_info['ConnectorInfo']['ClaimedTime'] = '2024-01-01T00:00:00.000Z'
+            server_info['ConnectorInfo']['ConnectionStatusLastChangeTime'] = '2025-01-01T00:00:00.000Z'
+
+        if 'ContractInfo' in server_info:
+            server_info['ContractInfo']['PurchaseOrderNumber'] = 'PO%s' % (random.randint(1, 254))
+            server_info['ContractInfo']['SalesOrderNumber'] = 'SO%s' % (random.randint(1, 254))
+            server_info['ContractInfo']['ContractUpdatedTime'] = '2025-01-01T00:00:00.000Z'
+
+        if 'CpuInfo' in server_info:
+            for item in server_info['CpuInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'ExtEthInfo' in server_info:
+            for item in server_info['ExtEthInfo']:
+                item['MacAddress'] = 'aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+
+        if 'FanInfo' in server_info:
+            for item in server_info['FanInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+                item['PartNumber'] = 'PN-%s' % (random.randint(10, 99))
+
+        if 'FirmwarewComponents' in server_info:
+            for item in server_info['FirmwarewComponents']:
+                item['PackageVersion'] = '1.0(1a)'
+                item['Version'] = '1.0(1a)'
+
+        if 'FirmwareVersion' in server_info:
+            server_info['FirmwareVersion'] = '1.0(1a)'
+
+        if 'HclInfo' in server_info:
+            server_info['HclInfo']['HclFirmwareVersion'] = '1.0(1a)'
+            server_info['HclInfo']['HclOsVersion'] = '1.0(1a)'
+            server_info['HclInfo']['HclOsVendor'] = 'OS Vendor'
+            if 'Details' in server_info['HclInfo']:
+                for item in server_info['HclInfo']['Details']:
+                    item['HclCimcVersion'] = '1.0(1a)'
+                    item['HclDriverVersion'] = '1.0(1a)'
+                    item['HclDriverName'] = 'driver-name'
+                    item['HclFirmwareVersion'] = '1.0(1a)'
+
+        if 'HostEthInfo' in server_info:
+            for item in server_info['HostEthInfo']:
+                item['Name'] = 'Name-%s' % (random.randint(10, 99))
+                item['MacAddress'] = 'aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+
+        if 'HostFcInfo' in server_info:
+            for item in server_info['HostFcInfo']:
+                item['Wwnn'] = '10:10:aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+                item['Wwpn'] = '20:20:aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+
+        if 'Inventory' in server_info:
+            for item in server_info['Inventory']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+                item['Model'] = '--- Anonymized ---'
+                item['ServerSerial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'KvmInfo' in server_info:
+            server_info['KvmInfo']['KvmVendor'] = 'Vendor'
+            if 'KvmIpAddresses' in server_info['KvmInfo']:
+                for item in server_info['KvmInfo']['KvmIpAddresses']:
+                    item['Address'] = '10.1.1.%s' % (random.randint(1, 253))
+                    item['DefaultGateway'] = '10.1.1.254'
+                    item['Subnet'] = '255.255.255.0'
+
+        if 'MacAddressInfo' in server_info:
+            for item in server_info['MacAddressInfo']:
+                item['MacAddress'] = 'aa:bb:%s:%s:%s:%s' % (
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99),
+                    random.randint(10, 99)
+                )
+
+        if 'MemoryInfo' in server_info:
+            for item in server_info['MemoryInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+                item['Model'] = 'Model-%s' % (random.randint(10, 99))
+
+        if 'PciDevicesInfo' in server_info:
+            for item in server_info['PciDevicesInfo']:
+                item['FirmwareVersion'] = '1.0(1a)'
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'PhysicalDiskInfo' in server_info:
+            for item in server_info['PhysicalDiskInfo']:
+                item['PartNumber'] = 'PN-%s' % (random.randint(10, 99))
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+                item['Pid'] = 'PID-%s' % (random.randint(10, 99))
+                item['Model'] = 'Model-XYZ'
+                item['DriveFirmware'] = '1.0(1a)'
+
+        if 'Power' in server_info:
+            if 'Data' in server_info['Power']:
+                if 'PowerSupply' in server_info['Power']['Data']:
+                    for item in server_info['Power']['Data']['PowerSupply']:
+                        item['SerialNumber'] = 'SN-%s' % (random.randint(10, 99))
+                        item['PartNumber'] = 'PN-%s' % (random.randint(10, 99))
+                        item['PartSparePartNumberNumber'] = 'SPN-%s' % (random.randint(10, 99))
+                        item['FirmwareVersion'] = 'Version-%s' % (random.randint(10, 99))
+
+        if 'ProfileInfo' in server_info and server_info['ProfileInfo'] is not None:
+            server_info['ProfileInfo']['Name'] = 'profile'
+            server_info['ProfileInfo']['ModTime'] = '2025-01-01T00:00:00.000Z'
+            if 'Policies' in server_info['ProfileInfo']:
+                for item in server_info['ProfileInfo']['Policies']:
+                    item['Name'] = 'Name-%s' % (random.randint(10, 99))
+                    item['ModTime'] = '2025-01-01T00:00:00.000Z'
+
+        if 'PsuInfo' in server_info:
+            for item in server_info['PsuInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'StorageControllerInfo' in server_info:
+            for item in server_info['StorageControllerInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+
+        if 'TpmInfo' in server_info:
+            for item in server_info['TpmInfo']:
+                item['Serial'] = 'SN-%s' % (random.randint(10, 99))
+                item['FirmwareVersion'] = 'Version-%s' % (random.randint(10, 99))
+                item['Version'] = 'Version-%s' % (random.randint(10, 99))
+
+        return server_info

@@ -15,11 +15,11 @@ class K8sVirtualMachineInstanceReplicaSetOutput():
             return
 
         order = [
-            'tbd'
+            'name'
         ]
 
         headers = [
-            'tbd'
+            'Virtual Machine Instance Replica Set'
         ]
 
         self.my_output.my_table(

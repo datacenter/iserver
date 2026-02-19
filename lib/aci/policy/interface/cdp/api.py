@@ -2,20 +2,24 @@ class PolicyInterfaceCdpApi():
     def __init__(self):
         self.policy_interface_cdp_mo = None
 
-    def get_policy_interface_cdp_mo(self):
+    def init_policy_interface_cdp_mo(self):
+        self.policy_interface_cdp_mo = None
+
+    def get_policy_interface_cdp_mo(self, cache_enabled=True):
         if self.policy_interface_cdp_mo is not None:
             return self.policy_interface_cdp_mo
 
-        cache = self.get_object_cache(
-            'cdpIfPol'
-        )
-        if cache is not None:
-            self.policy_interface_cdp_mo = cache
-            self.log.apic_mo(
-                'cdpIfPol',
-                self.policy_interface_cdp_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'cdpIfPol'
             )
-            return self.policy_interface_cdp_mo
+            if cache is not None:
+                self.policy_interface_cdp_mo = cache
+                self.log.apic_mo(
+                    'cdpIfPol',
+                    self.policy_interface_cdp_mo
+                )
+                return self.policy_interface_cdp_mo
 
         query = 'rsp-subtree=children&rsp-subtree-class=relnFrom'
         managed_objects = self.get_class(

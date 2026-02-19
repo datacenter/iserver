@@ -13,7 +13,6 @@ class InterfacePolicyProfileInfo():
                 selector_info = {}
                 selector_info['profile'] = selector_mo['dn'].split('/')[2][12:]
                 selector_info['name'] = selector_mo['name']
-                # dn:  "uni/infra/accportprof-ESX-R3DC-DVS_IntProf/hports-ESX-R3DC_ParentSel-typ-range"
                 selector_info['dn'] = selector_mo['dn']
                 selector_info['dn_name'] = selector_mo['dn'].split('/')[-1]
                 selector_info['block'] = []
@@ -26,29 +25,25 @@ class InterfacePolicyProfileInfo():
 
         if managed_object['infraRsAccBaseGrp'] is not None:
             for port_group_mo in managed_object['infraRsAccBaseGrp']:
-                # dn: "uni/infra/accportprof-ESX-R3DC-DVS_IntProf/hports-ESX-R3DC_ParentSel-typ-range/portblk-3a62d357434b3409"
                 port_group_selector_dn_name = port_group_mo['dn'].split('/')[3]
                 for selector_info in info['selectors']:
                     if selector_info['dn_name'] == port_group_selector_dn_name:
                         if port_group_mo['tCl'] == 'infraAccPortGrp':
                             selector_info['policy_group_type'] = port_group_mo['tCl']
                             selector_info['policy_group_type_name'] = 'Access'
-                            # tDn: "uni/infra/funcprof/accportgrp-ESX-R3DC-DVS_PolGrp"
                             selector_info['policy_group_name'] = port_group_mo['tDn'].split('/')[3][11:]
                             break
 
                         if port_group_mo['tCl'] == 'infraAccBndlGrp':
                             selector_info['policy_group_type'] = port_group_mo['tCl']
                             selector_info['policy_group_type_name'] = 'PC/VPC'
-                            # "tDn": "uni/infra/funcprof/accbundle-UCSB1-FI-A_PolGrp"
                             selector_info['policy_group_name'] = port_group_mo['tDn'].split('/')[3][10:]
                             break
 
                         if port_group_mo['tCl'] == 'infraBrkoutPortGrp':
                             selector_info['policy_group_type'] = port_group_mo['tCl']
                             selector_info['policy_group_type_name'] = 'Breakout'
-                            # 'dn': 'uni/infra/accportprof-k8s_CL2207_IntProf/hports-k8s_CL2207_brk_25g_4x_ParentIntSel-typ-range/rsaccBaseGrp'
-                            selector_info['policy_group_name'] = port_group_mo['tDn'].split('/')[3][12:]
+                            selector_info['policy_group_name'] = port_group_mo['tDn'].split('/')[3][14:]
                             break
 
                         self.log.error(
@@ -58,7 +53,6 @@ class InterfacePolicyProfileInfo():
 
         if managed_object['infraPortBlk'] is not None:
             for port_block_mo in managed_object['infraPortBlk']:
-                # dn: "uni/infra/accportprof-ESX-R3DC-DVS_IntProf/hports-ESX-R3DC_ParentSel-typ-range/portblk-4507c5cf36080774"
                 port_block_selector_dn_name = port_block_mo['dn'].split('/')[3]
                 for selector_info in info['selectors']:
                     if selector_info['dn_name'] == port_block_selector_dn_name:
@@ -75,7 +69,6 @@ class InterfacePolicyProfileInfo():
 
         if managed_object['infraSubPortBlk'] is not None:
             for port_block_mo in managed_object['infraSubPortBlk']:
-                # dn: "uni/infra/accportprof-ESX-R3DC-DVS_IntProf/hports-ESX-R3DC_ParentSel-typ-range/portblk-4507c5cf36080774"
                 port_block_selector_dn_name = port_block_mo['dn'].split('/')[3]
                 for selector_info in info['selectors']:
                     if selector_info['dn_name'] == port_block_selector_dn_name:

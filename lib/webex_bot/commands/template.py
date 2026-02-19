@@ -18,7 +18,7 @@ class GetXxxCommand(Command):
         self.run_id = 'bot.%s' % (str(uuid.uuid4()).rsplit('-', maxsplit=1)[-1])
         self.log_handler = log_helper.Log(self.run_id)
         self.log_handler.initialize()
-        self.link = 'https://wwwin-github.cisco.com/emear-telcocloud/iserver'
+        self.link = 'tbd'
         logger.info('Command initialized: get xxx [%s]', self.run_id[4:])
 
     def help(self):

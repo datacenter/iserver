@@ -95,36 +95,3 @@ class OcpClusterOutput(
             allow_order_subkeys=True,
             table=True
         )
-
-    def print_ocp_clusters_iwo(self, clusters):
-        order = [
-            'name',
-            'installation',
-            'release',
-            'installedTick',
-            'connectedTick',
-            'hostname',
-            'ips'
-        ]
-
-        headers = [
-            'Name',
-            'Type',
-            'Release',
-            'Installed',
-            'Connected',
-            'Hostnames',
-            'IP Addresses'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                clusters,
-                order,
-                ['hostname', 'ips']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            table=True
-        )

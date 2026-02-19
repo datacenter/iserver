@@ -109,7 +109,7 @@ class LacpInfo():
 
         return True
 
-    def get_lacps(self, object_filter=None, local_cache_enabled=True, cache_enabled=True):
+    def get_lacps(self, object_filter=None, server_macs=None, local_cache_enabled=True, cache_enabled=True):
         all_lacps = self.get_lacps_info(
             local_cache_enabled=local_cache_enabled,
             cache_enabled=cache_enabled
@@ -126,6 +126,19 @@ class LacpInfo():
         for lacp_info in all_lacps:
             if not self.match_lacp(lacp_info, object_filter):
                 continue
+
+            if server_macs is not None:
+                keys = ['ServerName', 'ServerMoid', 'AdapterModel', 'InterfaceDn']
+                for port_info in lacp_info['port']:
+                    for key in keys:
+                        port_info[key] = None
+
+                for port_info in lacp_info['port']:
+                    for server_mac in server_macs:
+                        if ip_helper.is_mac_equal(port_info['partner_mac'], server_mac['MacAddress']):
+                            for key in keys:
+                                port_info[key] = server_mac[key]
+                            break
 
             lacps.append(
                 lacp_info

@@ -141,8 +141,7 @@ def create_osp_subnet_command(
                 raise ErrorExit
 
         if user_input_mode or len(dhcp) == 0:
-            ctx.my_output.default('DHCP enabled')
-            if common.get_confirmation(title=False):
+            if common.get_confirmation(title='DHCP enabled'):
                 dhcp = 'enabled'
             else:
                 dhcp = 'disabled'

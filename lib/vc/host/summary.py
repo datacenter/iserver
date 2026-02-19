@@ -1,4 +1,5 @@
 import time
+from lib.vc import helper as vc_helper
 
 
 class VcHostSummary():
@@ -66,7 +67,7 @@ class VcHostSummary():
 
         info['cpuCapacity'] = info['cpuMhz'] * info['numCpuCores']
 
-        info['memoryUnit'] = self.convert_memory(
+        info['memoryUnit'] = vc_helper.convert_memory(
             info['memorySize']
         )
 
@@ -96,7 +97,7 @@ class VcHostSummary():
         if info['stats']['overallCpuUsage'] is None:
             info['stats']['overallCpuUsagePct'] = '0%'
         else:
-            info['stats']['overallCpuUsagePct'] = self.convert_pct(
+            info['stats']['overallCpuUsagePct'] = vc_helper.convert_pct(
                 info['stats']['overallCpuUsage'] * 100 / info['cpuCapacity'],
                 rounded=0
             )
@@ -104,7 +105,7 @@ class VcHostSummary():
         if info['stats']['overallMemoryUsage'] is None:
             info['stats']['overallMemoryUsagePct'] = '0%'
         else:
-            info['stats']['overallMemoryUsagePct'] = self.convert_pct(
+            info['stats']['overallMemoryUsagePct'] = vc_helper.convert_pct(
                 info['stats']['overallMemoryUsage'] * 1024 * 1024 * 100 / info['memorySize'],
                 rounded=0
             )

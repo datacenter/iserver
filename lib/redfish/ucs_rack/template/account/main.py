@@ -93,8 +93,8 @@ class RedfishEndpointUcsRackTemplateAccount():
 
         return info
 
-    def get_template_account_properties(self, role_info=False, include_disabled=False, cache_enabled=True):
-        all_accounts = self.get_account_mo(cache_enabled=cache_enabled)
+    def get_template_account_properties(self, role_info=False, include_disabled=False):
+        all_accounts = self.get_account_mo()
         if all_accounts is None:
             return None
 

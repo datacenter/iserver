@@ -12,7 +12,7 @@ class ImcCliFault():
             if self.fault_mo is not None:
                 return self.fault_mo
 
-            self.fault_mo = self.get_icm_cli_cache_entry(
+            self.fault_mo = self.get_imc_cli_cache_entry(
                 'fault'
             )
             if self.fault_mo is not None:
@@ -46,16 +46,11 @@ class ImcCliFault():
             if self.fault_filter_mo is not None:
                 return self.fault_filter_mo
 
-            self.fault_filter_mo = self.get_icm_cli_cache_entry(
+            self.fault_filter_mo = self.get_imc_cli_cache_entry(
                 'fault_filter'
             )
             if self.fault_filter_mo is not None:
                 return self.fault_filter_mo
-
-        # comp-7-p2b-eu-spdc-WMP24040061 /fault # show pef detail
-        # Platform Event Filter 1:
-        #     Event: Temperature Critical Assert Filter
-        #     Action: none
 
         if keep_scope:
             self.fault_filter_mo = self.show_list(
@@ -93,21 +88,11 @@ class ImcCliFault():
             if self.fault_entry_mo is not None:
                 return self.fault_entry_mo
 
-            self.fault_entry_mo = self.get_icm_cli_cache_entry(
+            self.fault_entry_mo = self.get_imc_cli_cache_entry(
                 'fault_entry'
             )
             if self.fault_entry_mo is not None:
                 return self.fault_entry_mo
-
-        # comp-7-p2b-eu-spdc-WMP24040061 /fault # show fault-entries detail
-        # Fault Engine Log:
-        #     Time: 2024-04-07T13:48:40
-        #     Severity: info
-        #     Fault DN: sys/rack-unit-1/mgmt/log-SEL-0/fault-F0462
-        #     Code: F0462
-        #     DN: sys/rack-unit-1/mgmt/log-SEL-0
-        #     Cause: log-capacity
-        #     Description: "CSCO_SEL_FULNESS: System Event log is Full: Clear the log"
 
         if keep_scope:
             self.fault_entry_mo = self.show_list(

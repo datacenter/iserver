@@ -44,7 +44,7 @@ def get_linux_hp_command(
 
     try:
         linux_output_handler = linux_output.LinuxOutput(log_id=ctx.run_id)
-        linux_handlers = validations.validate_linux_names(
+        linux_handlers = validations.get_linux_handlers(
             ctx,
             server,
             no_cache=no_cache
@@ -57,7 +57,8 @@ def get_linux_hp_command(
             threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
 
         for linux_handler in linux_handlers:
-            if not linux_handler.ssh_handler.is_ssh():
+            success, exception_name, error = linux_handler.ssh_handler.is_ssh()
+            if not success:
                 ctx.busy = False
                 ctx.my_output.error(
                     'Linux server connection failed: %s' % (linux_handler.server_display_name)

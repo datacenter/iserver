@@ -35,69 +35,11 @@ class RedfishEndpointFabricInterconnectTemplatePowerChassis():
 
         for item in data['PowerControl']:
             if item['MemberId'] == 'Chassis':
-                # "@odata.id": "/redfish/v1/Chassis/1/Power#/PowerControl/Chassis",
-                # "MemberId": "Chassis",
-                # "Name": "Chassis Power Control",
-                # "Oem": {
-                #     "Cisco": {
-                #         "@odata.type": "#CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
-                #         "PowerExtendedEnabled": false,
-                #         "PowerGridMaxWatts": 3044,
-                #         "PowerN+1MaxWatts": 3044,
-                #         "PowerN+2MaxWatts": 3044,
-                #         "PowerNotRedundantMaxWatts": 6087,
-                #         "PowerProfileMaxWatts": 8027,
-                #         "PowerProfileMinWatts": 4060,
-                #         "PowerRebalanceEnabled": true,
-                #         "PowerSaveEnabled": false
-                #     }
-                # },
-                # "PowerLimit": {
-                #     "LimitInWatts": null
-                # },
-                # "Status": {
-                #     "Health": "OK",
-                #     "State": "Enabled"
-                # }
                 for key in item['Oem']['Cisco']:
                     if key != '@odata.type':
                         properties['Data']['PowerControl'][key] = item['Oem']['Cisco'][key]
 
             if item['MemberId'].startswith('Blade'):
-                # {
-                #     "@odata.id": "/redfish/v1/Chassis/1/Power#/PowerControl/Blade8",
-                #     "MemberId": "Blade8",
-                #     "Name": "Blade 8 Power Control",
-                #     "Oem": {
-                #         "Cisco": {
-                #             "@odata.type": "#CiscoUCSExtensions.v1_0_0.CiscoUCSExtensions",
-                #             "InitialPowerLimit": {
-                #                 "LimitInWatts": 0
-                #             },
-                #             "PowerAllocationPriority": 3,
-                #             "PowerCharacteristics": {
-                #                 "MaxPowerWatts": 0,
-                #                 "MinPowerWatts": 0,
-                #                 "PowerProfileMaxWatts": 0,
-                #                 "PowerProfileMinWatts": 0
-                #             },
-                #             "PowerMetrics": {
-                #                 "AverageConsumedWatts": 0,
-                #                 "CurrentConsumedWatts": 0,
-                #                 "IntervalInMsec": 1000,
-                #                 "MaxConsumedWatts": 0,
-                #                 "MinConsumedWatts": 0
-                #             }
-                #         }
-                #     },
-                #     "PowerLimit": {
-                #         "LimitInWatts": 0
-                #     },
-                #     "Status": {
-                #         "Health": "OK",
-                #         "State": "Absent"
-                #     }
-                # },
                 blade_info = {}
                 blade_info['MemberId'] = item['MemberId']
                 blade_info['State'] = item['Status']['State']

@@ -1,4 +1,5 @@
 import json
+from lib import filter_helper
 from lib import output_helper
 
 from lib.redfish.dell.output import RedfishEndpointDellOutput
@@ -24,128 +25,6 @@ class RedfishOutput(
         RedfishEndpointFabricInterconnectOutput.__init__(self)
         RedfishEndpointHpeOutput.__init__(self)
         RedfishEndpointUcsRackOutput.__init__(self)
-
-    def print_redfish_endpoint_settings(self, endpoints, verify=False, show_password=True, title=False):
-        if title:
-            self.my_output.default(
-                'RedFish Endpoint [#%s]' % (len(endpoints)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(endpoints) == 0:
-            self.my_output.default('None')
-            return
-
-        entries = []
-        for item in endpoints:
-            entry = item['endpoint']
-            entry['__Output'] = {}
-
-            if 'verified' in entry:
-                if entry['verified']:
-                    entry['AuthenticatedTick'] = '\u2713'
-                    entry['__Output']['AuthenticatedTick'] = 'Green'
-                else:
-                    entry['AuthenticatedTick'] = '\u2717'
-                    entry['__Output']['AuthenticatedTick'] = 'Red'
-
-            for key in ['Product', 'SerialNumber', 'HostName']:
-                entry[key] = item['identity'][key]
-
-            if len(entry['inventory_type']) == 0:
-                entry['inventory_type'] = '--'
-
-            if len(entry['inventory_id']) == 0:
-                entry['inventory_id'] = '--'
-
-            entries.append(entry)
-
-        if not show_password:
-            for item in entries:
-                item['password'] = '******'
-
-        order = [
-            'SerialNumber',
-            'Product',
-            'HostName',
-            'type',
-            'ip',
-            'port',
-            'username',
-            'password',
-            'inventory_type',
-            'inventory_id'
-        ]
-
-        headers = [
-            'S/N',
-            'Product',
-            'Name',
-            'Type',
-            'IP',
-            'Port',
-            'Username',
-            'Password',
-            'FI Inventory Type',
-            'FI Inventory ID'
-        ]
-
-        if verify:
-            order.append('AuthenticatedTick')
-            headers.append('Authenticated')
-
-        self.my_output.my_table(
-            entries,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
-
-    def print_redfish_cache(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'RedFish Cache [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'CacheName',
-            'Product',
-            'SerialNumber',
-            'Firmware',
-            'PowerState',
-            'EndpointType',
-            'EndpointIp',
-            'EndpointInventoryType',
-            'EndpointInventoryId'
-        ]
-
-        headers = [
-            'Cache Name',
-            'Product',
-            'S/N',
-            'Firmware',
-            'Power',
-            'Type',
-            'IP',
-            'Inventory',
-            'Id'
-        ]
-
-        self.my_output.my_table(
-            info,
-            order=order,
-            headers=headers,
-            underline=True,
-            table=True
-        )
 
     def print_children(self, path, children, deep, output):
         if output == 'default':
@@ -190,24 +69,3 @@ class RedfishOutput(
                 )
 
                 self.my_output.default('')
-
-    def print_redfish_settings(self, settings):
-        order = [
-            'CacheEnabled',
-            'CacheDirectory'
-        ]
-
-        headers = [
-            'Cache Enabled',
-            'Cache Directory'
-        ]
-
-        self.my_output.dictionary(
-            settings,
-            title='Redfish Settings',
-            underline=True,
-            prefix="- ",
-            justify=True,
-            keys=order,
-            title_keys=headers
-        )

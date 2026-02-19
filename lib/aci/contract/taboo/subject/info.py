@@ -34,7 +34,11 @@ class ContractTabooSubjectInfo():
                 continue
 
             info['vzFilterName'].append(
-                rule_mo['tnVzFilterName']
+                '%s/%s' % (
+                    rule_mo['tDn'].split('/')[1][3:],
+                    rule_mo['tnVzFilterName']
+                )
+
             )
 
         (info['__Output']['faults'], info['faults']) = self.get_faults_info(

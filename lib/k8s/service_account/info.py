@@ -1,3 +1,4 @@
+import time
 from lib import filter_helper
 
 
@@ -94,3 +95,71 @@ class K8sServiceAccountInfo():
             )
 
         return service_accounts
+
+    def is_service_account(self, namespace, name, cache_enabled=True):
+        if self.get_service_account(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+    
+    def get_service_account(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        service_accounts = self.get_service_accounts(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if service_accounts is None:
+            return None
+
+        if len(service_accounts) == 1:
+            return service_accounts[0]
+
+        return None
+    
+    def wait_service_account(self, namespace, name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            service_account_info = self.get_service_account(
+                namespace,
+                name,
+                cache_enabled=False
+            )
+            if service_account_info is not None:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_service_account',
+                    'Max time reached: %s/%s' % (namespace, name)
+                )
+                return False
+
+            time.sleep(5)
+
+    def wait_no_service_account(self, namespace, name, max_time=180):
+        start_time = int(time.time())
+        while True:
+            service_account_info = self.get_service_account(
+                namespace,
+                name,
+                cache_enabled=False
+            )
+            if service_account_info is None:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                self.log.error(
+                    'k8s.wait_no_service_account',
+                    'Max time reached: %s/%s' % (namespace, name)
+                )
+                return False
+
+            time.sleep(5)

@@ -6,7 +6,6 @@ __pycache__
 *~
 .#*
 *.egg-info
-*.spec
 /dist
 /bdist
 /build
@@ -21,3 +20,5 @@ __pycache__
 poetry.lock
 *.toml
 *.code-workspace
+wip.md
+cli.md

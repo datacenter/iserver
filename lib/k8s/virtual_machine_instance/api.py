@@ -37,7 +37,6 @@ class K8sVirtualMachineInstanceApi():
                 True,
                 int(time.time() * 1000) - start_time
             )
-            print(traceback.format_exc())
             return None
 
         self.log.k8s_mo(
@@ -79,3 +78,29 @@ class K8sVirtualMachineInstanceApi():
             return False
 
         return True
+
+    def delete_virtual_machine_instance_mo(self, namespace, name):
+        api_handler = self.get_api(cluster_type='ocp')
+        if api_handler is None:
+            return False
+
+        try:
+            start_time = int(time.time() * 1000)
+            obj_list = api_handler.resources.get(api_version='kubevirt.io/v1', kind='VirtualMachineInstance')
+            success = True
+            response = obj_list.delete(
+                namespace=namespace,
+                name=name
+            )
+        except BaseException:
+            success = False
+            self.log.error('ocp.delete_virtual_machine_instance_mo', traceback.format_exc())
+
+        self.log.ocp(
+            'delete',
+            'virtual_machine_instance',
+            success,
+            int(time.time() * 1000) - start_time
+        )
+
+        return success

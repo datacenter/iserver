@@ -62,7 +62,6 @@ class ProtocolNdInterfaceInfo():
             )
         )
 
-        # topology/pod-1/node-201/sys/nd/inst/dom-cvim4a:cvim4a_VRF/if-[vlan161]
         info['domainName'] = info['dn'].split('/')[6][4:]
 
         info['__Output']['id'] = 'Yellow'

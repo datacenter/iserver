@@ -3,36 +3,6 @@ class PolicyInterfaceSynceContext():
         pass
 
     def set_policy_interface_synce_context(self, policies):
-        # Interface
-        # "podId": "1",
-        # "nodeId": "2207",
-        # "nodeName": "cl2207-eu-spdc",
-        # "apic": "apic21",
-        # "pod_node_name": "pod-1/cl2207-eu-spdc",
-        # "interfaceId": "eth1/1/1",
-        # "policyType": "synceEthIfPol",
-        # "policyDn": "uni/infra/synceIfP-k8s_synce_enable",
-        # "policyName": "k8s_synce_enable"
-        #
-        # Context
-        # "synce": {
-        #     "apic": [
-        #         "apic11"
-        #     ],
-        #     "node": {
-        #         "apic11": [
-        #             "cl202-eu-spdc",
-        #             "cl201-eu-spdc"
-        #         ]
-        #     },
-        #     "interface": {
-        #         "apic11": [
-        #             "pod-1:node-202:eth1/61",
-        #             "pod-1:node-201:eth1/61"
-        #         ]
-        #     }
-        # }
-
         if policies is None or len(policies) == 0:
             return None
 

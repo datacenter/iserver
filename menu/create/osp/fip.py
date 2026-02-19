@@ -177,8 +177,7 @@ def create_osp_fip_command(
             tenant_id = selected_tenant['id']
 
         if floating_ip is None:
-            ctx.my_output.default('Automatic allocation of floating IP?')
-            if not common.get_confirmation(title=False):
+            if not common.get_confirmation(title='Automatic allocation of floating IP'):
                 object_filter = []
                 object_filter.append(
                     'subnet_id:%s' % (subnet_id)

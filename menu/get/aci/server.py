@@ -37,7 +37,7 @@ class NoResultExit(Exception):
 @click.option("--address", "server_ip", callback=validations.validate_ips, multiple=True, help="Server IP")
 @click.option("--view", "-v", default=['state'], help="['state']", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
+@click.option("--ttl", "requested_ttl", default=-1, show_default=True, help="Cache ttl")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_aci_server_command(
         ctx,
@@ -51,7 +51,7 @@ def get_aci_server_command(
         server_ip,
         view,
         output,
-        no_cache,
+        requested_ttl,
         devel
         ):
     """Get server connectivity information"""
@@ -77,7 +77,7 @@ def get_aci_server_command(
             controller_username,
             controller_password,
             show_selected=False,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
         if apic_handler is None:
             raise ErrorExit

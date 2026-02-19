@@ -21,7 +21,6 @@ class InterfacePortChannelEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/aggr-[po2]/aggrif
         info['interfaceId'] = None
         if len(info['affected'].split('/')) == 6:
             if info['affected'].split('/')[4].startswith('aggr-'):

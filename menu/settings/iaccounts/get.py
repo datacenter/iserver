@@ -29,7 +29,8 @@ def settings_iaccount_get_command(ctx, output, show_key):
 
     ctx.my_output.my_table(
         accounts,
-        order=['name', 'keyfile', 'server', 'keyid'],
-        headers=['iaccount', 'key file', 'server', 'key id'],
-        table=True
+        order=['name', 'keyfile', 'server', 'keyid', 'account', 'role', 'domain'],
+        headers=['iaccount', 'key file', 'server', 'key id', 'account', 'role', 'domain'],
+        table=True,
+        cast_none=True
     )

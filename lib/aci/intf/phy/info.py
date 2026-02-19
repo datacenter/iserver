@@ -8,10 +8,14 @@ class InterfacePhyInfo():
     def __init__(self):
         self.interface_phy = {}
 
-    def get_interfaces_phy_summary(self, pod_id, node_id):
+    def init_interface_phy(self):
+        self.interface_phy = {}
+
+    def get_interfaces_phy_summary(self, pod_id, node_id, cache_enabled=True):
         interfaces = self.get_interfaces_phy(
             pod_id,
-            node_id
+            node_id,
+            cache_enabled=cache_enabled
         )
 
         if interfaces is None:
@@ -97,10 +101,11 @@ class InterfacePhyInfo():
 
         return summary
 
-    def get_port_count(self, pod_id, node_id):
+    def get_port_count(self, pod_id, node_id, cache_enabled=True):
         ports = self.get_ports(
             pod_id,
-            node_id
+            node_id,
+            cache_enabled=cache_enabled
         )
 
         if ports is None:
@@ -112,6 +117,7 @@ class InterfacePhyInfo():
         keys = [
             'adminSt',
             'autoNeg',
+            'brkoutMap',
             'bw',
             'delay',
             'descr',
@@ -229,12 +235,12 @@ class InterfacePhyInfo():
 
         return info
 
-    def get_interfaces_phy_info(self, pod_id, node_id):
+    def get_interfaces_phy_info(self, pod_id, node_id, cache_enabled=True):
         key = '%s.%s' % (pod_id, node_id)
         if key in self.interface_phy:
             return self.interface_phy[key]
 
-        interfaces_mo = self.get_interface_phy_mo(pod_id, node_id)
+        interfaces_mo = self.get_interface_phy_mo(pod_id, node_id, cache_enabled=cache_enabled)
         if interfaces_mo is None:
             return None
 
@@ -510,9 +516,14 @@ class InterfacePhyInfo():
             audit_info=False,
             hfault_filter=None,
             event_filter=None,
-            audit_filter=None
+            audit_filter=None,
+            cache_enabled=True
             ):
-        all_interfaces = self.get_interfaces_phy_info(pod_id, node_id)
+        if not cache_enabled:
+            self.init_interface_phy()
+            self.init_interface_phy_mo()
+
+        all_interfaces = self.get_interfaces_phy_info(pod_id, node_id, cache_enabled=cache_enabled)
         if all_interfaces is None:
             return None
 
@@ -706,7 +717,8 @@ class InterfacePhyInfo():
             qos_info=False,
             qos_references=None,
             cap_info=False,
-            pc_info=False
+            pc_info=False,
+            cache_enabled=True
             ):
         interfaces = self.get_interfaces_phy(
             pod_id,
@@ -723,7 +735,8 @@ class InterfacePhyInfo():
             qos_info=qos_info,
             qos_references=qos_references,
             cap_info=cap_info,
-            pc_info=pc_info
+            pc_info=pc_info,
+            cache_enabled=cache_enabled
         )
 
         if interfaces is None or len(interfaces) != 1:

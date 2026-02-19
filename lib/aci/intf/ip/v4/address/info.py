@@ -22,12 +22,10 @@ class AddressIpv4Info():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "addr": "<ip>/32"
         info['ip'] = info['addr']
         if len(info['addr'].split('/')) == 2:
             info['ip'] = info['addr'].split('/')[0]
 
-        # topology/pod-1/node-201/sys/ipv4/inst/dom-mgmt:inb/if-[lo18]/addr-[<ip>/32]
         info['interface'] = info['dn'].split('/')[7].split('-')[1][1:][:-1]
 
         return info

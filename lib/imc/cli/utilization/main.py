@@ -10,7 +10,7 @@ class ImcCliUtilization():
             if self.utilization_mo is not None:
                 return self.utilization_mo
 
-            self.utilization_mo = self.get_icm_cli_cache_entry(
+            self.utilization_mo = self.get_imc_cli_cache_entry(
                 'utilization'
             )
             if self.utilization_mo is not None:

@@ -2,10 +2,12 @@ import click
 
 from menu.get.aci.main import get_aci_menu
 from menu.get.chassis import get_chassis_command
+from menu.get.cnc.main import get_cnc_menu
 from menu.get.cvim.main import get_cvim_menu
+from menu.get.fi import get_fi_command
 from menu.get.helm.main import get_helm_menu
+from menu.get.imc.main import get_imc_menu
 from menu.get.intersight.main import get_intersight_menu
-from menu.get.iwo.main import get_iwo_menu
 from menu.get.k8s.main import get_k8s_menu
 from menu.get.kv.main import get_kv_menu
 from menu.get.linux.main import get_linux_menu
@@ -34,10 +36,12 @@ def get_menu(ctx):
 
 get_menu.add_command(get_aci_menu)
 get_menu.add_command(get_chassis_command)
+get_menu.add_command(get_cnc_menu)
 get_menu.add_command(get_cvim_menu)
+get_menu.add_command(get_fi_command)
 get_menu.add_command(get_helm_menu)
+get_menu.add_command(get_imc_menu)
 get_menu.add_command(get_intersight_menu)
-get_menu.add_command(get_iwo_menu)
 get_menu.add_command(get_k8s_menu)
 get_menu.add_command(get_kv_menu)
 get_menu.add_command(get_linux_menu)

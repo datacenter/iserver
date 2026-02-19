@@ -14,7 +14,6 @@ class ProtocolCdpEventInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # topology/pod-1/node-2205/sys/cdp/inst
         info['podId'] = info['affected'].split('/')[1].split('-')[1]
         info['nodeId'] = info['affected'].split('/')[2].split('-')[1]
         info['pod_node_name'] = 'pod-%s/%s' % (
@@ -24,7 +23,6 @@ class ProtocolCdpEventInfo():
             )
         )
 
-        # topology/pod-1/node-2205/sys/cdp/inst/if-[eth1/27]/adj-1
         info['interfaceId'] = None
         if '/sys/cdp/inst/if-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/sys/cdp/inst/if-[')[1].split(']')[0]

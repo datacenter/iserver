@@ -23,8 +23,6 @@ class DomainL2Info():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R2DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         info['aaep_names'].append(
                             item['tDn'].split('/')[2][8:]
@@ -34,8 +32,6 @@ class DomainL2Info():
         if 'infraRtDomP' in managed_object:
             if managed_object['infraRtDomP'] is not None:
                 for item in managed_object['infraRtDomP']:
-                    # "tCl": "infraAttEntityP",
-                    # "tDn": "uni/infra/attentp-UCSB1-R3DC_AAEP"
                     if item['tCl'] == 'infraAttEntityP':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']
@@ -55,8 +51,6 @@ class DomainL2Info():
         if 'l2extRtL2DomAtt' in managed_object:
             if managed_object['l2extRtL2DomAtt'] is not None:
                 for item in managed_object['l2extRtL2DomAtt']:
-                    # "tCl": "l2extOut",
-                    # "tDn": "uni/tn-k8s/l2out-Test"
                     if item['tCl'] == 'l2extOut':
                         reln_info = {}
                         reln_info['tCl'] = item['tCl']

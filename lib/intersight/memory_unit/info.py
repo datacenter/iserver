@@ -55,10 +55,13 @@ class MemoryUnitInfo():
 
         info['CapacityUnit'] = ''
         if info['Capacity'] != 'unspecified':
-            info['CapacityUnit'] = self.info_helper.convert_memory(
-                int(info['Capacity']) * 1024 * 1024,
-                precision=0
-            )
+            try:
+                info['CapacityUnit'] = self.info_helper.convert_memory(
+                    int(info['Capacity']) * 1024 * 1024,
+                    precision=0
+                )
+            except BaseException:
+                pass
 
         info['MemoryArrayId'] = None
         info['ChassisId'] = None

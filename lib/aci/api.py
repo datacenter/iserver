@@ -20,6 +20,7 @@ class Api():
         self.api_fault_limit = 1000
         self.api_event_limit = 1000
         self.api_audit_limit = 1000
+        self.post_timeout = 5
 
     def get_apic_ip(self):
         return self.apic_ip
@@ -154,6 +155,25 @@ class Api():
                                         )
         return resources
 
+    def get_mo_ctlr_resource_ctx(self, mo_name, managed_object):
+        resources = []
+        if 'children' in managed_object[mo_name]:
+            for child in managed_object[mo_name]['children']:
+                for key in child:
+                    if key == 'pconsCtrlrDeployCtx':
+                        if 'children' in child[key]:
+                            for item in child[key]['children']:
+                                for ckey in item:
+                                    if ckey == 'pconsResourceCtx':
+                                        resource = {}
+                                        resource['status'] = child[key]['attributes']['status']
+                                        resource['ctxClass'] = item[ckey]['attributes']['ctxClass']
+                                        resource['ctxDn'] = item[ckey]['attributes']['ctxDn']
+                                        resources.append(
+                                            resource
+                                        )
+        return resources
+
     def get_class(self, class_name, response_format='json', query_target_filter=None, query=None, node_class=False):
         self.request_info = {}
         self.request_info['url'] = '--'
@@ -180,11 +200,6 @@ class Api():
                 class_name,
                 response_format
             )
-
-        # if query is None:
-        #     query = 'page=0&page-size=10000'
-        # else:
-        #     query = '%s&page=0&page-size=10000' % (query)
 
         if query is not None:
             url = '%s?%s' % (
@@ -398,6 +413,60 @@ class Api():
         )
 
         return response
+
+    def create_managed_object(self, uri, body):
+        if not self.is_connected():
+            return False, "APIC not connected"
+
+        url = "https://%s:%s/api/%s" % (
+            self.apic_ip,
+            self.apic_port,
+            uri
+        )
+
+        self.log.debug(
+            'apic.create_managed_object',
+            url
+        )
+        self.log.debug(
+            'apic.create_managed_object',
+            json.dumps(body, indent=4)
+        )
+
+        headers = {
+            "Cookie": "APIC-Cookie=%s" % (self.token),
+            "Content-Type": "application/json"
+        }
+
+        requests.packages.urllib3.disable_warnings()
+        try:
+            success = True
+            response = requests.post(
+                url,
+                data=json.dumps(
+                    body
+                ),
+                headers=headers,
+                verify=False,
+                timeout=self.post_timeout
+            ).json()
+            self.log.debug(
+                'apic.create_managed_object',
+                json.dumps(response, indent=4)
+            )
+        except BaseException:
+            success = False
+            response = traceback.format_exc()
+            self.log.error(
+                'apic.create_managed_object',
+                response
+            )
+
+        if response['totalCount'] == '1':
+            if 'error' in response['imdata'][0]:
+                return False, response['imdata'][0]['error']['attributes']['text']
+
+        return success, response
 
     def get_mos(self, bar_enabled=False):
         if bar_enabled:
@@ -1144,31 +1213,3 @@ class Api():
 
             if bar_enabled:
                 bar_handler.finish()
-
-        # get_interface_fault_counts_mo(self, pod_id, node_id, interface_type, interface_id)
-
-        # get_interface_macsec_castats_mo(self, pod_id, node_id, interface_id)
-        # get_interface_macsec_rx_mo(self, pod_id, node_id, interface_id)
-        # get_interface_macsec_stats_mo(self, pod_id, node_id, interface_id)
-        # get_interface_macsec_tx_mo(self, pod_id, node_id, interface_id)
-
-        # get_interface_phy_epg_stats_mo(self, pod_id, node_id, interface_id)
-
-        # get_interface_policy_profile_mo(self, profile_name)
-        # get_interface_port_channel_relations_mo(self, pod_id, node_id, port_channel_id)
-        # get_policy_group_access_interface_vpc_port_mo(self, policy_group_name, node_id)
-        # get_policy_snoop_igmp_mo(self, tenant, name)
-        # get_policy_snoop_mld_mo(self, tenant, name)
-        # get_protocol_bfd_session_peer_mo(self, pod_id, node_id, session_id)
-        # get_protocol_bfd_session_stats_mo(self, pod_id, node_id, session_id)
-        # get_protocol_bgp_neighbor_stats_mo(self, pod_id, node_id, bgp_domain_name, bgp_peer_addr, bgp_state_addr)
-        # get_protocol_ipv4_routes_mo(self, pod_id, node_id, ipv4_domain_name)
-        # get_protocol_ipv6_routes_mo(self, pod_id, node_id, ipv6_domain_name)
-        # get_protocol_isis_domain_interfaces_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_protocol_isis_domain_lsps_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_protocol_isis_domain_neighbors_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_protocol_isis_domain_routes_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_protocol_isis_domain_trees_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_protocol_isis_domain_tunnels_mo(self, pod_id, node_id, instance_name, domain_name)
-        # get_vrf_ipv4_mo(self, tenant, name)
-        # get_vrf_ipv6_mo(self, tenant, name)

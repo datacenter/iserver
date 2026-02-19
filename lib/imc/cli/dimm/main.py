@@ -11,25 +11,11 @@ class ImcCliDimm():
             if self.dimm_mo is not None:
                 return self.dimm_mo
 
-            self.dimm_mo = self.get_icm_cli_cache_entry(
+            self.dimm_mo = self.get_imc_cli_cache_entry(
                 'dimm'
             )
             if self.dimm_mo is not None:
                 return self.dimm_mo
-
-        # Name DIMM_L1:
-        #     Capacity: 32768 MB
-        #     Channel Speed (MHz): 2933
-        #     Channel Type: DDR4
-        #     Memory Type Detail: Synchronous Registered (Buffered)
-        #     Bank Locator: NODE 1 CHANNEL 4 DIMM 0
-        #     Visibility: Yes
-        #     Operability: Operable
-        #     Manufacturer: 0x2C00
-        #     Part Number: 36ASF4G72PZ-2G9E2
-        #     Serial Number: F0F73494
-        #     Asset Tag: 252006 (Mfg Location:0x25, Mfg Year:20, Mfg Week:06)
-        #     Data Width: 64 bits
 
         self.dimm_mo = self.show_list(
             'show dimm detail',
@@ -58,23 +44,11 @@ class ImcCliDimm():
             if self.dimm_pid_mo is not None:
                 return self.dimm_pid_mo
 
-            self.dimm_pid_mo = self.get_icm_cli_cache_entry(
+            self.dimm_pid_mo = self.get_imc_cli_cache_entry(
                 'dimm_pid'
             )
             if self.dimm_pid_mo is not None:
                 return self.dimm_pid_mo
-
-        # Name DIMM_M1:
-        #     Description: 32GB DDR4-2933-MHz RDIMM/2Rx4/1.2v
-        #     Product ID: UCS-MR-X32G2RT-H
-        #     Vendor ID: 0xCE00
-        #     Vendor Name: Samsung
-        #     Model: M393A4K40CB2-CVF
-        #     SerialNumber: 120AD606
-        #     Operability: Operable
-        #     Capacity: 32768 MB
-        #     Speed: 2933
-        #     Data Width: 64 bits
 
         self.dimm_pid_mo = self.show_list(
             'show dimm-pid detail',

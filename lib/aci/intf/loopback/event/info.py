@@ -21,7 +21,6 @@ class InterfaceLoopbackEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/lb-[lo0]"
         info['interfaceId'] = None
         if '/lb-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/lb-[')[1].split(']')[0]

@@ -24,7 +24,7 @@ class NoResultExit(Exception):
 
 @click.command("ver")
 @click.pass_obj
-@click.option("--cluster", default='', help="Kubernetes cluster name")
+@click.option("--cluster", default='', help="Cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
@@ -46,7 +46,7 @@ def get_k8s_ver_command(
 
     try:
         k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster)
+        k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, log_id=ctx.run_id)
         if k8s_handlers is None:
             raise ErrorExit
 

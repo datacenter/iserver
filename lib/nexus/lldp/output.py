@@ -22,8 +22,8 @@ class LldpOutput():
             'nexus_name',
             'l_port_id',
             'chassis_id',
+            'sys_name',
             'port_id',
-            'hold_time',
             'system_capability'
         ]
 
@@ -31,8 +31,8 @@ class LldpOutput():
             'Device',
             'Local Interface',
             'Device ID',
+            'Device Name',
             'Port ID',
-            'Hold Time',
             'Capability'
         ]
 

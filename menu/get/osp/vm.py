@@ -209,8 +209,7 @@ def get_osp_vm_command(
 
         if 'state' in view:
             osp_output_handler.print_virtual_machines(
-                vms,
-                title=True
+                vms
             )
 
         if 'id' in view:

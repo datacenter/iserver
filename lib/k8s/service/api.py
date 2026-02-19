@@ -51,18 +51,18 @@ class K8sServiceApi():
 
         return self.service_mo
 
-    def create_namespaced_service(self, service_definition):
+    def create_service_mo(self, body):
         api_handler = self.get_api()
         if api_handler is None:
             return None
 
         start_time = int(time.time() * 1000)
 
-        namespace = service_definition['metadata']['namespace']
+        namespace = body['metadata']['namespace']
         try:
             api_response = api_handler.create_namespaced_service(
                 namespace,
-                service_definition
+                body
             )
         except BaseException:
             api_response = None
@@ -89,7 +89,7 @@ class K8sServiceApi():
 
         return True
 
-    def delete_namespaced_service(self, namespace, name):
+    def delete_service_mo(self, namespace, name):
         api_handler = self.get_api()
         if api_handler is None:
             return None

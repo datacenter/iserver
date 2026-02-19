@@ -3,24 +3,6 @@ class InterfacePhyPcInfo():
         self.interface_phy_pc = {}
 
     def get_interface_phy_pc_info(self, managed_object):
-        # {
-        #     "bdlPortNum": "255",
-        #     "bfdState": "5",
-        #     "channelingSt": "unknown",
-        #     "childAction": "",
-        #     "dn": "topology/pod-1/node-205/sys/phys-[eth1/33]/aggrmbrif",
-        #     "flags": "",
-        #     "ltlProgrammed": "no",
-        #     "modTs": "never",
-        #     "monPolDn": "uni/fabric/monfab-default",
-        #     "name": "",
-        #     "nameAlias": "",
-        #     "operSt": "down",
-        #     "pcMode": "on",
-        #     "status": "",
-        #     "summOperSt": "down",
-        #     "uptime": "00:00:00:00.000"
-        # },
         keys = [
             'dn',
             'channelingSt',
@@ -33,7 +15,6 @@ class InterfacePhyPcInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
-        # "dn": "topology/pod-1/node-205/sys/phys-[eth1/33]/aggrmbrif"
         info['pod_id'] = info['dn'].split('/')[1]
         info['node_id'] = info['dn'].split('/')[2]
         info['interface_id'] = None

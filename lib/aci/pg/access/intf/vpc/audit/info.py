@@ -14,7 +14,6 @@ class PolicyGroupAccessInterfaceVpcAuditInfo():
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "affected": "uni/infra/funcprof/accbundle-ESX-R7DC_PolGrp/rsqosDppIfPol"
         info['pgName'] = None
         if 'uni/infra/funcprof/accbundle-' in info['affected']:
             info['pgName'] = info['affected'].split('uni/infra/funcprof/accbundle-')[1].split('/')[0]

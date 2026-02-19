@@ -139,7 +139,7 @@ class IntersightCommon():
 
     def get_moid(self, name):
         command = 'isctl get %s name "%s" -o json' % (self.iobject, name)
-        response = self.isctl.get(command, api_debug=True)
+        response = self.isctl.get(command, api_debug=True, log_error=False)
         if response is None:
             return None
         if isinstance(response, list):
@@ -157,7 +157,7 @@ class IntersightCommon():
 
     def get_by_name(self, name):
         command = 'isctl get %s name "%s" -o json' % (self.iobject, name)
-        response = self.isctl.get(command, api_debug=True)
+        response = self.isctl.get(command, api_debug=True, log_error=False)
         if response is None:
             return None
         if isinstance(response, list):

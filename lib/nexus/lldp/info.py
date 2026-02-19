@@ -17,6 +17,13 @@ class LldpInfo():
         for key in lldp_mo:
             info[key] = lldp_mo[key]
 
+        info['mac'] = None
+        if info['chassis_type'] == 'Mac Address':
+            info['mac'] = info['chassis_id']
+
+        if info['port_type'] == 'Mac Address':
+            info['mac'] = info['port_id']
+
         if isinstance(info['system_capability'], dict):
             info['system_capability'] = None
 
@@ -39,7 +46,7 @@ class LldpInfo():
             return None
 
         self.lldp = []
-        for managed_object in managed_objects['TABLE_nbor']['ROW_nbor']:
+        for managed_object in managed_objects['TABLE_nbor_detail']['ROW_nbor_detail']:
             lldp_info = self.get_lldp_info(
                 managed_object
             )
@@ -67,12 +74,12 @@ class LldpInfo():
             if key == 'mac':
                 key_found = True
 
-                if lldp_info['port_type'] != 'Mac Address':
+                if lldp_info['mac'] is None:
                     return False
 
                 found = False
                 for mac_address in value.split(','):
-                    if ip_helper.is_mac_match(mac_address, lldp_info['port_id']):
+                    if ip_helper.is_mac_match(mac_address, lldp_info['mac']):
                         found = True
                         break
 

@@ -1,4 +1,8 @@
+import time
+import yaml
+import datetime
 from lib import filter_helper
+from menu.common import get_confirmation
 
 
 class K8sDeploymentInfo():
@@ -28,14 +32,32 @@ class K8sDeploymentInfo():
         for key in keys:
             info[key] = self.get(deployment_mo, 'status:%s' % (key))
 
+        info['spec_replicas'] = self.get(deployment_mo, 'spec:replicas')
+
+        if info['spec_replicas'] == 0:
+            info['readyT'] = '0/0'
+            info['__Output']['readyT'] = 'Yellow'
+            info['ready'] = True
+            return info
+
+        info['ready'] = False
+        if info['replicas'] is not None and info['readyReplicas'] is not None:
+            if info['replicas'] > 0 and info['replicas'] == info['readyReplicas']:
+                info['ready'] = True
+
         info['readyT'] = '%s/%s' % (
             info['replicas'],
             info['readyReplicas']
         )
-        if info['replicas'] > 0 and info['replicas'] == info['readyReplicas']:
+
+        if info['ready']:
+            info['readyTick'] = '\u2713'
             info['__Output']['readyT'] = 'Green'
+            info['__Output']['readyTick'] = 'Green'
         else:
+            info['readyTick'] = '\u2717'
             info['__Output']['readyT'] = 'Red'
+            info['__Output']['readyTick'] = 'Red'
 
         return info
 
@@ -116,3 +138,36 @@ class K8sDeploymentInfo():
             )
 
         return deployments
+
+    def get_deployment(self, namespace, name, return_mo=False, cache_enabled=True):
+        object_filter = []
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        deployments = self.get_deployments(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if deployments is None:
+            return None
+
+        if len(deployments) == 1:
+            return deployments[0]
+
+        return None
+
+    def is_deployment(self, namespace, name, cache_enabled=True):
+        if self.get_deployment(namespace, name, cache_enabled=cache_enabled) is None:
+            return False
+        return True
+
+    def is_deployment_ready(self, namespace, name, cache_enabled=True):
+        deployment_info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
+        if deployment_info is None:
+            return False
+        
+        return deployment_info['ready']

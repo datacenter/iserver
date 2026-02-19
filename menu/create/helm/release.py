@@ -128,7 +128,7 @@ def create_helm_release_command(
 
                     ctx.my_output.default('Day0 PVC %s/%s already exists. Reuse it?' % (pvc_namespace, pvc_name))
                     if not common.get_confirmation():
-                        if not ocp_handler.k8s_handler.delete_namespaced_pvc(pvc_namespace, pvc_name):
+                        if not ocp_handler.k8s_handler.delete_pvc_mo(pvc_namespace, pvc_name):
                             ctx.my_output.error('PVC delete failed')
                             raise ErrorExit
                         ctx.my_output.default('PVC deleted')
@@ -178,7 +178,7 @@ def create_helm_release_command(
                     if release['day0'] is not None:
                         for item in release['day0']:
                             if ocp_handler.k8s_handler.is_pvc(item['dv']['metadata']['namespace'], item['dv']['metadata']['name'], cache_enabled=False):
-                                success = ocp_handler.k8s_handler.delete_namespaced_pvc(
+                                success = ocp_handler.k8s_handler.delete_pvc_mo(
                                     item['dv']['metadata']['namespace'],
                                     item['dv']['metadata']['name']
                                 )

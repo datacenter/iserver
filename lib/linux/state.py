@@ -152,31 +152,6 @@ class LinuxState():
 
     def get_cpu_info(self, output):
         try:
-            # Architecture:          x86_64
-            # CPU op-mode(s):        32-bit, 64-bit
-            # Byte Order:            Little Endian
-            # CPU(s):                28
-            # On-line CPU(s) list:   0-27
-            # Thread(s) per core:    1
-            # Core(s) per socket:    14
-            # Socket(s):             2
-            # NUMA node(s):          2
-            # Vendor ID:             GenuineIntel
-            # CPU family:            6
-            # Model:                 79
-            # Model name:            Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz
-            # Stepping:              1
-            # CPU MHz:               2600.158
-            # CPU max MHz:           2600.0000
-            # CPU min MHz:           1200.0000
-            # BogoMIPS:              5187.67
-            # Virtualization:        VT-x
-            # L1d cache:             32K
-            # L1i cache:             32K
-            # L2 cache:              256K
-            # L3 cache:              35840K
-            # NUMA node0 CPU(s):     0-13
-            # NUMA node1 CPU(s):     14-27
             info = {}
             info['numa_count'] = None
             info['numa_nodes'] = []
@@ -229,18 +204,6 @@ class LinuxState():
 
     def get_release_info(self, output):
         try:
-            # NAME="Ubuntu"
-            # VERSION="18.04.4 LTS (Bionic Beaver)"
-            # ID=ubuntu
-            # ID_LIKE=debian
-            # PRETTY_NAME="Ubuntu 18.04.4 LTS"
-            # VERSION_ID="18.04"
-            # HOME_URL="https://www.ubuntu.com/"
-            # SUPPORT_URL="https://help.ubuntu.com/"
-            # BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
-            # PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
-            # VERSION_CODENAME=bionic
-            # UBUNTU_CODENAME=bionic
             info = {}
             for line in output.split('\n'):
                 if line.startswith('NAME='):

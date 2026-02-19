@@ -3,8 +3,6 @@ class ProtocolBfdSessionStatsApi():
         self.bfd_session_stats_mo = {}
 
     def set_protocol_bfd_session_stats_mo(self, managed_object):
-        # "dn": "topology/pod-1/node-2208/sys/bfd/inst/session-1090519041/stats"
-
         stats_dn = managed_object['bfdSessStats']['attributes']['dn']
         pod_id = stats_dn.split('/')[1][4:]
         node_id = stats_dn.split('/')[2][5:]
@@ -41,7 +39,6 @@ class ProtocolBfdSessionStatsApi():
             )
             return self.bfd_session_stats_mo[key]
 
-        # url: https://<apic>/api/node/mo/topology/pod-1/node-201/sys/bfd/inst/session-1090519172.json?query-target=children&target-subtree-class=bfdPeerV&subscription=yes
         distinguished_name = 'topology/pod-%s/node-%s/sys/bfd/inst/session-%s' % (pod_id, node_id, session_id)
         query = 'query-target=children&target-subtree-class=bfdSessStats'
         managed_objects = self.get_managed_object(

@@ -10,6 +10,7 @@ class VcNetwork():
         self.distributed_network_names = {}
 
         self.network_objects = None
+        self.networks = None
         self.network_names = {}
 
     def get_distributed_network_name_by_key(self, key):
@@ -92,15 +93,6 @@ class VcNetwork():
 
         return None
 
-    def get_network_info(self, network_obj):
-        info = {}
-        info['name'] = network_obj.name
-        # info['objects'] = dir(network_obj)
-        # info['host'] = dir(network_obj.host)
-        # info['summary'] = dir(network_obj.summary)
-        # info['vm'] = dir(network_obj.vm)
-        return info
-
     def is_network(self, network_name):
         network_obj = self.get_network_object(network_name)
         if network_obj is None:
@@ -181,3 +173,78 @@ class VcNetwork():
 
         for network_name in network_names:
             self.my_output.default('- %s' % (network_name))
+
+    def get_network_info(self, network_obj):
+        info = {}
+        info['name'] = network_obj.name
+        info['overallStatus'] = network_obj.overallStatus
+        info['accessible'] = network_obj.summary.accessible
+        info['ipPoolId'] = network_obj.summary.ipPoolId
+        info['ipPoolName'] = network_obj.summary.ipPoolName
+        info['type'] = 'standard'
+        if isinstance(network_obj.summary.network, vim.dvs.DistributedVirtualPortgroup):
+            info['type'] = 'dvs'
+
+        info['host'] = []
+        for host_obj in network_obj.host:
+            info['host'].append(
+                host_obj.name
+            )
+
+        info['vm'] = []
+        for vm_obj in network_obj.vm:
+            info['vm'].append(
+                vm_obj.name
+            )
+
+        if info['type'] == 'dvs':
+            info['ports'] = network_obj.portKeys
+            info['portGroupKey'] = network_obj.config.key
+            info['numPorts'] = network_obj.config.numPorts
+            info['dvsName'] = network_obj.config.distributedVirtualSwitch.name
+
+            vlan_info = network_obj.config.defaultPortConfig.vlan
+            vlan_spec = vim.dvs.VmwareDistributedVirtualSwitch.TrunkVlanSpec
+
+            if isinstance(vlan_info, vlan_spec):
+                info['trunk'] = True
+                info['vlans'] = []
+                for item in vlan_info.vlanId:
+                    if item.start == item.end:
+                        info['vlans'].append(str(item.start))
+                    else:
+                        info['vlans'].append(str(item.start)+'-'+str(item.end))
+            else:
+                info['trunk'] = True
+                info['vlans'] = []
+
+                vlan_id = getattr(vlan_info, 'vlanId', None)
+                if vlan_id is not None:
+                    info['vlans'].append(
+                        str(vlan_id)
+                    )
+
+        return info
+
+    def get_networks(self):
+        if self.networks is not None:
+            return self.networks
+
+        networks_objs = self.get_network_objects()
+        if networks_objs is None:
+            return None
+
+        self.networks = []
+        for network_obj in networks_objs:
+            self.networks.append(
+                self.get_network_info(
+                    network_obj
+                )
+            )
+
+        self.networks = sorted(
+            self.networks,
+            key=lambda i: i['name']
+        )
+
+        return self.networks

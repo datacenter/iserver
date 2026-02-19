@@ -50,6 +50,7 @@ class ProtocolBgpInstanceInfo():
                 info['dn'].split('/')[2].split('-')[1]
             )
         )
+        info['pod_node_nameT'] = info['pod_node_name'].split('/')
 
         if info['adminSt'] == 'enabled':
             info['__Output']['adminSt'] = 'Green'

@@ -22,7 +22,6 @@ class InterfaceLoopbackFaultInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/inst-overlay-1/lb-[lo0]"
         info['interfaceId'] = None
 
         if not managed_object['delegated']:
@@ -30,7 +29,6 @@ class InterfaceLoopbackFaultInfo():
                 if '/lb-[' in info['affected']:
                     info['interfaceId'] = info['affected'].split('/lb-[')[1].split(']')[0]
 
-        # "dn": "topology/pod-1/node-2208/sys/inst-overlay-1/lb-[lo0]"
         if info['interfaceId'] is None:
             if '/lb-[' in info['dn']:
                 info['interfaceId'] = info['dn'].split('/lb-[')[1].split(']')[0]

@@ -21,7 +21,6 @@ class InterfaceSviEventInfo():
             )
         )
 
-        # "affected": "topology/pod-1/node-2208/sys/ctx-[vxlan-2228224]/bd-[vxlan-15597460]/svi-[vlan33]"
         info['interfaceId'] = None
         if '/svi-[' in info['affected']:
             info['interfaceId'] = info['affected'].split('/svi-[')[1].split(']')[0]

@@ -8,14 +8,16 @@ from lib import context
 from lib import file_helper
 from lib import iaccount_helper
 from lib import ip_helper
+from lib import ssh
 from lib import my_servers_helper
 from lib import settings_helper
 
-from lib.intersight import organization
-from lib.intersight import scu
-from lib.intersight import os_image
-from lib.intersight import hcl_operating_system
-from lib.intersight import hcl_operating_system_vendor
+from lib.intersight.organization import main as organization
+from lib.intersight.scu import main as scu
+from lib.intersight.os_image import main as os_image
+from lib.intersight.os_configuration_file import main as os_configuration_file
+from lib.intersight.hcl_operating_system import main as hcl_operating_system
+from lib.intersight.hcl_operating_system_vendor import main as hcl_operating_system_vendor
 
 from lib.aci import apic
 from lib.aci import settings as aci_settings
@@ -38,6 +40,9 @@ from lib.vc import settings as vc_settings
 from lib.linux import main as linux
 from lib.linux import settings as linux_settings
 
+from lib.cnc import main as cnc
+from lib.cnc import settings as cnc_settings
+
 
 def validate_iaccount(ctx, param, value):
     iaccount_handler = iaccount_helper.IntersightAccount()
@@ -57,6 +62,18 @@ def validate_iaccount(ctx, param, value):
         raise click.BadParameter('Invalid iaccount value')
 
     iaccount_handler.set_default_iaccount(value)
+
+    return value
+
+
+def validate_iaccount_optional(ctx, param, value):
+    iaccount_handler = iaccount_helper.IntersightAccount()
+
+    if value is None:
+        return None
+
+    if not iaccount_handler.is_iaccount_valid(value):
+        raise click.BadParameter('Invalid iaccount')
 
     return value
 
@@ -101,6 +118,16 @@ def validate_fqdn(value):
     return False
 
 
+def validate_directory(ctx, param, value):
+    if not os.path.isdir(value):
+        raise click.BadParameter('Directory does not exist: %s' % (value))
+
+    if not os.path.isabs(value):
+        raise click.BadParameter('Directory must be absolute (not relative): %s' % (value))
+
+    return value
+
+
 def validate_ip(ctx, param, value):
     if value is not None and len(value) > 0:
         if not ip_helper.is_valid_ipv4_address(value):
@@ -131,11 +158,19 @@ def validate_ips(ctx, param, values):
 
                     ips.append(item)
             else:
-                if not ip_helper.is_valid_ipv4_address(value):
-                    if not validate_fqdn(value):
-                        raise click.BadParameter('Invalid IPv4 address: %s' % (value))
+                if len(value.split('-')) == 2:
+                    addresses = ip_helper.get_ipv4_addresses_in_range(value.split('-')[0], value.split('-')[1])
+                    if addresses is None:
+                        raise click.BadParameter('Invalid IPv4 address range: %s' % (value))
 
-                ips.append(value)
+                    for address in addresses:
+                        ips.append(address)
+                else:
+                    if not ip_helper.is_valid_ipv4_address(value):
+                        if not validate_fqdn(value):
+                            raise click.BadParameter('Invalid IPv4 address: %s' % (value))
+
+                    ips.append(value)
 
     return ips
 
@@ -183,6 +218,19 @@ def validate_file_content(ctx, filename):
         return None
 
     return content
+
+
+def validate_file_absolute(ctx, param, filename):
+    if len(filename) == 0:
+        raise click.BadParameter('Define filename')
+
+    if not os.path.isfile(filename):
+        raise click.BadParameter('File %s not found' % (filename))
+
+    if not os.path.isabs(filename):
+        raise click.BadParameter('Absolute path required')
+    
+    return filename
 
 
 def validate_file(ctx, param, filename):
@@ -309,51 +357,61 @@ def validate_filter_ip(ctx, param, value):
     return ip_filter
 
 
-def validate_scu(ctx, iaccount, scu_name, required=True):
+def validate_scu(ctx, iaccount, scu_name):
     if len(scu_name) == 0:
-        if required:
-            ctx.my_output.error('SCU value required')
-            return None
-        return scu_name
+        return None
 
     scu_handler = scu.SoftwareConfigurationUtility(iaccount, log_id=ctx.run_id)
-    scu_item = scu_handler.get_by_name(scu_name)
-    if scu_item is None:
+    scu_mo = scu_handler.get_by_name(scu_name)
+    if scu_mo is None:
         ctx.my_output.error('SCU not found: %s' % (scu_name))
         return None
 
-    return scu_item
+    return scu_handler.get_info(scu_mo)
 
 
-def validate_os_image(ctx, iaccount, image_name, required=True):
+def validate_os_image(ctx, iaccount, image_name):
     if len(image_name) == 0:
-        if required:
-            ctx.my_output.error('OS image value required')
-            return None
-        return image_name
+        return None
 
     image_handler = os_image.OsImage(iaccount, log_id=ctx.run_id)
-    image_item = image_handler.get_by_name(image_name)
-    if image_item is None:
+    image_mo = image_handler.get_by_name(image_name)
+    if image_mo is None:
         ctx.my_output.error('Image not found: %s' % (image_name))
         return None
 
     vendor_handler = hcl_operating_system_vendor.HclOperatingSystemVendor(iaccount, log_id=ctx.run_id)
-    vendor_item = vendor_handler.get_by_name(image_item['Vendor'])
+    vendor_item = vendor_handler.get_by_name(image_mo['Vendor'])
     if vendor_item is None:
-        ctx.my_output.error('Image vendor not found: %s' % (image_item['Vendor']))
+        ctx.my_output.error('Image vendor not found: %s' % (image_mo['Vendor']))
         return None
-    image_item['VendorId'] = vendor_item['Moid']
+    image_mo['VendorId'] = vendor_item['Moid']
 
     version_handler = hcl_operating_system.HclOperatingSystem(iaccount, log_id=ctx.run_id)
-    version_item = version_handler.get_vendor_version(vendor_item['Moid'], image_item['Version'])
+    version_item = version_handler.get_vendor_version(vendor_item['Moid'], image_mo['Version'])
     if version_item is None:
-        ctx.my_output.error('Image version not found: %s' % (image_item['Version']))
+        ctx.my_output.error('Image version not found: %s' % (image_mo['Version']))
         return None
 
-    image_item['VersionId'] = version_item['Moid']
+    image_mo['VersionId'] = version_item['Moid']
 
-    return image_item
+    return image_mo
+
+
+def validate_os_config(ctx, iaccount, config_name):
+    if len(config_name) == 0:
+        return None
+
+    config_handler = os_configuration_file.OsConfigurationFile(iaccount, log_id=ctx.run_id)
+    config_mo = config_handler.get_by_name(config_name)
+    if config_mo is None:
+        ctx.my_output.error('OS configuration not found: %s' % (config_name))
+        return None
+
+    vendor_handler = hcl_operating_system_vendor.HclOperatingSystemVendor(iaccount, log_id=ctx.run_id)
+    vendors = vendor_handler.get_all()
+
+    return config_handler.get_info(config_mo, vendors)
 
 
 def validate_chassis_ifm_filter(ctx, param, value):
@@ -573,7 +631,7 @@ def validate_apic_any_name(ctx, param, value):
     return selected_controllers
 
 
-def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False, debug=False):
+def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, requested_ttl=-1, debug=False):
     aci_settings_handler = aci_settings.ApicSettings(log_id=None)
 
     if controller_obj is None and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
@@ -597,7 +655,8 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
         if show_selected and ctx.output == 'default':
             ctx.my_output.default(
                 aci_settings_handler.get_apic_controller_label(
-                    controller_obj['name']
+                    controller_obj['name'],
+                    requested_ttl=requested_ttl
                 )
             )
 
@@ -608,7 +667,7 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
         controller_password,
         apic_name=controller_obj['name'],
         log_id=ctx.run_id,
-        no_cache=no_cache,
+        requested_ttl=requested_ttl,
         debug=debug
     )
 
@@ -620,7 +679,7 @@ def validate_apic_controller(ctx, controller_obj, controller_ip, controller_port
     return apic_handler
 
 
-def validate_apic_controllers(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, no_cache=False):
+def validate_apic_controllers(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, requested_ttl=-1):
     aci_settings_handler = aci_settings.ApicSettings(log_id=None)
 
     if len(controller_objs) == 0 and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
@@ -660,7 +719,7 @@ def validate_apic_controllers(ctx, controller_objs, controller_ip, controller_po
             controller_password,
             apic_name=controller_obj['name'],
             log_id=ctx.run_id,
-            no_cache=no_cache
+            requested_ttl=requested_ttl
         )
 
         if auto_connect:
@@ -681,7 +740,8 @@ def validate_apic_controllers(ctx, controller_objs, controller_ip, controller_po
             for name in names:
                 ctx.my_output.default(
                     aci_settings_handler.get_apic_controller_label(
-                        name
+                        name,
+                        requested_ttl=requested_ttl
                     )
                 )
 
@@ -733,7 +793,7 @@ def validate_apic_controllers_with_context_interfaces(ctx, context_interfaces):
     return apic_handlers
 
 
-def validate_apic_controllers_with_nodes(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, node_names, node_role, pod_id=None, no_cache=False):
+def validate_apic_controllers_with_nodes(ctx, controller_objs, controller_ip, controller_port, controller_username, controller_password, node_names, node_role, pod_id=None, requested_ttl=-1):
     apic_handlers = validate_apic_controllers(
         ctx,
         controller_objs,
@@ -742,7 +802,7 @@ def validate_apic_controllers_with_nodes(ctx, controller_objs, controller_ip, co
         controller_username,
         controller_password,
         show_selected=False,
-        no_cache=no_cache
+        requested_ttl=requested_ttl
     )
     if apic_handlers is None:
         return None
@@ -979,6 +1039,74 @@ def validate_apic_tenant_ap_name(ctx, param, value):
     raise click.BadParameter('Invalid name syntax')
 
 
+def validate_cnc_name(ctx, param, value):
+    cnc_settings_handler = cnc_settings.CncSettings(log_id=None)
+    if len(value) == 0:
+        default_controller_name = cnc_settings_handler.get_default_controller()
+        if default_controller_name is not None:
+            return cnc_settings_handler.get_cnc_controller(default_controller_name)
+
+    controller = None
+    if len(value) > 0:
+        controller = cnc_settings_handler.get_cnc_controller(value)
+
+    if controller is None:
+        controllers = cnc_settings_handler.get_cnc_controller_names()
+        if controllers is None:
+            raise click.BadParameter('Invalid cnc name')
+        raise click.BadParameter('Invalid cnc name. Define one of %s' % (','.join(controllers)))
+
+    return controller
+
+
+def validate_cnc_controller(ctx, controller_obj, controller_ip, controller_port, controller_username, controller_password, show_selected=True, auto_connect=False, requested_ttl=-1, debug=False):
+    cnc_settings_handler = cnc_settings.CncSettings(log_id=None)
+
+    if controller_obj is None and len(controller_ip) == 0 and len(controller_username) == 0 and len(controller_password) == 0:
+        controller_name = cnc_settings_handler.get_default_controller()
+        if controller_name is not None:
+            controller_obj = cnc_settings_handler.get_cnc_controller(controller_name)
+
+    if len(controller_ip) > 0 or len(controller_username) > 0 or len(controller_password) > 0:
+        if len(controller_ip) == 0 or len(controller_username) == 0 or len(controller_password) == 0:
+            ctx.my_output.error('Define controller name or ip/username/password')
+            return None
+    else:
+        controller_ip = controller_obj['ip']
+        controller_port = controller_obj['port']
+        controller_username = controller_obj['username']
+        controller_password = controller_obj['password']
+        cnc_settings_handler.set_default_controller(
+            controller_obj['name']
+        )
+
+        if show_selected and ctx.output == 'default':
+            ctx.my_output.default(
+                cnc_settings_handler.get_cnc_controller_label(
+                    controller_obj['name'],
+                    requested_ttl=requested_ttl
+                )
+            )
+
+    cnc_handler = cnc.Cnc(
+        controller_ip,
+        controller_port,
+        controller_username,
+        controller_password,
+        cnc_name=controller_obj['name'],
+        log_id=ctx.run_id,
+        requested_ttl=requested_ttl,
+        debug=debug
+    )
+
+    if auto_connect:
+        if not cnc.is_connected():
+            ctx.my_output.error('Failed to connect to CNC')
+            return None
+
+    return cnc_handler
+
+
 def validate_context(ctx, param, value):
     if len(value) == 0:
         return None
@@ -1073,7 +1201,7 @@ def validate_nexus_any_name(ctx, param, value):
     return selected_devices
 
 
-def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_password, debug=False):
+def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_password, device_nxapi=True, debug=False):
     nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
 
     if device_obj is None and len(device_ip) == 0 and len(device_username) == 0 and len(device_password) == 0:
@@ -1086,6 +1214,7 @@ def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_pa
         device_ip = device_obj['ip']
         device_username = device_obj['username']
         device_password = device_obj['password']
+        device_nxapi = device_obj['nxapi']
         device_name = device_obj['name']
         nexus_settings_handler.set_default_nexus_device(
             device_obj['name']
@@ -1103,6 +1232,7 @@ def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_pa
         device_ip,
         device_username,
         device_password,
+        device_nxapi,
         name=device_name,
         log_id=ctx.run_id,
         debug=debug
@@ -1115,7 +1245,7 @@ def validate_nexus_device(ctx, device_obj, device_ip, device_username, device_pa
     return nexus_handler
 
 
-def validate_nexus_devices(ctx, device_objs, device_ip, device_username, device_password, show_selected=True, debug=False, cache_enabled=False):
+def validate_nexus_devices(ctx, device_objs, device_ip, device_username, device_password, device_nxapi=True, show_selected=True, debug=False, cache_enabled=False):
     nexus_settings_handler = nexus_settings.NexusSettings(log_id=None)
 
     if len(device_objs) == 0 and len(device_ip) == 0 and len(device_username) == 0 and len(device_password) == 0:
@@ -1131,7 +1261,8 @@ def validate_nexus_devices(ctx, device_objs, device_ip, device_username, device_
                 name=device_ip,
                 ip=device_ip,
                 username=device_username,
-                password=device_password
+                password=device_password,
+                nxapi=device_nxapi
             )
         )
 
@@ -1146,11 +1277,13 @@ def validate_nexus_devices(ctx, device_objs, device_ip, device_username, device_
         device_ip = device_obj['ip']
         device_username = device_obj['username']
         device_password = device_obj['password']
+        device_nxapi = device_obj['nxapi']
 
         nexus_handler = nxapi.NxApi(
             device_ip,
             device_username,
             device_password,
+            device_nxapi,
             name=device_name,
             log_id=ctx.run_id,
             debug=debug,
@@ -1285,13 +1418,13 @@ def validate_vcenters(ctx, vcenter_objs):
 
 
 def empty_string_to_none(ctx, param, value):
-    if len(value) == 0:
+    if value is None or len(value) == 0:
         return None
 
     return value
 
 
-def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=False):
+def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=False, ssh_access=False, helm=False, fixup=False):
     ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
 
     if cluster_name is None or cluster_name == '':
@@ -1299,9 +1432,6 @@ def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=F
         if cluster_name is None:
             ctx.my_output.error('Define ocp cluster name')
             return None
-
-        if ctx.output == 'default' and not silent:
-            ctx.my_output.default('Cluster: %s' % (cluster_name))
 
     cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
     if cluster_obj is None:
@@ -1312,6 +1442,9 @@ def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=F
                 ctx.my_output.default('- %s' % (name))
 
         return None
+
+    if ctx.output == 'default' and not silent:
+        ctx.my_output.default('Cluster: %s' % (cluster_name))
 
     ocp_settings_handler.set_default_cluster(
         cluster_obj['name']
@@ -1324,6 +1457,81 @@ def validate_ocp_cluster(ctx, cluster_name, verbose=False, debug=False, silent=F
         log_id=ctx.run_id
     )
 
+    if ssh_access or helm:
+        management_ip = ocp_handler.settings_handler.get_management_ip(cluster_obj['name'])
+        if management_ip is not None:
+            if ctx.output == 'default' and not silent:
+                ctx.my_output.default('- management host: %s' % (management_ip))
+
+        if management_ip is None:
+            if not fixup:
+                ctx.my_output.error('Cluster management host not defined')
+                return None
+            
+            management_ip = input('Cluster management IP: ')
+            if not ip_helper.is_valid_ipv4_address(management_ip):
+                ctx.my_output.error('Invalid IPv4 address')
+                return None
+            
+            if not ocp_handler.settings_handler.set_management_ip(cluster_obj['name'], management_ip):
+                ctx.my_output.error('Failed to set management address')
+                return None
+        
+        key_filename = ocp_handler.settings_handler.get_management_ssh_pub_filename(cluster_obj['name'])
+        if key_filename is not None:
+            if ctx.output == 'default' and not silent:
+                ctx.my_output.default('- ssh public key: %s' % (key_filename))
+
+        if key_filename is None:
+            if not fixup:
+                ctx.my_output.error('SSH public key for cluster management host access not defined')
+                return None
+
+            filename = input('SSH public key for management host access with core username: ')
+            if not os.path.isfile(filename):
+                ctx.my_output.error('File not found')
+                return None
+            
+            if not ocp_handler.settings_handler.set_management_ssh_pub(cluster_obj['name'], filename):
+                ctx.my_output.error('Failed to set ssh public key')
+                return None
+
+        ssh_handler = ssh.Ssh(management_ip, 'core', key_filename=key_filename, log_id=ctx.run_id)
+        success, exception_name, error = ssh_handler.is_ssh()
+        if not success:
+            ctx.my_output.error('%s [%s]' % (error, exception_name))
+            if exception_name == 'timeout':
+                return None
+            
+            if not fixup:
+                return None
+            
+            if exception_name == 'AuthenticationException':
+                filename = input('New SSH public key: ')
+                if len(filename) == 0:
+                    return None
+                
+                if not os.path.isfile(filename):
+                    ctx.my_output.error('File not found')
+                    return None
+                
+                if not ocp_handler.settings_handler.set_management_ssh_pub(cluster_obj['name'], filename):
+                    ctx.my_output.error('Failed to set ssh public key')
+                    return None
+
+                ctx.my_output.default('Updated')
+                ssh_handler = ssh.Ssh(management_ip, 'core', key_filename=key_filename, log_id=ctx.run_id)
+                success, exception_name, error = ssh_handler.is_ssh()
+                if not success:
+                    ctx.my_output.error('%s [%s]' % (error, exception_name))
+                    return None
+
+        if helm:
+            success, output, error = ssh_handler.run_cmd('helm version')
+            if not success:
+                ctx.my_output.error('Helm not found on the management host: %s' % (management_ip))
+                return None
+        
     return ocp_handler
 
 
@@ -1407,6 +1615,22 @@ def validate_ocp_cluster_name(ctx, param, cluster_name):
     if cluster_obj is None:
         raise click.BadParameter('Define valid OCP cluster name')
 
+    print('OpenShift Cluster: %s\n' % (cluster_obj['name']))
+    return cluster_obj['name']
+
+
+def validate_ocp_cluster_name_no_prompt(ctx, param, cluster_name):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=None)
+    if cluster_name == '':
+        cluster_name = ocp_settings_handler.get_default_cluster()
+        if cluster_name is None:
+            raise click.BadParameter('Define OCP cluster name')
+
+    cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
+    if cluster_obj is None:
+        raise click.BadParameter('Define valid OCP cluster name')
+
+    ocp_settings_handler.set_default_cluster(cluster_obj['name'])
     return cluster_obj['name']
 
 
@@ -1497,6 +1721,22 @@ def validate_ocp_vm_namespace(ctx, ocp_handler, namespace, vm_name):
     )
 
     return namespace
+
+
+def validate_k8s_yaml_file_optional(ctx, param, value):
+    if len(value) == 0:
+        return None
+
+    content = file_helper.get_file_yaml(
+        value
+    )
+    if content is None:
+        raise click.BadParameter('Yaml file read failed: %s' % (value))
+
+    if 'kind' not in content:
+        raise click.BadParameter('Invalid yaml file content: %s' % (value))
+
+    return value
 
 
 def validate_ocp_vm_yaml_file(ctx, filename):
@@ -1701,33 +1941,32 @@ def validate_timestamp_filter(ctx, param, value):
     if value.endswith('m'):
         try:
             reference = int(value[:-1])
-        except BaseException:
-            click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
+        except BaseException as exc:
+            raise click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.') from exc
         return value
 
     if value.endswith('h'):
         try:
             reference = int(value[:-1])
-        except BaseException:
-            click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
+        except BaseException as exc:
+            raise click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.') from exc
         return value
 
     if value.endswith('d'):
         try:
             reference = int(value[:-1])
-        except BaseException:
-            click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
+        except BaseException as exc:
+            raise click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.') from exc
         return value
 
     if value.endswith('y'):
         try:
             reference = int(value[:-1])
-        except BaseException:
-            click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
+        except BaseException as exc:
+            raise click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.') from exc
         return value
 
-    click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
-    return None
+    raise click.BadParameter('Unsupported time filter. Use <n>[m|h|d|y] syntax.')
 
 
 def validate_view(ctx, user_input, all_views, default, resolve):
@@ -1777,8 +2016,8 @@ def validate_view(ctx, user_input, all_views, default, resolve):
     return views
 
 
-def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False):
-    k8s_settings_handler = k8s_settings.K8sSettings(log_id=None)
+def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False, log_id=None):
+    k8s_settings_handler = k8s_settings.K8sSettings(log_id=log_id)
     if value is None or len(value) == 0:
         default_cluster_name = k8s_settings_handler.get_default_cluster()
         if default_cluster_name is not None:
@@ -1799,7 +2038,7 @@ def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False):
                     )
                     return None
 
-            return k8s.K8s(kubeconfig_filename=kubeconfig, cluster_type=cluster['type'], log_id=ctx.run_id)
+            return k8s.K8s(kubeconfig_filename=kubeconfig, cluster_type=cluster['type'], log_id=ctx.run_id, cluster_name=default_cluster_name)
 
     if len(value) > 0:
         cluster = k8s_settings_handler.get_k8s_cluster(value, strict_match=False)
@@ -1821,7 +2060,7 @@ def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False):
                     '[Warning] Default k8s cluster name set failed'
                 )
 
-            return k8s.K8s(kubeconfig_filename=cluster['kubeconfig'], cluster_type=cluster['type'], log_id=ctx.run_id)
+            return k8s.K8s(kubeconfig_filename=cluster['kubeconfig'], cluster_type=cluster['type'], log_id=ctx.run_id, cluster_name=cluster['name'])
 
     clusters = k8s_settings_handler.get_k8s_clusters()
     if len(clusters) == 0:
@@ -1865,7 +2104,170 @@ def validate_kubevirt_name(ctx, value):
     return None
 
 
+def validate_linux_name_no_prompt(ctx, param, linux_name):
+    linux_settings_handler = linux_settings.LinuxSettings(log_id=None)
+    server = linux_settings_handler.get_linux_server(linux_name, strict_match=True)
+    if server is None:
+        raise click.BadParameter('Define valid linux name')
+    return linux_name
+
+
+def get_ocp_node_linux_handler(ctx, cluster_name, node_name, no_cache=False):
+    access_detail = get_ocp_node_access_detail(ctx, cluster_name, node_name)
+    if access_detail is None:
+        return None
+    
+    handlers = {}
+    handlers['ocp:%s:%s' % (cluster_name, node_name)] = linux.Linux(
+        access_detail['address'],
+        'core',
+        password=None,
+        key_filename=access_detail['key_filename'],
+        server_name=None,
+        ocp_cluster_name=cluster_name,
+        ocp_node_name=node_name,
+        no_cache=no_cache,
+        log_id=ctx.run_id
+    )
+    return handlers
+
+
+def get_ocp_node_access_detail(ctx, cluster_name, node_name):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
+
+    if not ocp_settings_handler.is_ocp_cluster(cluster_name):
+        ctx.my_output.error('Define valid ocp cluster name')
+        cluster_names = ocp_settings_handler.get_ocp_cluster_names()
+        if cluster_names is not None and len(cluster_names) > 0:
+            for cluster_name in cluster_names:
+                ctx.my_output.default('- %s' % (cluster_name))
+
+        return None
+
+    if not ocp_settings_handler.is_management_ssh_pub(cluster_name):
+        ctx.my_output.error('Define ssh public key for openshift cluster access using "iserver set ocp access" command')
+        return None
+
+    ocp_handler = ocp.Ocp(
+        cluster_name,
+        verbose=False,
+        debug=False,
+        log_id=ctx.run_id
+    )
+
+    if node_name == '.':
+        node_names = ocp_handler.k8s_handler.get_nodes_name()
+        if node_names is None:
+            ctx.my_output.error('Failed to get cluster node names')
+            return None
+        
+        if len(node_names) == 0:
+            ctx.my_output.error('No cluster node found')
+            return None
+        
+        node_name = node_names[0]
+
+    node_ip = ocp_handler.k8s_handler.get_node_ip(node_name)
+    if node_ip is None:
+        ctx.my_output.error('Define valid node name for selected cluster')
+        node_names = ocp_handler.k8s_handler.get_nodes_name()
+        if node_names is not None and len(node_names) > 0:
+            for node_name in node_names:
+                ctx.my_output.default('- %s' % (node_name))
+
+        return None
+
+    item = {}
+    item['name'] = 'ocp:%s:%s' % (cluster_name, node_name)
+    item['address'] = node_ip
+    item['username'] = 'core'
+    item['password'] = None
+    item['key_filename'] = ocp_settings_handler.get_management_ssh_pub_filename(cluster_name)
+    return item
+
+
+def get_ocp_node_linux_handlers(ctx, cluster_name, no_cache=False):
+    nodes_access = get_ocp_nodes_access_detail(ctx, cluster_name)
+    if nodes_access is None:
+        return None
+
+    handlers = {}
+    for node_access in nodes_access:
+        handlers[node_access['name']] = linux.Linux(
+            node_access['address'],
+            'core',
+            password=None,
+            key_filename=node_access['key_filename'],
+            server_name=None,
+            ocp_cluster_name=cluster_name,
+            ocp_node_name=node_access['node_name'],
+            no_cache=no_cache,
+            log_id=ctx.run_id
+        )
+
+    return handlers
+
+
+def get_ocp_nodes_access_detail(ctx, cluster_name):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=ctx.run_id)
+
+    if not ocp_settings_handler.is_ocp_cluster(cluster_name):
+        ctx.my_output.error('Define valid ocp cluster name')
+        cluster_names = ocp_settings_handler.get_ocp_cluster_names()
+        if cluster_names is not None and len(cluster_names) > 0:
+            for cluster_name in cluster_names:
+                ctx.my_output.default('- %s' % (cluster_name))
+
+        return None
+
+    if not ocp_settings_handler.is_management_ssh_pub(cluster_name):
+        ctx.my_output.error('Define ssh public key for openshift cluster access using "iserver set ocp access" command')
+        return None
+
+    key_filename = ocp_settings_handler.get_management_ssh_pub_filename(cluster_name)
+
+    ocp_handler = ocp.Ocp(
+        cluster_name,
+        verbose=False,
+        debug=False,
+        log_id=ctx.run_id
+    )
+
+    node_names = ocp_handler.k8s_handler.get_nodes_name()
+    if node_names is None:
+        ctx.my_output.error('Failed to get cluster node names')
+        return None
+    
+    info = []
+    for node_name in node_names:
+        node_ip = ocp_handler.k8s_handler.get_node_ip(node_name)
+        if node_ip is None:
+            ctx.my_output.error('Failed to get node ip: %s' % (node_name))
+            continue
+
+        item = {}
+        item['name'] = 'ocp:%s:%s' % (cluster_name, node_name)
+        item['node_name'] = node_name
+        item['address'] = node_ip
+        item['username'] = 'core'
+        item['password'] = None
+        item['key_filename'] = key_filename
+        info.append(
+            item
+        )
+
+    return info
+
+
 def validate_linux_name(ctx, server_name, no_cache=False):
+    if len(server_name.split(':')) == 3 and server_name.split(':')[0] == 'ocp':
+        handlers = get_ocp_node_linux_handler(ctx, server_name.split(':')[1], server_name.split(':')[2], no_cache=no_cache)
+        if handlers is None:
+            return None
+        
+        for key in handlers:
+            return handlers[key]
+
     linux_settings_handler = linux_settings.LinuxSettings(log_id=None)
     if server_name is None:
         default_server_name = linux_settings_handler.get_default_server()
@@ -1922,86 +2324,154 @@ def validate_linux_name(ctx, server_name, no_cache=False):
     return None
 
 
-def validate_linux_names(ctx, server_names, no_cache=False):
-    linux_settings_handler = linux_settings.LinuxSettings(log_id=None)
-    if len(server_names) == 0:
-        default_server_name = linux_settings_handler.get_default_server()
-        if default_server_name is not None:
-            ctx.my_output.default(
-                'Server: %s' % (
-                    default_server_name
-                )
-            )
-            default_server = linux_settings_handler.get_linux_server(default_server_name)
-            if default_server is None:
-                ctx.my_output.error('Default server not found')
-                return None
+def get_linux_handlers(ctx, server_names, no_cache=False, verbose=False):
+    servers = get_linux_access_details(ctx, server_names, verbose=False)
+    if servers is None:
+        return None
+    
+    handlers = {}
+    for server in servers:
+        handlers[server['name']] = linux.Linux(
+            server['address'],
+            server['username'],
+            password=server['password'],
+            key_filename=server['key_filename'],
+            server_name=server['name'],
+            no_cache=no_cache,
+            log_id=ctx.run_id
+        )
 
-            server_handler = linux.Linux(
-                default_server['address'],
-                default_server['username'],
-                password=default_server['password'],
-                key_filename=default_server['key'],
-                server_name=default_server['name'],
-                no_cache=no_cache,
-                log_id=ctx.run_id
+    if verbose:
+        ctx.my_output.default(
+            'Server: %s' % (
+                ', '.join(handlers.keys())
             )
-            return [server_handler]
+        )
+
+    return handlers
+
+
+def get_linux_access_details(ctx, server_names, verbose=False):
+    info = []
+
+    linux_settings_handler = linux_settings.LinuxSettings(log_id=ctx.run_id)
+    if len(server_names) == 0:
+        default_server = linux_settings_handler.get_cli_default_server()
+        if default_server is None:
+            address = ctx.my_output.get_input('Server: ', empty_to_none=True)
+            if address is None:
+                return None
+            
+            linux_settings_handler.set_cli_default_server(address)
+        else:
+            address = ctx.my_output.get_input('Server [%s]: ' % (default_server), empty_to_none=True)
+            if address is None:
+                address = default_server
+
+        default_username = linux_settings_handler.get_cli_default_username(address)
+        if default_username is None:
+            username = ctx.my_output.get_input('Username: ', empty_to_none=True)
+            if username is None:
+                return None
+            linux_settings_handler.set_cli_default_username(address, username)
+        else:
+            username = ctx.my_output.get_input('Username [%s]: ' % (default_username), empty_to_none=True)
+            if username is None:
+                username = default_username
+        
+        password = ctx.my_output.get_input('Password: ', empty_to_none=True)
+        if password is None:
+            default_ssh_pub = linux_settings_handler.get_cli_default_ssh_pub(address)
+            if default_ssh_pub is None:
+                ssh_public_key = ctx.my_output.get_input('SSH Public Key: ', empty_to_none=True)
+                if ssh_public_key is not None:
+                    linux_settings_handler.set_cli_default_ssh_pub(address, ssh_public_key)
+            else:
+                ssh_public_key = ctx.my_output.get_input('SSH Public Key [%s]: ' % (default_ssh_pub), empty_to_none=True)
+                if ssh_public_key is None:
+                    ssh_public_key = default_ssh_pub
+
+        if password is None and ssh_public_key is None:
+            return None
+
+        item = {}
+        item['name'] = address
+        item['address'] = address
+        item['username'] = username
+        item['password'] = password
+        item['key_filename'] = ssh_public_key
+        info.append(
+            item
+        )
+        return info
 
     all_servers = linux_settings_handler.get_linux_servers()
-    if len(all_servers) == 0:
-        ctx.my_output.error('No linux server defined')
-        return None
-
     selected_server_names = []
     for server_name in server_names:
-        for server in all_servers:
-            if server_name in server['name']:
-                if server['name'] not in selected_server_names:
-                    selected_server_names.append(server['name'])
+        if len(server_name.split(':')) in [2,3]:
+            if server_name.split(':')[0] == 'ocp':
+                selected_server_names.append(
+                    server_name
+                )
+        else:
+            for server in all_servers:
+                if server_name in server['name']:
+                    if server['name'] not in selected_server_names:
+                        selected_server_names.append(server['name'])
 
-    if len(selected_server_names) == 0:
-        ctx.my_output.error('Define linux server')
-        for server in all_servers:
-            ctx.my_output.default('- %s' % (server['name']))
-        return None
-
-    server_handlers = []
-    server_handler_names = []
     for server_name in selected_server_names:
+        if len(server_name.split(':')) == 3 and server_name.split(':')[0] == 'ocp':
+            node_access_detail = get_ocp_node_access_detail(ctx, server_name.split(':')[1], server_name.split(':')[2])
+            if node_access_detail is None:
+                ctx.my_output.default('Failed to get node access information of ocp cluster %s' % (server_name.split(':')[1]))
+                return None
+            
+            info.append(
+                node_access_detail
+            )
+            continue
+
+        if len(server_name.split(':')) == 2 and server_name.split(':')[0] == 'ocp':
+            node_access_details = get_ocp_nodes_access_detail(ctx, server_name.split(':')[1])
+            if node_access_details is None or len(node_access_details) == 0:
+                ctx.my_output.default('Failed to get nodes access information of ocp cluster %s' % (server_name.split(':')[1]))
+                return None
+        
+            for item in node_access_details:
+                info.append(
+                    item
+                )
+
+            continue
+        
         server = linux_settings_handler.get_linux_server(server_name, strict_match=False)
         if server is not None:
-            server_handler_names.append(server_name)
-            server_handler = linux.Linux(
-                server['address'],
-                server['username'],
-                password=server['password'],
-                key_filename=server['key'],
-                server_name=server['name'],
-                no_cache=no_cache,
-                log_id=ctx.run_id
-            )
-            server_handlers.append(server_handler)
+            item = {}
+            item['name'] = server['name']
+            item['address'] = server['address']
+            item['username'] = server['username']
+            item['password'] = server['password']
+            item['key_filename'] = server['key']
+            info.append(item)
 
-    if len(selected_server_names) == 0:
+    if len(info) == 0:
         ctx.my_output.error('Define linux server')
         for server in all_servers:
             ctx.my_output.default('- %s' % (server['name']))
         return None
 
-    if len(selected_server_names) == 1:
-        success = linux_settings_handler.set_default_server(server['name'])
-        if not success:
-            ctx.my_output.default(
-                '[Warning] Default server name set failed'
-            )
+    if verbose:
+        names = []
+        for item in info:
+            names.append(item['name'])
 
-    ctx.my_output.default(
-        'Server: %s' % (
-            ','.join(selected_server_names)
+        ctx.my_output.default(
+            'Server: %s' % (
+                ', '.join(names)
+            )
         )
-    )
-    return server_handlers
+
+    return info
 
 
 def validate_helm_chart(ctx, values_filename):

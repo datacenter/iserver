@@ -1,12 +1,6 @@
 from lib import ip_helper
 
 
-# Scope
-#   Public : This means that ACI will automatically advertise this subnet outside the fabric. Users are not longer required to create route-maps or distributing routes. ACI will automate this for you
-#   Private: This means this subnet will stay within the Tenant. This is the default setting for subnets within a BD.
-#   Shared: This means that the subnet can be shared with other VRF within the same Tenant. It is important to note if you enable this knob to users different subnets.
-
-
 class BridgeDomainSubnetInfo():
     def __init__(self):
         pass
@@ -32,27 +26,6 @@ class BridgeDomainSubnetInfo():
         return bridge_domain_subnets
 
     def get_bridge_domain_subnet_info(self, managed_object):
-        # "annotation": "",
-        # "childAction": "",
-        # "configIssues": "",
-        # "ctrl": "",
-        # "debugMessage": "",
-        # "descr": "",
-        # "extMngdBy": "",
-        # "ip": "<ip>/24",
-        # "ipDPLearning": "enabled",
-        # "lcOwn": "local",
-        # "modTs": "2021-10-27T15:21:50.404+01:00",
-        # "monPolDn": "uni/tn-common/monepg-default",
-        # "name": "",
-        # "nameAlias": "",
-        # "preferred": "no",
-        # "rn": "subnet-[<ip>/24]",
-        # "scope": "private",
-        # "status": "",
-        # "uid": "15374",
-        # "userdom": ":all:common:",
-        # "virtual": "no"
         info = {}
         info['__Output'] = {}
 

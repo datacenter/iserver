@@ -3,26 +3,11 @@ class ProtocolLldpStatsInfo():
         pass
 
     def get_protocol_lldp_stats_info(self, managed_object):
-        # "childAction": "",
-        # "dn": "topology/pod-1/node-205/sys/lldp/inst/inststats",
-        # "entriesAged": "0",
-        # "errPktRcvd": "0",
-        # "lastAdjChgTs": "2023-06-12T16:52:47.652+02:00",
-        # "modTs": "never",
-        # "numAdjAdded": "16",
-        # "numAdjRemoved": "0",
-        # "pktDiscarded": "0",
-        # "pktRcvd": "109173",
-        # "pktSent": "109091",
-        # "status": "",
-        # "unrecogTLV": "0"
-
         info = {}
         info['__Output'] = {}
         for key in managed_object:
             info[key] = managed_object[key]
 
-        # "dn": "topology/pod-1/node-205/sys/lldp/inst/inststats"
         info['pod_node_name'] = '%s/%s' % (
             info['dn'].split('/')[1],
             self.get_node_name(

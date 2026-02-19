@@ -15,7 +15,7 @@ class ImcCliCache():
         self.cache_endpoint_id = endpoint_id
         self.endpoint_settings_handler = settings.ImcEndpointSettings(log_id=log_id)
 
-    def get_icm_cli_cache_entry(self, cache_entry_name):
+    def get_imc_cli_cache_entry(self, cache_entry_name):
         if self.cache_ttl < 0:
             return None
 
@@ -36,7 +36,7 @@ class ImcCliCache():
 
         for key in ['data', 'timestamp']:
             if key not in cache_entry:
-                self.log.error('get_icm_cli_cache_entry', 'Invalid cache content: %s' % (filename))
+                self.log.error('get_imc_cli_cache_entry', 'Invalid cache content: %s' % (filename))
                 return None
 
         if self.cache_ttl > 0:

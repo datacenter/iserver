@@ -1,14 +1,9 @@
-import json
-from lib import output_helper
-
-
 class ChassisThermal():
-    def __init__(self, log_id=None):
+    def __init__(self):
         self.mo_equipment_fan_stats = None
         self.mo_equipment_fan_module_stats = None
         self.mo_equipment_psu_stats = None
         self.mo_equipment_io_card_stats = None
-        self.my_output = output_helper.OutputHelper(log_id=log_id)
 
     def get_chassis_thermal_data(self):
         if self.mo_equipment_fan_stats is None:
@@ -43,7 +38,7 @@ class ChassisThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['fan_module_rn'] = info['dn'].split('/')[2]
@@ -56,7 +51,7 @@ class ChassisThermal():
         )
 
         for suffix in ['', '_avg', '_min', '_max']:
-            info['speed%s' % (suffix)] = getattr(managed_object, 'speed%s' % (suffix))
+            info['speed%s' % (suffix)] = getattr(managed_object, 'speed%s' % (suffix), None)
 
         return info
 
@@ -94,7 +89,7 @@ class ChassisThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['fan_module_rn'] = info['dn'].split('/')[2]
@@ -106,7 +101,7 @@ class ChassisThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'ambient_temp%s' % (suffix))
+                    getattr(managed_object, 'ambient_temp%s' % (suffix), None)
                 ),
                 2
             )
@@ -147,7 +142,7 @@ class ChassisThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['psu_rn'] = info['dn'].split('/')[2]
@@ -159,7 +154,7 @@ class ChassisThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'ambient_temp%s' % (suffix))
+                    getattr(managed_object, 'ambient_temp%s' % (suffix), None)
                 ),
                 2
             )
@@ -200,7 +195,7 @@ class ChassisThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['slot_rn'] = info['dn'].split('/')[2]
@@ -212,7 +207,7 @@ class ChassisThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'ambient_temp%s' % (suffix))
+                    getattr(managed_object, 'ambient_temp%s' % (suffix), None)
                 ),
                 2
             )
@@ -227,7 +222,7 @@ class ChassisThermal():
             'time_collected'
         ]
         for key in keys:
-            info[key] = getattr(managed_object, key)
+            info[key] = getattr(managed_object, key, None)
 
         info['chassis_rn'] = info['dn'].split('/')[1]
         info['slot_rn'] = info['dn'].split('/')[2]
@@ -239,7 +234,7 @@ class ChassisThermal():
         for suffix in ['', '_avg', '_min', '_max']:
             info['temperature%s' % (suffix)] = round(
                 float(
-                    getattr(managed_object, 'temp%s' % (suffix))
+                    getattr(managed_object, 'temp%s' % (suffix), None)
                 ),
                 2
             )

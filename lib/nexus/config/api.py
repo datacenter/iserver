@@ -20,7 +20,7 @@ class ConfigApi():
             )
             return None
 
-        response = self.run_show_command(command)
+        response = self.run_show_command(command, cast_json=False)
         if response is None:
             self.log.error(
                 'get_config_mo',
@@ -32,6 +32,6 @@ class ConfigApi():
             return None
 
         self.set_command_cache(command, response)
-        self.config_mo = [response]
+        self.config_mo = response
 
         return self.config_mo

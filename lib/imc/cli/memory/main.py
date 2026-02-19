@@ -10,7 +10,7 @@ class ImcCliMemory():
             if self.memory_mo is not None:
                 return self.memory_mo
 
-            self.memory_mo = self.get_icm_cli_cache_entry(
+            self.memory_mo = self.get_imc_cli_cache_entry(
                 'memory'
             )
             if self.memory_mo is not None:

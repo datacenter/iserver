@@ -2,11 +2,10 @@ class ImcCliHttpOutput():
     def __init__(self):
         pass
 
-    def print_imc_http(self, info):
-        self.print_list_dict(
+    def print_imc_http(self, info, add_title_endpoint_ip=True):
+        self.print_list_table(
             info,
-            'HTTP',
-            add_endpoint_ip=True,
-            underline=False,
+            title='HTTP',
+            add_title_endpoint_ip=add_title_endpoint_ip,
             allow_order_subkeys=False
         )

@@ -71,24 +71,6 @@ class ProtocolIpv4(
                     info['route']
                 )
 
-        # if domain_info:
-        #     info['domain'] = self.get_protocol_arp_domains(
-        #         pod_id,
-        #         node_id,
-        #         arp_domain_filter=arp_domain_filter,
-        #         adjacency_info=adjacency_info
-        #     )
-
-        # if adjacency_info:
-        #     info['adjacency'] = []
-        #     for domain in info['domain']:
-        #         info['adjacency'] = info['adjacency'] + domain['adjacency']
-
-        # if interface_info:
-        #     info['interface'] = self.get_protocol_arp_domains_interface_summary(
-        #         info['domain']
-        #     )
-
         if fault_info:
             info['faultInst'] = self.get_protocol_ipv4_fault(
                 pod_id,

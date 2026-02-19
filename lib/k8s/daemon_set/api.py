@@ -46,3 +46,29 @@ class K8sDaemonSetApi():
         )
 
         return self.daemon_set_mo
+
+    def patch_daemon_set_mo(self, namespace, name, body):
+        api_handler = self.get_api(cluster_type='standard', api_type='apps')
+        if api_handler is None:
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+            response = api_handler.patch_namespaced_daemon_set(
+                name,
+                namespace,
+                body
+            )
+
+        except BaseException:
+            self.log.error('k8s.patch_daemon_set_mo', traceback.format_exc())
+            self.log.k8s(
+                'patch',
+                'daemon_set',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+            print(traceback.format_exc())
+            return False
+
+        return True

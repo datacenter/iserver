@@ -11,7 +11,7 @@ class ImcCliHdd():
             if self.hdd_mo is not None:
                 return self.hdd_mo
 
-            self.hdd_mo = self.get_icm_cli_cache_entry(
+            self.hdd_mo = self.get_imc_cli_cache_entry(
                 'hdd'
             )
             if self.hdd_mo is not None:
@@ -48,19 +48,11 @@ class ImcCliHdd():
             if self.hdd_pid_mo is not None:
                 return self.hdd_pid_mo
 
-            self.hdd_pid_mo = self.get_icm_cli_cache_entry(
+            self.hdd_pid_mo = self.get_imc_cli_cache_entry(
                 'hdd_pid'
             )
             if self.hdd_pid_mo is not None:
                 return self.hdd_pid_mo
-
-        # Disk 3:
-        #     Controller: MRAID
-        #     Description: 1.2TB 12G SAS 10K RPM SFF HDD
-        #     Product ID: UCS-HD12TB10K12N
-        #     Vendor: TOSHIBA
-        #     Model: AL15SEB120N
-        #     SerialNumber: Z820A08VFJRG
 
         self.hdd_pid_mo = self.show_list(
             'show hdd-pid detail',

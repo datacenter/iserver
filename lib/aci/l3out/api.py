@@ -2,20 +2,24 @@ class L3OutApi():
     def __init__(self):
         self.l3out_mo = None
 
-    def get_l3out_mo(self):
+    def init_l3out_mo(self):
+        self.l3out_mo = None
+
+    def get_l3out_mo(self, cache_enabled=True):
         if self.l3out_mo is not None:
             return self.l3out_mo
 
-        cache = self.get_object_cache(
-            'l3extOut'
-        )
-        if cache is not None:
-            self.l3out_mo = cache
-            self.log.apic_mo(
-                'l3extOut',
-                self.l3out_mo
+        if cache_enabled:
+            cache = self.get_object_cache(
+                'l3extOut'
             )
-            return self.l3out_mo
+            if cache is not None:
+                self.l3out_mo = cache
+                self.log.apic_mo(
+                    'l3extOut',
+                    self.l3out_mo
+                )
+                return self.l3out_mo
 
         children = [
             'bgpExtP',

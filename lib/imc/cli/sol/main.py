@@ -10,13 +10,13 @@ class ImcCliSol():
             if self.sol_mo is not None:
                 return self.sol_mo
 
-            self.sol_mo = self.get_icm_cli_cache_entry(
+            self.sol_mo = self.get_imc_cli_cache_entry(
                 'sol'
             )
             if self.sol_mo is not None:
                 return self.sol_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show sol detail
+        # com# show sol detail
         # Serial Over LAN:
         #     Enabled: yes
         #     Baud Rate(bps): 115200

@@ -15,11 +15,21 @@ class K8sVolumeSnapshotOutput():
             return
 
         order = [
-            'tbd'
+            'namespace_name',
+            'info.readyT',
+            'info.pvc',
+            'info.class_name',
+            'info.size',
+            'age'
         ]
 
         headers = [
-            'tbd'
+            'Volume Snapshot',
+            'Ready',
+            'PVC',
+            'Class',
+            'Size',
+            'Age'
         ]
 
         self.my_output.my_table(

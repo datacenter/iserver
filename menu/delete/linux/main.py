@@ -1,5 +1,6 @@
 import click
 
+from menu.delete.linux.lvm import delete_linux_lvm_command
 from menu.delete.linux.server import delete_linux_server_command
 
 
@@ -13,4 +14,5 @@ def delete_linux_menu(ctx):
     """Delete linux commands"""
 
 
+delete_linux_menu.add_command(delete_linux_lvm_command)
 delete_linux_menu.add_command(delete_linux_server_command)

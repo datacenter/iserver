@@ -6,7 +6,11 @@ class ContractSubjectInfo():
         keys = [
             'descr',
             'dn',
-            'name'
+            'name',
+            'prio',
+            'revFltPorts',
+            'targetDscp'
+
         ]
 
         info = {}

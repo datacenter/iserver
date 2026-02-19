@@ -3,7 +3,7 @@ class LldpApi():
         self.lldp_mo = None
 
     def get_lldp_mo(self, local_cache_enabled=True, cache_enabled=True):
-        command = 'show lldp neighbors'
+        command = 'show lldp neighbors detail'
 
         if local_cache_enabled:
             if self.lldp_mo is not None:
@@ -36,7 +36,7 @@ class LldpApi():
             )
             return None
 
-        if 'TABLE_nbor' not in response:
+        if 'TABLE_nbor_detail' not in response:
             self.log.error(
                 'get_lldp_mo',
                 'Unexpected rest response %s: %s' % (
@@ -46,7 +46,7 @@ class LldpApi():
             )
             return None
 
-        if 'ROW_nbor' not in response['TABLE_nbor']:
+        if 'ROW_nbor_detail' not in response['TABLE_nbor_detail']:
             self.log.error(
                 'get_lldp_mo',
                 'Unexpected rest response %s: %s' % (
@@ -56,12 +56,12 @@ class LldpApi():
             )
             return None
 
-        if isinstance(response['TABLE_nbor']['ROW_nbor'], dict):
+        if isinstance(response['TABLE_nbor_detail']['ROW_nbor_detail'], dict):
             new_response = {}
-            new_response['TABLE_nbor'] = {}
-            new_response['TABLE_nbor']['ROW_nbor'] = []
-            new_response['TABLE_nbor']['ROW_nbor'].append(
-                response['TABLE_nbor']['ROW_nbor']
+            new_response['TABLE_nbor_detail'] = {}
+            new_response['TABLE_nbor_detail']['ROW_nbor_detail'] = []
+            new_response['TABLE_nbor_detail']['ROW_nbor_detail'].append(
+                response['TABLE_nbor_detail']['ROW_nbor_detail']
             )
             response = new_response
 

@@ -10,13 +10,13 @@ class ImcCliVmedia():
             if self.vmedia_mo is not None:
                 return self.vmedia_mo
 
-            self.vmedia_mo = self.get_icm_cli_cache_entry(
+            self.vmedia_mo = self.get_imc_cli_cache_entry(
                 'vmedia'
             )
             if self.vmedia_mo is not None:
                 return self.vmedia_mo
 
-        # comp-7-p2b-eu-spdc-WMP24040061# show vmedia detail
+        # com# show vmedia detail
         # vMedia Settings:
         #     Enabled: yes
         #     Max Sessions: 1

@@ -23,6 +23,7 @@ class ErrorExit(Exception):
 @click.option("--username", "nexus_username", default='', help="Nexus device username")
 @click.option("--password", "nexus_password", default='', help="Nexus device password")
 @click.option("--domain", "nexus_domain", default='', help="Administrative domain")
+@click.option("--api", "nexus_nxapi", is_flag=True, show_default=True, default=False, help="NX API enabled")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def set_nx_device_command(
         ctx,
@@ -31,6 +32,7 @@ def set_nx_device_command(
         nexus_username,
         nexus_password,
         nexus_domain,
+        nexus_nxapi,
         devel
         ):
     """Set nexus device access details"""
@@ -61,6 +63,7 @@ def set_nx_device_command(
             nexus_ip,
             nexus_username,
             nexus_password,
+            nexus_nxapi,
             name=nexus_name,
             log_id=ctx.run_id
         )
@@ -79,6 +82,7 @@ def set_nx_device_command(
             nexus_ip,
             nexus_username,
             nexus_password,
+            nexus_nxapi,
             domain=nexus_domain
         )
         if not success:
