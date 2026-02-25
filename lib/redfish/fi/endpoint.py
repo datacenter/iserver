@@ -54,6 +54,7 @@ class RedfishEndpointFabricInterconnect(
         self.endpoint_type = 'fi'
         self.session_id = None
         self.session_token = None
+        self.virtual_media_base_url = None
         if auto_connect:
             self.connect()
 
@@ -410,8 +411,30 @@ class RedfishEndpointFabricInterconnect(
 
         return True
 
+    def get_virtual_media_base_url(self):
+        if self.virtual_media_base_url is not None:
+            return self.virtual_media_base_url
+        
+        path = 'Managers/bmc/VirtualMedia'
+        if self.get_properties(path) is not None:
+            self.virtual_media_base_url = path
+            return self.virtual_media_base_url
+        
+        self.virtual_media_base_url = 'Managers/CIMC/VirtualMedia'
+        return self.virtual_media_base_url
+    
+    def get_virtual_media_id_url_encoding(self, virtual_media_id):
+        url = self.get_virtual_media_base_url()
+        if 'CIMC' in url:
+            return virtual_media_id
+        
+        return 'Slot_%s' % (virtual_media_id)
+
+    def get_virtual_media_url(self, virtual_media_id):
+        return '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+    
     def get_virtual_media(self, virtual_media_id=0):
-        path = 'Managers/CIMC/VirtualMedia/%s' % (virtual_media_id)
+        path = '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
         response = self.get_properties(path)
         return response
 
@@ -448,7 +471,7 @@ class RedfishEndpointFabricInterconnect(
                 if not self.eject_media(virtual_media_id=virtual_media_id):
                     return False
 
-        path = '/redfish/v1/Managers/CIMC/VirtualMedia/%s/Actions/VirtualMedia.InsertMedia' % (virtual_media_id)
+        path = '/redfish/v1/%s/%s/Actions/VirtualMedia.InsertMedia' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
         if fixup:
             path = self.path_fixup(path)
 
@@ -464,7 +487,7 @@ class RedfishEndpointFabricInterconnect(
         return self.post(url, data=data)
 
     def eject_media(self, virtual_media_id=0, fixup=True):
-        path = '/redfish/v1/Managers/CIMC/VirtualMedia/%s/Actions/VirtualMedia.EjectMedia' % (virtual_media_id)
+        path = '/redfish/v1/%s/%s/Actions/VirtualMedia.EjectMedia' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
         if fixup:
             path = self.path_fixup(path)
 

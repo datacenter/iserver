@@ -127,6 +127,27 @@ def validate_web(user_settings, my_output):
             my_output.error('web_server requires either password or ssh_public_key property')
             return None
 
+    if 'verify' not in user_settings['web_server']:
+        user_settings['web_server']['verify'] = True
+    
+    if not isinstance(user_settings['web_server']['verify'], bool):
+        my_output.error('web_server verify bool required')
+        return None
+
+    if 'base_check' not in user_settings['web_server']:
+        user_settings['web_server']['base_check'] = True
+    
+    if not isinstance(user_settings['web_server']['base_check'], bool):
+        my_output.error('web_server base_check bool required')
+        return None
+
+    if 'timeout' not in user_settings['web_server']:
+        user_settings['web_server']['timeout'] = 5
+    
+    if not isinstance(user_settings['web_server']['timeout'], int):
+        my_output.error('web_server timeout int required')
+        return None
+
     return user_settings
 
 

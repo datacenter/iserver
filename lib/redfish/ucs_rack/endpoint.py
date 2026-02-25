@@ -47,6 +47,7 @@ class RedfishEndpointUcsRack(
         self.endpoint_type = 'ucsc'
         self.default_chassis_uri = '/redfish/v1/Chassis/1'
         self.chassis_uri = None
+        self.virtual_media_base_url = None
 
     def __del__(self):
         self.disconnect()
@@ -125,8 +126,30 @@ class RedfishEndpointUcsRack(
 
         return uri
 
+    def get_virtual_media_base_url(self):
+        if self.virtual_media_base_url is not None:
+            return self.virtual_media_base_url
+        
+        path = 'Managers/bmc/VirtualMedia'
+        if self.get_properties(path) is not None:
+            self.virtual_media_base_url = path
+            return self.virtual_media_base_url
+        
+        self.virtual_media_base_url = 'Managers/CIMC/VirtualMedia'
+        return self.virtual_media_base_url
+
+    def get_virtual_media_id_url_encoding(self, virtual_media_id):
+        url = self.get_virtual_media_base_url()
+        if 'CIMC' in url:
+            return virtual_media_id
+        
+        return 'Slot_%s' % (virtual_media_id)
+
+    def get_virtual_media_url(self, virtual_media_id):
+        return '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+    
     def get_virtual_media(self, virtual_media_id=0):
-        path = 'Managers/CIMC/VirtualMedia/%s' % (virtual_media_id)
+        path = '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
         response = self.get_properties(path)
         return response
 
@@ -163,7 +186,7 @@ class RedfishEndpointUcsRack(
                 if not self.eject_media(virtual_media_id=virtual_media_id):
                     return False
 
-        url = 'https://%s:%s/redfish/v1/Managers/CIMC/VirtualMedia/%s/Actions/VirtualMedia.InsertMedia' % (self.endpoint_ip, self.endpoint_port, virtual_media_id)
+        url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.InsertMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
 
         data = {}
         data['Image'] = iso_url
@@ -175,7 +198,7 @@ class RedfishEndpointUcsRack(
         return self.post(url, data=data)
 
     def eject_media(self, virtual_media_id=0):
-        url = 'https://%s:%s/redfish/v1/Managers/CIMC/VirtualMedia/%s/Actions/VirtualMedia.EjectMedia' % (self.endpoint_ip, self.endpoint_port, virtual_media_id)
+        url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.EjectMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
         return self.post(url)
 
     def get_boot_properties(self):

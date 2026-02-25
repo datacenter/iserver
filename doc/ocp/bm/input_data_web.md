@@ -79,4 +79,16 @@ Notes:
 - image_upload_directory may be relative to home-dir of username or absolute path, this is where downloaded iso will be uploaded to via ssh/scp
 - server virtual media will be configured with image_base_url/generated.iso
 
+## SSL Verify
+
+in case of https, ssl certificate verification is enabled by default and can be disabled with "verify" property set to false value
+
+## Timeout
+
+web server access check with the default timeout of 5 seconds can be controlled with "timeout" int property
+
+## Base URL check
+
+web server image_base_url check can be skipped with "base_check" property set to false value
+
 [Back](../BareMetalCluster.md)

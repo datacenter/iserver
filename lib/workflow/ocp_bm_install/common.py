@@ -5,6 +5,7 @@ import uuid
 import shutil
 import requests
 import subprocess
+import traceback
 from lib import ssh
 from lib import file_helper
 from lib import filter_helper
@@ -289,18 +290,30 @@ def check_iso_server(user_settings, my_output, log_id=None):
 def check_web_server_http_acccess(user_settings, my_output, log_id=None):
     my_output.default('Check web server http access...')
 
-    try:
-        response = requests.get(
-            user_settings['web_server']['image_base_url'],
-            timeout=5
-        )
-    except BaseException:
-        my_output.error('Web server http access failed')
-        return False
+    success = True
 
-    if response.status_code >= 300:
-        my_output.error('Web server http access failed')
-        return False
+    if user_settings['web_server']['base_check']:
+        my_output.default(
+            '- http get [%s] with timeout [%s seconds] and ssl-check [%s]' % (
+                user_settings['web_server']['image_base_url'], 
+                user_settings['web_server']['timeout'],
+                user_settings['web_server']['verify']
+            )
+        )
+        try:
+            response = requests.get(
+                user_settings['web_server']['image_base_url'],
+                timeout=user_settings['web_server']['timeout'],
+                verify=user_settings['web_server']['verify']
+            )
+        except BaseException:
+            my_output.error('Exception')
+            my_output.default(traceback.format_exc(), wrap='~~~')
+            return False
+
+        if response.status_code >= 300:
+            my_output.error('Web server http access failed with status code %s' % (response.status_code))
+            return False
 
     ssh_handler = get_server_ssh_handler(user_settings['web_server'], log_id=log_id)
 
@@ -309,74 +322,134 @@ def check_web_server_http_acccess(user_settings, my_output, log_id=None):
         user_settings['web_server']['image_upload_directory'],
         os.path.basename(source_filename)
     )
+    my_output.default('- prepare file %s for download on web server %s' % (target_filename, user_settings['web_server']['ip']))
     success = ssh_handler.scp_file(
         source_filename,
         target_filename
     )
     if not success:
         my_output.error('Web server file upload failed')
-        return False
 
-    success = True
-    try:
-        response = requests.get(
-            '%s/%s' % (
-                user_settings['web_server']['image_base_url'],
-                os.path.basename(source_filename)
-            ),
-            timeout=5
+    if success:
+        file_url = '%s/%s' % (
+            user_settings['web_server']['image_base_url'],
+            os.path.basename(source_filename)
         )
-    except BaseException:
-        my_output.error('Web server http access failed')
-        success = False
+        my_output.default(
+            '- http get [%s] with timeout [%s seconds] and ssl-check [%s]' % (
+                file_url, 
+                user_settings['web_server']['timeout'],
+                user_settings['web_server']['verify']
+            )
+        )
+        try:
+            response = requests.get(
+                file_url,
+                timeout=user_settings['web_server']['timeout'],
+                verify=user_settings['web_server']['verify']
+            )
+        except BaseException:
+            my_output.error('Exception')
+            my_output.default(traceback.format_exc(), wrap='~~~')
+            success = False
 
-    my_output.default('Test file uploaded to web server via ssh and then downloaded successfully via http')
+        if success and response.status_code >= 300:
+            my_output.error('File download failed with status code %s' % (response.status_code))
+            success = False
+
+    try:
+        os.remove(source_filename)
+    except BaseException:
+        pass
+
     ssh_handler.delete_file(target_filename)
+
+    if success:
+        my_output.default('Test file uploaded to web server via ssh and then downloaded successfully via http')
 
     return success
 
 
-def check_local_web_server_http_acccess(user_settings, my_output, log_id=None):
+def check_local_web_server_http_acccess(user_settings, my_output):
     my_output.default('Check local web server http access...')
 
-    try:
-        response = requests.get(
-            user_settings['web_server']['image_base_url'],
-            timeout=5
-        )
-    except BaseException:
-        my_output.error('Web server http access failed')
-        return False
+    success = True
 
-    if response.status_code >= 300:
-        my_output.error('Web server http access failed')
-        return False
+    if user_settings['web_server']['base_check']:
+        my_output.default(
+            '- http get [%s] with timeout [%s seconds] and ssl-check [%s]' % (
+                user_settings['web_server']['image_base_url'], 
+                user_settings['web_server']['timeout'],
+                user_settings['web_server']['verify']
+            )
+        )
+        try:
+            response = requests.get(
+                user_settings['web_server']['image_base_url'],
+                timeout=user_settings['web_server']['timeout'],
+                verify=user_settings['web_server']['verify']
+            )
+        except BaseException:
+            my_output.error('Exception')
+            my_output.default(traceback.format_exc(), wrap='~~~')
+            return False
+
+        if response.status_code >= 300:
+            my_output.error('Web server http access failed with status code %s' % (response.status_code))
+            return False
 
     source_filename = file_helper.set_tmp_file('test')
     target_filename = os.path.join(
         user_settings['web_server']['image_upload_directory'],
         os.path.basename(source_filename)
     )
+    my_output.default('- prepare local file for download: %s' % (target_filename))
     try:
         shutil.copy(source_filename, target_filename)
     except BaseException:
         my_output.error('File copy failed: %s => %s' % (source_filename, target_filename))
-        return False
-
-    success = True
-    try:
-        response = requests.get(
-            '%s/%s' % (
-                user_settings['web_server']['image_base_url'],
-                os.path.basename(source_filename)
-            ),
-            timeout=5
-        )
-    except BaseException:
-        my_output.error('Web server http access failed')
         success = False
 
-    my_output.default('Test file uploaded locally to web server and then downloaded successfully via http')
+    if success:
+        file_url = '%s/%s' % (
+            user_settings['web_server']['image_base_url'],
+            os.path.basename(source_filename)
+        )
+        my_output.default(
+            '- http get [%s] with timeout [%s seconds] and ssl-check [%s]' % (
+                file_url, 
+                user_settings['web_server']['timeout'],
+                user_settings['web_server']['verify']
+            )
+        )
+        try:
+            response = requests.get(
+                file_url,
+                timeout=user_settings['web_server']['timeout'],
+                verify=user_settings['web_server']['verify']
+            )
+        except BaseException:
+            my_output.error('Exception')
+            my_output.default(traceback.format_exc(), wrap='~~~')
+            success = False
+
+        if success and response.status_code >= 300:
+            my_output.error('File download failed with status code %s' % (response.status_code))
+            success = False
+
+    if success:
+        my_output.default('Test file uploaded locally to web server and then downloaded successfully via http')
+
+    try:
+        os.remove(source_filename)
+    except BaseException:
+        pass
+
+    try:
+        os.remove(target_filename)
+    except BaseException:
+        pass
+
     return success
 
 
@@ -394,7 +467,7 @@ def check_web_server(user_settings, my_output, log_id=None):
 
         my_output.default('Upload directory found: %s' % (user_settings['web_server']['image_upload_directory']))
 
-        if not check_local_web_server_http_acccess(user_settings, my_output, log_id=log_id):
+        if not check_local_web_server_http_acccess(user_settings, my_output):
             return False
 
         return True
@@ -508,6 +581,7 @@ def check_cluster_server_ssh_acccess(user_settings, my_output):
 
 def print_virtual_media_info(virtual_media_details, my_output):
     my_output.default('Virtual Media [%s]' % (virtual_media_details['Id']))
+    my_output.default('- DataId: %s' % (filter_helper.get_attr(virtual_media_details, '@odata.id', cast='---')))
     my_output.default('- Name: %s' % (filter_helper.get_attr(virtual_media_details, 'Name', cast='---')))
     my_output.default('- Inserted: %s' % (filter_helper.get_attr(virtual_media_details, 'Inserted', cast='---')))
     my_output.default('- MediaTypes: %s' % (filter_helper.get_attr(virtual_media_details, 'MediaTypes', cast='---')))
@@ -539,9 +613,10 @@ def test_server_redfish_virtual_media(user_settings, redfish_handler, server, vi
     )
     if virtual_media_details is None:
         my_output.error(
-            'Failed to get virtual media [%s] state via redfish: %s' % (
+            'Failed to get virtual media [%s] state via redfish [%s] with resource [%s]' % (
                 server['redfish']['virtual_media_id'],
-                server['redfish']['endpoint_ip']
+                server['redfish']['endpoint_ip'],
+                redfish_handler.endpoint_handler.get_virtual_media_url(server['redfish']['virtual_media_id'])
             )
         )
 
