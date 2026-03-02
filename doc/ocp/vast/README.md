@@ -2,6 +2,8 @@
 
 The VAST Operator provides CSI driver for the VAST Data storage system.
 
+![OperatorCreate](../images/vast/operator_create.png)
+
 ## Life Cycle Management Commands
 
 Command | Intent | Details
