@@ -42,6 +42,8 @@ def get_ocp_odf_command(ctx, cluster_name, view):
         if not success:
             raise ErrorExit
 
+        ctx.my_output.default('View: state (def), crd, ocs', before_newline=True)
+
     except ErrorExit:
         sys.exit(1)
 

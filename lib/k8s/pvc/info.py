@@ -105,20 +105,22 @@ class K8sPvcInfo():
                 '[cron] %s' % (info['cron'])
             )
 
-        for data_volume in self.get_data_volumes(cache_enabled=True):
-            if data_volume['namespace'] != info['namespace']:
-                continue
+        data_volumes = self.get_data_volumes(cache_enabled=True)
+        if data_volumes is not None:
+            for data_volume in data_volumes:
+                if data_volume['namespace'] != info['namespace']:
+                    continue
 
-            if data_volume['claim_name'] != info['name']:
-                continue
+                if data_volume['claim_name'] != info['name']:
+                    continue
 
-            info['usage'].append(
-                '[dv] %s' % (data_volume['name'])
-            )
+                info['usage'].append(
+                    '[dv] %s' % (data_volume['name'])
+                )
 
-            info['dv_name'] = data_volume['name']
-            info['dvTick'] = '\u2713'
-            info['__Output']['dvTick'] = 'Green'        
+                info['dv_name'] = data_volume['name']
+                info['dvTick'] = '\u2713'
+                info['__Output']['dvTick'] = 'Green'        
 
 
         pods = self.get_pods(

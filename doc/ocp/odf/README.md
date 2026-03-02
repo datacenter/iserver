@@ -2,6 +2,8 @@
 
 OpenShift Data Foundation (ODF) is a software-defined storage solution for Red Hat's container platform, OpenShift, that provides unified, persistent storage for containerized applications across various environments as explained on [RedHat documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.19).
 
+ODF can be installed on bare metal infrastructure where OpenShift is already installed. In such case ODF depends on [Local Storage Operator](../lso/README.md). iserver supports such deployment model only.
+
 ## Life Cycle Management Commands
 
 Command | Intent | Details

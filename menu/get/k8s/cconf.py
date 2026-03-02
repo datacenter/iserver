@@ -25,7 +25,7 @@ class NoResultExit(Exception):
 @click.command("cconf")
 @click.pass_obj
 @click.option("--cluster", default='', help="Cluster name")
-@click.option("--name", default='ciliumconfig', callback=validations.empty_string_to_none, help="Filter by name")
+@click.option("--name", callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")

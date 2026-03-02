@@ -144,8 +144,7 @@ def get_k8s_locv_command(
 
         if 'state' in view:
             k8s_output_handler.print_local_volumes(
-                locvs,
-                title=True
+                locvs
             )
 
             pvs = []

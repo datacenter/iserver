@@ -8,11 +8,10 @@ from lib.ocp import settings
 
 from lib.ocp.cluster.main import OcpCluster
 from lib.ocp.node.main import OcpNode
-from lib.ocp.task.main import OcpTask
 from lib.ocp.vm.main import OcpVm
 
 
-class Ocp(OcpCluster, OcpNode, OcpTask, OcpVm):
+class Ocp(OcpCluster, OcpNode, OcpVm):
     def __init__(self, ocp_cluster_name, verbose=False, debug=False, log_id=None):
         self.verbose = verbose
         self.debug = debug
@@ -53,5 +52,4 @@ class Ocp(OcpCluster, OcpNode, OcpTask, OcpVm):
 
         OcpCluster.__init__(self, log_id=log_id)
         OcpNode.__init__(self)
-        OcpTask.__init__(self)
         OcpVm.__init__(self)

@@ -27,7 +27,7 @@ class K8sDeploymentUpdate():
             }
         }
 
-        if not self.patch_deployment_mo(namespace, name, body):
+        if not self.path_resource(body):
             if my_output is not None:
                 my_output.error('Deployment [%s/%s] patch failed' % (namespace, name))
             return False
@@ -86,11 +86,7 @@ class K8sDeploymentUpdate():
             if not get_confirmation():
                 return False     
 
-        success = self.patch_deployment_mo(
-            body['metadata']['namespace'],
-            body['metadata']['name'],
-            dict(spec=body['spec'])
-        )
+        success = self.patch_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('patch failed')

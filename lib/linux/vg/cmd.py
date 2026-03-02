@@ -53,3 +53,13 @@ class LinuxVgCmd():
         
         return True, str(output)
     
+    def reduce_vg_cmd(self, vg_name):
+        success, output, error = self.ssh_handler.run_cmd(
+            'sudo vgreduce --removemissing %s' % (vg_name)
+        )
+        
+        if not success:
+            return False, str(error)
+        
+        return True, str(output)
+        

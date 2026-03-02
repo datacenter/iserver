@@ -26,24 +26,7 @@ None
 OpenShift Workflow - Local Storage Operator - Delete Operator
 =============================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Check Local Storage Operator Resources
 --------------------------------------

@@ -1,7 +1,6 @@
 import click
 
 from menu.set.ocp.cilium.main import set_ocp_cilium_menu
-from menu.set.ocp.cluster.main import set_ocp_cluster_menu
 
 from menu.set.ocp.ai import set_ocp_ai_command
 from menu.set.ocp.bashrc import set_ocp_bashrc_command
@@ -43,6 +42,7 @@ from menu.set.ocp.ssh import set_ocp_ssh_command
 from menu.set.ocp.task import set_ocp_task_command
 from menu.set.ocp.tetragon import set_ocp_tetragon_command
 from menu.set.ocp.trident import set_ocp_trident_command
+from menu.set.ocp.vast import set_ocp_vast_command
 
 
 class Failure(Exception):
@@ -55,7 +55,6 @@ def set_ocp_menu(ctx):
     """OCP Actions and Settings"""
 
 
-set_ocp_menu.add_command(set_ocp_cluster_menu)
 set_ocp_menu.add_command(set_ocp_cilium_menu)
 
 set_ocp_menu.add_command(set_ocp_ai_command)
@@ -98,3 +97,4 @@ set_ocp_menu.add_command(set_ocp_ssh_command)
 set_ocp_menu.add_command(set_ocp_task_command)
 set_ocp_menu.add_command(set_ocp_tetragon_command)
 set_ocp_menu.add_command(set_ocp_trident_command)
+set_ocp_menu.add_command(set_ocp_vast_command)

@@ -309,7 +309,7 @@ class K8sLocalVolumeSetInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_local_volume_set_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -465,8 +465,7 @@ class K8sLocalVolumeSetInfo():
 
         if k8s_output is not None:
             k8s_output.print_local_volume_sets(
-                items,
-                title=True
+                items
             )
 
         if confirmation:

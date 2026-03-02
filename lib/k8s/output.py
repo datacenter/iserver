@@ -35,6 +35,7 @@ from lib.k8s.ceph_operator_config.output import K8sCephOperatorConfigOutput
 from lib.k8s.ceph_rdb_mirror.output import K8sCephRdbMirrorOutput
 from lib.k8s.certificate.output import K8sCertificateOutput
 from lib.k8s.cilium_config.output import K8sCiliumConfigOutput
+from lib.k8s.cilium_load_balancer_ip_pool.output import CiliumLoadBalancerIpPoolOutput
 from lib.k8s.cluster_operator.output import K8sClusterOperatorOutput
 from lib.k8s.cluster_policy.output import K8sClusterPolicyOutput
 from lib.k8s.cluster_quota.output import K8sClusterQuotaOutput
@@ -203,6 +204,9 @@ from lib.k8s.tracing_policy_namespaced.output import K8sTracingPolicyNamespacedO
 from lib.k8s.tuned.output import K8sTunedOutput
 from lib.k8s.upload_token_request.output import K8sUploadTokenRequestOutput
 from lib.k8s.user.output import K8sUserOutput
+from lib.k8s.vast_cluster.output import K8sVastClusterOutput
+from lib.k8s.vast_driver.output import K8sVastDriverOutput
+from lib.k8s.vast_storage.output import K8sVastStorageOutput
 from lib.k8s.version.output import K8sVersionOutput
 from lib.k8s.virtual_machine.output import K8sVirtualMachineOutput
 from lib.k8s.virtual_machine_clone.output import K8sVirtualMachineCloneOutput
@@ -263,6 +267,7 @@ class K8sOutput(
     K8sCephRdbMirrorOutput,
     K8sCertificateOutput,
     K8sCiliumConfigOutput,
+    CiliumLoadBalancerIpPoolOutput,
     K8sClusterOperatorOutput,
     K8sClusterPolicyOutput,
     K8sClusterQuotaOutput,
@@ -431,6 +436,9 @@ class K8sOutput(
     K8sTunedOutput,
     K8sUploadTokenRequestOutput,
     K8sUserOutput,
+    K8sVastClusterOutput,
+    K8sVastDriverOutput,
+    K8sVastStorageOutput,
     K8sVersionOutput,
     K8sVirtualMachineOutput,
     K8sVirtualMachineCloneOutput,
@@ -496,6 +504,7 @@ class K8sOutput(
         K8sCephRdbMirrorOutput.__init__(self)
         K8sCertificateOutput.__init__(self)
         K8sCiliumConfigOutput.__init__(self)
+        CiliumLoadBalancerIpPoolOutput.__init__(self)
         K8sClusterOperatorOutput.__init__(self)
         K8sClusterPolicyOutput.__init__(self)
         K8sClusterQuotaOutput.__init__(self)
@@ -654,6 +663,9 @@ class K8sOutput(
         K8sTunedOutput.__init__(self)
         K8sUploadTokenRequestOutput.__init__(self)
         K8sUserOutput.__init__(self)
+        K8sVastClusterOutput.__init__(self)
+        K8sVastDriverOutput.__init__(self)
+        K8sVastStorageOutput.__init__(self)
         K8sVersionOutput.__init__(self)
         K8sVirtualMachineOutput.__init__(self)
         K8sVirtualMachineCloneOutput.__init__(self)

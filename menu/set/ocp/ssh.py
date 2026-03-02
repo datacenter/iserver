@@ -4,6 +4,7 @@ import click
 from lib.workflow.ocp_ssh import create
 
 from menu import validations
+from menu import user_inputs
 
 
 class Failure(Exception):
@@ -33,6 +34,13 @@ def set_ocp_ssh_command(
     ctx.output = 'default'
 
     try:
+        if len(filename) == 0:
+            item = user_inputs.get_value(ctx, prompt='SSH public key location')
+            if len(item) == 0:
+                raise ErrorExit
+            
+            filename = [item]
+
         params = {}
         params['cluster'] = cluster_name
         params['role'] = node_role

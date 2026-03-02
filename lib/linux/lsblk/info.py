@@ -116,9 +116,18 @@ class LinuxLsblkInfo():
                         if line.split(' -> ')[0].split(' ')[-1].startswith('wwn-'):
                             disk_path[line.split(' -> ')[1].split('/')[-1]] = '/dev/disk/by-id/%s' % (line.split(' -> ')[0].split(' ')[-1])
 
+                        if line.split(' -> ')[0].split(' ')[-1].startswith('nvme-') and not line.split(' -> ')[0].split(' ')[-1].startswith('nvme-eui.'):
+                            if not line.split(' -> ')[0].split(' ')[-1].endswith('_1'):
+                                disk_path[line.split(' -> ')[1].split('/')[-1]] = '/dev/disk/by-id/%s' % (line.split(' -> ')[0].split(' ')[-1])
+
                 for item in items:
                     if item['name'] in disk_path:
                         item['disk-wwn'] = disk_path[item['name']]
+
+        items = sorted(
+            items,
+            key=lambda i: i['kname'].lower()
+        )
 
         self.log.linux_info(
             '%s.lsblk' % (self.server_display_name),

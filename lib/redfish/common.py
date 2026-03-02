@@ -19,6 +19,7 @@ class RedfishEndpointCommon():
             endpoint_port,
             redfish_username,
             redfish_password,
+            bmc=False,
             system_id=None,
             auto_connect=True,
             get_timeout=10,
@@ -41,6 +42,7 @@ class RedfishEndpointCommon():
         self.session_handler = None
         self.session_id = None
         self.session_token = None
+        self.bmc = bmc
 
         self.deep_search_exclusions = deep_search_exlusions
 
@@ -164,7 +166,8 @@ class RedfishEndpointCommon():
             )
 
             headers = {}
-            headers['X-Auth-Token'] = self.session_token
+            if not self.bmc:
+                headers['X-Auth-Token'] = self.session_token
 
             response = self.session_handler.get(
                 url,

@@ -85,6 +85,8 @@ def get_ocp_connector(
         )
 
         if len(clusters) == 0 or 'list' in view:
+            ctx.my_output.default('Filter: cluster, domain', before_newline=True)
+            ctx.my_output.default('View:   list (def), access, cli')
             return
         
         ctx.my_output.default('')
@@ -176,7 +178,7 @@ def get_ocp_connector(
         )
 
         ctx.my_output.default('Filter: cluster, domain', before_newline=True)
-        ctx.my_output.default('View:   list (def), access')
+        ctx.my_output.default('View:   list (def), access, cli')
 
     except ErrorExit:
         ctx.busy = False

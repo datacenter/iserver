@@ -8,25 +8,39 @@ from lib.workflow.ocp_odf_operator import common as local_common
 def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
-    
+
+    if 'view' not in params or params['view'] is None:
+        params['view'] = ['state']
+
+    if not isinstance(params['view'], list):
+        return None, 'view must be list'
+
+    if len(params['view']) == 0:
+        params['view'] = ['state']
+
+    for item in params['view']:
+        if item not in ['state', 'crd', 'ocs']:
+            return None, 'unsupported view %s' % (item)
+        
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    new_params = {}
+        return None, 'check-verbose param must be true or false'    
+        
     allowed_keys = [
         'cluster',
         'view',
+        'verbose',
         'check-verbose'
     ]
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params, None
-
+    return local_common.sanitize_params(params, allowed_keys), None
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
@@ -38,23 +52,17 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.augment_params(params)
-
-    my_output.default('Workflow Parameters', underline=True)
-    my_output.default(json.dumps(params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = True
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
+    params = local_common.initialize(params, my_output, log_id)
+    if params is None:
         return False
-    
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
+
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True
+    )
+    if not state['installed']:
+        return True
 
     subscription = params['k8s_handler'].get_subscription_by_package(
         params['name'],
@@ -66,20 +74,6 @@ def run(params, log_id=None):
         return True
     
     if 'state' in params['view']:
-        my_output.default('Operator', underline=True)
-        my_output.default('- subscription: %s' % (subscription['namespace_name']))
-        my_output.default('- channel: %s' % (subscription['channel']))
-        my_output.default('- csv: %s' % (subscription['installed_csv']))
-        
-        csv = params['k8s_handler'].get_cluster_service_version(
-            subscription['namespace'],
-            subscription['installed_csv'],
-            return_mo=False,
-            cache_enabled=False
-        )
-        if csv is None:
-            my_output.debug('[WARNING] CSV not found: %s/%s' % (subscription['namespace'], subscription['installed_csv']))
-
         crds = local_common.get_odf_crd(
             params['k8s_handler'], 
             my_output=my_output,

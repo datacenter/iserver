@@ -279,7 +279,7 @@ class K8sPortworxStorageNodeInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_portworx_storage_node_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -354,7 +354,7 @@ class K8sPortworxStorageNodeInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_portworx_storage_node_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -457,15 +457,11 @@ class K8sPortworxStorageNodeInfo():
             return None
 
         portworx_storage_node = self.get_portworx_storage_node(cache_enabled=False)
-        if portworx_storage_node is None:
-            if my_output is not None:
-                my_output.error('Storage cluster object not found')
-            return None
-
-        if portworx_storage_node['expected_osd_count'] is None:
-            if my_output is not None:
-                my_output.error('Failed to get expected osd count')
-            return None
+        if portworx_storage_node is not None:
+            if portworx_storage_node['expected_osd_count'] is None:
+                if my_output is not None:
+                    my_output.error('Failed to get expected osd count')
+                return None
 
         nodes = self.get_nodes(
             object_filter=['label:cluster.ocs.openshift.io/openshift-storage'],
@@ -506,13 +502,14 @@ class K8sPortworxStorageNodeInfo():
                 )
             )
         
-        for index in range(0, portworx_storage_node['expected_osd_count']):
-            deployments.append(
-                dict(
-                    namespace='openshift-storage',
-                    name='rook-ceph-osd-%s' % (index)
+        if portworx_storage_node is not None:
+            for index in range(0, portworx_storage_node['expected_osd_count']):
+                deployments.append(
+                    dict(
+                        namespace='openshift-storage',
+                        name='rook-ceph-osd-%s' % (index)
+                    )
                 )
-            )
 
         for node in nodes:
             deployments.append(

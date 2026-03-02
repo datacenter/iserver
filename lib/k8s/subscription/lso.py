@@ -5,12 +5,9 @@ class K8sSubscriptionLocalStorage():
     def __init__(self):
         pass
 
-    def is_local_storage_subscription(self, namespace, name, cache_enabled=True):
-        return self.is_subscription(namespace, name, cache_enabled=cache_enabled)
-
-    def check_local_storage_subscription(self, name, my_output=None, required=True, check_ready=True):
+    def check_local_storage_subscription(self, name, my_output=None, check_ready=True, before_newline=True):
         if my_output is not None:
-            my_output.default('Local Storage Operator', underline=True)
+            my_output.default('Local Storage Operator Subscription', underline=True, before_newline=before_newline)
 
         subscription = self.get_subscription_by_package(
             name,
@@ -18,21 +15,17 @@ class K8sSubscriptionLocalStorage():
             cache_enabled=False
         )
         if subscription is None:
-            if required:
-                if my_output is not None:
-                    my_output.error('Operator not found: %s' % (name))
-            else:
-                if my_output is not None:
-                    my_output.default('Operator not found: %s' % (name))
+            if my_output is not None:
+                my_output.default('Operator %s %s' % (name, my_output.add_color('not found', 'Red')))
 
             return False
         
         if my_output is not None:
-            my_output.default('- namespace: %s' % (subscription['namespace_name']))
+            my_output.default('- subscription: %s' % (subscription['namespace_name']))
             my_output.default('- package: %s' % (name))
             my_output.default('- csv: %s' % (subscription['installed_csv']))
 
-        csv = self.get_cluster_service_version(
+        csv = self.get_cluster_service_version_optimized(
             subscription['namespace'],
             subscription['installed_csv'],
             return_mo=False,
@@ -44,7 +37,7 @@ class K8sSubscriptionLocalStorage():
             return False
 
         if check_ready:
-            return self.is_subscription_local_storage_ready()
+            return self.is_subscription_local_storage_ready(my_output=my_output)
         
         return True    
 
@@ -91,16 +84,37 @@ class K8sSubscriptionLocalStorage():
 
         return True
 
-    def is_subscription_local_storage_ready(self):
+    def is_subscription_local_storage_ready(self, my_output=None):
+        ready = True
+        if my_output is not None:
+            my_output.default('Local Storage Operator Resources', before_newline=True, underline=True)
+
         deployments = [
             {'namespace': 'openshift-local-storage', 'name': 'local-storage-operator'}
         ]
 
         for deployment in deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
-                return False
+            if self.is_deployment_ready(deployment['namespace'], deployment['name']):
+                if my_output is not None:
+                    my_output.default(
+                        '- deployment %s/%s %s' % (
+                            deployment['namespace'], 
+                            deployment['name'],
+                            my_output.add_color('ready', 'Green')
+                        )
+                    )
+            else:
+                if my_output is not None:
+                    my_output.default(
+                        '- deployment %s/%s %s' % (
+                            deployment['namespace'], 
+                            deployment['name'],
+                            my_output.add_color('not ready', 'Red')
+                        )
+                    )
+                ready = False
 
-        return True
+        return ready
 
     def wait_subscription_local_storage_ready(self, my_output=None):
         deployments = [

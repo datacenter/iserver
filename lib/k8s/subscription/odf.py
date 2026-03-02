@@ -3,27 +3,57 @@ import time
 
 class K8sSubscriptionOdf():
     def __init__(self):
-        pass
+        self.subscription_odf_deployment = [
+            {'namespace': 'openshift-storage', 'name': 'ceph-csi-controller-manager'},
+            {'namespace': 'openshift-storage', 'name': 'csi-addons-controller-manager'},
+            {'namespace': 'openshift-storage', 'name': 'noobaa-operator'},
+            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-console'},
+            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-controller-manager'},
+            {'namespace': 'openshift-storage', 'name': 'ocs-operator'},
+            {'namespace': 'openshift-storage', 'name': 'odf-console'},
+            {'namespace': 'openshift-storage', 'name': 'odf-operator-controller-manager'},
+            {'namespace': 'openshift-storage', 'name': 'prometheus-operator'},
+            {'namespace': 'openshift-storage', 'name': 'rook-ceph-operator'},
+            {'namespace': 'openshift-storage', 'name': 'ux-backend-server'}
+        ]
 
-    def get_ocs_operator_subscription(self, name='ocs-operator', csv_info=False, deployment_info=False, replica_set_info=False, cache_enabled=True):
-        info = self.get_subscription_by_package(
-            name,
-            csv_info=csv_info,
-            cache_enabled=cache_enabled
-        )
-        if info is None:
-            return None
-        
-        if deployment_info:
-            info['deployment'] = self.get_deployment('openshift-storage', 'ocs-operator', cache_enabled=cache_enabled)
-
-        if replica_set_info:
-            info['replica_set'] = self.get_replica_set_deployment('openshift-storage', 'ocs-operator', cache_enabled=cache_enabled)
-            
-        return info
-    
     def is_odf_subscription(self, namespace, name, cache_enabled=True):
         return self.is_subscription(namespace, name, cache_enabled=cache_enabled)
+
+    def check_odf_subscription(self, name, my_output=None, check_ready=True, before_newline=True):
+        if my_output is not None:
+            my_output.default('OpenShift Data Foundation (ODF) Subscription', underline=True, before_newline=before_newline)
+
+        subscription = self.get_subscription_by_package(
+            name,
+            return_mo=False,
+            cache_enabled=False
+        )
+        if subscription is None:
+            if my_output is not None:
+                my_output.error('Operator %s %s' % (name, my_output.add_color('not found', 'Red')))
+            return False
+        
+        if my_output is not None:
+            my_output.default('- subscription: %s' % (subscription['namespace_name']))
+            my_output.default('- package: %s' % (name))
+            my_output.default('- csv: %s' % (subscription['installed_csv']))
+
+        csv = self.get_cluster_service_version_optimized(
+            subscription['namespace'],
+            subscription['installed_csv'],
+            return_mo=False,
+            cache_enabled=False
+        )
+        if csv is None:
+            if my_output is not None:
+                my_output.error('Cluster service version not found: %s/%s' % (subscription['namespace'], subscription['installed_csv']))
+            return False
+
+        if check_ready:
+            return self.is_subscription_odf_ready(my_output=my_output)
+        
+        return True    
 
     def create_odf_subscription(self, namespace, name, channel, confirmation=False, my_output=None, wait=True):
         success = self.create_subscription(
@@ -68,62 +98,52 @@ class K8sSubscriptionOdf():
 
         return True
 
-    def is_subscription_odf_operator_ready(self):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'ceph-csi-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'csi-addons-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'noobaa-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-console'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-operator'},
-            {'namespace': 'openshift-storage', 'name': 'odf-console'},
-            {'namespace': 'openshift-storage', 'name': 'odf-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'prometheus-operator'},
-            {'namespace': 'openshift-storage', 'name': 'rook-ceph-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ux-backend-server'}
-        ]
+    def is_subscription_odf_ready(self, my_output=None):
+        ready = True
+        if my_output is not None:
+            my_output.default('OpenShift Data Foundation (ODF) Resources', before_newline=True, underline=True)
 
-        for deployment in deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
-                return False
-
-        return True
+        for deployment in self.subscription_odf_deployment:
+            if self.is_deployment_ready(deployment['namespace'], deployment['name']):
+                if my_output is not None:
+                    my_output.default(
+                        '- deployment %s/%s %s' % (
+                            deployment['namespace'], 
+                            deployment['name'],
+                            my_output.add_color('ready', 'Green')
+                        )
+                    )
+            else:
+                ready = False
+                if my_output is not None:
+                    my_output.default(
+                        '- deployment %s/%s %s' % (
+                            deployment['namespace'], 
+                            deployment['name'],
+                            my_output.add_color('not ready', 'Red')
+                        )
+                    )
+                
+        return ready
     
     def wait_subscription_odf_ready(self, my_output=None):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'ceph-csi-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'csi-addons-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'noobaa-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-console'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-operator'},
-            {'namespace': 'openshift-storage', 'name': 'odf-console'},
-            {'namespace': 'openshift-storage', 'name': 'odf-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'prometheus-operator'},
-            {'namespace': 'openshift-storage', 'name': 'rook-ceph-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ux-backend-server'}
-        ]
-        success = self.wait_deployments_ready_state(deployments, my_output=my_output, optional=False, allow_zero_replicas=True)
+        success = self.wait_deployments_ready_state(
+            self.subscription_odf_deployment, 
+            my_output=my_output, 
+            optional=False, 
+            allow_zero_replicas=True
+        )
         if not success:
             return False
 
         return True
 
     def wait_no_subscription_odf(self, my_output=None):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'ceph-csi-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'csi-addons-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'noobaa-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-console'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-client-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'ocs-operator'},
-            {'namespace': 'openshift-storage', 'name': 'odf-console'},
-            {'namespace': 'openshift-storage', 'name': 'odf-operator-controller-manager'},
-            {'namespace': 'openshift-storage', 'name': 'prometheus-operator'},
-            {'namespace': 'openshift-storage', 'name': 'rook-ceph-operator'},
-            {'namespace': 'openshift-storage', 'name': 'ux-backend-server'}
-        ]
-        success = self.wait_no_deployments(deployments, my_output=my_output, optional=False)
+        success = self.wait_no_deployments(
+            self.subscription_odf_deployment, 
+            my_output=my_output, 
+            optional=False
+        )
         if not success:
             return False
 

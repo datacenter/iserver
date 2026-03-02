@@ -8,15 +8,22 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
 
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
     
     new_params = {}
     allowed_keys = [
         'cluster',
+        'verbose',
         'check-verbose'
     ]
     for key in params:

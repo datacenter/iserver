@@ -20,32 +20,39 @@ def validate(params):
     if not isinstance(params['confirmation'], bool):
         return None, 'confirmation param must be true or false'
     
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
 
     allowed_keys = [
         'cluster',
         'node-selector-override',
         'channel',
         'confirmation',
+        'verbose',
         'check-verbose'
     ]
     return local_common.sanitize_params(params, allowed_keys), None
 
 
-def get_namespace_labels(params):
-    labels = {}
+def get_namespace_annotations(params):
+    annotations = {}
 
     if params['k8s_handler'].get_node_count() == 1:
-        labels['workload.openshift.io/allowed'] = 'management'
+        annotations['workload.openshift.io/allowed'] = 'management'
 
     if params['node-selector-override']:
-        labels['openshift.io/node-selector'] = ''
+        annotations['openshift.io/node-selector'] = ''
 
-    return labels
+    return annotations
 
 
 def run(params, log_id=None):
@@ -61,13 +68,32 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if params['k8s_handler'].is_local_storage_subscription(params['namespace'], params['name']):
-        my_output.default('LSO already created')
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True
+    )
+    if state['installed']:
+        if state['ready']:
+            my_output.default('')
+            my_output.default('Completed tasks')
+            my_output.default('- Local Storage Operator already %s and %s' % (
+                my_output.add_color('installed', 'Green'),
+                my_output.add_color('ready', 'Green')
+            ))
+        else:
+            my_output.default('')
+            my_output.default('Completed tasks')
+            my_output.default('- Local Storage Operator already %s and %s' % (
+                my_output.add_color('installed', 'Green'),
+                my_output.add_color('not ready', 'Red')
+            ))
+
         return True
     
     success = params['k8s_handler'].create_namespace(
         params['namespace'],
-        labels=get_namespace_labels(params),
+        annotations=get_namespace_annotations(params),
         confirmation=params['confirmation'],
         my_output=my_output,
         wait=True

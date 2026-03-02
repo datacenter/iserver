@@ -160,14 +160,35 @@ class K8sDeploymentInfo():
 
         return None
 
-    def is_deployment(self, namespace, name, cache_enabled=True):
-        if self.get_deployment(namespace, name, cache_enabled=cache_enabled) is None:
-            return False
-        return True
+    def get_deployment_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
+        managed_object = self.get_deployment_mo(
+            namespace=namespace, 
+            name=name, 
+            cache_enabled=cache_enabled
+        )
+        if return_mo:
+            return managed_object
+        
+        return self.get_deployment_info(managed_object)
 
-    def is_deployment_ready(self, namespace, name, cache_enabled=True):
-        deployment_info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
-        if deployment_info is None:
+    def is_deployment(self, namespace, name, cache_enabled=True, optimized=False):
+        if optimized:
+            info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
+        else:
+            info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
+
+        if info is None:
             return False
         
-        return deployment_info['ready']
+        return True
+
+    def is_deployment_ready(self, namespace, name, cache_enabled=True, optimized=False):
+        if optimized:
+            info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
+        else:
+            info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
+
+        if info is None:
+            return False
+        
+        return info['ready']

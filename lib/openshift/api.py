@@ -1,3 +1,4 @@
+import json
 import time
 import traceback
 import requests
@@ -30,8 +31,14 @@ class Api():
         data['client_id'] = 'cloud-services'
         data['refresh_token'] = self.authentication_token
 
+        self.log.debug(
+            'generate_access_token',
+            json.dumps(data, indent=4)
+        )
+
         requests.packages.urllib3.disable_warnings()
         start_time = int(time.time() * 1000)
+        error = None
         try:
             response = requests.post(
                 url,
@@ -56,6 +63,7 @@ class Api():
                 authenticated = False
                 self.access_token = None
                 self.access_token_timestamp = None
+                error = 'Response code: %s' % (response.status_code)
 
         except BaseException:
             self.log.error(
@@ -65,6 +73,17 @@ class Api():
             authenticated = False
             self.access_token = None
             self.access_token_timestamp = None
+            error = 'Code exception'
+
+        self.log.debug(
+            'generate_access_token',
+            str(self.access_token)
+        )
+
+        self.log.debug(
+            'generate_access_token',
+            str(self.access_token_timestamp)
+        )
 
         end_time = int(time.time() * 1000)
         duration_ms = end_time - start_time
@@ -73,6 +92,9 @@ class Api():
             authenticated,
             duration_ms
         )
+
+        return self.access_token, error
+
 
     def is_access_token_valid(self):
         if self.access_token is None:
@@ -99,9 +121,11 @@ class Api():
             'get_access_token',
             'Access token is invalid - generate new one'
         )
-        self.generate_access_token()
-
-        return self.access_token
+        token, error = self.generate_access_token()
+        if error is not None:
+            self.log.error('get_access_token', error)
+            
+        return token
 
     def get_query(self, url_suffix, extra_headers=None, params=None):
         token = self.get_access_token()

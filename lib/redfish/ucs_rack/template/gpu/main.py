@@ -1,6 +1,9 @@
 class RedfishEndpointUcsRackTemplateGpu():
     def __init__(self):
-        self.defult_gpu_uri = '/redfish/v1/Systems/SYSTEM_ID/Processors'
+        if self.endpoint_handler.bmc:
+            self.defult_gpu_uri = '/redfish/v1/Systems/system/Processors'
+        else:
+            self.defult_gpu_uri = '/redfish/v1/Systems/SYSTEM_ID/Processors'
         self.gpu = None
 
     def get_gpu_uri(self):

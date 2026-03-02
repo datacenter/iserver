@@ -17,7 +17,7 @@ class ErrorExit(Exception):
 @click.command("lso")
 @click.pass_obj
 @click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['operator', 'volume','all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
+@click.option("--mode", type=click.Choice(['operator', 'volume'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--nso", is_flag=True, show_default=True, default=False, help="Enable node selector override namespace annotation")
 @click.option("--channel", default='__default__', show_default=True, help="Operator channel")
 @click.option("--sc", "storage_class", default='local-sc', callback=validations.empty_string_to_none, show_default=True, help="Storage class name")
@@ -44,7 +44,7 @@ def set_ocp_lso_command(
     """Set local storage operator in openshift cluster"""
 
     try:
-        if mode in ['operator', 'all']:
+        if mode in ['operator']:
             params = {}
             params['cluster'] = cluster_name
             params['node-selector-override'] = nso
@@ -58,7 +58,7 @@ def set_ocp_lso_command(
             if not success:
                 raise ErrorExit
 
-        if mode in ['volume', 'all']:
+        if mode in ['volume']:
             new_device = []
             for item in device:
                 new_device.append(item)

@@ -95,8 +95,7 @@ def get_k8s_locvdr_command(
 
         if 'state' in view:
             k8s_output_handler.print_local_volume_discovery_results(
-                locvdrs,
-                title=True
+                locvdrs
             )
 
         ctx.my_output.default('Filter: --', before_newline=True)

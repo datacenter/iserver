@@ -58,6 +58,22 @@ class RedfishEndpoint():
                 log_id=log_id
             )
 
+        if endpoint_type == 'bmc':
+            self.endpoint_handler = ucs_rack_endpoint.RedfishEndpointUcsRack(
+                self,
+                endpoint_ip,
+                endpoint_port,
+                redfish_username,
+                redfish_password,
+                bmc=True,
+                system_id=system_id,
+                auto_connect=auto_connect,
+                get_timeout=get_timeout,
+                ssl_verify=ssl_verify,
+                deep_search_exlusions=deep_search_exlusions,
+                log_id=log_id
+            )
+
         if endpoint_type == 'fi':
             self.endpoint_handler = fi_endpoint.RedfishEndpointFabricInterconnect(
                 self,

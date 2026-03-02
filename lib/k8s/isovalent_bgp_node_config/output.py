@@ -13,7 +13,7 @@ class K8sIsovalentBGPNodeConfigOutput():
                 ['Node', 'node'],
                 ['Instance', 'instance'],
                 ['ASN', 'local_asn'],
-                ['Peer name', 'name'],
+                ['Peer', 'name'],
                 ['Peer IP', 'ip'],
                 ['Peer ASN', 'peer_asn'],
                 ['State', 'state'],
@@ -21,7 +21,6 @@ class K8sIsovalentBGPNodeConfigOutput():
                 ['Hold', 'hold_time'],
                 ['AFI', 'route.afi'],
                 ['SAFI', 'route.safi'],
-                ['Adv', 'route.advertised'],
-                ['Rcv', 'route.received']
+                ['Adv', 'route.advertised']
             ]
         )

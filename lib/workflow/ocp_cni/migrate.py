@@ -433,7 +433,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'Subscription':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_subscription(body['metadata']['namespace'], body['metadata']['name']):
-                success = params['k8s_handler'].create_subscription_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -462,7 +462,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'Deployment':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_deployment(body['metadata']['namespace'], body['metadata']['name']):
-                success = params['k8s_handler'].create_deployment_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False

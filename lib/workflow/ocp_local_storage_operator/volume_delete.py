@@ -9,14 +9,21 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
     
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
 
     allowed_keys = [
         'cluster',
+        'verbose',
         'check-verbose'
     ]  
     return local_common.sanitize_params(params, allowed_keys), None
@@ -82,7 +89,12 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if not params['k8s_handler'].check_local_storage_subscription(params['name'], my_output=my_output, required=False):
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True
+    )
+    if not state['installed'] or not state['ready']:
         return False
     
     params = validate_values(params, my_output)

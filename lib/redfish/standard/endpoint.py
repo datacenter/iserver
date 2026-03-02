@@ -17,6 +17,7 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             endpoint_port,
             redfish_username,
             redfish_password,
+            bmc=False,
             system_id=None,
             auto_connect=True,
             get_timeout=10,
@@ -31,6 +32,7 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
             endpoint_port,
             redfish_username,
             redfish_password,
+            bmc=bmc,
             system_id=system_id,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
@@ -40,6 +42,8 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
         )
 
         self.endpoint_type = 'standard'
+        self.bmc = bmc
+
         if auto_connect:
             self.connect()
 
@@ -63,10 +67,16 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
         if self.session_handler is not None:
             return True
 
+        if self.bmc:
+            return self.connect_bmc()
+        
         start_time = int(time.time() * 1000)
         self.session_handler = requests.Session()
 
-        url = 'https://%s:%s/redfish/v1/SessionService/Sessions' % (self.endpoint_ip, self.endpoint_port)
+        url = 'https://%s:%s/redfish/v1/SessionService/Sessions' % (
+            self.endpoint_ip, 
+            self.endpoint_port
+        )
         data = {}
         data['UserName'] = self.redfish_username
         data['Password'] = self.redfish_password
@@ -151,10 +161,90 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
 
         return True
 
+    def connect_bmc(self):
+        if self.session_handler is not None:
+            return True
+
+        start_time = int(time.time() * 1000)
+        self.session_handler = requests.Session()
+        self.session_handler.auth = (self.redfish_username, self.redfish_password)
+
+        url = 'https://%s:%s/redfish/v1' % (
+            self.endpoint_ip, 
+            self.endpoint_port
+        )
+
+        try:
+            response = self.session_handler.get(
+                url,
+                verify=self.ssl_verify
+            )
+
+        except BaseException:
+            self.log.error(
+                'connect-bmc',
+                'Redfish authentication exception: %s' % (self.endpoint_ip)
+            )
+
+            self.log.error(
+                'connect-bmc',
+                traceback.format_exc()
+            )
+
+            end_time = int(time.time() * 1000)
+            duration_ms = end_time - start_time
+            self.log.redfish(
+                'connect bmc %s' % (self.endpoint_ip),
+                False,
+                duration_ms
+            )
+
+            return False
+
+        if response.status_code >= 300:
+            self.log.error(
+                'connect-bmc',
+                'Redfish authentication failed: %s %s %s' % (
+                    self.endpoint_ip,
+                    response.status_code,
+                    str(response.content)
+                )
+            )
+
+            end_time = int(time.time() * 1000)
+            duration_ms = end_time - start_time
+            self.log.redfish(
+                'connect bmc %s' % (self.endpoint_ip),
+                False,
+                duration_ms
+            )
+
+            return False
+
+        self.session_id = 'bmc_session_id'
+        self.session_token = 'bmc_session_token'
+
+        end_time = int(time.time() * 1000)
+        duration_ms = end_time - start_time
+        self.log.debug(
+            'connect bmc',
+            'Redfish connected to %s in %s ms' % (self.endpoint_ip, duration_ms)
+        )
+        self.log.redfish(
+            'connect bmc %s' % (self.endpoint_ip),
+            True,
+            duration_ms
+        )
+
+        return True
+
     def disconnect(self):
         if self.session_handler is None:
             return True
 
+        if self.bmc:
+            return self.disconnect_bmc()
+        
         start_time = int(time.time() * 1000)
         url = 'https://%s:%s/redfish/v1/SessionService/Sessions/%s' % (
             self.endpoint_ip,
@@ -241,6 +331,21 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
 
         return True
 
+    def disconnect_bmc(self):
+        if self.session_handler is None:
+            return True
+
+        try:
+            self.session_handler.close()
+            del self.session_handler
+        except BaseException:
+            pass
+
+        self.session_handler = None
+        self.session_id = None
+        self.session_token = None
+        return True
+
     def patch(self, url, data=None):
         if self.session_handler is None:
             return False
@@ -248,7 +353,8 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
         start_time = int(time.time() * 1000)
 
         headers = {}
-        headers['X-Auth-Token'] = self.session_token
+        if not self.bmc:
+            headers['X-Auth-Token'] = self.session_token
 
         try:
             if data is None:
@@ -258,12 +364,20 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
                     verify=self.ssl_verify
                 )
             else:
-                response = self.session_handler.patch(
-                    url,
-                    headers=headers,
-                    data=json.dumps(data),
-                    verify=self.ssl_verify
-                )
+                if self.bmc:
+                    response = self.session_handler.patch(
+                        url,
+                        headers=headers,
+                        json=data,
+                        verify=self.ssl_verify
+                    )
+                else:
+                    response = self.session_handler.patch(
+                        url,
+                        headers=headers,
+                        data=json.dumps(data),
+                        verify=self.ssl_verify
+                    )
 
         except BaseException:
             self.log.error(
@@ -335,7 +449,8 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
         start_time = int(time.time() * 1000)
 
         headers = {}
-        headers['X-Auth-Token'] = self.session_token
+        if not self.bmc:
+            headers['X-Auth-Token'] = self.session_token
 
         try:
             if data is None:
@@ -345,12 +460,20 @@ class RedfishEndpointStandard(RedfishEndpointCommon):
                     verify=self.ssl_verify
                 )
             else:
-                response = self.session_handler.post(
-                    url,
-                    headers=headers,
-                    data=json.dumps(data),
-                    verify=self.ssl_verify
-                )
+                if self.bmc:
+                    response = self.session_handler.post(
+                        url,
+                        headers=headers,
+                        json=data,
+                        verify=self.ssl_verify
+                    )
+                else:
+                    response = self.session_handler.post(
+                        url,
+                        headers=headers,
+                        data=json.dumps(data),
+                        verify=self.ssl_verify
+                    )
 
         except BaseException:
             self.log.error(

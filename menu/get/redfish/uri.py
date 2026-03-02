@@ -21,7 +21,7 @@ class ErrorExit(Exception):
 
 @click.command("uri")
 @click.pass_obj
-@click.option("--type", "endpoint_type", type=click.Choice(['standard', 'ucsc', 'fi', 'dell', 'hpe'], case_sensitive=False), default='standard', help="Redfish endpoint type")
+@click.option("--type", "endpoint_type", type=click.Choice(['standard', 'ucsc', 'fi', 'bmc', 'dell', 'hpe'], case_sensitive=False), default='standard', help="Redfish endpoint type")
 @click.option("--ip", "endpoint_ip", default='', callback=validations.validate_ip, help="Management IP address")
 @click.option("--port", "endpoint_port", default=443, help="Redfish management TCP port")
 @click.option("--username", default='', help="Redfish username")
@@ -87,7 +87,7 @@ def get_redfish_uri_command(
         params = redfish_common.input_params(ctx, params)
         if params is None:
             raise ErrorExit
-
+        
         ctx.my_output.default('Requested URI: %s' % (redfish_path))
 
         if output not in ['json']:

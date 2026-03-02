@@ -7,50 +7,69 @@ class K8sNamespaceApi():
     def __init__(self):
         self.namespace_mo = None
 
-    def get_namespace_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.namespace_mo is not None:
-                return self.namespace_mo
-
-        api_handler = self.get_api()
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.list_namespace(
-                timeout_seconds=self.api_timeout_seconds
-            )
-            self.log.k8s(
-                'get',
-                'namespace',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_namespace_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'namespace',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            return None
-
-        self.namespace_mo = []
-        for item in response.items:
-            namespace_mo = self.convert_object(item.to_dict())
-            self.namespace_mo.append(
-                namespace_mo
-            )
-
-        self.log.k8s_mo(
-            'namespace',
+    def get_namespace_mo(self, name=None, cache_enabled=True, fast=False):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.namespace_mo
         )
+        if cache_hit:
+            return response
 
-        return self.namespace_mo
+        response, self.namespace_mo = self.get_resources(
+            'Namespace', 
+            'v1', 
+            self.namespace_mo,
+            name=name,
+            fast=fast
+        )
+
+        return response
+
+    # def get_namespace_mo(self, cache_enabled=True):
+    #     if cache_enabled:
+    #         if self.namespace_mo is not None:
+    #             return self.namespace_mo
+
+    #     api_handler = self.get_api()
+    #     if api_handler is None:
+    #         return None
+
+    #     try:
+    #         start_time = int(time.time() * 1000)
+    #         response = api_handler.list_namespace(
+    #             timeout_seconds=self.api_timeout_seconds
+    #         )
+    #         self.log.k8s(
+    #             'get',
+    #             'namespace',
+    #             True,
+    #             int(time.time() * 1000) - start_time
+    #         )
+
+    #     except BaseException:
+    #         self.log.error('k8s.get_namespace_mo', traceback.format_exc())
+    #         self.log.k8s(
+    #             'get',
+    #             'namespace',
+    #             True,
+    #             int(time.time() * 1000) - start_time
+    #         )
+    #         return None
+
+    #     self.namespace_mo = []
+    #     for item in response.items:
+    #         namespace_mo = self.convert_object(item.to_dict())
+    #         self.namespace_mo.append(
+    #             namespace_mo
+    #         )
+
+    #     self.log.k8s_mo(
+    #         'namespace',
+    #         self.namespace_mo
+    #     )
+
+    #     return self.namespace_mo
 
     def create_namespace_mo(self, name):
         api_handler = self.get_api()
@@ -147,6 +166,31 @@ class K8sNamespaceApi():
 
         return True
     
+    def add_namespace_annotation(self, namespace, key, value):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return False
+
+        try:
+            labels = {
+                'metadata': {
+                    'annotations': {
+                        key:value
+                    }
+                }
+            }
+
+            response = api_handler.patch_namespace(
+                namespace,
+                labels
+            )
+
+        except BaseException:
+            self.log.error('k8s_nodes.add_namespace_annotation', traceback.format_exc())
+            return False
+
+        return True
+    
     def delete_namespace_label(self, namespace, key):
         api_handler = self.get_api()
         if api_handler is None:
@@ -168,6 +212,31 @@ class K8sNamespaceApi():
 
         except BaseException:
             self.log.error('k8s_nodes.add_namespace_label', traceback.format_exc())
+            return False
+
+        return True
+    
+    def delete_namespace_annotation(self, namespace, key):
+        api_handler = self.get_api()
+        if api_handler is None:
+            return False
+
+        try:
+            labels = {
+                'metadata': {
+                    'annotations': {
+                        key:None
+                    }
+                }
+            }
+
+            response = api_handler.patch_namespace(
+                namespace,
+                labels
+            )
+
+        except BaseException:
+            self.log.error('k8s_nodes.delete_namespace_annotation', traceback.format_exc())
             return False
 
         return True

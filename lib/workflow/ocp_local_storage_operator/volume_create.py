@@ -1,8 +1,5 @@
-import json
-import yaml
 from lib import output_helper
 from lib import ip_helper
-from lib.workflow.ocp_access import check as ocp_check
 from lib.workflow import ocp_common as global_common
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_local_storage_operator import common as local_common
@@ -14,18 +11,6 @@ def validate(params):
     
     params['ssh-required'] = True
 
-    if 'confirmation' not in params:
-        params['confirmation'] = False
-
-    if not isinstance(params['confirmation'], bool):
-        return None, 'confirmation param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = True
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
     if 'device' not in params:
         params['device'] = []
 
@@ -35,13 +20,11 @@ def validate(params):
     for item in params['device']:
         if not isinstance(item, str):
             return None, 'device param must list of strings'
-        
-        if len(item.split(':')) not in [1, 2]:
-            return None, 'device list element must be node-name or node-name:device-wwn'
-    
-        if len(item.split(':')) == 2:
-            if not item.split(':')[1].startswith('wwn-'):
-                return None, 'node device should be in wwn-abc format'
+
+        if len(item.split(':')) > 1:
+            device_name = ':'.join(item.split(':')[1:])
+            if not device_name.startswith('wwn-') and not device_name.startswith('nvme-'):
+                return None, 'node device should be in wwn- or nvme- format'
             
     if 'sc' not in params:
         params['sc'] = 'local-sc'
@@ -100,17 +83,36 @@ def validate(params):
             if limit_value not in ['rotational', 'nonrotational']:
                 return None, 'supported limit values for key mechinical: rotational, nonrotational'
             
+    if 'confirmation' not in params:
+        params['confirmation'] = False
+
+    if not isinstance(params['confirmation'], bool):
+        return None, 'confirmation param must be true or false'
+    
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
+    if 'check-verbose' not in params:
+        params['check-verbose'] = params['verbose']
+
+    if not isinstance(params['check-verbose'], bool):
+        return None, 'check-verbose param must be true or false'    
+
     allowed_keys = [
         'cluster',
         'ssh-required',
-        'confirmation',
-        'check-verbose',
         'device',
         'sc',
         'volume',
         'fstype',
         'max',
-        'limit'
+        'limit',
+        'confirmation',
+        'verbose',
+        'check-verbose'
     ]  
     return local_common.sanitize_params(params, allowed_keys), None
 
@@ -165,16 +167,16 @@ def validate_values(params, my_output, log_id):
 
         if len(params['local_volume']) > 0:
             my_output.default('Local Volume already defined', before_newline=True)
-            k8s_output_handler.print_local_volumes(params['local_volume'], title=False)
+            k8s_output_handler.print_local_volumes(params['local_volume'])
             return None
     
         if len(params['local_volume_discovery']) > 0:
             my_output.default('Local Volume Discovery already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'], title=False)
+            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'])
 
         if len(params['local_volume_set']) > 0:
             my_output.default('Local Volume Set already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_sets(params['local_volume_set'], title=False)
+            k8s_output_handler.print_local_volume_sets(params['local_volume_set'])
 
             for lvs in params['local_volume_set']:
                 if lvs['pv'] is not None and len(lvs['pv']) > 0:
@@ -190,7 +192,7 @@ def validate_values(params, my_output, log_id):
     params['explicit-devices'] = {}
     for device in params['device']:
         node_name = None
-        device_wwn = None
+        device_name = None
         if len(device.split(':')) == 1:
             volume_mode = 'discovery-node'
             node_name = device
@@ -202,7 +204,7 @@ def validate_values(params, my_output, log_id):
         else:
             volume_mode = 'explicit'
             node_name = device.split(':')[0]
-            device_wwn = device.split(':')[1]
+            device_name = ':'.join(device.split(':')[1:])
             if volume_mode is not None and volume_mode != 'explicit':
                 my_output.error('Consistency required in volume mode selection')
                 return None
@@ -210,10 +212,10 @@ def validate_values(params, my_output, log_id):
             found = False
             for local_volume in params['local_volume']:
                 if node_name in local_volume['node']:
-                    if device_wwn in local_volume['device_path']:
+                    if device_name in local_volume['device_path']:
                         my_output.default(
                             'Device [%s] on node [%s] already defined in local volume [%s]' % (
-                                device_wwn,
+                                device_name,
                                 node_name,
                                 local_volume['name']
                             )
@@ -229,7 +231,7 @@ def validate_values(params, my_output, log_id):
             if node_name not in params['explicit-devices']:
                 params['explicit-devices'][node_name] = []
 
-            params['explicit-devices'][node_name].append(device_wwn)
+            params['explicit-devices'][node_name].append(device_name)
 
         if node_name not in node_names:
             my_output.error('Unknown node name: %s' % (node_name))
@@ -239,7 +241,7 @@ def validate_values(params, my_output, log_id):
             my_output.error('No block device information collected for node name: %s' % (node_name))
             return None
         
-        if device_wwn is not None:
+        if device_name is not None and device.startswith('wwn-'):
             found = False
             for block_device in params['lsblk'][node_name]:
                 if 'disk-wwn' not in block_device:
@@ -248,11 +250,27 @@ def validate_values(params, my_output, log_id):
                 if block_device['disk-wwn'] is None:
                     continue
 
-                if block_device['disk-wwn'] == '/dev/disk/by-id/%s' % device_wwn:
+                if block_device['disk-wwn'] == '/dev/disk/by-id/%s' % device_name:
                     found = True
 
             if not found:
-                my_output.error('No wwn block device [%s] found on node [%s]' % (device_wwn, node_name))
+                my_output.error('No wwn block device [%s] found on node [%s]' % (device_name, node_name))
+                return None
+            
+        if device_name is not None and device.startswith('nvme-'):
+            found = False
+            for block_device in params['lsblk'][node_name]:
+                if 'disk-wwn' not in block_device:
+                    continue
+
+                if block_device['disk-wwn'] is None:
+                    continue
+
+                if block_device['disk-wwn'] == '/dev/disk/by-wwn/%s' % device_name:
+                    found = True
+
+            if not found:
+                my_output.error('No nvme device [%s] found on node [%s]' % (device_name, node_name))
                 return None
             
     if volume_mode is None:
@@ -269,16 +287,16 @@ def validate_values(params, my_output, log_id):
         
         if len(params['local_volume']) > 0:
             my_output.default('Local Volume already defined', before_newline=True)
-            k8s_output_handler.print_local_volumes(params['local_volume'], title=False)
+            k8s_output_handler.print_local_volumes(params['local_volume'])
             return None
     
         if len(params['local_volume_discovery']) > 0:
             my_output.default('Local Volume Discovery already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'], title=False)
+            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'])
 
         if len(params['local_volume_set']) > 0:
             my_output.default('Local Volume Set already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_sets(params['local_volume_set'], title=False)
+            k8s_output_handler.print_local_volume_sets(params['local_volume_set'])
         
             for lvs in params['local_volume_set']:
                 if lvs['pv'] is not None and len(lvs['pv']) > 0:
@@ -290,11 +308,11 @@ def validate_values(params, my_output, log_id):
     if params['volume-mode'] == 'explicit':
         if len(params['local_volume_discovery']) > 0:
             my_output.default('Local Volume Discovery already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'], title=False)
+            k8s_output_handler.print_local_volume_discoveries(params['local_volume_discovery'])
 
         if len(params['local_volume_set']) > 0:
             my_output.default('Local Volume Set already defined', before_newline=True)
-            k8s_output_handler.print_local_volume_sets(params['local_volume_set'], title=False)
+            k8s_output_handler.print_local_volume_sets(params['local_volume_set'])
 
             for lvs in params['local_volume_set']:
                 if lvs['pv'] is not None and len(lvs['pv']) > 0:
@@ -353,7 +371,6 @@ def create_local_volume_discovery(params, my_output, k8s_output_handler, name='a
 
     k8s_output_handler.print_local_volume_discovery_results(
         params['discovery_results'],
-        title=True,
         unavailable=False
     )
 
@@ -456,7 +473,7 @@ def create_local_volume_set(params, my_output, k8s_output_handler):
         my_output.error('Unexpected failure in local volume set get')
         return None
     
-    k8s_output_handler.print_local_volume_sets(local_volume_sets, title=False)
+    k8s_output_handler.print_local_volume_sets(local_volume_sets)
     for lvs in local_volume_sets:
         if lvs['pv'] is not None and len(lvs['pv']) > 0:
             k8s_output_handler.print_pvs(lvs['pv'])
@@ -470,17 +487,32 @@ def create_local_volume(params, my_output, k8s_output_handler):
         for device in params['explicit-devices'][node_name]:
             lv_name = 'local-disks-%s' % (ip_helper.get_short_uuid())
             lv_names.append(lv_name)
-            success = params['k8s_handler'].create_local_volume(
-                params['namespace'],
-                lv_name,
-                [node_name],
-                params['volume'],
-                ['/dev/disk/by-id/%s' % (device)],
-                params['sc'],
-                confirmation=params['confirmation'],
-                my_output=my_output,
-                wait=True
-            )
+
+            if device.startswith('wwn-'):
+                success = params['k8s_handler'].create_local_volume(
+                    params['namespace'],
+                    lv_name,
+                    [node_name],
+                    params['volume'],
+                    ['/dev/disk/by-id/%s' % (device)],
+                    params['sc'],
+                    confirmation=params['confirmation'],
+                    my_output=my_output,
+                    wait=True
+                )
+            else:
+                success = params['k8s_handler'].create_local_volume(
+                    params['namespace'],
+                    lv_name,
+                    [node_name],
+                    params['volume'],
+                    ['/dev/disk/by-id/%s' % (device)],
+                    params['sc'],
+                    confirmation=params['confirmation'],
+                    my_output=my_output,
+                    wait=True
+                )
+
             if not success:
                 return False
 
@@ -511,7 +543,12 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if not params['k8s_handler'].check_local_storage_subscription(params['name'], my_output=my_output):
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True
+    )
+    if not state['installed'] or not state['ready']:
         return False
     
     params = validate_values(params, my_output, log_id)

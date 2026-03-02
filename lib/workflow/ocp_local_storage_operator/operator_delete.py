@@ -8,14 +8,21 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
 
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
 
     allowed_keys = [
         'cluster',
+        'verbose',
         'check-verbose'
     ]
     return local_common.sanitize_params(params, allowed_keys), None
@@ -74,7 +81,22 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if not check_resources(params, my_output):
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True,
+        check_resources=True
+    )
+    if not state['installed']:
+        my_output.default('')
+        my_output.default('Completed tasks')
+        my_output.default('- Local Storage Operator already %s' % (
+            my_output.add_color('uninstalled', 'Green')
+        ))
+        return True
+
+    if state['dependants']:
+        my_output.default('Cleanup local storage configuration first', before_newline=True)
         return False
     
     success = params['k8s_handler'].delete_local_storage_subscription(

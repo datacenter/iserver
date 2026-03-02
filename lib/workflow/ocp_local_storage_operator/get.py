@@ -9,14 +9,21 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
     
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
     
     allowed_keys = [
         'cluster',
+        'verbose',
         'check-verbose'
     ]
     return local_common.sanitize_params(params, allowed_keys), None
@@ -36,85 +43,36 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    subscription = params['k8s_handler'].get_subscription_by_package(
-        params['name'],
-        return_mo=False,
-        cache_enabled=False
+    state = local_common.check_state(
+        params, 
+        my_output,
+        check_ready=True,
+        check_resources=True
     )
-    if subscription is None:
-        my_output.default('Operator not found: %s' % (params['name']))
+    if not state['installed']:
         return True
-    
-    my_output.default('Operator', underline=True)
-    my_output.default('- subscription: %s' % (subscription['namespace_name']))
-    my_output.default('- channel: %s' % (subscription['channel']))
-    my_output.default('- csv: %s' % (subscription['installed_csv']))
-    
-    csv = params['k8s_handler'].get_cluster_service_version(
-        subscription['namespace'],
-        subscription['installed_csv'],
-        return_mo=False,
-        cache_enabled=False
-    )
-    if csv is None:
-        my_output.debug('[WARNING] CSV not found: %s/%s' % (subscription['namespace'], subscription['installed_csv']))
-    
-    my_output.default('Operator functional readiness', underline=True, before_newline=True)
-    if params['k8s_handler'].is_subscription_local_storage_ready():
-        my_output.default(my_output.add_color('ready', 'Green'))
-    else:
-        my_output.default(my_output.add_color('not ready', 'Red'))
-        params['k8s_handler'].check_namespace_usage_and_state(
-            subscription['namespace'],
-            my_output=my_output,
-            show_details=True
-        )
 
-    lvd = params['k8s_handler'].get_local_volume_discoveries(
-        cache_enabled=False
-    )
-    if lvd is None:
-        my_output.error('Failed to run api call')
-        return False
-    
-    k8s_output_handler.print_local_volume_discoveries(lvd, title=True)
+    if state['local_volume_discovery'] is not None and len(state['local_volume_discovery']) > 0:
+        k8s_output_handler.print_local_volume_discoveries(state['local_volume_discovery'])
 
-    lvdr = params['k8s_handler'].get_local_volume_discovery_results(
-        cache_enabled=False
-    )
-    if lvdr is None:
-        my_output.error('Failed to run api call')
-        return False
-    
-    k8s_output_handler.print_local_volume_discovery_results(lvdr, title=True)
+    if state['local_volume_discovery_result'] is not None and len(state['local_volume_discovery_result']) > 0:
+        k8s_output_handler.print_local_volume_discovery_results(state['local_volume_discovery_result'])
 
-    lvset = params['k8s_handler'].get_local_volume_sets(
-        cache_enabled=False
-    )
-    if lvset is None:
-        my_output.error('Failed to run api call')
-        return False
-    
-    k8s_output_handler.print_local_volume_sets(lvset, title=True)
+    if state['local_volume_set'] is not None and len(state['local_volume_set']) > 0:
+        k8s_output_handler.print_local_volume_sets(state['local_volume_set'])
 
-    vol = params['k8s_handler'].get_local_volumes(
-        cache_enabled=False
-    )
-    if vol is None:
-        my_output.error('Failed to run api call')
-        return False
-    
-    k8s_output_handler.print_local_volumes(vol, title=True)
+    if state['local_volume'] is not None and len(state['local_volume']) > 0:
+        k8s_output_handler.print_local_volumes(state['local_volume'])
 
-    if lvset is not None:
-        for item in lvset:
+    if state['local_volume_set'] is not None:
+        for item in state['local_volume_set']:
             storage_class = params['k8s_handler'].get_storage_class(item['storage_class'], pv_info=True)
             if storage_class is not None:
-                k8s_output_handler.print_storage_classes_with_resources([storage_class], title=True)
+                k8s_output_handler.print_storage_classes_with_resources([storage_class])
 
-    if vol is not None:
+    if state['local_volume'] is not None:
         sc_names = []
-        for item in vol:
+        for item in state['local_volume']:
             for device in item['device']:
                 if device['sc'] not in sc_names:
                     sc_names.append(device['sc'])
@@ -122,6 +80,6 @@ def run(params, log_id=None):
         for item in sc_names:
             storage_class = params['k8s_handler'].get_storage_class(item, pv_info=True)
             if storage_class is not None:
-                k8s_output_handler.print_storage_classes_with_resources([storage_class], title=True)
-        
+                k8s_output_handler.print_storage_classes_with_resources([storage_class])
+    
     return True

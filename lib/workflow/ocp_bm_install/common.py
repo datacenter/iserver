@@ -581,7 +581,7 @@ def check_cluster_server_ssh_acccess(user_settings, my_output):
 
 def print_virtual_media_info(virtual_media_details, my_output):
     my_output.default('Virtual Media [%s]' % (virtual_media_details['Id']))
-    my_output.default('- DataId: %s' % (filter_helper.get_attr(virtual_media_details, '@odata.id', cast='---')))
+    my_output.default('- @odata.id: %s' % (filter_helper.get_attr(virtual_media_details, '@odata.id', cast='---')))
     my_output.default('- Name: %s' % (filter_helper.get_attr(virtual_media_details, 'Name', cast='---')))
     my_output.default('- Inserted: %s' % (filter_helper.get_attr(virtual_media_details, 'Inserted', cast='---')))
     my_output.default('- MediaTypes: %s' % (filter_helper.get_attr(virtual_media_details, 'MediaTypes', cast='---')))
@@ -624,31 +624,59 @@ def test_server_redfish_virtual_media(user_settings, redfish_handler, server, vi
 
     print_virtual_media_info(virtual_media_details, my_output)
 
-    if 'DVD' not in virtual_media_details['MediaTypes']:
-        my_output.error(
-            'Virtual media [#%s] does not support DVD media type: %s' % (
-                server['redfish']['virtual_media_id'],
-                server['redfish']['endpoint_ip']
-            )
-        )
-        return False
-
-    if virtual_media_details['Status']['State'] != 'Disabled':
-        if not user_settings['settings']['server_force_virtual_media_eject']:
-            my_output.default(
-                'Virtual media id is currently used. It must be ejected to be tested.',
-                before_newline=True
+    if server['redfish']['endpoint_type'] == 'bmc':
+        if 'CD' not in virtual_media_details['MediaTypes']:
+            my_output.error(
+                'Virtual media [#%s] does not support CD media type: %s' % (
+                    server['redfish']['virtual_media_id'],
+                    server['redfish']['endpoint_ip']
+                )
             )
             return False
 
-        success = redfish_handler.endpoint_handler.eject_media(
-            virtual_media_id=server['redfish']['virtual_media_id']
-        )
-        if not success:
-            my_output.error('Failed to eject virtual media via redfish: %s' % (server['redfish']['endpoint_ip']))
+        if virtual_media_details['Inserted']:
+            if not user_settings['settings']['server_force_virtual_media_eject']:
+                my_output.default(
+                    'Virtual media id is currently used. It must be ejected to be tested.',
+                    before_newline=True
+                )
+                return False
+
+            success = redfish_handler.endpoint_handler.eject_media(
+                virtual_media_id=server['redfish']['virtual_media_id']
+            )
+            if not success:
+                my_output.error('Failed to eject virtual media via redfish: %s' % (server['redfish']['endpoint_ip']))
+                return False
+
+            my_output.default('Virtual media ejected via redfish')
+
+    if server['redfish']['endpoint_type'] != 'bmc':
+        if 'DVD' not in virtual_media_details['MediaTypes']:
+            my_output.error(
+                'Virtual media [#%s] does not support DVD media type: %s' % (
+                    server['redfish']['virtual_media_id'],
+                    server['redfish']['endpoint_ip']
+                )
+            )
             return False
 
-        my_output.default('Virtual media ejected via redfish')
+        if virtual_media_details['Status']['State'] != 'Disabled':
+            if not user_settings['settings']['server_force_virtual_media_eject']:
+                my_output.default(
+                    'Virtual media id is currently used. It must be ejected to be tested.',
+                    before_newline=True
+                )
+                return False
+
+            success = redfish_handler.endpoint_handler.eject_media(
+                virtual_media_id=server['redfish']['virtual_media_id']
+            )
+            if not success:
+                my_output.error('Failed to eject virtual media via redfish: %s' % (server['redfish']['endpoint_ip']))
+                return False
+
+            my_output.default('Virtual media ejected via redfish')
 
     my_output.default('Virtual media test')
     filename = 'image-%s.iso' % (str(uuid.uuid4()))
@@ -709,7 +737,7 @@ def test_server_redfish_virtual_media(user_settings, redfish_handler, server, vi
     return True
 
 
-def test_server_redfish_boot_properties(redfish_handler, my_output):
+def test_server_redfish_boot_properties(server, redfish_handler, my_output):
     boot_properties = redfish_handler.endpoint_handler.get_boot_properties()
     if boot_properties is None:
         my_output.error('Failed to get boot settings via redfish')
@@ -742,18 +770,22 @@ def test_server_redfish_boot_properties(redfish_handler, my_output):
     my_output.default('- Cd, Hdd and None found in target values')
 
     if enabled_values is None:
-        my_output.error('Enabled values missing')
-        return False
+        if server['endpoint_type'] == 'bmc':
+            my_output.default('- BootSourceOverrideEnabled@Redfish.AllowableValues uri undefined - test skipped')
+        else:
+            my_output.error('Enabled values missing')
+            return False
 
-    if 'Disabled' not in enabled_values:
-        my_output.error('Disabled not in enabled values')
-        return False
+    if server['endpoint_type'] != 'bmc':
+        if 'Disabled' not in enabled_values:
+            my_output.error('Disabled not in enabled values')
+            return False
 
-    if 'Once' not in enabled_values:
-        my_output.error('Once not in enabled values')
-        return False
+        if 'Once' not in enabled_values:
+            my_output.error('Once not in enabled values')
+            return False
 
-    my_output.default('- Once and Disabled found in enabled values')
+        my_output.default('- Once and Disabled found in enabled values')
 
     success = redfish_handler.endpoint_handler.set_one_time_boot_source('Cd')
     if not success:
@@ -772,7 +804,7 @@ def test_server_redfish_boot_properties(redfish_handler, my_output):
     return True
 
 
-def test_server_redfish_actions(redfish_handler, my_output):
+def test_server_redfish_actions(server, redfish_handler, my_output):
     my_output.default('System power actions')
 
     actions = redfish_handler.endpoint_handler.get_system_actions()
@@ -788,8 +820,12 @@ def test_server_redfish_actions(redfish_handler, my_output):
 
     allowed = filter_helper.get_attr(actions, '#ComputerSystem.Reset:ResetType@Redfish.AllowableValues')
     if allowed is None:
-        my_output.error('Missing ResetType@Redfish.AllowableValues')
-        return False
+        if server['endpoint_type'] == 'bmc':
+            my_output.default('- #ComputerSystem.Reset:ResetType@Redfish.AllowableValues uri undefined - test skipped')
+            return True
+        else:
+            my_output.error('Missing ResetType@Redfish.AllowableValues')
+            return False
 
     my_output.default('- Allowed values: %s' % (allowed))
 
@@ -830,6 +866,7 @@ def check_server_redfish_access(user_settings, my_output, log_id, include_vmedia
         values = redfish_handler.get_properties(chassis_uri)
         if values is not None:
             keys = [
+                '@odata.id',
                 'ChassisType',
                 'Model',
                 'SerialNumber',
@@ -849,7 +886,10 @@ def check_server_redfish_access(user_settings, my_output, log_id, include_vmedia
         my_output.default('- Detected chassis type: %s' % (server['redfish']['chassis_type']))
 
         if server['redfish']['chassis_type'] == 'Rack':
-            server['redfish']['virtual_media_id'] = 0
+            if server['redfish']['endpoint_type'] == 'bmc':
+                server['redfish']['virtual_media_id'] = 2
+            else:
+                server['redfish']['virtual_media_id'] = 0
         else:
             server['redfish']['virtual_media_id'] = 3
 
@@ -870,6 +910,7 @@ def check_server_redfish_access(user_settings, my_output, log_id, include_vmedia
 
         if include_boot_source:
             success = test_server_redfish_boot_properties(
+                server['redfish'],
                 redfish_handler,
                 my_output
             )
@@ -878,6 +919,7 @@ def check_server_redfish_access(user_settings, my_output, log_id, include_vmedia
 
         if include_actions:
             success = test_server_redfish_actions(
+                server['redfish'],
                 redfish_handler,
                 my_output
             )

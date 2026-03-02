@@ -28,6 +28,10 @@ def initialize(params, my_output, log_id):
         return None
 
     params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
+
+    if '__id__' in params and params['__id__'] is not None:
+        my_output.default('ID: %s' % (params['__id__']), after_newline=True)
+
     return params
 
 def get_default_params():

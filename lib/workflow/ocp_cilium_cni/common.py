@@ -69,6 +69,9 @@ def sanitize_params(params, allowed_keys):
 
 
 def is_cilium(params, my_output, install_plan_enforced=False):
+    if 'package' not in params:
+        params['package'] = 'clife'
+    
     subscription = params['k8s_handler'].get_subscription_by_package(
         params['package'],
         csv_info=True,

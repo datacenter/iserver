@@ -29,7 +29,7 @@ class K8sAdminJobCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_admin_job_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('admin job create failed')
             return False

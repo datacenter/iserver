@@ -7,14 +7,21 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
 
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
         return None, 'check-verbose param must be true or false'
     
     allowed_keys = [
         'cluster',
+        'verbose',
         'check-verbose'
     ]
     return local_common.sanitize_params(params, allowed_keys), None
@@ -23,7 +30,7 @@ def validate(params):
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Get SSH public keys', before_newline=True, after_newline=True, double_underline=True)
+    my_output.default('OpenShift Workflow - SSH public keys - Get', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if params is None:

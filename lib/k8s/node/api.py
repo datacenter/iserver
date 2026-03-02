@@ -1,4 +1,3 @@
-import time
 import traceback
 
 
@@ -6,57 +5,25 @@ class K8sNodeApi():
     def __init__(self):
         self.node_mo = None
 
-    def get_node_mo(self, cache_enabled=True, fast=False):
-        if cache_enabled:
-            if self.node_mo is not None:
-                return self.node_mo
-
-        api_handler = self.get_api()
-        if api_handler is None:
-            return None
-
-        # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/V1NodeList.md
-        try:
-            start_time = int(time.time() * 1000)
-            if fast:
-                response = api_handler.list_node(
-                    timeout_seconds=1
-                )
-            else:
-                response = api_handler.list_node(
-                    timeout_seconds=self.api_timeout_seconds
-                )
-            self.log.k8s(
-                'get',
-                'node',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s_nodes.get_nodes', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'node',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            return None
-
-        self.node_mo = []
-        for item in response.items:
-            node_mo = self.convert_object(item.to_dict())
-            self.node_mo.append(
-                node_mo
-            )
-
-        self.log.k8s_mo(
-            'node',
+    def get_node_mo(self, name=None, cache_enabled=True, fast=False):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.node_mo
         )
+        if cache_hit:
+            return response
 
-        return self.node_mo
+        response, self.node_mo = self.get_resources(
+            'Node', 
+            'v1', 
+            self.node_mo,
+            name=name,
+            fast=fast
+        )
 
+        return response
+    
     def add_node_annotation(self, node_name, key, value):
         api_handler = self.get_api()
         if api_handler is None:

@@ -3,15 +3,19 @@ import copy
 from lib.workflow.ocp_access import check as ocp_check
 
 
-def initialize(params, my_output, log_id, show_workflow_params=False):
+def initialize(params, my_output, log_id):
     params = augment_params(params)
 
-    if show_workflow_params:
+    if params['verbose']:
         my_output.default('Workflow Parameters', underline=True)
         display_params = copy.deepcopy(params)
         if 'key' in display_params and display_params['key'] is not None:
             display_params['key'] = 'user-defined'
         my_output.default(json.dumps(display_params, indent=4), after_newline=True)
+    else:
+        my_output.debug('Workflow Parameters', underline=True)
+        display_params = copy.deepcopy(params)
+        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
 
     ocp_check_params = {}
     ocp_check_params['cluster'] = params['cluster']

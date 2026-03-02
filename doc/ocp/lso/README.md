@@ -1,10 +1,10 @@
-# Local Storage Operator
+# Local Storage Operator (LSO)
 
-Operator for local storage as explained on [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/storage/configuring-persistent-storage#persistent-storage-using-local-storage) and [GitHub](https://github.com/openshift/local-storage-operator)
+The Local Storage Operator (LSO) allows provisioning of persistent storage by using local volumes. Local persistent volumes allows access to local storage devices, such as a disk or partition, by using the standard persistent volume claim interface.
 
-## HowTo by Example
+LSO is required in case [OpenShift Data Foundation (ODF)](../odf/README.md) is deployed on the same bare metal servers as OpenShift cluster.
 
-- local storage on 3-node OpenShift Cluster with explicitly defined block devices ([detail](./example.md))
+Refer to [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/storage/configuring-persistent-storage#persistent-storage-using-local-storage) and [GitHub](https://github.com/openshift/local-storage-operator) for details.
 
 ## Life Cycle Management Commands
 
@@ -13,7 +13,6 @@ Command | Intent | Details
 iserver get ocp lso | check the LVM operator state | [Link](./get.md)
 iserver set ocp lso --mode operator | install local storage operator | [Link](./create_operator.md)
 iserver set ocp lso --mode volume | add local volumes | [Link](./create_volume.md)
-iserver set ocp lso --mode all | install operator and add local volumes | [Link](./create_all.md)
 iserver set ocp task | in task way | [Link](./create_task.md)
 iserver delete ocp lso --mode operator | delete local storage operator | [Link](./delete_operator.md)
 iserver delete ocp lso --mode volume | delete local storage volumes | [Link](./delete_volume.md)
@@ -33,5 +32,9 @@ iserver get k8s sc | get storage class | [Link](./sc.md)
 iserver delete k8s locv | delete local volume | [Link](./locv.md)
 iserver delete k8s locvd | delete local volume discovery | [Link](./locvd.md)
 iserver delete k8s locvs | delete local volume set | [Link](./locvs.md)
+
+## Extras
+
+- local storage on 3-node OpenShift Cluster with explicitly defined block devices ([example](./example.md))
 
 [[Back]](../Operations.md)

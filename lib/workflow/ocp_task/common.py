@@ -20,6 +20,7 @@ def get_supported_tasks():
         'mtv',
         'odf',
         'portworx',
+        'vast',
         'serverless',
         'service-mesh',
         'sriov', 
@@ -33,6 +34,7 @@ def get_supported_tasks():
         'cilium-timescape',
         'cilium-mesh',
         'cilium-pnet',
-        'cilium-inb'
+        'cilium-inb',
+        'k8s'
     ]
     return supported_tasks

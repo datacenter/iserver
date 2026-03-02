@@ -1,6 +1,9 @@
 class RedfishEndpointUcsRackTemplateCpu():
     def __init__(self):
-        self.defult_cpu_uri = '/redfish/v1/Systems/SYSTEM_ID/Processors'
+        if self.endpoint_handler.bmc:
+            self.defult_cpu_uri = '/redfish/v1/Systems/system/Processors'
+        else:
+            self.defult_cpu_uri = '/redfish/v1/Systems/SYSTEM_ID/Processors'
         self.cpu = None
 
     def get_cpu_uri(self):

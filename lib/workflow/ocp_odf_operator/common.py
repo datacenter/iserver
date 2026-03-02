@@ -1,3 +1,4 @@
+import copy
 import json
 from lib.workflow.ocp_access import check as ocp_check
 
@@ -5,8 +6,14 @@ from lib.workflow.ocp_access import check as ocp_check
 def initialize(params, my_output, log_id, ssh_required=False):
     params = augment_params(params)
 
-    my_output.default('Workflow Parameters', underline=True)
-    my_output.default(json.dumps(params, indent=4), after_newline=True)
+    if params['verbose']:
+        my_output.default('Workflow Parameters', underline=True)
+        display_params = copy.deepcopy(params)
+        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
+    else:
+        my_output.debug('Workflow Parameters', underline=True)
+        display_params = copy.deepcopy(params)
+        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
 
     ocp_check_params = {}
     ocp_check_params['cluster'] = params['cluster']
@@ -53,6 +60,22 @@ def sanitize_params(params, allowed_keys):
             new_params[key] = params[key]
 
     return new_params
+
+
+def check_state(params, my_output, check_ready=True):
+    state = {}
+
+    state['installed'] = params['k8s_handler'].check_odf_subscription(
+        params['name'], 
+        my_output=my_output,
+        check_ready=False
+    )
+
+    if not check_ready or not state['installed']:
+        return state
+
+    state['ready'] = params['k8s_handler'].is_subscription_odf_ready(my_output=my_output)
+    return state
 
 
 def get_odf_crd(k8s_handler, my_output=None, cache_enabled=False, message_on_error=True, crd=['__all__']):

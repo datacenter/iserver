@@ -322,11 +322,9 @@ def run(directory, install_mode, log_id=None, offline=False):
     )
 
     my_output.default('Checking openshift API', before_newline=True, underline=True)
-    console_handler.check_token(my_output, user_settings['strip_token'])
-
-    if not console_handler.is_ready():
-        my_output.error('OpenShift API not configured')
-        return None, None, None, None
+    if not console_handler.check_token(my_output, user_settings['strip_token']):
+        if install_mode == 'install':
+            return None, None, None, None
 
     data = get_data(user_settings)
     data['pull_secret'] = console_handler.get_pull_secret()

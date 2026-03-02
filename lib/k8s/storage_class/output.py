@@ -18,8 +18,8 @@ class K8sStorageClassOutput():
             cast_zero=True
         )
 
-    def print_storage_classes_with_resources(self, info, title=False):
-        self.print_storage_classes(info, title=title)
+    def print_storage_classes_with_resources(self, info):
+        self.print_storage_classes(info)
 
         if len(info) == 0:
             return

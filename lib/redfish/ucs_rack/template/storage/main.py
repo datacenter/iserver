@@ -3,7 +3,10 @@ import json
 
 class RedfishEndpointUcsRackTemplateStorage():
     def __init__(self):
-        self.defult_storage_uri = '/redfish/v1/Systems/SYSTEM_ID/Storage'
+        if self.endpoint_handler.bmc:
+            self.defult_storage_uri = '/redfish/v1/Systems/system/Storage'
+        else:
+            self.defult_storage_uri = '/redfish/v1/Systems/SYSTEM_ID/Storage'
 
     def get_storage_uri(self):
         return self.path_fixup(self.defult_storage_uri)

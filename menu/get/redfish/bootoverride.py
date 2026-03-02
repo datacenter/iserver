@@ -20,7 +20,7 @@ class ErrorExit(Exception):
 
 @click.command("boot-override")
 @click.pass_obj
-@click.option("--type", "endpoint_type", type=click.Choice(['standard', 'ucsc', 'fi', 'dell', 'hpe'], case_sensitive=False), default='standard', help="Redfish endpoint type")
+@click.option("--type", "endpoint_type", type=click.Choice(['standard', 'ucsc', 'fi', 'bmc', 'dell', 'hpe'], case_sensitive=False), default='standard', help="Redfish endpoint type")
 @click.option("--ip", "endpoint_ip", default='', callback=validations.validate_ip, help="Management IP address")
 @click.option("--port", "endpoint_port", default=443, help="Redfish management TCP port")
 @click.option("--username", default='', help="Redfish username")

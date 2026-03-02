@@ -35,6 +35,8 @@ from lib.workflow.ocp_ssh import task as task_ssh
 from lib.workflow.ocp_splunk_operator import task as task_splunk
 from lib.workflow.ocp_tetragon_operator import task as task_tetragon
 from lib.workflow.ocp_trident_operator import task as task_trident
+from lib.workflow.ocp_vast_operator import task as task_vast
+from lib.workflow.k8s import task as task_k8s
 
 
 def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confirmation=True):
@@ -297,6 +299,21 @@ def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confi
 
                 new_tasks.append(
                     dict(portworx=new_task)
+                )
+
+            if task_name == 'vast':
+                new_task, error = task_vast.validate_create(
+                    task[task_name],
+                    cluster_name,
+                    confirmation,
+                    cluster_settings=cluster_settings,
+                    k8s_handler=k8s_handler
+                )
+                if new_task is None:
+                    return None, 'Task vast: %s' % (error)
+
+                new_tasks.append(
+                    dict(vast=new_task)
                 )
 
             if task_name == 'nfd':
@@ -583,6 +600,23 @@ def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confi
                     task_def
                 )
 
+            if task_name == 'k8s':
+                new_task, error = task_k8s.validate_create(
+                    task[task_name],
+                    cluster_name,
+                    confirmation,
+                    cluster_settings=cluster_settings,
+                    k8s_handler=k8s_handler
+                )
+                if new_task is None:
+                    return None, 'Task k8s: %s' % (error)
+
+                task_def = {}
+                task_def['k8s'] = new_task
+                new_tasks.append(
+                    task_def
+                )
+
     return new_tasks, None
 
 
@@ -775,6 +809,16 @@ def run(tasks, cluster_name, confirmation=True, cluster_settings=None, k8s_handl
                 
                 success = success and task_success
 
+            if task_name == 'vast':
+                task_success = task_vast.run(
+                    task[task_name],
+                    log_id=log_id
+                )
+                if break_on_error:
+                    return False
+                
+                success = success and task_success
+
             if task_name == 'nfd':
                 task_success = task_nfd.run(
                     task[task_name],
@@ -947,6 +991,16 @@ def run(tasks, cluster_name, confirmation=True, cluster_settings=None, k8s_handl
                 
             if task_name == 'cilium-inb':
                 task_success = task_cilium_inb.run(
+                    task[task_name],
+                    log_id=log_id
+                )
+                if break_on_error:
+                    return False
+                
+                success = success and task_success
+
+            if task_name == 'k8s':
+                task_success = task_k8s.run(
                     task[task_name],
                     log_id=log_id
                 )

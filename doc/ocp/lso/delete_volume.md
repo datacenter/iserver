@@ -16,37 +16,26 @@ None
   --cluster TEXT                  Cluster Name
 ```
 
-## Example (volumes created in discovery-node mode)
+## Example (volumes created in discovery-all mode)
 
 ```
-# iserver delete ocp lso --mode volume
+# iserver delete ocp lso --cluster bm1 --mode volume
+
 
 OpenShift Workflow - Local Storage Operator - Delete Local Volume
 =================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-Local Storage Operator
-----------------------
-- namespace: openshift-local-storage/local-storage-operator
+Local Storage Operator Subscription
+-----------------------------------
+- subscription: openshift-local-storage/local-storage-operator
 - package: local-storage-operator
-- csv: local-storage-operator.v4.18.0-202509240837
+- csv: local-storage-operator.v4.18.0-202602132343
+
+Local Storage Operator Resources
+--------------------------------
+- deployment openshift-local-storage/local-storage-operator ready
 
 Collect cluster state and validate input values
 -----------------------------------------------
@@ -62,32 +51,97 @@ No local volumes found
 Delete local volume sets
 ------------------------
 
-LocalVolumeSet [#1]
--------------------
-
-+-------------------------+----------------+---------------+-------------+-----------+------------+---------+
-| Namespace               | Name           | Storage Class | Volume Mode | Available | Disk Maker | Devices |
-+-------------------------+----------------+---------------+-------------+-----------+------------+---------+
-| openshift-local-storage | my-local-disks | local-sc      | Block       | ✓         | ✓          | 4       |
-+-------------------------+----------------+---------------+-------------+-----------+------------+---------+
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
+| ID | Local Volume Set        | Storage Class | Volume Mode | Available | Disk Maker | # Devices |
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
+| 1  | openshift-local-storage | local-sc      | Block       | V         | V          | 6         | 
+|    | my-local-disks          |               |             |           |            |           | 
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
 - openshift-local-storage/my-local-disks
-        REST API successful
-        Wait for no local volume set [timeout:60]...
+	REST API successful
+	Wait for no local volume set [timeout:60]...
 
 Delete local volume discovieries
 --------------------------------
 
-Local Volume Discovery [#1]
----------------------------
-
-+-------------------------+-----------------------+-----------+-------------+
-| Namespace               | Name                  | Available | Phase       |
-+-------------------------+-----------------------+-----------+-------------+
-| openshift-local-storage | auto-discover-devices | ✓         | Discovering |
-+-------------------------+-----------------------+-----------+-------------+
++----+-------------------------+-----------+-------------+
+| ID | Local Volume Discovery  | Available | Phase       |
++----+-------------------------+-----------+-------------+
+| 1  | openshift-local-storage | V         | Discovering | 
+|    | auto-discover-devices   |           |             | 
++----+-------------------------+-----------+-------------+
 - openshift-local-storage/auto-discover-devices
-        REST API successful
-        Wait for no local volume discovery [timeout:60]...
+	REST API successful
+	Wait for no local volume discovery [timeout:60]...
+
+Unlabel Storage Nodes
+---------------------
+- node label: cluster.ocs.openshift.io/openshift-storage=""
+- node: bm1-1
+- node: bm1-2
+- node: bm1-3
+
+Completed tasks
+- Volumes deleted
+- Node labels removed
+```
+
+## Example (volumes created in discovery-node mode)
+
+```
+# iserver delete ocp lso --cluster bm1 --mode volume
+
+OpenShift Workflow - Local Storage Operator - Delete Local Volume
+=================================================================
+
+OpenShift Cluster: bm1
+
+Local Storage Operator Subscription
+-----------------------------------
+- subscription: openshift-local-storage/local-storage-operator
+- package: local-storage-operator
+- csv: local-storage-operator.v4.18.0-202602132343
+
+Local Storage Operator Resources
+--------------------------------
+- deployment openshift-local-storage/local-storage-operator ready
+
+Collect cluster state and validate input values
+-----------------------------------------------
+- get kubernetes node names
+- get local volume discovery
+- get local volume sets
+- get local volumes
+
+Delete local volumes
+--------------------
+No local volumes found
+
+Delete local volume sets
+------------------------
+
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
+| ID | Local Volume Set        | Storage Class | Volume Mode | Available | Disk Maker | # Devices |
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
+| 1  | openshift-local-storage | local-sc      | Block       | V         | V          | 4         | 
+|    | my-local-disks          |               |             |           |            |           | 
++----+-------------------------+---------------+-------------+-----------+------------+-----------+
+- openshift-local-storage/my-local-disks
+	REST API successful
+	Wait for no local volume set [timeout:60]...
+
+Delete local volume discovieries
+--------------------------------
+
++----+-------------------------+-----------+-------------+
+| ID | Local Volume Discovery  | Available | Phase       |
++----+-------------------------+-----------+-------------+
+| 1  | openshift-local-storage | V         | Discovering | 
+|    | auto-discover-devices   |           |             | 
++----+-------------------------+-----------+-------------+
+- openshift-local-storage/auto-discover-devices
+	REST API successful
+	Wait for no local volume discovery [timeout:60]...
 
 Unlabel Storage Nodes
 ---------------------
@@ -104,34 +158,22 @@ Completed tasks
 ## Example (volumes created in explicit mode)
 
 ```
-# iserver delete ocp lso --mode volume
+# iserver delete ocp lso --cluster bm1 --mode volume
 
 OpenShift Workflow - Local Storage Operator - Delete Local Volume
 =================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-Local Storage Operator
-----------------------
-- namespace: openshift-local-storage/local-storage-operator
+Local Storage Operator Subscription
+-----------------------------------
+- subscription: openshift-local-storage/local-storage-operator
 - package: local-storage-operator
-- csv: local-storage-operator.v4.18.0-202509240837
+- csv: local-storage-operator.v4.18.0-202602132343
+
+Local Storage Operator Resources
+--------------------------------
+- deployment openshift-local-storage/local-storage-operator ready
 
 Collect cluster state and validate input values
 -----------------------------------------------
@@ -143,32 +185,32 @@ Collect cluster state and validate input values
 Delete local volumes
 --------------------
 
-Local Volume [#2]
------------------
-
-+-------------------------+--------------------------+-------+------------------------+---------------+-------+
-| Namespace               | Name                     | Node  | Device                 | Storage Class | Mode  |
-+-------------------------+--------------------------+-------+------------------------+---------------+-------+
-| openshift-local-storage | local-disks-5fb3cf004057 | bm1-2 | wwn-0x500a075118ef266c | local-sc      | Block |
-| openshift-local-storage | local-disks-f3e4a3a77a00 | bm1-1 | wwn-0x500a075118ef25c1 | local-sc      | Block |
-+-------------------------+--------------------------+-------+------------------------+---------------+-------+
++----+--------------------------+-------+------------------------+---------------+-------+
+| ID | Local Volume             | Node  | Device                 | Storage Class | Mode  |
++----+--------------------------+-------+------------------------+---------------+-------+
+| 1  | openshift-local-storage  | bm1-2 | wwn-0x500a07511c54ae16 | local-sc      | Block | 
+|    | local-disks-73bd95395a50 |       |                        |               |       | 
++----+--------------------------+-------+------------------------+---------------+-------+
+| 2  | openshift-local-storage  | bm1-1 | wwn-0x55cd2e414e3ba224 | local-sc      | Block | 
+|    | local-disks-93e8611f3e62 |       |                        |               |       | 
++----+--------------------------+-------+------------------------+---------------+-------+
 
 Associated Persistent Volumes
 -----------------------------
 
 
-+-------------------+-----------+-------+----------+-------+---------------+-------------+--------------------------+--------------------------------+-----+------+
-| Name              | Status    | Mode  | SC       | Size  | Access Mode   | CSI Driver  | CSI Handle               | Device                         | PVC | Age  |
-+-------------------+-----------+-------+----------+-------+---------------+-------------+--------------------------+--------------------------------+-----+------+
-| local-pv-c6bf5067 | Available | Block | local-sc | 894Gi | ReadWriteOnce | LocalVolume | local-disks-5fb3cf004057 | wwn-0x500a075118ef266c [bm1-2] | --  | 2h1m | 
-| local-pv-bf5ba6b4 | Available | Block | local-sc | 894Gi | ReadWriteOnce | LocalVolume | local-disks-f3e4a3a77a00 | wwn-0x500a075118ef25c1 [bm1-1] | --  | 2h1m |
-+-------------------+-----------+-------+----------+-------+---------------+-------------+--------------------------+--------------------------------+-----+------+
-- openshift-local-storage/local-disks-5fb3cf004057
-        REST API successful
-        Wait for no local volume [timeout:60]...
-- openshift-local-storage/local-disks-f3e4a3a77a00
-        REST API successful
-        Wait for no local volume [timeout:60]...
++----+-------------------+-----------+-------+----------+-------+--------+-----+------+
+| ID | Persistent Volume | Status    | Mode  | SC       | Size  | Access | PVC | Age  |
++----+-------------------+-----------+-------+----------+-------+--------+-----+------+
+| 1  | local-pv-290dd896 | Available | Block | local-sc | 894Gi | RWO    | --  | 1h1m | 
+| 2  | local-pv-21e09790 | Available | Block | local-sc | 894Gi | RWO    | --  | 1h1m | 
++----+-------------------+-----------+-------+----------+-------+--------+-----+------+
+- openshift-local-storage/local-disks-73bd95395a50
+	REST API successful
+	Wait for no local volume [timeout:60]...
+- openshift-local-storage/local-disks-93e8611f3e62
+	REST API successful
+	Wait for no local volume [timeout:60]...
 
 Delete local volume sets
 ------------------------

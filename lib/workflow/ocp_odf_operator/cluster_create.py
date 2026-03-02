@@ -85,11 +85,17 @@ def validate(params):
     if not isinstance(params['confirmation'], bool):
         return None, 'confirmation param must be true or false'
     
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        return None, 'check-verbose param must be true or false'    
     
     allowed_keys = [
         'cluster',
@@ -102,6 +108,7 @@ def validate(params):
         'flexible',
         'tools',
         'confirmation',
+        'verbose',
         'check-verbose'
     ]
     return local_common.sanitize_params(params, allowed_keys), None

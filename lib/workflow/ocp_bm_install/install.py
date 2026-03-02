@@ -520,7 +520,7 @@ def wait_boot_from_iso(user_settings, cluster_id, console_handler, my_output, lo
     bmc_addresses = None
     serial_numbers = None
 
-    if user_settings['server'][0]['redfish']['endpoint_type'] == 'ucsc':
+    if user_settings['server'][0]['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
         bmc_addresses = []
         for server in user_settings['server']:
             bmc_addresses.append(
@@ -552,7 +552,7 @@ def update_cluster_settings(user_settings, cluster_id, console_handler, my_outpu
 
     server_hostname = {}
     server_role = {}
-    if user_settings['server'][0]['redfish']['endpoint_type'] == 'ucsc':
+    if user_settings['server'][0]['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
         server_key = 'bmc'
         for server in user_settings['server']:
             key = server['redfish']['endpoint_ip']

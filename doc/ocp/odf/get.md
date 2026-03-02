@@ -25,27 +25,7 @@ None
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Get Information
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "view": [
-        "state"
-    ],
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: bm1
 
 Operator
 --------

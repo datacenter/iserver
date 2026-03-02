@@ -8,7 +8,7 @@ class K8sDeploymentWait():
     def wait_deployment(self, namespace, name, max_time=60):
         start_time = int(time.time())
         while True:
-            deployment = self.get_deployment(
+            deployment = self.get_deployment_optimized(
                 namespace,
                 name,
                 cache_enabled=False
@@ -29,7 +29,7 @@ class K8sDeploymentWait():
     def wait_deployment_ready_state(self, namespace, name, max_time=600, optional=False, allow_zero_replicas=False):
         start_time = int(time.time())
         while True:
-            deployment = self.get_deployment(
+            deployment = self.get_deployment_optimized(
                 namespace,
                 name,
                 cache_enabled=False
@@ -61,7 +61,7 @@ class K8sDeploymentWait():
     def wait_no_deployment(self, namespace, name, max_time=600, optional=False):
         start_time = int(time.time())
         while True:
-            deployment = self.get_deployment(
+            deployment = self.get_deployment_optimized(
                 namespace,
                 name,
                 cache_enabled=False

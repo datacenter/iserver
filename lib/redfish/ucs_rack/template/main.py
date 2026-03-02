@@ -32,8 +32,9 @@ class RedfishEndpointUcsRackTemplate(
         RedfishEndpointUcsRackTemplateStorage,
         RedfishEndpointUcsRackTemplateThermal
         ):
-    def __init__(self, endpoint_handler):
+    def __init__(self, endpoint_handler, bmc=False):
         self.endpoint_handler = endpoint_handler
+        self.endpoint_handler.bmc = bmc
 
         RedfishEndpointUcsRackTemplateAccount.__init__(self)
         RedfishEndpointUcsRackTemplateBios.__init__(self)

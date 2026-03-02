@@ -53,27 +53,7 @@ Completed
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Create Operator
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "channel": "__default__",
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Create Namespace
 ----------------
@@ -168,34 +148,7 @@ Completed tasks
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Create Cluster
 ==============================================================================
 
-Workflow Parameters
--------------------
-{
-    "replica": 3,
-    "count": 2,
-    "nfs": true,
-    "default_sc": true,
-    "flexible": true,
-    "cluster": "bm1",
-    "confirmation": false,
-    "sc": "odf-sc",
-    "tools": false,
-    "instance": null,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Checks
 ------
@@ -313,27 +266,7 @@ Checking the cluster state
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Get Information
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "view": [
-        "state"
-    ],
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: bm1
 
 Operator
 --------

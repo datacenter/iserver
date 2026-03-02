@@ -1,6 +1,9 @@
 class RedfishEndpointUcsRackTemplateMem():
     def __init__(self):
-        self.defult_mem_uri = '/redfish/v1/Systems/SYSTEM_ID/Memory'
+        if self.endpoint_handler.bmc:
+            self.defult_mem_uri = '/redfish/v1/Systems/system/Memory'
+        else:
+            self.defult_mem_uri = '/redfish/v1/Systems/SYSTEM_ID/Memory'
         self.mem = None
 
     def get_mem_uri(self):

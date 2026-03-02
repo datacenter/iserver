@@ -7,6 +7,7 @@ from lib import filter_helper
 from kubernetes import config
 from kubernetes import client
 from kubernetes.config import kube_config
+from menu.common import get_confirmation
 
 # https://github.com/openshift/openshift-restclient-python
 from openshift.dynamic import DynamicClient
@@ -22,13 +23,15 @@ class K8sApi():
         self.connect_timeout_seconds = 3
         self.api_retries = 1
         self.kind_get_all = {
-            'Pod': 'list_pod_for_all_namespaces'
+            'Pod': 'list_pod_for_all_namespaces',
+            'Node': 'list_node'
         }
         self.kind_get_namespace = {
             'Pod': 'list_namespaced_pod'
         }
         self.kind_get_namespace_name = {
-            'Pod': 'read_namespaced_pod'
+            'Pod': 'read_namespaced_pod',
+            'Node': 'read_node'
         }
         self.kind_create_namespace_name = {
             'Pod': 'create_namespaced_pod'      
@@ -41,10 +44,12 @@ class K8sApi():
         self.kind_replace_name = {           
         }
         self.kind_patch_namespace_name = { 
+            'Deployment': 'patch_namespaced_deployment'
         }
         self.kind_patch_name = {           
         }
-        self.kind_delete_namespace_name = {           
+        self.kind_delete_namespace_name = { 
+            'Deployment': 'delete_namespaced_deployment'          
         }
         self.kind_delete_name = {           
         }
@@ -623,19 +628,22 @@ class K8sApi():
             
         return True, None
     
-    def get_resources(self, kind, api_version, managed_objects, name=None):
+    def get_resources(self, kind, api_version, managed_objects, name=None, fast=False):
         api_handler = self.get_api_kind(kind)
         if api_handler is None:
             return None, managed_objects
 
         start_time = int(time.time() * 1000)
+        timeout = self.api_timeout_seconds
+        if fast:
+            timeout = 1
 
         # All kind objects
         if name is None:
             try:
                 if kind in self.kind_get_all:
                     response_mo = getattr(api_handler, self.kind_get_all[kind])(
-                        timeout_seconds=self.api_timeout_seconds
+                        timeout_seconds=timeout
                     )
                     response = []
                     for item in response_mo.items:
@@ -727,18 +735,55 @@ class K8sApi():
             
         return True, None
 
-    def create_resource(self, body):
+    def create_resource(self, body, object_name=None, my_output=None, confirmation=False):
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
         name = filter_helper.get(body, 'metadata:name')
 
         if kind is None or api_version is None or name is None:
+            if my_output is not None:
+                my_output.error('Body parse failed')
+                my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             return False
-        
+
         api_handler = self.get_api_kind(kind)
         if api_handler is None:
+            if my_output is not None:
+                my_output.error('Kubernetes api not ready')
             return False
+
+        if my_output is not None:
+            my_output.default('Create %s' % (kind), before_newline=True, underline=True)
+            if namespace is not None:
+                my_output.default('- namespace: %s' % (namespace))
+            if name is not None:
+                my_output.default('- name: %s' % (name))
+
+        if object_name is not None:
+            if namespace is None:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    name, cache_enabled=False
+                )
+            else:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    namespace, name, cache_enabled=False
+                )
+
+            if found:
+                if my_output is not None:
+                    my_output.default('- %s' % (my_output.add_color('already created', 'Green')))
+                    
+                return True
+        
+        if my_output is None:
+            confirmation = False
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+            if confirmation:
+                if not get_confirmation():
+                    return False
 
         start_time = int(time.time() * 1000)
 
@@ -764,7 +809,20 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s] %s' % (
+                            kind,
+                            name,
+                            my_output.add_color('created', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.create_resource', traceback.format_exc())
                 self.log.k8s(
                     'create',
@@ -798,7 +856,21 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s/%s] %s' % (
+                            kind,
+                            namespace,
+                            name,
+                            my_output.add_color('created', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.create_resource', traceback.format_exc())
                 self.log.k8s(
                     'create',
@@ -986,10 +1058,34 @@ class K8sApi():
 
         return True
 
-    def delete_resource(self, kind, api_version, name, namespace=None):
+    def delete_resource(self, kind, api_version, name, namespace=None, object_name=None, my_output=None):
         api_handler = self.get_api_kind(kind)
         if api_handler is None:
+            if my_output is not None:
+                my_output.error('Kubernetes api not ready')
             return False
+
+        if my_output is not None:
+            my_output.default('Delete %s' % (kind), before_newline=True, underline=True)
+            if namespace is not None:
+                my_output.default('- namespace: %s' % (namespace))
+            if name is not None:
+                my_output.default('- name: %s' % (name))
+
+        if object_name is not None:
+            if namespace is None:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    name, cache_enabled=False
+                )
+            else:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    namespace, name, cache_enabled=False
+                )
+
+            if not found:
+                if my_output is not None:
+                    my_output.default('- %s' % (my_output.add_color('already deleted', 'Green')))
+                return True
 
         start_time = int(time.time() * 1000)
 
@@ -1015,7 +1111,18 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '- %s' % (my_output.add_color('deleted', 'Green'))
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.default(
+                        '- delete %s' % (my_output.add_color('failed', 'Red'))
+                    )
+
                 self.log.error('k8s.delete_resource', traceback.format_exc())
                 self.log.k8s(
                     'delete',
@@ -1049,7 +1156,18 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '- %s' % (my_output.add_color('deleted', 'Green'))
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.default(
+                        '- delete %s' % (my_output.add_color('failed', 'Red'))
+                    )
+
                 self.log.error('k8s.delete_resource', traceback.format_exc())
                 self.log.k8s(
                     'delete',

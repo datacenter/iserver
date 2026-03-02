@@ -96,8 +96,7 @@ def get_k8s_locvs_command(
 
         if 'state' in view:
             k8s_output_handler.print_local_volume_sets(
-                locvs,
-                title=True
+                locvs
             )
 
             for lvs in locvs:

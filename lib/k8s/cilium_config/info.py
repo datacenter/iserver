@@ -128,6 +128,7 @@ class K8sCiliumConfigInfo():
             object_filter.append(
                 'name:%s' % (name)
             )
+            
         cilium_configs = self.get_cilium_configs(
             object_filter=object_filter,
             return_mo=return_mo,

@@ -26,25 +26,7 @@ python.exe .\iserver.py delete ocp odf --mode operator
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Delete Operator
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Check OpenShift Data Foundation (ODF) Operator Resources
 --------------------------------------------------------

@@ -2,10 +2,8 @@
 
 ## Step 1: Preparation
 
-- prepare kubeconfig file
-- add cluster
-- define ssh access
-- check k8s and ssh access
+- define OpenShift cluster [access](../Access.md)
+- prepare [management server](../ManagementServer.md)
 
 ## Step 2: Check cluster state
 
@@ -17,43 +15,28 @@
 OpenShift Workflow - Local Storage Operator - Get Information
 =============================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "my-cluster",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: my-cluster
-- api [C:\Users\user\.itool\ocp-clusters\my-cluster\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: my-cluster
 Operator not found: local-storage-operator
 ```
 
 ```
 # iserver get k8s sc --cluster my-cluster
 Cluster: my-cluster (type: ocp)
--
-Storage Class [#0]
-------------------
-None
+
++----+---------------+---------+-------------+----------------+---------------------+------------------------+-----+----+     
+| ID | Storage Class | Default | Provisioner | Reclaim Policy | Volume Binding Mode | Allow Volume Expansion | PVC | PV |     
++----+---------------+---------+-------------+----------------+---------------------+------------------------+-----+----+     
++----+---------------+---------+-------------+----------------+---------------------+------------------------+-----+----+     
 ```
 
 ```
 # iserver get k8s pv --cluster my-cluster
 Cluster: my-cluster (type: ocp)
-/
-PV [#0]
--------
-None
+
++----+-------------------+--------+------+----+------+--------+-----+-----+
+| ID | Persistent Volume | Status | Mode | SC | Size | Access | PVC | Age |
++----+-------------------+--------+------+----+------+--------+-----+-----+
++----+-------------------+--------+------+----+------+--------+-----+-----+
 ```
 
 ### UI
@@ -72,7 +55,7 @@ OpenShift cluster: my-cluster
 Server: ocp:my-cluster:node-1, ocp:my-cluster:node-2, ocp:my-cluster:node-3
 |
 Block Devices [ocp:my-cluster:node-1]
------------------------------
+-------------------------------------
 
 +----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+--------------------------------------------------------+
 | Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type | Disk ID                                                |
@@ -88,7 +71,7 @@ Block Devices [ocp:my-cluster:node-1]
 +----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+--------------------------------------------------------+
 
 Block Devices [ocp:my-cluster:node-2]
------------------------------
+-------------------------------------
 
 +----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+--------------------------------------------------------+
 | Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type | Disk ID                                                |
@@ -104,7 +87,7 @@ Block Devices [ocp:my-cluster:node-2]
 +----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+--------------------------------------------------------+
 
 Block Devices [ocp:my-cluster:node-3]
------------------------------
+-------------------------------------
 
 +----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+--------------------------------------------------------+
 | Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type | Disk ID                                                |
@@ -123,32 +106,20 @@ Block Devices [ocp:my-cluster:node-3]
 ## Step 4:  Add local storage operator on selected disks
 
 ```
-# iserver set ocp lso --mode all --cluster my-cluster --device node-1:wwn-0x500a075118ef25c1 --device node-1:wwn-0x500a075118ef2777 --device node-2:wwn-0x500a075118ef266c --device node-2:wwn-0x500a075118ef25d9 --device node-3:wwn-0x500a075118ef2616 --device node-3:wwn-0x500a075118ef291c
+# iserver set ocp lso \
+  --mode all \
+  --cluster my-cluster \
+  --device node-1:wwn-0x500a075118ef25c1 \
+  --device node-1:wwn-0x500a075118ef2777 \
+  --device node-2:wwn-0x500a075118ef266c \
+  --device node-2:wwn-0x500a075118ef25d9 \
+  --device node-3:wwn-0x500a075118ef2616 \
+  --device node-3:wwn-0x500a075118ef291c
 
 OpenShift Workflow - Local Storage Operator - Create Operator
 =============================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "my-cluster",
-    "node-selector-override": false,
-    "channel": "__default__",
-    "confirmation": true,
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: my-cluster
-- api [C:\Users\user\.itool\ocp-clusters\my-cluster\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: my-cluster
 
 Create Namespace
 ----------------
@@ -236,39 +207,7 @@ Completed tasks
 OpenShift Workflow - Local Storage Operator - Create Local Volume
 =================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "my-cluster",
-    "sc": "local-sc",
-    "device": [
-        "node-1:wwn-0x500a075118ef25c1",
-        "node-1:wwn-0x500a075118ef2777",
-        "node-2:wwn-0x500a075118ef266c",
-        "node-2:wwn-0x500a075118ef25d9",
-        "node-3:wwn-0x500a075118ef2616",
-        "node-3:wwn-0x500a075118ef291c"
-    ],
-    "limit": [],
-    "volume": "block",
-    "fstype": "ext4",
-    "max": -1,
-    "confirmation": true,
-    "ssh-required": true,
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: my-cluster
-- api [C:\Users\user\.itool\ocp-clusters\my-cluster\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\my-cluster\ssh.pub]: ok
+OpenShift Cluster: my-cluster
 
 Local Storage Operator
 ----------------------
@@ -546,23 +485,7 @@ Completed tasks
 OpenShift Workflow - Local Storage Operator - Get Information
 =============================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "my-cluster",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: my-cluster
-- api [C:\Users\user\.itool\ocp-clusters\my-cluster\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: my-cluster
 
 Operator
 --------

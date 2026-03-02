@@ -138,6 +138,23 @@ class K8sCommon():
 
         return self.convert_age(int(time.time()) - timestamp)
 
+    def get_base_info(self, managed_object, condition_map=None):
+        info = {}
+        info['__Output'] = {}
+
+        metadata_info = self.get_metadata_info(
+            managed_object
+        )
+        info.update(metadata_info)
+
+        info['spec'] = self.get(managed_object, 'spec')
+        info['status'] = self.get(managed_object, 'status')
+
+        if condition_map is not None:
+            info = self.get_condition_info(managed_object, condition_map, info)
+        
+        return info
+
     def get_metadata_info(self, managed_object, exclude_labels=[], exclude_annotations=[]):
         info = {}
 
@@ -331,3 +348,226 @@ class K8sCommon():
         conditions = sorted(conditions)
         return conditions
     
+    def get_condition_info(self, managed_object, condition_map, info):
+        for key in condition_map:
+            info[key] = False
+            info['%s_status' % (key)] = None
+            info['%s_reason' % (key)] = None
+            info['%s_message' % (key)] = None
+            info['%sTick' % (key)] = '\u2717'
+            info['__Output']['%sTick' % (key)] = 'Red'
+
+        conditions_mo = self.get(managed_object, 'status:conditions')
+        if conditions_mo is not None:
+            for condition_mo in conditions_mo:
+                for key in condition_map:
+                    if condition_mo['type'] == condition_map[key]:
+                        info['%s_status' % (key)] = self.get(condition_mo, 'status')
+                        info['%s_reason' % (key)] = self.get(condition_mo, 'reason')
+                        info['%s_message' % (key)] = self.get(condition_mo, 'message')
+                        if condition_mo['status'] in ['True', '"True"']:
+                            info[key] = True
+                            info['%sTick' % (key)] = '\u2713'
+                            info['__Output']['%sTick' % (key)] = 'Green'
+
+        return info
+
+    def get_managed_objects_info(self, object_name, cache_enabled=True):
+        if cache_enabled:
+            value = getattr(self, object_name)
+            if value is not None:
+                return value
+
+        managed_objects = getattr(self, 'get_%s_mo' % (object_name))(cache_enabled=cache_enabled)
+        if managed_objects is None:
+            return None
+
+        infos = []
+        for managed_object in managed_objects:
+            info = {}
+            info['info'] = getattr(self, 'get_%s_info' % (object_name))(managed_object)
+            info['mo'] = managed_object
+            infos.append(info)
+
+        setattr(self, object_name, infos)
+        return infos
+
+    def get_infos(self, object_name, object_filter=None, return_mo=False, cache_enabled=True):
+        all_infos = self.get_managed_objects_info(object_name, cache_enabled=cache_enabled)
+        if all_infos is None:
+            return None
+
+        infos = []
+
+        for info in all_infos:
+            if not self.match_info(info['info'], object_filter):
+                continue
+
+            if return_mo:
+                infos.append(
+                    info['mo']
+                )
+                continue
+
+            infos.append(
+                info['info']
+            )
+
+        return infos
+
+    def get_info(self, object_name, name, namespace=None, return_mo=False, cache_enabled=True, **kwargs):
+        object_filter = []
+        if namespace is not None:
+            object_filter.append(
+                'namespace:%s' % (namespace)
+            )
+        object_filter.append(
+            'name:%s' % (name)
+        )
+        infos = getattr(self, 'get_%ss' % (object_name))(
+            object_filter=object_filter,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled,
+            **kwargs
+        )
+        if infos is None:
+            return None
+
+        if len(infos) == 1:
+            return infos[0]
+
+        return None
+
+    def match_info(self, info, object_filter):
+        if object_filter is None or len(object_filter) == 0:
+            return True
+
+        for rule in object_filter:
+            (key, value) = rule.split(':')
+
+            key_found = False
+
+            if key == 'namespace':
+                if 'namespace' in info:
+                    key_found = True
+                    if not filter_helper.match_string(value, info['namespace']):
+                        return False
+
+            if key == 'name':
+                if 'name' in info:
+                    key_found = True
+                    if not filter_helper.match_string(value, info['name']):
+                        return False
+
+            if not key_found:
+                self.log.error(
+                    'match_info',
+                    'Unsupported key [%s]: %s' % (key, json.dumps(info))
+                )
+
+        return True
+
+    def wait_managed_object(self, object_name, name, namespace=None, match_properties={}, break_properties={}, my_output=None, prompt=None, max_time=60):
+        if my_output is not None and prompt is not None:
+            if len(match_properties) > 0:
+                my_output.default('%s with %s' % (prompt, json.dumps(match_properties)))
+            else:
+                my_output.default(prompt)
+
+        start_time = int(time.time())
+        while True:
+            if namespace is None:
+                info = getattr(self, 'get_%s' % (object_name))(
+                    name,
+                    cache_enabled=False
+                )
+            else:
+                info = getattr(self, 'get_%s' % (object_name))(
+                    namespace,
+                    name,
+                    cache_enabled=False
+                )
+
+            if info is not None:
+                success = True
+                for key in match_properties:
+                    if self.get(info, key) != match_properties[key]:
+                        success = False
+                        break
+
+                failure = False
+                failure_on = None
+                for key in break_properties:
+                    if self.get(info, key) != break_properties[key]:
+                        failure_on = key
+                        failure = True
+                        break
+
+                if failure:
+                    if my_output is not None:
+                        my_output.error('failed on %s' % (failure_on))
+                    return False
+                
+                if success:
+                    return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if namespace is None:
+                    self.log.error(
+                        'k8s.wait_managed_object',
+                        'Max time reached [%s]: %s' % (object_name, name)
+                    )
+                else:
+                    self.log.error(
+                        'k8s.wait_managed_object',
+                        'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
+                    )
+
+                if my_output is not None:
+                    my_output.error('timed out')
+
+                return False
+
+            time.sleep(5)
+
+    def wait_no_managed_object(self, object_name, name, namespace=None, my_output=None, prompt=None, max_time=60):
+        if my_output is not None and prompt is not None:
+            my_output.default(prompt)
+
+        start_time = int(time.time())
+        while True:
+            if namespace is None:
+                info = getattr(self, 'get_%s' % (object_name))(
+                    name,
+                    cache_enabled=False
+                )
+            else:
+                info = getattr(self, 'get_%s' % (object_name))(
+                    namespace,
+                    name,
+                    cache_enabled=False
+                )
+
+            if info is None:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if namespace is None:
+                    self.log.error(
+                        'k8s.wait_no_managed_object',
+                        'Max time reached [%s]: %s' % (object_name, name)
+                    )
+                else:
+                    self.log.error(
+                        'k8s.wait_no_managed_object',
+                        'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
+                    )
+
+                if my_output is not None:
+                    my_output.error('timed out')
+
+                return False
+
+            time.sleep(5)

@@ -38,7 +38,7 @@ class K8sServiceInfo():
 
         info['external_name'] = self.get(service_mo, 'spec:external_name')
         info['load_balancer_ip'] = self.get(service_mo, 'spec:load_balancer_ip')
-        info['load_balancer_ingress'] = self.get(service_mo, 'status:load_balancer:ingress')
+        info['load_balancer_ingress'] = self.get(service_mo, 'status:load_balancer:ingress', on_error=[], on_none=[])
 
         info['ipT'] = []
         if info['type'] == 'ExternalName':
@@ -51,6 +51,13 @@ class K8sServiceInfo():
             info['cluster_ipT'] = info['cluster_ips']
             info['external_ipT'] = info['external_ips']
             info['ipT'] = info['ipT'] + info['cluster_ips'] + info['external_ips']
+            for item in info['load_balancer_ingress']:
+                ingress_ip = self.get(item, 'ip')
+                if ingress_ip is not None:
+                    if ingress_ip not in info['ipT']:
+                        info['ipT'].append(
+                            ingress_ip
+                        )
 
         info['portT'] = []
         info['port'] = []

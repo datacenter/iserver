@@ -30,6 +30,7 @@ from menu.delete.ocp.ssh import delete_ocp_ssh_command
 from menu.delete.ocp.task import delete_ocp_task_command
 from menu.delete.ocp.tetragon import delete_ocp_tetragon_command
 from menu.delete.ocp.trident import delete_ocp_trident_command
+from menu.delete.ocp.vast import delete_ocp_vast_command
 from menu.delete.ocp.vm import delete_ocp_vm_command
 
 
@@ -73,4 +74,5 @@ delete_ocp_menu.add_command(delete_ocp_ssh_command)
 delete_ocp_menu.add_command(delete_ocp_task_command)
 delete_ocp_menu.add_command(delete_ocp_tetragon_command)
 delete_ocp_menu.add_command(delete_ocp_trident_command)
+delete_ocp_menu.add_command(delete_ocp_vast_command)
 delete_ocp_menu.add_command(delete_ocp_vm_command)

@@ -1032,7 +1032,7 @@ class OutputHelper():
             index += 1
         return items
     
-    def my_table_ng(self, source, info, check=True, cast_zero=False, skip=[]):
+    def my_table_ng(self, source, info, check=True, cast_zero=False, cast_dict=False, skip=[]):
         items = copy.deepcopy(source)
         if items is None:
             items = []
@@ -1063,6 +1063,15 @@ class OutputHelper():
                     if key in item and isinstance(item[key], int) and item[key] == 0:
                         item[key] = '--'
 
+        if cast_dict:
+            for item in items:
+                for key in order:
+                    if key not in item:
+                        continue
+
+                    if isinstance(item[key], dict):
+                        item[key] = json.dumps(item[key], indent=2).split('\n')
+                        
         expand = []
         if len(items) > 0:
             for key in order:

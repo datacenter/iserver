@@ -1,6 +1,9 @@
 class RedfishEndpointUcsRackTemplateBios():
     def __init__(self):
-        self.default_bios_uri = '/redfish/v1/Systems/SYSTEM_ID/Bios'
+        if self.endpoint_handler.bmc:
+            self.default_bios_uri = '/redfish/v1/Systems/system/Bios'
+        else:
+            self.default_bios_uri = '/redfish/v1/Systems/SYSTEM_ID/Bios'
         self.bios = None
 
     def get_bios_uri(self):

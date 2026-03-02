@@ -7,8 +7,9 @@
 
 ## Requirements
 
-ODP operator must be installed
-No storage cluster may exist
+- Local storage operator must be [installed](../lso/create_operator.md) and [configured](../lso/create_volume.md)
+- ODF operator must be [installed](./create_operator.md)
+- No storage cluster may exist
 
 ## Configurable options
 
@@ -26,7 +27,7 @@ No storage cluster may exist
   --no-confirm                   Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![ClusterCreate](../images/odf/cluster_create.png)
 
@@ -38,34 +39,7 @@ No storage cluster may exist
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Create Cluster
 ==============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "sc": "odf-sc",
-    "replica": 3,
-    "count": 2,
-    "default_sc": true,
-    "nfs": true,
-    "flexible": true,
-    "tools": false,
-    "confirmation": false,
-    "instance": null,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Checks
 ------

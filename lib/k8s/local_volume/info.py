@@ -303,7 +303,7 @@ class K8sLocalVolumeInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_local_volume_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -326,7 +326,7 @@ class K8sLocalVolumeInfo():
                 return False
         
             if my_output is not None:
-                my_output.default('- wait for persistent volumes [timeout:180]...')
+                my_output.default('- wait for persistent volume assiated with local volume %s [timeout:180]...' % (name))
 
             success = self.wait_pv_local_volume(
                 name,
@@ -401,8 +401,7 @@ class K8sLocalVolumeInfo():
 
         if k8s_output is not None:
             k8s_output.print_local_volumes(
-                items,
-                title=True
+                items
             )
 
             pvs = []

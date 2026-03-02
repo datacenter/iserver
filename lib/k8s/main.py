@@ -39,6 +39,7 @@ from lib.k8s.ceph_object_zone_group.main import K8sCephObjectZoneGroup
 from lib.k8s.ceph_operator_config.main import K8sCephOperatorConfig
 from lib.k8s.ceph_rdb_mirror.main import K8sCephRdbMirror
 from lib.k8s.cilium_config.main import K8sCiliumConfig
+from lib.k8s.cilium_load_balancer_ip_pool.main import CiliumLoadBalancerIpPool
 from lib.k8s.cluster_operator.main import K8sClusterOperator
 from lib.k8s.cluster_policy.main import K8sClusterPolicy
 from lib.k8s.cluster_quota.main import K8sClusterQuota
@@ -210,6 +211,9 @@ from lib.k8s.tracing_policy_namespaced.main import K8sTracingPolicyNamespaced
 from lib.k8s.tuned.main import K8sTuned
 from lib.k8s.upload_token_request.main import K8sUploadTokenRequest
 from lib.k8s.user.main import K8sUser
+from lib.k8s.vast_cluster.main import K8sVastCluster
+from lib.k8s.vast_driver.main import K8sVastDriver
+from lib.k8s.vast_storage.main import K8sVastStorage
 from lib.k8s.version.main import K8sVersion
 from lib.k8s.virtual_machine.main import K8sVirtualMachine
 from lib.k8s.virtual_machine_clone.main import K8sVirtualMachineClone
@@ -272,6 +276,7 @@ class K8s(
         K8sCephRdbMirror,
         K8sCertificate,
         K8sCiliumConfig,
+        CiliumLoadBalancerIpPool,
         K8sClusterOperator,
         K8sClusterPolicy,
         K8sClusterQuota,
@@ -443,6 +448,9 @@ class K8s(
         K8sTuned,
         K8sUploadTokenRequest,
         K8sUser,
+        K8sVastCluster,
+        K8sVastDriver,
+        K8sVastStorage,
         K8sVersion,
         K8sVirtualMachine,
         K8sVirtualMachineClone,
@@ -505,6 +513,7 @@ class K8s(
         K8sCephRdbMirror.__init__(self)
         K8sCertificate.__init__(self)
         K8sCiliumConfig.__init__(self)
+        CiliumLoadBalancerIpPool.__init__(self)
         K8sClusterOperator.__init__(self)
         K8sClusterPolicy.__init__(self)
         K8sClusterQuota.__init__(self)
@@ -676,6 +685,9 @@ class K8s(
         K8sTuned.__init__(self)
         K8sUploadTokenRequest.__init__(self)
         K8sUser.__init__(self)
+        K8sVastCluster.__init__(self)
+        K8sVastDriver.__init__(self)
+        K8sVastStorage.__init__(self)
         K8sVersion.__init__(self)
         K8sVirtualMachine.__init__(self)
         K8sVirtualMachineClone.__init__(self)

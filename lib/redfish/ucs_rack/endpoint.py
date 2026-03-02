@@ -17,6 +17,7 @@ class RedfishEndpointUcsRack(
             endpoint_port,
             redfish_username,
             redfish_password,
+            bmc=False,
             system_id=None,
             auto_connect=True,
             get_timeout=10,
@@ -31,6 +32,7 @@ class RedfishEndpointUcsRack(
             endpoint_port,
             redfish_username,
             redfish_password,
+            bmc=bmc,
             system_id=system_id,
             auto_connect=auto_connect,
             get_timeout=get_timeout,
@@ -41,11 +43,10 @@ class RedfishEndpointUcsRack(
         RedfishEndpointUcsRackAccount.__init__(self)
         RedfishEndpointUcsRackTemplate.__init__(
             self,
-            endpoint_handler
+            endpoint_handler,
+            bmc=bmc
         )
 
-        self.endpoint_type = 'ucsc'
-        self.default_chassis_uri = '/redfish/v1/Chassis/1'
         self.chassis_uri = None
         self.virtual_media_base_url = None
 
@@ -53,6 +54,9 @@ class RedfishEndpointUcsRack(
         self.disconnect()
 
     def get_chassis_type(self):
+        if self.bmc:
+            return 'Rack'
+        
         uri = '/redfish/v1/Chassis'
         children = self.endpoint_handler.get_odata_ids(uri)
         if children is None:
@@ -74,7 +78,17 @@ class RedfishEndpointUcsRack(
 
         return 'Rack'
 
+    def get_chassis_uri_bmc(self):
+        if self.chassis_uri is not None:
+            return self.chassis_uri
+
+        self.chassis_uri = '/redfish/v1/Systems/system'
+        return self.chassis_uri
+
     def get_chassis_uri(self):
+        if self.bmc:
+            return self.get_chassis_uri_bmc()
+        
         if self.chassis_uri is not None:
             return self.chassis_uri
 
@@ -109,11 +123,24 @@ class RedfishEndpointUcsRack(
         self.chassis_uri = chassis_uri
         return chassis_uri
 
+    def get_system_uri(self, base=False):
+        if self.bmc:
+            if base:
+                return '/redfish/v1/Systems/system'
+            
+            return 'https://%s:%s/redfish/v1/Systems/system' % (self.endpoint_ip, self.endpoint_port)
+        
+        system_id = self.get_system_id()
+        if base:
+            url = '/redfish/v1/Systems/%s' % (system_id)
+        else:
+            url = 'https://%s:%s/redfish/v1/Systems/%s' % (self.endpoint_ip, self.endpoint_port, system_id)
+
+        return url
+
     def get_excluded_tree_uri(self):
         if not self.deep_search_exclusions:
             return []
-
-        system_id = self.get_system_id()
 
         uri = [
             '/redfish/v1/JsonSchemas',
@@ -121,7 +148,7 @@ class RedfishEndpointUcsRack(
             '/redfish/v1/Chassis/CMC/LogServices',
             '/redfish/v1/SessionService',
             '/redfish/v1/Managers/CIMC/LogServices',
-            '/redfish/v1/Systems/%s/LogServices' % (system_id)
+            '%s/LogServices' % (self.get_system_uri(base=True))
         ]
 
         return uri
@@ -188,13 +215,17 @@ class RedfishEndpointUcsRack(
 
         url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.InsertMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
 
-        data = {}
-        data['Image'] = iso_url
-        data['WriteProtected'] = True
-        data['TransferProtocolType'] = protocol
-        data['TransferMethod'] = 'Stream'
-        data['Inserted'] = True
-
+        if 'CIMC' in url:
+            data = {}
+            data['Image'] = iso_url
+            data['WriteProtected'] = True
+            data['TransferProtocolType'] = protocol
+            data['TransferMethod'] = 'Stream'
+            data['Inserted'] = True
+        else:
+            data = {}
+            data['Image'] = iso_url
+            
         return self.post(url, data=data)
 
     def eject_media(self, virtual_media_id=0):
@@ -202,29 +233,43 @@ class RedfishEndpointUcsRack(
         return self.post(url)
 
     def get_boot_properties(self):
-        system_id = self.get_system_id()
-        path = 'Systems/%s' % (system_id)
-        response = self.get_properties(path)
-        if response is None or 'Boot' not in response:
-            return None
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'Boot' not in response:
+                return None
+
+        if not self.bmc:
+            system_id = self.get_system_id()
+            path = 'Systems/%s' % (system_id)
+            response = self.get_properties(path)
+            if response is None or 'Boot' not in response:
+                return None
+            
         return response['Boot']
 
     def set_one_time_boot_source(self, target, enabled='Once'):
-        system_id = self.get_system_id()
-        url = 'https://%s:%s/redfish/v1/Systems/%s' % (self.endpoint_ip, self.endpoint_port, system_id)
-
         data = {}
         data['Boot'] = {}
         data['Boot']['BootSourceOverrideTarget'] = target
         data['Boot']['BootSourceOverrideEnabled'] = enabled
 
-        return self.patch(url, data=data)
+        return self.patch(self.get_system_uri(), data=data)
 
     def get_power_state(self):
-        path = 'Systems/%s' % (self.get_system_id())
-        response = self.get_properties(path)
-        if response is None or 'PowerState' not in response:
-            return None
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'PowerState' not in response:
+                return None
+            
+        if not self.bmc:
+            path = 'Systems/%s' % (self.get_system_id())
+            response = self.get_properties(path)
+            if response is None or 'PowerState' not in response:
+                return None
 
         return response['PowerState']
 
@@ -235,8 +280,7 @@ class RedfishEndpointUcsRack(
         return True
 
     def power_cycle(self):
-        system_id = self.get_system_id()
-        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
 
         data = {}
         data['ResetType'] = 'PowerCycle'
@@ -244,16 +288,24 @@ class RedfishEndpointUcsRack(
         return self.post(url, data=data)
 
     def get_system_actions(self):
-        system_id = self.get_system_id()
-        path = 'Systems/%s' % (system_id)
-        response = self.get_properties(path)
-        if response is None or 'Actions' not in response:
-            return None
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'Actions' not in response:
+                return None
+            
+        if not self.bmc:
+            system_id = self.get_system_id()
+            path = 'Systems/%s' % (system_id)
+            response = self.get_properties(path)
+            if response is None or 'Actions' not in response:
+                return None
+
         return response['Actions']
 
     def power_restart(self, graceful=False):
-        system_id = self.get_system_id()
-        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
 
         data = {}
         if graceful:
@@ -264,8 +316,7 @@ class RedfishEndpointUcsRack(
         return self.post(url, data=data)
 
     def power_on(self):
-        system_id = self.get_system_id()
-        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
 
         data = {}
         data['ResetType'] = 'On'
@@ -273,8 +324,7 @@ class RedfishEndpointUcsRack(
         return self.post(url, data=data)
 
     def power_off(self, gracefull=False):
-        system_id = self.get_system_id()
-        url = 'https://%s:%s/redfish/v1/Systems/%s/Actions/ComputerSystem.Reset' % (self.endpoint_ip, self.endpoint_port, system_id)
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
 
         data = {}
 

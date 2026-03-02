@@ -251,7 +251,7 @@ def add_operator(params, my_output=None):
 
     params['subscription_json'] = subscription_json
 
-    success = params['k8s_handler'].create_subscription_mo(subscription=subscription_json)
+    success = params['k8s_handler'].create_resource(subscription=subscription_json)
     if not success:
         params['success'] = False
         params['error'] = 'Subsciption create api failed'

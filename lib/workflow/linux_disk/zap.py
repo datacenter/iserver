@@ -33,6 +33,9 @@ def validate(params):
 
     params['device'] = copy.deepcopy(new_devices)
 
+    if 'break' not in params:
+        params['break'] = True
+
     if 'confirmation' not in params:
         params['confirmation'] = True
 
@@ -46,6 +49,7 @@ def validate(params):
         'server',
         'device',
         'verbose',
+        'break',
         'confirmation'
     ]
     return local_common.sanitize_params(params, allowed_keys), None
@@ -101,8 +105,19 @@ def run(params, log_id=None):
             success, output, error = server['ssh_handler'].run_cmd(command)
             my_output.default('%s %s' % (str(output), str(error)), wrap='~~~')
             if not success:
-                my_output.error('Failed')
-                return False
+                if 'Invalid partition data!' in str(output) or 'Invalid partition data!' in str(error):
+                    command = 'sudo sgdisk --zap-all %s' % (device['path'])
+                    my_output.default('Command: %s' % (command))
+                    success, output, error = server['ssh_handler'].run_cmd(command)
+                    my_output.default('%s %s' % (str(output), str(error)), wrap='~~~')
+                    if not success:
+                        my_output.error('Failed')
+                        if params['break']:
+                            return False
+                else:
+                    my_output.error('Failed')
+                    if params['break']:
+                        return False
             
             command = 'sudo blkdiscard -f  %s' % (device['path'])
             my_output.default('Command: %s' % (command))
@@ -110,7 +125,8 @@ def run(params, log_id=None):
             my_output.default('%s %s' % (str(output), str(error)), wrap='~~~')
             if not success:
                 my_output.error('Failed')
-                return False
+                if params['break']:
+                    return False
 
         lsblks = server['linux_handler'].get_lsblks(
             device_names=params['device'],

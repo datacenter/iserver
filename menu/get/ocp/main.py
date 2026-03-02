@@ -14,7 +14,6 @@ from menu.get.ocp.cpolicy import get_ocp_cpolicy_command
 from menu.get.ocp.fabric import get_ocp_cluster_fabric_command
 from menu.get.ocp.gpu import get_ocp_gpu_command
 from menu.get.ocp.grafana import get_ocp_grafana_command
-from menu.get.ocp.helm import get_ocp_helm_command
 from menu.get.ocp.htpasswd import get_ocp_htpasswd_command
 from menu.get.ocp.imm import get_ocp_imm_command
 from menu.get.ocp.iotel import get_ocp_iotel_command
@@ -35,6 +34,7 @@ from menu.get.ocp.sriov import get_ocp_sriov_command
 from menu.get.ocp.ssh import get_ocp_ssh_command
 from menu.get.ocp.tetragon import get_ocp_tetragon_command
 from menu.get.ocp.trident import get_ocp_trident_command
+from menu.get.ocp.vast import get_ocp_vast_command
 
 
 class Failure(Exception):
@@ -61,7 +61,6 @@ get_ocp_menu.add_command(get_ocp_cpolicy_command)
 get_ocp_menu.add_command(get_ocp_cluster_fabric_command)
 get_ocp_menu.add_command(get_ocp_gpu_command)
 get_ocp_menu.add_command(get_ocp_grafana_command)
-get_ocp_menu.add_command(get_ocp_helm_command)
 get_ocp_menu.add_command(get_ocp_htpasswd_command)
 get_ocp_menu.add_command(get_ocp_imm_command)
 get_ocp_menu.add_command(get_ocp_iotel_command)
@@ -82,3 +81,4 @@ get_ocp_menu.add_command(get_ocp_sriov_command)
 get_ocp_menu.add_command(get_ocp_ssh_command)
 get_ocp_menu.add_command(get_ocp_tetragon_command)
 get_ocp_menu.add_command(get_ocp_trident_command)
+get_ocp_menu.add_command(get_ocp_vast_command)

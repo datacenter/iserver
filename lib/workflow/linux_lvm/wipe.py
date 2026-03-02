@@ -57,7 +57,25 @@ def run(linux_handler, my_output, server_name=None):
             my_output.error('Volume group delete failed')
             success = False
 
+            if 'Consider vgreduce --removemissing' in cmd_output:
+                my_output.default('- reduce vg: %s' % (item['vg_name']))
+                vg_reduced, cmd_output = linux_handler.reduce_vg_cmd(item['vg_name'])
+                if not vg_reduced:
+                    my_output.error('Volume group reduce failed')
+                else:
+                    my_output.default('- delete (again) vg: %s' % (item['vg_name']))
+                    vg_deleted, cmd_output = linux_handler.delete_vg_cmd(item['vg_name'])
+                    my_output.default(cmd_output)
+                    if not vg_deleted:
+                        my_output.error('Volume group delete failed after vg reduce')
+                        success = False
+                    else:
+                        success = True
+
     for item in pvs:
+        if item['pv_name'] in ['[unknown]']:
+            continue
+        
         my_output.default('- delete pv: %s' % (item['pv_name']))
         pv_deleted, cmd_output = linux_handler.delete_pv_cmd(item['pv_name'])
         my_output.default(cmd_output)

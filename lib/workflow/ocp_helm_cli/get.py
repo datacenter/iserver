@@ -1,7 +1,4 @@
-from lib import ip_helper
-from lib import file_helper
 from lib import output_helper
-from lib.workflow.ocp_bashrc_proxy import configure
 from lib.workflow.ocp_helm_cli import common as local_common
 
 
@@ -9,6 +6,19 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
     
+    if 'view' not in params or params['view'] is None:
+        params['view'] = ['list']
+
+    if not isinstance(params['view'], list):
+        return None, 'view must be list'
+
+    if len(params['view']) == 0:
+        params['view'] = ['list']
+
+    for item in params['view']:
+        if item not in ['list', 'ver']:
+            return None, 'unsupported view %s' % (item)
+        
     if 'confirmation' not in params:
         params['confirmation'] = True
 
@@ -30,6 +40,7 @@ def validate(params):
     allowed_keys = [
         'cluster',
         'url',
+        'view',
         'confirmation',
         'verbose',
         'check-verbose'
@@ -50,14 +61,26 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    success, output, error = params['ssh_handler'].run_cmd(
-        'helm version'
-    )
-    if not success:
-        my_output.error('Command failed')
-        my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
-        return False
+    if 'ver' in params['view']:
+        success, output, error = params['ssh_handler'].run_cmd(
+            'helm version'
+        )
+        if not success:
+            my_output.error('Command failed')
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            return False
 
-    my_output.default('Helm found and ready')
-    my_output.default(str(output), wrap='~~~')
+        my_output.default(str(output), wrap='~~~')
+
+    if 'list' in params['view']:
+        success, output, error = params['ssh_handler'].run_cmd(
+            'helm ls -A'
+        )
+        if not success:
+            my_output.error('Command failed')
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            return False
+
+        my_output.default(str(output), wrap='~~~')
+        
     return True

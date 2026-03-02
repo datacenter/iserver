@@ -241,7 +241,7 @@ def validate_server(user_settings, my_output, log_id):
         if 'endpoint_type' not in server['redfish']:
             server['redfish']['endpoint_type'] = 'ucsc'
 
-        if server['redfish']['endpoint_type'] not in ['ucsc', 'fi']:
+        if server['redfish']['endpoint_type'] not in ['ucsc', 'bmc', 'fi']:
             my_output.error('Unsupported server redfish endpoint type')
             return None
 

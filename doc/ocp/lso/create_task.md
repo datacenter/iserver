@@ -59,27 +59,7 @@ Completed
 OpenShift Workflow - Local Storage Operator - Create Operator
 =============================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "node-selector-override": false,
-    "channel": "stable",
-    "check-verbose": true,
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Create Namespace
 ----------------
@@ -163,37 +143,7 @@ Completed tasks
 OpenShift Workflow - Local Storage Operator - Create Local Volume
 =================================================================
 
-Workflow Parameters
--------------------
-{
-    "sc": "local-sc",
-    "device": [
-        "bm1-1:wwn-0x500a075118ef25c1",
-        "bm1-2:wwn-0x500a075118ef266c"
-    ],
-    "volume": "block",
-    "max": 2,
-    "limit": [
-        "type:disk"
-    ],
-    "cluster": "bm1",
-    "confirmation": false,
-    "ssh-required": true,
-    "check-verbose": true,
-    "fstype": "ext4",
-    "namespace": "openshift-local-storage",
-    "name": "local-storage-operator",
-    "operator-group-name": "local-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
+OpenShift Cluster: bm1
 
 Local Storage Operator
 ----------------------

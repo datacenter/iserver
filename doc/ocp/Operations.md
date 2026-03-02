@@ -53,6 +53,7 @@ CSI
 - [ODF](./odf/README.md)
 - [Portworx](./portworx/README.md)
 - [Trident](./trident/README.md)
+- [VAST](./vast/README.md)
 
 Virtualization
 - [Container Virtualization Operator](./cnv/README.md)

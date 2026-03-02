@@ -28,7 +28,7 @@ No storage cluster may exist
   --no-confirm                   Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/odf/operator_create.png)
 
@@ -42,27 +42,7 @@ python.exe .\iserver.py set ocp odf --mode all --replica 3 --count 2 --nfs --def
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Create Operator
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "channel": "__default__",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Create Namespace
 ----------------
@@ -157,34 +137,7 @@ Completed tasks
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Create Cluster
 ==============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "sc": "odf-sc",
-    "replica": 3,
-    "count": 2,
-    "default_sc": true,
-    "nfs": true,
-    "flexible": true,
-    "tools": false,
-    "confirmation": false,
-    "instance": null,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Checks
 ------
@@ -301,27 +254,7 @@ python.exe .\iserver.py get ocp odf --cluster bm1
 OpenShift Workflow - OpenShift Data Foundation (ODF) Operator - Get Information
 ===============================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "view": [
-        "state"
-    ],
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "odf-operator",
-    "cluster-name": "odf-cluster",
-    "operator-group-name": "openshift-storage-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: bm1
 
 Operator
 --------

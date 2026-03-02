@@ -121,8 +121,7 @@ def get_k8s_sc_command(
 
         if 'res' in view:
             k8s_output_handler.print_storage_classes_with_resources(
-                storage_classes,
-                title=True
+                storage_classes
             )
 
         ctx.my_output.default('Filter: namespace, name', before_newline=True)

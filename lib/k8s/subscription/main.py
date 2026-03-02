@@ -13,6 +13,7 @@ from lib.k8s.subscription.mtv import K8sSubscriptionMtv
 from lib.k8s.subscription.nfd import K8sSubscriptionNfd
 from lib.k8s.subscription.nim import K8sSubscriptionNim
 from lib.k8s.subscription.nmstate import K8sSubscriptionNmstate
+from lib.k8s.subscription.ocs import K8sSubscriptionOcs
 from lib.k8s.subscription.odf import K8sSubscriptionOdf
 from lib.k8s.subscription.ods import K8sSubscriptionOds
 from lib.k8s.subscription.portworx import K8sSubscriptionPortworx
@@ -22,6 +23,7 @@ from lib.k8s.subscription.splunk import K8sSubscriptionSplunk
 from lib.k8s.subscription.sriov import K8sSubscriptionSriov
 from lib.k8s.subscription.tetragon import K8sSubscriptionTetragon
 from lib.k8s.subscription.trident import K8sSubscriptionTrident
+from lib.k8s.subscription.vast import K8sSubscriptionVast
 from lib.k8s.subscription.web_terminal import K8sSubscriptionWebTerminal
 
 
@@ -41,6 +43,7 @@ class K8sSubscription(
         K8sSubscriptionNfd,
         K8sSubscriptionNim,
         K8sSubscriptionNmstate,
+        K8sSubscriptionOcs,
         K8sSubscriptionOdf,
         K8sSubscriptionOds,
         K8sSubscriptionPortworx,
@@ -50,6 +53,7 @@ class K8sSubscription(
         K8sSubscriptionSriov,
         K8sSubscriptionTetragon,
         K8sSubscriptionTrident,
+        K8sSubscriptionVast,
         K8sSubscriptionWebTerminal
         ):
     def __init__(self):
@@ -68,6 +72,7 @@ class K8sSubscription(
         K8sSubscriptionNfd.__init__(self)
         K8sSubscriptionNim.__init__(self)
         K8sSubscriptionNmstate.__init__(self)
+        K8sSubscriptionOcs.__init__(self)
         K8sSubscriptionOdf.__init__(self)
         K8sSubscriptionOds.__init__(self)
         K8sSubscriptionPortworx.__init__(self)
@@ -77,4 +82,5 @@ class K8sSubscription(
         K8sSubscriptionSriov.__init__(self)
         K8sSubscriptionTetragon.__init__(self)
         K8sSubscriptionTrident.__init__(self)
+        K8sSubscriptionVast.__init__(self)
         K8sSubscriptionWebTerminal.__init__(self)

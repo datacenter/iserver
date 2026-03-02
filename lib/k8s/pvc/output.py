@@ -28,6 +28,7 @@ class K8sPvcOutput():
                 ['Access', 'access_modesT'],
                 ['Storage Class', 'storage_class_name'],
                 ['Usage', 'usage'],
+                ['PV', 'volume_name'],
                 ['Age', 'age']
             ]
         )
