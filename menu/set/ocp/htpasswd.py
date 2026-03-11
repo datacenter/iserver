@@ -3,8 +3,8 @@ import traceback
 import click
 
 from menu import validations
-from lib.workflow.ocp_identity_htpasswd import get as ocp_get_workflow
 from lib.workflow.ocp_identity_htpasswd import add as ocp_add_workflow
+from menu import user_inputs
 
 
 class Failure(Exception):
@@ -23,19 +23,27 @@ class ErrorExit(Exception):
 @click.option("--user", "userpass", is_flag=False, multiple=True, help="User:pass entries")
 @click.option("--admin", "admins", is_flag=False, multiple=True, help="Admin users")
 @click.option("--mode", type=click.Choice(['post', 'patch'], case_sensitive=False), default='patch', show_default=True, help="Mode of operation")
-def set_ocp_htpasswd_command(ctx, cluster_name, provider_name, htpasswd_filename, userpass, admins, mode):
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
+def set_ocp_htpasswd_command(ctx, cluster_name, provider_name, htpasswd_filename, userpass, admins, mode, no_confirm):
     """Set identity htpasswd in openshift cluster"""
 
     try:
-        params = {}
-        params['cluster'] = cluster_name
-        
-        success = ocp_get_workflow.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
+        if provider_name is None:
+            provider_name = user_inputs.get_value(ctx, prompt='Provider name', empty=True)
+            if len(provider_name) == 0:
+                raise ErrorExit
+
+        if len(htpasswd_filename) == 0 and len(userpass) == 0 and len(admins) == 0:
+            value = user_inputs.get_value(ctx, prompt='htpasswd file (comma-seperated)', empty=True)
+            if len(value) > 0:
+                htpasswd_filename = value.split(',')
+
+            value = user_inputs.get_value(ctx, prompt='user:pass (comma-separated)', empty=True)
+            if len(value) > 0:
+                userpass = value.split(',')
+                value = user_inputs.get_value(ctx, prompt='admins (comma-separated or __ALL__)', empty=True)
+                if len(value) > 0:
+                    admins = value.split(',')
 
         params = {}
         params['cluster'] = cluster_name
@@ -44,20 +52,9 @@ def set_ocp_htpasswd_command(ctx, cluster_name, provider_name, htpasswd_filename
         params['userpass'] = userpass
         params['admins'] = admins
         params['mode'] = mode
-        params['check-verbose'] = False
-        params['title'] = 'Workflow tasks'
+        params['confirmation'] = not no_confirm
 
         success = ocp_add_workflow.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-        params = {}
-        params['cluster'] = cluster_name
-        params['check-verbose'] = False
-        success = ocp_get_workflow.run(
             params,
             log_id=ctx.run_id
         )

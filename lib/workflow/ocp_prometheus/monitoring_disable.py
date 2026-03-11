@@ -60,7 +60,7 @@ def edit_config_map(params, config_map_mo, my_output):
         my_output.error('Exception: config map data change failed')
         return False, False
 
-    success = params['k8s_handler'].set_config_map_data(
+    success = params['k8s_handler'].update_config_map(
         params['mon-namespace'],
         params['mon-name'],
         all_data_json,

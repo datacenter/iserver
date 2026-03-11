@@ -46,6 +46,7 @@ from lib.k8s.cluster_version.output import K8sClusterVersionOutput
 from lib.k8s.clusterwide_private_network.output import K8sClusterwidePrivateNetworkOutput
 from lib.k8s.cni.output import K8sCniOutput
 from lib.k8s.config_map.output import K8sConfigMapOutput
+from lib.k8s.cron_job.output import K8sCronJobOutput
 from lib.k8s.custom_resource_definition.output import K8sCustomResourceDefinitionOutput
 from lib.k8s.daemon_set.output import K8sDaemonSetOutput
 from lib.k8s.data_import_cron.output import K8sDataImportCronOutput
@@ -74,6 +75,7 @@ from lib.k8s.grafana_mute_timing.output import K8sGrafanaMuteTimingOutput
 from lib.k8s.grafana_notification_policy.output import K8sGrafanaNotificationPolicyOutput
 from lib.k8s.grafana_notification_policy_route.output import K8sGrafanaNotificationPolicyRouteOutput
 from lib.k8s.grafana_notification_template.output import K8sGrafanaNotificationTemplateOutput
+from lib.k8s.group.output import K8sGroupOutput
 from lib.k8s.hook.output import K8sHookOutput
 from lib.k8s.host.output import K8sHostOutput
 from lib.k8s.host_path_provisioner.output import K8sHostPathProvisionerOutput
@@ -278,6 +280,7 @@ class K8sOutput(
     K8sClusterwidePrivateNetworkOutput,
     K8sCniOutput,
     K8sConfigMapOutput,
+    K8sCronJobOutput,
     K8sCustomResourceDefinitionOutput,
     K8sDaemonSetOutput,
     K8sDataImportCronOutput,
@@ -306,6 +309,7 @@ class K8sOutput(
     K8sGrafanaNotificationPolicyOutput,
     K8sGrafanaNotificationPolicyRouteOutput,
     K8sGrafanaNotificationTemplateOutput,
+    K8sGroupOutput,
     K8sHookOutput,
     K8sHostOutput,
     K8sHostPathProvisionerOutput,
@@ -514,6 +518,7 @@ class K8sOutput(
         K8sClusterwidePrivateNetworkOutput.__init__(self)
         K8sCniOutput.__init__(self)
         K8sConfigMapOutput.__init__(self)
+        K8sCronJobOutput.__init__(self)
         K8sCustomResourceDefinitionOutput.__init__(self)
         K8sDaemonSetOutput.__init__(self)
         K8sDataImportCronOutput.__init__(self)
@@ -534,6 +539,7 @@ class K8sOutput(
         K8sGrafanaOutput.__init__(self)
         K8sGrafanaDashboardOutput.__init__(self)
         K8sGrafanaDatasourceOutput.__init__(self)
+        K8sGroupOutput.__init__(self)
         K8sHookOutput.__init__(self)
         K8sHostOutput.__init__(self)
         K8sHostPathProvisionerOutput.__init__(self)

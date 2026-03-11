@@ -2,6 +2,7 @@ from lib.k8s.secret.api import K8sSecretApi
 from lib.k8s.secret.info import K8sSecretInfo
 from lib.k8s.secret.create import K8sSecretCreate
 from lib.k8s.secret.delete import K8sSecretDelete
+from lib.k8s.secret.update import K8sSecretUpdate
 from lib.k8s.secret.wait import K8sSecretWait
 
 
@@ -10,6 +11,7 @@ class K8sSecret(
         K8sSecretInfo,
         K8sSecretCreate,
         K8sSecretDelete,
+        K8sSecretUpdate,
         K8sSecretWait
         ):
     def __init__(self):
@@ -17,4 +19,5 @@ class K8sSecret(
         K8sSecretInfo.__init__(self)
         K8sSecretCreate.__init__(self)
         K8sSecretDelete.__init__(self)
+        K8sSecretUpdate.__init__(self)
         K8sSecretWait.__init__(self)

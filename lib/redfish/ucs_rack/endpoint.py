@@ -207,7 +207,7 @@ class RedfishEndpointUcsRack(
             if int(time.time()) - start_time > timeout:
                 return False
 
-    def insert_media_http(self, iso_url, virtual_media_id=0, protocol='HTTP', safe=True):
+    def insert_media_http(self, iso_url, virtual_media_id=0, safe=True):
         if safe:
             if self.is_virtual_media_defined(virtual_media_id=virtual_media_id):
                 if not self.eject_media(virtual_media_id=virtual_media_id):
@@ -215,17 +215,18 @@ class RedfishEndpointUcsRack(
 
         url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.InsertMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
 
-        if 'CIMC' in url:
-            data = {}
-            data['Image'] = iso_url
-            data['WriteProtected'] = True
-            data['TransferProtocolType'] = protocol
-            data['TransferMethod'] = 'Stream'
-            data['Inserted'] = True
+        if iso_url.split(':')[0] == 'https':
+            protocol = 'HTTPS'
         else:
-            data = {}
-            data['Image'] = iso_url
+            protocol = 'HTTP'
             
+        data = {}
+        data['Image'] = iso_url
+        data['WriteProtected'] = True
+        data['TransferProtocolType'] = protocol
+        data['TransferMethod'] = 'Stream'
+        data['Inserted'] = True
+
         return self.post(url, data=data)
 
     def eject_media(self, virtual_media_id=0):

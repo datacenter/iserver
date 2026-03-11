@@ -26,7 +26,7 @@ class ErrorExit(Exception):
 @click.option("--inventory-type", default='', help="FI Inventory Type")
 @click.option("--inventory-id", default='', help="FI Inventory Id")
 @click.option("--id", "vmedia_id", type=click.INT, default=-1, help="Virtual media id")
-@click.option("--url", default='', help="Redfish username")
+@click.option("--url", default='', help="Image location")
 @click.option("--no-wait", is_flag=True, show_default=True, default=False, help="Wait for inserted")
 def set_redfish_vmedia_insert_command(
         ctx,
@@ -82,8 +82,7 @@ def set_redfish_vmedia_insert_command(
 
         success = redfish_handler.endpoint_handler.insert_media_http(
             url, 
-            virtual_media_id=vmedia_id, 
-            protocol='HTTP', 
+            virtual_media_id=vmedia_id,
             safe=True
         )
         if not success:

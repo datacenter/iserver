@@ -105,7 +105,7 @@ def get_operator_config(params, my_output):
 
 
 def update_operator_config(data, params, my_output):
-    success = params['k8s_handler'].set_config_map_data(
+    success = params['k8s_handler'].update_config_map(
         params['operator-cm-namespace'],
         params['operator-cm-name'],
         data,

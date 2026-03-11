@@ -127,6 +127,10 @@ def validate_web(user_settings, my_output):
             my_output.error('web_server requires either password or ssh_public_key property')
             return None
 
+    if user_settings['web_server']['image_base_url'].split(':')[0] not in ['http', 'https']:
+        my_output.error('web_server image_base_url must be http:// or https://')
+        return None
+
     if 'verify' not in user_settings['web_server']:
         user_settings['web_server']['verify'] = True
     

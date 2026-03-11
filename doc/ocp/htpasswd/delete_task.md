@@ -1,5 +1,7 @@
 # HTPasswd Identity Provider - Delete via Task
 
+[[Back]](./README.md) [[Prev]](./delete.md) [[Next]](./get.md)
+
 ## Input
 
 ```
@@ -7,9 +9,12 @@
     {
         "identity": {
             "type": "htpasswd",
-            "provider": "custom",
+            "provider": "new-one",
+            "userpass": [
+                "aaa:aaa"
+            ],
             "filename": [
-                "htpasswd.txt"
+                "/tmp/htpasswd.txt"
             ],
             "admins": [
                 "__ALL__"
@@ -43,8 +48,7 @@ None
 ## Example
 
 ```
-# iserver delete ocp task --filename C:\tmp\task.json --cluster bm1
-
+# iserver delete ocp task --cluster bm1 --filename C:\tmp\task.json
 
 OpenShift Workflow - Delete Tasks
 =================================
@@ -57,31 +61,180 @@ Completed
 OpenShift Workflow - Delete HTPasswd Identity Provider
 ======================================================
 
+OpenShift Cluster: bm1
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\auser1wod\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+htpasswd identity provider [new-one]
+- found
 
-Deleting user [user1] and identity [custom:user1]
-User already deleted, checking for identity leftover
-Deleting user [user1] from cluster-admin group
-Deleting user [user2] and identity [custom:user2]
-User already deleted, checking for identity leftover
-Deleting user [user2] from cluster-admin group
-Deleting user [user3] and identity [custom:user3]
-User already deleted, checking for identity leftover
-Deleting user [user3] from cluster-admin group
-Deleting user [user4] and identity [custom:user4]
-User already deleted, checking for identity leftover
-Deleting user [user4] from cluster-admin group
-Deleting secret [openshift-config/custom]
-Deleting htpasswd identity provider [custom]
-Removing user [user1] from cluster-admin group
-Removing user [user2] from cluster-admin group
-Removing user [user3] from cluster-admin group
-Removing user [user4] from cluster-admin group
+Delete user
+-----------
+- user: bbb
+- with identities
+- incl identity: new-one:bbb
+- already deleted
+
+Delete Identity
+---------------
+- name: new-one:bbb
+- already deleted
+
+Remove user subject from cluster role binding
+---------------------------------------------
+- cluster role binding: cluster-admin
+- user: bbb
+
+Replace ClusterRoleBinding
+--------------------------
+- name: cluster-admin
+
+~~~
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: 'true'
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  description: Group:system:masters
+  kind: Group
+  name: system:masters
+- apiGroup: rbac.authorization.k8s.io
+  description: User:akaliwod
+  kind: User
+  name: akaliwod
+- apiGroup: rbac.authorization.k8s.io
+  description: User:xxx
+  kind: User
+  name: xxx
+- apiGroup: rbac.authorization.k8s.io
+  description: User:yyy
+  kind: User
+  name: yyy
+- apiGroup: rbac.authorization.k8s.io
+  description: User:aaa
+  kind: User
+  name: aaa
+
+~~~
+ClusterRoleBinding [cluster-admin] replaced
+
+Delete user
+-----------
+- user: aaa
+- with identities
+- incl identity: new-one:aaa
+- already deleted
+
+Delete Identity
+---------------
+- name: new-one:aaa
+- already deleted
+
+Remove user subject from cluster role binding
+---------------------------------------------
+- cluster role binding: cluster-admin
+- user: aaa
+
+Replace ClusterRoleBinding
+--------------------------
+- name: cluster-admin
+
+~~~
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: 'true'
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  description: Group:system:masters
+  kind: Group
+  name: system:masters
+- apiGroup: rbac.authorization.k8s.io
+  description: User:akaliwod
+  kind: User
+  name: akaliwod
+- apiGroup: rbac.authorization.k8s.io
+  description: User:xxx
+  kind: User
+  name: xxx
+- apiGroup: rbac.authorization.k8s.io
+  description: User:yyy
+  kind: User
+  name: yyy
+
+~~~
+ClusterRoleBinding [cluster-admin] replaced
+
+Delete Secret
+-------------
+- namespace: openshift-config
+- name: new-one
+- wait for no secret
+
+Delete identity provider from oauth
+-----------------------------------
+- oauth: cluster
+- provider: new-one
+
+Replace OAuth
+-------------
+- name: cluster
+
+~~~
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: 'true'
+    include.release.openshift.io/self-managed-high-availability: 'true'
+    release.openshift.io/create-only: 'true'
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+    mappingMethod: claim
+    name: ldap
+    type: LDAP
+    ...
+  - htpasswd:
+      fileData:
+        name: local-admins
+    mappingMethod: claim
+    name: local-admins
+    type: HTPasswd
+
+~~~
+OAuth [cluster] replaced
+
+Remove user subject from cluster role binding
+---------------------------------------------
+- cluster role binding: cluster-admin
+- user: bbb
+- already deleted
+
+Remove user subject from cluster role binding
+---------------------------------------------
+- cluster role binding: cluster-admin
+- user: aaa
+- already deleted
+
+Completed tasks
+- HTPasswd Identity Provider configured
 ```
 
-[[Back]](../Operations.md)
+[[Back]](./README.md) [[Prev]](./delete.md) [[Next]](./get.md)

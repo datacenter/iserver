@@ -436,11 +436,13 @@ def create_instance(params, my_output):
     labels['app'] = 'opentelemetry'
     labels['component'] = 'otel-collector-config'
 
-    success = params['k8s_handler'].create_config_map_data(
+    data = {}
+    data['otel-collector-config'] = get_otel_config()
+
+    success = params['k8s_handler'].create_config_map(
         params['otel_config_namespace'], 
         params['otel_config_name'],
-        'otel-collector-config', 
-        get_otel_config(),
+        data,
         labels=labels,
         confirmation=params['confirmation'],
         my_output=my_output,
@@ -449,11 +451,13 @@ def create_instance(params, my_output):
     if not success:
         return False
 
-    success = params['k8s_handler'].create_config_map_data(
+    data = {}
+    data['intersight-otel.toml'] = params['poller']
+
+    success = params['k8s_handler'].create_config_map(
         params['intersight_config_namespace'], 
         params['intersight_config_name'],
-        'intersight-otel.toml', 
-        params['poller'],
+        data,
         confirmation=params['confirmation'],
         my_output=my_output,
         wait=True

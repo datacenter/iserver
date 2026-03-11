@@ -2,11 +2,15 @@ class K8sClusterOperatorOutput():
     def __init__(self):
         pass
 
-    def print_cluster_operators(self, info):
-        all_available = True
-        for item in info:
-            if not item['available']:
-                all_available = False
+    def print_cluster_operator(self, info):
+        self.print_cluster_operators([info], summary=False)
+
+    def print_cluster_operators(self, info, summary=True):
+        if summary:
+            all_available = True
+            for item in info:
+                if not item['available']:
+                    all_available = False
 
         self.my_output.my_table_ng(
             info,
@@ -18,15 +22,16 @@ class K8sClusterOperatorOutput():
                 ['Progressing', 'progressingTick'],
                 ['Degraded', 'degradedTick'],
                 ['Upgradeable', 'upgradeableTick'],
-                ['Since', 'availableSince'],
+                ['Since', 'sinceT'],
                 ['Age', 'age']
             ]
         )
 
-        if all_available:
-            self.my_output.default('All cluster operators available: %s' % (self.my_output.add_color('yes', 'Green')), before_newline=True)
-        else:
-            self.my_output.default('All cluster operators available: %s' % (self.my_output.add_color('no', 'Red')), before_newline=True)
+        if summary:
+            if all_available:
+                self.my_output.default('All cluster operators available: %s' % (self.my_output.add_color('yes', 'Green')), before_newline=True)
+            else:
+                self.my_output.default('All cluster operators available: %s' % (self.my_output.add_color('no', 'Red')), before_newline=True)
 
     def print_cluster_operators_deployment(self, info, title=False):
         if title:

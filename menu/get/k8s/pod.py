@@ -25,7 +25,7 @@ class NoResultExit(Exception):
 @click.command("pod")
 @click.pass_obj
 @click.option("--cluster", default='', help="Cluster name")
-@click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
+@click.option("--namespace", "-n", default='', callback=validations.empty_string_to_none, help="Filter by namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
 @click.option("--owner", default='', callback=validations.empty_string_to_none, help="Filter by owner")
 @click.option("--node", default='', callback=validations.empty_string_to_none, help="Filter by node")
@@ -66,10 +66,14 @@ def get_k8s_pod_command(
             raise ErrorExit
 
         object_filter = []
+        call_namespace = None
         if namespace is not None:
-            object_filter.append(
-                'namespace:%s' % (namespace)
-            )
+            if '*' in namespace:
+                object_filter.append(
+                    'namespace:%s' % (namespace)
+                )
+            else:
+                call_namespace = namespace
 
         if name is not None:
             object_filter.append(
@@ -99,6 +103,7 @@ def get_k8s_pod_command(
 
         if output == 'mo':
             pods = k8s_handlers.get_pods(
+                namespace=call_namespace,
                 object_filter=object_filter,
                 return_mo=True
             )
@@ -123,6 +128,7 @@ def get_k8s_pod_command(
             log_info = True
 
         pods = k8s_handlers.get_pods(
+            namespace=call_namespace,
             object_filter=object_filter,
             service_info=service_info,
             log_info=log_info

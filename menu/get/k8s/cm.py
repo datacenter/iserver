@@ -133,8 +133,7 @@ def get_k8s_cm_command(
 
         if 'state' in view:
             k8s_output_handler.print_config_maps(
-                config_maps,
-                title=True
+                config_maps
             )
 
         if 'name' in view:
@@ -151,8 +150,7 @@ def get_k8s_cm_command(
 
         if 'pod' in view:
             k8s_output_handler.print_config_maps_pod(
-                config_maps,
-                title=True
+                config_maps
             )
 
         ctx.my_output.default('Filter: namespace, name, cname, cdata', before_newline=True)

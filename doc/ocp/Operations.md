@@ -70,8 +70,10 @@ AI
 - [Service Mesh v2](./service-mesh/README.md)
 
 Security
-- [Certificate Manager](./cert-manager/README.md)
+- [OpenShift Authantication (OAuth)](./oauth/README.md)
 - [HTPasswd Identity Provider](./htpasswd/README.md)
+- [LDAP Identity Provider](./ldap/README.md)
+- [Certificate Manager](./cert-manager/README.md)
 - [SSH Access](./ssh/README.md)
 - [Tetragon](./tetragon/README.md)
 

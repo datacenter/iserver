@@ -286,7 +286,7 @@ def add_operator(params, my_output=None):
     return params
 
 
-def get_management_node_ssh_handler(connector, log_id=None):
+def get_management_node_ssh_handler(connector, log_id=None, optional=False):
     log_handler = log_helper.Log(log_id)
     ocp_settings_handler = ocp_settings.OcpSettings(log_id=log_id)
     if not ocp_settings_handler.is_ocp_cluster(connector):
@@ -301,10 +301,11 @@ def get_management_node_ssh_handler(connector, log_id=None):
         'management_ip'
     )
     if management_ip is None:
-        log_handler.error(
-            'get_management_node_ssh_handler',
-            'management_ip cluster file not found: %s' % (connector)
-        )
+        if not optional:
+            log_handler.error(
+                'get_management_node_ssh_handler',
+                'management_ip cluster file not found: %s' % (connector)
+            )
         return None
 
     filename = ocp_settings_handler.get_ocp_cluster_filename(
@@ -312,10 +313,11 @@ def get_management_node_ssh_handler(connector, log_id=None):
         'ssh.pub'
     )
     if filename is None:
-        log_handler.error(
-            'get_management_node_ssh_handler',
-            'ssh.pub cluster file not found: %s' % (connector)
-        )
+        if not optional:
+            log_handler.error(
+                'get_management_node_ssh_handler',
+                'ssh.pub cluster file not found: %s' % (connector)
+            )
         return None
 
     ssh_handler = ssh.Ssh(

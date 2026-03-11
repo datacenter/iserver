@@ -47,6 +47,13 @@ def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp',
             'name:%s' % (filter_params['name'])
         )
 
+    for item in filter_params:
+        if item not in ['namespace', 'name']:
+            if filter_params[item] is not None:
+                object_filter.append(
+                    '%s:%s' % (item, filter_params[item])
+                )
+
     if output not in ['json', 'mo']:
         ctx.busy = True
         threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()

@@ -22,6 +22,7 @@ from menu.set.ocp.grafana import set_ocp_grafana_command
 from menu.set.ocp.htpasswd import set_ocp_htpasswd_command
 from menu.set.ocp.imm import set_ocp_imm_command
 from menu.set.ocp.iotel import set_ocp_iotel_command
+from menu.set.ocp.ldap import set_ocp_ldap_command
 from menu.set.ocp.lso import set_ocp_lso_command
 from menu.set.ocp.lvm import set_ocp_lvm_command
 from menu.set.ocp.minio import set_ocp_minio_command
@@ -77,6 +78,7 @@ set_ocp_menu.add_command(set_ocp_grafana_command)
 set_ocp_menu.add_command(set_ocp_htpasswd_command)
 set_ocp_menu.add_command(set_ocp_imm_command)
 set_ocp_menu.add_command(set_ocp_iotel_command)
+set_ocp_menu.add_command(set_ocp_ldap_command)
 set_ocp_menu.add_command(set_ocp_lso_command)
 set_ocp_menu.add_command(set_ocp_lvm_command)
 set_ocp_menu.add_command(set_ocp_minio_command)

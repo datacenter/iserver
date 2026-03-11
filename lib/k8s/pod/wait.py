@@ -49,6 +49,21 @@ class K8sPodWait():
 
             time.sleep(5)
 
+    def wait_no_pods(self, pods, max_time=60, prompt='Pod', my_output=None):
+        for pod in pods:
+            success = self.wait_no_managed_object(
+                'pod',
+                pod['name'],
+                namespace=pod['namespace'],
+                my_output=my_output,
+                prompt='- wait for no %s %s/%s [timeout:%ss]' % (prompt, pod['namespace'], pod['name'], max_time),
+                max_time=max_time
+            )
+            if not success:
+                return False
+
+        return True
+
     def wait_pods_count(self, object_filter, count, max_time=60):
         start_time = int(time.time())
         while True:

@@ -1,64 +1,89 @@
-from menu.common import get_confirmation
-
-
 class K8sConfigMapCreate():
     def __init__(self):
         pass
 
-    def create_config_map_data(
+    def get_create_config_map_body(
             self, 
             namespace, 
             name,
-            destination,
+            content, 
+            labels=None
+        ):
+        body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'ConfigMap'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        if labels is not None:
+            body['metadata']['labels'] = {}
+            for key in labels:
+                body['metadata']['labels'][key] = labels[key]
+        body['data'] = {}
+        for key in content:
+            body['data'][key] = content[key]
+
+        return body
+    
+    def create_config_map(
+            self, 
+            namespace, 
+            name,
             content, 
             labels=None,
             confirmation=False, 
             my_output=None, 
             wait=True
         ):
-        if my_output is None:
-            confirmation = False
+        body = self.get_create_config_map_body(
+            namespace, 
+            name,
+            content, 
+            labels=labels
+        )
+        if not self.create_resource(body, object_name='config_map', my_output=my_output, confirmation=confirmation):
+            return False
 
-        if my_output is not None:
-            my_output.default('Create Config Map', before_newline=True, underline=True)
-            my_output.default('- namespace: %s' % (namespace))
-            my_output.default('- name: %s' % (name))
-            if labels is not None:
-                my_output.default('- labels')
-                for label in labels:
-                    my_output.default('\t%s:%s' % (label, labels[label]))
-
-        if self.is_config_map(namespace, name, cache_enabled=False):
-            if my_output is not None:
-                my_output.default(
-                    '- already defined'
-                )
+        if not wait:
             return True
 
-        if my_output is not None:
-            my_output.default('- destination: %s' % (destination))
-            my_output.default(content, before_newline=True, wrap='~~~')
-
-        if confirmation:
-            if not get_confirmation():
-                return False
-
-        if not self.create_config_map_data_mo(namespace, name, destination, content, labels=labels):
-            if my_output is not None:
-                my_output.error('REST API failed')
+        success = self.wait_config_map(
+            namespace,
+            name,
+            max_time=60,
+            my_output=my_output
+        )
+        if not success:
             return False
         
-        if my_output is not None:
-            my_output.default('Config map created', before_newline=True, after_newline=True)
+        return True
 
-        if wait:
-            if my_output is not None:
-                my_output.default('Wait for config map [timeout:60]...')
-
-            if not self.wait_config_map(namespace, name, max_time=30):
-                if my_output is not None:
-                    my_output.error('Timed out')
-                
-                return False
-
-        return True    
+    def create_or_update_config_map(
+            self, 
+            namespace, 
+            name,
+            content, 
+            labels=None,
+            confirmation=False, 
+            my_output=None, 
+            wait=True
+        ):
+        if self.is_config_map(namespace, name, cache_enabled=False, optimize=True):
+            return self.update_config_map(
+                namespace, 
+                name,
+                content, 
+                confirmation=confirmation, 
+                my_output=my_output
+            )
+        
+        return self.create_config_map(
+            namespace, 
+            name,
+            content, 
+            labels=labels,
+            confirmation=confirmation, 
+            my_output=my_output,
+            wait=wait
+        )
+    

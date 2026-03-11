@@ -3,7 +3,6 @@ import traceback
 import click
 
 from menu import validations
-from lib.workflow.ocp_identity_htpasswd import get as ocp_get_workflow
 from lib.workflow.ocp_identity_htpasswd import delete as ocp_delete_workflow
 
 
@@ -28,33 +27,13 @@ def delete_ocp_htpasswd_command(ctx, cluster_name, provider_name, htpasswd_filen
     try:
         params = {}
         params['cluster'] = cluster_name
-        success = ocp_get_workflow.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-        params = {}
-        params['cluster'] = cluster_name
         params['provider'] = provider_name
         params['filename'] = htpasswd_filename
         params['userpass'] = users
         params['admins'] = admins
         params['mode'] = 'delete'
-        params['check-verbose'] = False
 
         success = ocp_delete_workflow.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-        params = {}
-        params['cluster'] = cluster_name
-        params['check-verbose'] = False
-        success = ocp_get_workflow.run(
             params,
             log_id=ctx.run_id
         )

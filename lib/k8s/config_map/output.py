@@ -2,38 +2,14 @@ class K8sConfigMapOutput():
     def __init__(self):
         pass
 
-    def print_config_maps(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Config Map - State [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name',
-            'dataCount',
-            'age'
-        ]
-
-        headers = [
-            'Config Map',
-            'Data',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_config_maps(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=False,
-            table=True
+            [
+                ['Config Map', 'namespace_name'],
+                ['Data', 'dataCount'],
+                ['Age', 'age']
+            ]
         )
 
     def print_config_maps_name(self, info, title=False):
@@ -135,63 +111,13 @@ class K8sConfigMapOutput():
                     self.my_output.default('Data: %s' % (key), underline=True)
                     self.my_output.default(item['data'][key])
 
-    def print_config_maps_pod(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Config Map - Pod [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        row_separator = False
-
-        for item in info:
-            for pod in item['pod']:
-                pod['namespace_name'] = '%s/%s' % (
-                    pod['namespace'],
-                    pod['name']
-                )
-
-            if len(item['pod']) > 1:
-                row_separator = True
-
-            if len(item['pod']) == 0:
-                item['pod'].append(
-                    dict(
-                        namespace_name='--'
-                    )
-                )
-
-        order = [
-            'namespace',
-            'name',
-            'dataCount',
-            'pod.namespace_name'
-            'age'
-        ]
-
-        headers = [
-            'Namespace',
-            'Name',
-            'Data Name',
-            'Pod',
-            'Age'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['pod']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=row_separator,
-            table=True
+    def print_config_maps_pod(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Config Map', 'namespace_name'],
+                ['Data', 'dataCount'],
+                ['Pod', 'pod.namespace_name'],
+                ['Age', 'age']
+            ]
         )

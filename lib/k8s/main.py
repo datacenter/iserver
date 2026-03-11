@@ -38,6 +38,7 @@ from lib.k8s.ceph_object_zone.main import K8sCephObjectZone
 from lib.k8s.ceph_object_zone_group.main import K8sCephObjectZoneGroup
 from lib.k8s.ceph_operator_config.main import K8sCephOperatorConfig
 from lib.k8s.ceph_rdb_mirror.main import K8sCephRdbMirror
+from lib.k8s.cron_job.main import K8sCronJob
 from lib.k8s.cilium_config.main import K8sCiliumConfig
 from lib.k8s.cilium_load_balancer_ip_pool.main import CiliumLoadBalancerIpPool
 from lib.k8s.cluster_operator.main import K8sClusterOperator
@@ -78,6 +79,7 @@ from lib.k8s.grafana_mute_timing.main import K8sGrafanaMuteTiming
 from lib.k8s.grafana_notification_policy.main import K8sGrafanaNotificationPolicy
 from lib.k8s.grafana_notification_policy_route.main import K8sGrafanaNotificationPolicyRoute
 from lib.k8s.grafana_notification_template.main import K8sGrafanaNotificationTemplate
+from lib.k8s.group.main import K8sGroup
 from lib.k8s.hook.main import K8sHook
 from lib.k8s.host.main import K8sHost
 from lib.k8s.host_path_provisioner.main import K8sHostPathProvisioner
@@ -287,6 +289,7 @@ class K8s(
         K8sClusterwidePrivateNetwork,
         K8sCni,
         K8sConfigMap,
+        K8sCronJob, 
         K8sCustomResourceDefinition,
         K8sDaemonSet,
         K8sDataImportCron,
@@ -315,6 +318,7 @@ class K8s(
         K8sGrafanaNotificationPolicy,
         K8sGrafanaNotificationPolicyRoute,
         K8sGrafanaNotificationTemplate,
+        K8sGroup,
         K8sHook,
         K8sHost,
         K8sHostPathProvisioner,
@@ -524,6 +528,7 @@ class K8s(
         K8sClusterwidePrivateNetwork.__init__(self)
         K8sCni.__init__(self)
         K8sConfigMap.__init__(self)
+        K8sCronJob.__init__(self)
         K8sCustomResourceDefinition.__init__(self)
         K8sDaemonSet.__init__(self)
         K8sDataImportCron.__init__(self)
@@ -552,6 +557,7 @@ class K8s(
         K8sGrafanaNotificationPolicy.__init__(self)
         K8sGrafanaNotificationPolicyRoute.__init__(self)
         K8sGrafanaNotificationTemplate.__init__(self)
+        K8sGroup.__init__(self)
         K8sHook.__init__(self)
         K8sHost.__init__(self)
         K8sHostPathProvisioner.__init__(self)

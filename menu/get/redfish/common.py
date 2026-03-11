@@ -56,8 +56,8 @@ def get_params_from_user(ctx, params):
         if len(params['password']) == 0:
             return None
 
-        params['handler_endpoint_type'] = input('Endpoint type [ucsc, fi, dell, hp]: ')
-        if len(params['handler_endpoint_type']) == 0 or params['handler_endpoint_type'] not in ['ucsc', 'fi', 'dell', 'hp']:
+        params['handler_endpoint_type'] = input('Endpoint type [ucsc, bmc, fi, dell, hp]: ')
+        if len(params['handler_endpoint_type']) == 0 or params['handler_endpoint_type'] not in ['ucsc', 'bmc', 'fi', 'dell', 'hp']:
             return None
 
         if params['handler_endpoint_type'] == 'fi':

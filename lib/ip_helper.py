@@ -12,6 +12,7 @@ import requests
 import validators
 import sshpubkeys
 import urllib
+import base64
 
 
 def get_short_uuid():
@@ -22,6 +23,14 @@ def generate_uuid(seed):
     md5_handler = hashlib.md5()
     md5_handler.update(seed.encode('utf-8'))
     return str(uuid.UUID(md5_handler.hexdigest()))
+
+
+def encode_text_64(text):
+    return base64.b64encode(text.encode("utf-8")).decode("utf-8")
+
+
+def decode_text_64(text):
+    return base64.b64decode(text).decode("utf-8")
 
 
 def generate_mac():
@@ -536,6 +545,20 @@ def get_url(url, timeout=5):
     except BaseException:
         pass
     return None
+
+
+def get_url_parse(url):
+    if not is_url_valid(url):
+        return None
+    
+    parsed = urllib.parse.urlsplit(url)
+    info = {}
+    info['protocol'] = parsed.scheme
+    info['hostname'] = parsed.hostname
+    info['netloc'] = parsed.netloc
+    info['path'] = parsed.path.lstrip('/')
+    info['query'] = parsed.query
+    return info
 
 
 def is_public_key_valid(value):

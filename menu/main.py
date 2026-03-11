@@ -153,14 +153,14 @@ def _on_close(ctx):
                 else:
                     print('Info: finished in %s ms and logs saved in %s' % (duration, ctx.log.logs_directory))
 
-                if ctx.log.is_log('error'):
-                    print(
-                        '%s: errors found in %s' % (
-                            ctx.my_output.add_color('Warning', 'Red'),
-                            ctx.log.get_log_filename('error')
-                        )
-                    )
-                    error_exit = True
+                # if ctx.log.is_log('error'):
+                #     print(
+                #         '%s: errors found in %s' % (
+                #             ctx.my_output.add_color('Warning', 'Red'),
+                #             ctx.log.get_log_filename('error')
+                #         )
+                #     )
+                #     error_exit = True
 
             clean_logs = False
 

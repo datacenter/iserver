@@ -17,6 +17,7 @@ from menu.get.ocp.grafana import get_ocp_grafana_command
 from menu.get.ocp.htpasswd import get_ocp_htpasswd_command
 from menu.get.ocp.imm import get_ocp_imm_command
 from menu.get.ocp.iotel import get_ocp_iotel_command
+from menu.get.ocp.ldap import get_ocp_ldap_command
 from menu.get.ocp.lso import get_ocp_lso_command
 from menu.get.ocp.lvm import get_ocp_lvm_command
 from menu.get.ocp.minio import get_ocp_minio_command
@@ -24,6 +25,7 @@ from menu.get.ocp.mtv import get_ocp_mtv_command
 from menu.get.ocp.nfd import get_ocp_nfd_command
 from menu.get.ocp.nim import get_ocp_nim_command
 from menu.get.ocp.nmstate import get_ocp_nmstate_command
+from menu.get.ocp.oauth import get_ocp_oauth_command
 from menu.get.ocp.odf import get_ocp_odf_command
 from menu.get.ocp.portworx import get_ocp_portworx_command
 from menu.get.ocp.prometheus import get_ocp_prometheus_command
@@ -64,6 +66,7 @@ get_ocp_menu.add_command(get_ocp_grafana_command)
 get_ocp_menu.add_command(get_ocp_htpasswd_command)
 get_ocp_menu.add_command(get_ocp_imm_command)
 get_ocp_menu.add_command(get_ocp_iotel_command)
+get_ocp_menu.add_command(get_ocp_ldap_command)
 get_ocp_menu.add_command(get_ocp_lso_command)
 get_ocp_menu.add_command(get_ocp_lvm_command)
 get_ocp_menu.add_command(get_ocp_minio_command)
@@ -71,6 +74,7 @@ get_ocp_menu.add_command(get_ocp_mtv_command)
 get_ocp_menu.add_command(get_ocp_nfd_command)
 get_ocp_menu.add_command(get_ocp_nim_command)
 get_ocp_menu.add_command(get_ocp_nmstate_command)
+get_ocp_menu.add_command(get_ocp_oauth_command)
 get_ocp_menu.add_command(get_ocp_odf_command)
 get_ocp_menu.add_command(get_ocp_portworx_command)
 get_ocp_menu.add_command(get_ocp_prometheus_command)

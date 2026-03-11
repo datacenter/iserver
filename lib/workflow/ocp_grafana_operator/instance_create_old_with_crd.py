@@ -153,7 +153,7 @@ def add_cluster_role_binding(params, my_output):
         my_output.default('Service Account [%s] is not yet associated with role [cluster-monitoring-view]' % (sa_name))
 
         crb_name = '%s-sa-view' % (params['instance'])
-        crb_name = params['k8s_handler'].add_service_account_cluster_role_binding(
+        crb_name = params['k8s_handler'].create_service_account_cluster_role_binding(
             crb_name,
             'cluster-monitoring-view',
             sa_name,

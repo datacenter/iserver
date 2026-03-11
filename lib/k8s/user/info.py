@@ -1,112 +1,71 @@
-from lib import filter_helper
-
-
 class K8sUserInfo():
     def __init__(self):
         self.user = None
 
-    def get_user_info(self, user_mo):
-        if user_mo is None:
-            return None
-
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            user_mo
+    def get_user_info(self, managed_object):
+        info = self.get_base_info(
+            managed_object
         )
-        info.update(metadata_info)
-
-        info['groups'] = self.get(user_mo, 'groups')
-        info['identities'] = self.get(user_mo, 'identities')
+        info['full_name'] = self.get(managed_object, 'fullName')
+        info['groups'] = self.get(managed_object, 'groups', on_error=[], on_none=[])
+        info['identities'] = self.get(managed_object, 'identities', on_error=[], on_none=[])
         return info
 
-    def get_users_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.user is not None:
-                return self.user
-
-        managed_objects = self.get_user_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
-
-        self.user = []
-        for managed_object in managed_objects:
-            user_info = {}
-            user_info['info'] = self.get_user_info(
-                managed_object
-            )
-            user_info['mo'] = managed_object
-            self.user.append(
-                user_info
-            )
-
-        return self.user
-
-    def match_user(self, user_info, user_filter):
-        if user_filter is None or len(user_filter) == 0:
-            return True
-
-        for ap_rule in user_filter:
-            key = ap_rule.split(':')[0]
-            value = ':'.join(ap_rule.split(':')[1:])
-
-            key_found = False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_string(value, user_info['name']):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_user',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
-    def get_users(self, object_filter=None, return_mo=False, cache_enabled=True):
-        all_users = self.get_users_info(cache_enabled=cache_enabled)
-        if all_users is None:
-            return None
-
-        users = []
-
-        for user_info in all_users:
-            if not self.match_user(user_info['info'], object_filter):
+    def add_users_identity(self, infos, cache_enabled=False):
+        identities = self.get_identitys(cache_enabled=cache_enabled)
+        for info in infos:
+            info['info']['identityT'] = []
+            if identities is None:
                 continue
 
-            if return_mo:
-                users.append(
-                    user_info['mo']
-                )
-                continue
+            for item in info['info']['identities']:
+                identity_info = {}
+                identity_info['provider_name'] = None
+                identity_info['provider_username'] = None
+                identity_info['user_name'] = None
+                identity_info['user_id'] = None
+                for identity in identities:
+                    if identity['name'] == item:
+                        identity_info['provider_name'] = identity['provider_name']
+                        identity_info['provider_username'] = identity['provider_username']
+                        identity_info['user_name'] = identity['user_name']
+                        identity_info['user_id'] = identity['user_id']
+                        info['info']['identityT'].append(identity_info)
 
-            users.append(
-                user_info['info']
-            )
+        return infos
 
-        return users
+    def add_users_group(self, infos, cache_enabled=False):
+        groups = self.get_groups(cache_enabled=cache_enabled)
+        if groups is None:
+            return infos
 
-    def get_user(self, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'name:%s' % (name)
+        for info in infos:
+            for group in groups:
+                for group_user in group['users']:
+                    if group_user == info['info']['name']:
+                        if group['name'] not in info['info']['groups']:
+                            info['info']['groups'].append(group['name'])
+
+        return infos
+        
+    def get_users(self, identity_info=True, group_info=True, object_filter=None, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'user', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            add=dict(identity=identity_info,group=group_info)
         )
-        users = self.get_users(
-            object_filter=object_filter,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
+        return infos
+    
+    def get_user(self, name, identity_info=True, return_mo=False, cache_enabled=True):
+        return self.get_info(
+            'user', 
+            name,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            identity_info=identity_info
         )
-
-        if users is None:
-            return None
-
-        if len(users) == 1:
-            return users[0]
-
-        return None
 
     def is_user(self, name, return_mo=False, cache_enabled=True):
         if self.get_user(name, return_mo=return_mo, cache_enabled=cache_enabled) is None:

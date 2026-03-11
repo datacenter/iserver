@@ -166,7 +166,7 @@ def run(params, log_id=None):
     if params['verbose']:
         k8s_output_handler.print_secrets(params['secrets'])
         k8s_output_handler.print_config_maps(params['config_maps'])
-        k8s_output_handler.print_deployments(params['deployments'])
+        k8s_output_handler.print_deployments_state(params['deployments'])
         k8s_output_handler.print_pods_state(params['pods'])
         k8s_output_handler.print_services(params['services'])
         k8s_output_handler.print_service_monitors(params['service_monitors'])

@@ -193,7 +193,7 @@ def scale_down_network_operator(params, my_output, k8s_output_handler):
         my_output.error('Network operator deployment not found')
         return False
 
-    k8s_output_handler.print_deployments([deployment])
+    k8s_output_handler.print_deployments_state([deployment])
 
     replica_set = params['k8s_handler'].get_replica_set_deployment('openshift-network-operator', 'network-operator', cache_enabled=False)
     if replica_set is None:
@@ -363,7 +363,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'ServiceAccount':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_service_account(body['metadata']['namespace'], body['metadata']['name']):
-                success = params['k8s_handler'].create_service_account_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -403,7 +403,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'ClusterRole':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_cluster_role(body['metadata']['name'], cache_enabled=False):
-                success = params['k8s_handler'].create_cluster_role_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -413,7 +413,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'ClusterRoleBinding':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_cluster_role_binding(body['metadata']['name'], cache_enabled=False):
-                success = params['k8s_handler'].create_cluster_role_binding_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -499,7 +499,7 @@ def update_multus(params, my_output):
     cm_data = {}
     cm_data['daemon-config.json'] = json.dumps(data_json, indent=4)
 
-    success = params['k8s_handler'].set_config_map_data(
+    success = params['k8s_handler'].update_config_map(
         'openshift-multus', 
         'multus-daemon-config',
         cm_data,
@@ -574,7 +574,7 @@ def wait_cilium_resources(params, my_output, k8s_output_handler):
         my_output.error('Failed to get deployments')
         return False
     
-    k8s_output_handler.print_deployments(deployments)
+    k8s_output_handler.print_deployments_state(deployments)
 
     pods = params['k8s_handler'].get_pods(
         object_filter=['namespace:cilium'],
@@ -682,7 +682,7 @@ def restart_machine_config(params, my_output, k8s_output_handler):
     if deployments is None or pods is None:
         return False
 
-    k8s_output_handler.print_deployments(deployments)
+    k8s_output_handler.print_deployments_state(deployments)
     k8s_output_handler.print_pods_state(pods)
 
     my_output.default('Rollout restart', before_newline=True)
@@ -714,7 +714,7 @@ def restart_machine_config(params, my_output, k8s_output_handler):
     if deployments is None or pods is None:
         return False
 
-    k8s_output_handler.print_deployments(deployments)
+    k8s_output_handler.print_deployments_state(deployments)
     k8s_output_handler.print_pods_state(pods)
 
     return True
@@ -727,7 +727,7 @@ def scale_up_network_operator(params, my_output, k8s_output_handler):
         my_output.error('Network operator deployment not found')
         return False
 
-    k8s_output_handler.print_deployments([deployment])
+    k8s_output_handler.print_deployments_state([deployment])
 
     success = params['k8s_handler'].set_deployment_replicas(
         'openshift-network-operator', 

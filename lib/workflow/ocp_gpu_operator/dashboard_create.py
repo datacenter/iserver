@@ -101,11 +101,13 @@ def run(params, log_id=None):
         labels['console.openshift.io/odc-dashboard'] = "true"
         my_output.default('ConfigMap admin label: console.openshift.io/odc-dashboard=true')
 
-    success = params['k8s_handler'].create_config_map_data_mo(
+    data = {}
+    data['dcgm-exporter-dashboard.json'] = content
+
+    success = params['k8s_handler'].create_config_map(
         params['monitoring']['dashboard_namespace'],
         params['monitoring']['dashboard_name'],
-        'dcgm-exporter-dashboard.json',
-        content,
+        data,
         labels=labels
     )
     if not success:

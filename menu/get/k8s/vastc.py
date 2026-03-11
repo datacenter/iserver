@@ -1,13 +1,8 @@
 import sys
-import json
-import threading
 import traceback
 import click
-
-from lib.k8s import output as k8s_output
 from menu.get.k8s import common
 from menu import validations
-from menu import progress
 
 
 class Failure(Exception):

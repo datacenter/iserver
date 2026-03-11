@@ -90,7 +90,7 @@ def run(params, log_id=None):
             labels = {}
             labels['environment.metal3.io'] = 'baremetal'
 
-            success = params['k8s_handler'].create_secret_kv_mo(
+            success = params['k8s_handler'].create_secret_kv(
                 secret_namespace,
                 secret_name,
                 kv,

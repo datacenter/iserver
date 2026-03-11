@@ -3,7 +3,7 @@ import copy
 import base64
 from lib import file_helper
 from lib import output_helper
-from lib.workflow.ocp_access import check as ocp_check
+from lib.workflow.ocp_identity_htpasswd import common as local_common
 
 
 def validate(params):
@@ -66,20 +66,34 @@ def validate(params):
         for user in params['users']:
             params['admins'].append(user)
             
+    if 'verbose' not in params:
+        params['verbose'] = False
 
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose params must be true or false'
-        
+        return None, 'check-verbose param must be true or false'    
+
+    if 'confirmation' not in params:
+        params['confirmation'] = True
+
+    if not isinstance(params['confirmation'], bool):
+        return None, 'confirmation param must be true or false'
+    
     return params, None
 
 
-def validate_delete(params):
+def validate_delete(params, my_output):
+    my_output.default('htpasswd identity provider [%s]' % (params['provider']), before_newline=True)
     params['providerInfo'] = params['k8s_handler'].get_identity_provider_htpasswd(params['provider'])
     if params['providerInfo'] is None:
         return None, 'Provider not found'
+        
+    my_output.default('- found')
 
     params['userMap'] = params['k8s_handler'].get_identity_provider_htpasswd_user_map()
     if params['userMap'] is None:
@@ -146,20 +160,11 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
+    params = local_common.initialize(params, my_output, log_id)
+    if params is None:
         return False
     
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-
-    params, error = validate_delete(params)
+    params, error = validate_delete(params, my_output)
     if error is not None:
         my_output.error(error)
         return False
@@ -171,41 +176,23 @@ def run(params, log_id=None):
                 user
             )
 
-            my_output.default(
-                'Deleting user [%s] and identity [%s]' % (
-                    user,
-                    identity
-                )
+            success = params['k8s_handler'].delete_user(
+                user, 
+                include_identity=True,
+                identity=identity,
+                my_output=my_output,
+                wait=True
             )
-
-            user_mo = params['k8s_handler'].get_user(user, return_mo=True, cache_enabled=False)
-            if user_mo is None:
-                my_output.default('User already deleted, checking for identity leftover')
-                if params['k8s_handler'].is_identity(identity, cache_enabled=False):
-                    if not params['k8s_handler'].delete_identity_mo(identity):
-                        my_output.error('REST API failed')
-                        return False
-
-            if user_mo is not None:
-                if len(user_mo['identities']) > 1:
-                    my_output.default('User has multiple identities, deleting identity only')
-                    if params['k8s_handler'].is_identity(identity, cache_enabled=False):
-                        if not params['k8s_handler'].delete_identity_mo(identity):
-                            my_output.error('REST API failed')
-                            return False
-                else:
-                    if not params['k8s_handler'].delete_user_mo(user_mo, include_identity=True):
-                        my_output.error('REST API failed')
-                        return False
-
-            my_output.default(
-                'Deleting user [%s] from cluster-admin group' % (
-                    user
-                )
+            if not success:
+                return False
+            
+            success = params['k8s_handler'].del_user_subject_cluster_role_binding(
+                'cluster-admin', 
+                user, 
+                confirmation=params['confirmation'], 
+                my_output=my_output
             )
-
-            if not params['k8s_handler'].del_user_subject_cluster_role_binding('cluster-admin', user):
-                my_output.error('REST API failed')
+            if not success:
                 return False
 
         users_left = []
@@ -224,59 +211,58 @@ def run(params, log_id=None):
         content = content.strip('\n')
 
         if len(users_left) > 0:
+            my_output.default('Generated htpasswd', before_newline=True)
+            my_output.default(content, wrap='~~~')
+
             encoded_content = base64.b64encode(
                 content.encode('utf-8')
             ).decode('utf-8')
 
             kv = {}
             kv['htpasswd'] = encoded_content
-            success = params['k8s_handler'].update_secret_kv_mo(
+
+            success = params['k8s_handler'].create_or_update_secret_kv(
                 params['secret_namespace'],
                 params['providerInfo']['secret'],
-                kv
+                kv,
+                replace=True,
+                confirmation=params['confirmation'],
+                my_output=my_output,
+                wait=True
             )
             if not success:
-                my_output.error(
-                    'Secret update failed: %s/%s' % (
-                        params['secret_namespace'],
-                        params['providerInfo']['secret']
-                    )
-                )
                 return False
 
-            my_output.default(
-                'Secret %s/%s updated' % (
-                    params['secret_namespace'],
-                    params['providerInfo']['secret']
-                )
-            )
-
         if len(users_left) == 0:
-            my_output.default(
-                'Deleting secret [%s/%s]' % (
-                    params['secret_namespace'],
-                    params['secret_name']
-                )
+            success = params['k8s_handler'].delete_secret(
+                params['secret_namespace'], 
+                params['secret_name'],
+                my_output=my_output, 
+                wait=True
             )
-            if params['k8s_handler'].is_secret(params['secret_namespace'], params['secret_name'], cache_enabled=False):
-                if not params['k8s_handler'].delete_secret_mo(params['secret_namespace'], params['secret_name']):
-                    my_output.error('REST API failed')
-                    return False
+            if not success:
+                return False
 
-            my_output.default(
-                'Deleting htpasswd identity provider [%s]' % (
-                    params['provider']
-                )
+            success = params['k8s_handler'].del_identity_provider_oauth(
+                params['provider'],
+                confirmation=params['confirmation'],
+                my_output=my_output
             )
-            if not params['k8s_handler'].del_identity_provider_oauth(params['provider']):
-                my_output.error('REST API failed')
+            if not success:
                 return False
 
     if len(params['admins']) > 0:
         for admin in params['admins']:
-            my_output.default('Removing user [%s] from cluster-admin group' % (admin))
-            if not params['k8s_handler'].del_user_subject_cluster_role_binding('cluster-admin', admin):
-                my_output.error('REST API failed')
+            success = params['k8s_handler'].del_user_subject_cluster_role_binding(
+                'cluster-admin', 
+                admin, 
+                confirmation=params['confirmation'], 
+                my_output=my_output
+            )
+            if not success:
                 return False
 
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- HTPasswd Identity Provider configured')
     return True

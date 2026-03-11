@@ -465,7 +465,7 @@ class RedfishEndpointFabricInterconnect(
             if int(time.time()) - start_time > timeout:
                 return False
 
-    def insert_media_http(self, iso_url, virtual_media_id=0, protocol='HTTP', safe=True, fixup=True):
+    def insert_media_http(self, iso_url, virtual_media_id=0, safe=True, fixup=True):
         if safe:
             if self.is_virtual_media_defined(virtual_media_id=virtual_media_id):
                 if not self.eject_media(virtual_media_id=virtual_media_id):
@@ -477,6 +477,11 @@ class RedfishEndpointFabricInterconnect(
 
         url = 'https://%s:%s%s' % (self.endpoint_ip, self.endpoint_port, path)
 
+        if iso_url.split(':')[0] == 'https':
+            protocol = 'HTTPS'
+        else:
+            protocol = 'HTTP'
+            
         data = {}
         data['Image'] = iso_url
         data['WriteProtected'] = True

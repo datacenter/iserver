@@ -97,7 +97,7 @@ class K8sProviderCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_secret_mo(namespace, secret_body):
+        if not self.create_resource(secret_body):
             if my_output is not None:
                 my_output.error('Secret REST API failed')
             return False

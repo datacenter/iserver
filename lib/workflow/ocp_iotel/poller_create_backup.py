@@ -559,7 +559,7 @@ def run(params, log_id=None):
         data = {}
         data['intersight-otel.toml'] = params['poller']
 
-        success = params['k8s_handler'].set_config_map_data(
+        success = params['k8s_handler'].update_config_map(
             instance['intersight_config_namespace'], 
             instance['intersight_config_name'],
             data,

@@ -121,8 +121,7 @@ def get_k8s_crb_command(
 
         if 'state' in view:
             k8s_output_handler.print_cluster_role_bindings(
-                crbs,
-                title=True
+                crbs
             )
 
         ctx.my_output.default('Filter: name, role, subject', before_newline=True)

@@ -7,6 +7,7 @@ from lib.k8s.pod.cilium_timescape import K8sPodCiliumTimescape
 from lib.k8s.pod.create import K8sPodCreate
 from lib.k8s.pod.delete import K8sPodDelete
 from lib.k8s.pod.nvidia_driver import K8sPodNvidiaDriver
+from lib.k8s.pod.oauth import K8sPodOauth
 from lib.k8s.pod.openshift_prometheus import K8sPodOpenshiftPrometheus
 from lib.k8s.pod.wait import K8sPodWait
 
@@ -21,6 +22,7 @@ class K8sPod(
         K8sPodCreate,
         K8sPodDelete,
         K8sPodNvidiaDriver,
+        K8sPodOauth,
         K8sPodOpenshiftPrometheus,
         K8sPodWait
         ):
@@ -34,5 +36,6 @@ class K8sPod(
         K8sPodCreate.__init__(self)
         K8sPodDelete.__init__(self)
         K8sPodNvidiaDriver.__init__(self)
+        K8sPodOauth.__init__(self)
         K8sPodOpenshiftPrometheus.__init__(self)
         K8sPodWait.__init__(self)

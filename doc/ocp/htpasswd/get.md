@@ -1,11 +1,12 @@
 # HTPasswd Identity Provider - Get
 
+[[Back]](./README.md) [[Prev]](./delete_task.md) [[Next]](./set.md)
+
 ## Workflow
 
-- check api access to openshift cluster
-- select OAuth CRD with identityProviders of HTPasswd type
-- check Secret CRD with user credentials
-- check ClusterRoleBinding CRD for admin role association
+- get `OAuth` crd with identityProviders of HTPasswd type
+- get `Secret` crd with user credentials
+- get `ClusterRoleBinding` crd for admin role association
 
 ## Requirements
 
@@ -26,19 +27,15 @@ None
 OpenShift Workflow - Get HTPasswd Identity Provider
 ===================================================
 
+OpenShift Cluster: bm1
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-+---------+----------+--------+-----------+--------------+
-| OAuth   | Provider | Secret | Is Secret | User         |
-+---------+----------+--------+-----------+--------------+
-| cluster | custom   | custom | True      | kali (admin) |
-+---------+----------+--------+-----------+--------------+
++----+---------+--------------+--------------+-----------+------------------+
+| ID | OAuth   | Provider     | Secret       | Is Secret | User             |
++----+---------+--------------+--------------+-----------+------------------+
+| 1  | cluster | local-admins | local-admins | True      | akaliwod (admin) |
+|    |         |              |              |           | xxx (admin)      |
+|    |         |              |              |           | yyy (admin)      |
++----+---------+--------------+--------------+-----------+------------------+
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Prev]](./delete_task.md) [[Next]](./set.md)

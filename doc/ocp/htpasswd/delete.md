@@ -1,5 +1,7 @@
 # HTPasswd Identity Provider - Delete
 
+[[Back]](./README.md) [[Prev]](./create_task.md) [[Next]](./delete_task.md)
+
 ## Workflow
 
 - check api access to openshift cluster
@@ -23,6 +25,16 @@ None
   --admin TEXT     Admin users
   --help           Show this message
 ```
+
+## Use cases
+
+Intent | Example
+--- | --- 
+Delete admin role | [Link](./delete_admin.md)
+Delete user | [Link](./delete_user.md)
+Delete provider | [Link](./delete_provider.md)
+
+[[Back]](./README.md) [[Prev]](./create_task.md) [[Next]](./delete_task.md)
 
 ## Example: Remove user from admin group
 
@@ -141,4 +153,4 @@ OpenShift Workflow - Get HTPasswd Identity Provider
 Identity htpasswd not defined
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Prev]](./create_task.md) [[Next]](./delete_task.md)

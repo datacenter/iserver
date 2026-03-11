@@ -6,21 +6,12 @@ class K8sClusterOperatorInfo():
     def __init__(self):
         self.cluster_operator = None
 
-    def get_cluster_operator_info(self, cluster_operator_mo):
-        if cluster_operator_mo is None:
-            return None
-
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            cluster_operator_mo
-        )
-        info.update(metadata_info)
+    def get_cluster_operator_info(self, managed_object):
+        info = self.get_base_info(managed_object)
 
         info['manager'] = None
         managed_fields = self.get(
-            cluster_operator_mo,
+            managed_object,
             'metadata:managedFields'
         )
         if managed_fields is not None:
@@ -31,43 +22,46 @@ class K8sClusterOperatorInfo():
                 except BaseException:
                     pass
 
+        info['since'] = None
+
         info['available'] = False
-        info['availableSince'] = '--'
         info['availableTick'] = '\u2717'
         info['__Output']['availableTick'] = 'Red'
 
         info['progressing'] = False
-        info['progressingTick'] = '\u2713'
+        info['progressingTick'] = '\u2717'
 
         info['degraded'] = False
-        info['degradedTick'] = '\u2713'
+        info['degradedTick'] = '\u2717'
 
         info['upgradeable'] = False
-        info['upgradeableTick'] = '\u2713'
+        info['upgradeableTick'] = '\u2717'
 
         conditions_mo = self.get(
-            cluster_operator_mo,
+            managed_object,
             'status:conditions'
         )
         if conditions_mo is not None:
             for condition_mo in conditions_mo:
+                info['since'] = self.get_max_timestamp(
+                    info['since'],
+                    self.get(
+                        condition_mo,
+                        'lastTransitionTime'
+                    )
+                )
+
                 if condition_mo['type'] == 'Available':
                     if condition_mo['status'] == 'True':
                         info['available'] = True
                         info['availableTick'] = '\u2713'
                         info['__Output']['availableTick'] = 'Green'
-                        info['availableSince'] = self.convert_timestamp_to_age(
-                            self.get(
-                                condition_mo,
-                                'lastTransitionTime'
-                            ),
-                            on_error='--'
-                        )
-
+                        
                 if condition_mo['type'] == 'Degraded':
                     if condition_mo['status'] == 'True':
                         info['degraded'] = True
                         info['degradedTick'] = '\u2713'
+                        info['__Output']['degradedTick'] = 'Red'
 
                 if condition_mo['type'] == 'Progressing':
                     if condition_mo['status'] == 'True':
@@ -79,8 +73,12 @@ class K8sClusterOperatorInfo():
                         info['upgradeable'] = True
                         info['upgradeableTick'] = '\u2713'
 
+        info['sinceT'] = None
+        if info['since'] is not None:
+            info['sinceT'] = self.convert_age(int(time.time()) - info['since'])
+
         versions = self.get(
-            cluster_operator_mo,
+            managed_object,
             'status:versions'
         )
         info['version'] = None
@@ -90,7 +88,7 @@ class K8sClusterOperatorInfo():
                     info['version'] = version['version']
 
         info['related'] = self.get(
-            cluster_operator_mo,
+            managed_object,
             'status:relatedObjects'
         )
 
@@ -283,32 +281,3 @@ class K8sClusterOperatorInfo():
                 return False
             
         return True
-    
-    def wait_cluster_operator_available(self, name, max_time=600, my_output=None):
-        start_time = int(time.time())
-        while True:
-            info = self.get_cluster_operator(name, cache_enabled=False)
-            if info is not None and info['available']:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                if my_output is not None:
-                    my_output.default('Max wait time reached, cluster operator not available: %s' % (name))
-
-                return False
-
-            time.sleep(5)
-            
-    def wait_cluster_operators_available(self, max_time=600):
-        start_time = int(time.time())
-        while True:
-            if self.are_cluster_operators_available(cache_enabled=False):
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                return False
-
-            time.sleep(5)
-            

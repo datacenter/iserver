@@ -23,8 +23,8 @@ class K8sApi():
         self.connect_timeout_seconds = 3
         self.api_retries = 1
         self.kind_get_all = {
-            'Pod': 'list_pod_for_all_namespaces',
-            'Node': 'list_node'
+            'Node': 'list_node',
+            'Pod': 'list_pod_for_all_namespaces'
         }
         self.kind_get_namespace = {
             'Pod': 'list_namespaced_pod'
@@ -34,12 +34,12 @@ class K8sApi():
             'Node': 'read_node'
         }
         self.kind_create_namespace_name = {
-            'Pod': 'create_namespaced_pod'      
+            'Pod': 'create_namespaced_pod'
         }
         self.kind_create_name = {           
         }
         self.kind_replace_namespace_name = { 
-            'Pod': 'replace_namespaced_pod'          
+            'Pod': 'replace_namespaced_pod'
         }
         self.kind_replace_name = {           
         }
@@ -49,7 +49,7 @@ class K8sApi():
         self.kind_patch_name = {           
         }
         self.kind_delete_namespace_name = { 
-            'Deployment': 'delete_namespaced_deployment'          
+            'Deployment': 'delete_namespaced_deployment'
         }
         self.kind_delete_name = {           
         }
@@ -874,7 +874,7 @@ class K8sApi():
                 self.log.error('k8s.create_resource', traceback.format_exc())
                 self.log.k8s(
                     'create',
-                    '%s [%s] [ns:%s] [name:%s] [response:%s]' % (kind, api_version, namespace, name, str(response)),
+                    '%s [%s] [ns:%s] [name:%s]' % (kind, api_version, namespace, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )
@@ -882,18 +882,55 @@ class K8sApi():
 
         return True
 
-    def patch_resource(self, body):
+    def patch_resource(self, body, object_name=None, my_output=None, confirmation=False):
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
         name = filter_helper.get(body, 'metadata:name')
 
         if kind is None or api_version is None or name is None:
+            if my_output is not None:
+                my_output.error('Body parse failed')
+                my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             return False
-        
+
         api_handler = self.get_api_kind(kind)
         if api_handler is None:
+            if my_output is not None:
+                my_output.error('Kubernetes api not ready')
             return False
+
+        if my_output is not None:
+            my_output.default('Patch %s' % (kind), before_newline=True, underline=True)
+            if namespace is not None:
+                my_output.default('- namespace: %s' % (namespace))
+            if name is not None:
+                my_output.default('- name: %s' % (name))
+
+        if object_name is not None:
+            if namespace is None:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    name, cache_enabled=False
+                )
+            else:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    namespace, name, cache_enabled=False
+                )
+
+            if not found:
+                if my_output is not None:
+                    my_output.default('- %s' % (my_output.add_color('not found', 'Red')))
+                    
+                return False
+        
+        if my_output is None:
+            confirmation = False
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+            if confirmation:
+                if not get_confirmation():
+                    return False
 
         start_time = int(time.time() * 1000)
 
@@ -922,7 +959,20 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s] %s' % (
+                            kind,
+                            name,
+                            my_output.add_color('patched', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.patch_resource', traceback.format_exc())
                 self.log.k8s(
                     'patch',
@@ -959,7 +1009,21 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s/%s] %s' % (
+                            kind,
+                            namespace,
+                            name,
+                            my_output.add_color('patched', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.patch_resource', traceback.format_exc())
                 self.log.k8s(
                     'patch',
@@ -971,18 +1035,55 @@ class K8sApi():
 
         return True
 
-    def replace_resource(self, body):
+    def replace_resource(self, body, object_name=None, my_output=None, confirmation=False):
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
         name = filter_helper.get(body, 'metadata:name')
 
         if kind is None or api_version is None or name is None:
+            if my_output is not None:
+                my_output.error('Body parse failed')
+                my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             return False
-        
+
         api_handler = self.get_api_kind(kind)
         if api_handler is None:
+            if my_output is not None:
+                my_output.error('Kubernetes api not ready')
             return False
+
+        if my_output is not None:
+            my_output.default('Replace %s' % (kind), before_newline=True, underline=True)
+            if namespace is not None:
+                my_output.default('- namespace: %s' % (namespace))
+            if name is not None:
+                my_output.default('- name: %s' % (name))
+
+        if object_name is not None:
+            if namespace is None:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    name, cache_enabled=False
+                )
+            else:
+                found = getattr(self, 'is_%s' % (object_name))(
+                    namespace, name, cache_enabled=False
+                )
+
+            if not found:
+                if my_output is not None:
+                    my_output.default('- %s' % (my_output.add_color('not found', 'Red')))
+                    
+                return False
+        
+        if my_output is None:
+            confirmation = False
+
+        if my_output is not None:
+            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+            if confirmation:
+                if not get_confirmation():
+                    return False
 
         start_time = int(time.time() * 1000)
 
@@ -1010,11 +1111,24 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s] %s' % (
+                            kind,
+                            name,
+                            my_output.add_color('replaced', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.replace_resource', traceback.format_exc())
                 self.log.k8s(
                     'replace',
-                    '%s [%s] [name:%s] [response:%s]' % (kind, api_version, name, str(response)),
+                    '%s [%s] [name:%s]' % (kind, api_version, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )
@@ -1046,7 +1160,21 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+
+                if my_output is not None:
+                    my_output.default(
+                        '%s [%s/%s] %s' % (
+                            kind,
+                            namespace,
+                            name,
+                            my_output.add_color('replaced', 'Green')
+                        )
+                    )
+
             except BaseException:
+                if my_output is not None:
+                    my_output.error('Kubernetes api exception')
+
                 self.log.error('k8s.replace_resource', traceback.format_exc())
                 self.log.k8s(
                     'replace',

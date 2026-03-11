@@ -5,7 +5,7 @@ import base64
 import bcrypt
 from lib import file_helper
 from lib import output_helper
-from lib.workflow.ocp_access import check as ocp_check
+from lib.workflow.ocp_identity_htpasswd import common as local_common
 
 
 def validate(params):
@@ -80,32 +80,52 @@ def validate(params):
     if len(params['users']) == 0 and len(params['admins']) == 0:
         return None, 'No user or admin information'
 
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+        
     if 'check-verbose' not in params:
-        params['check-verbose'] = True
+        params['check-verbose'] = params['verbose']
 
     if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose params must be true or false'
+        return None, 'check-verbose param must be true or false'    
 
+    if 'confirmation' not in params:
+        params['confirmation'] = True
+
+    if not isinstance(params['confirmation'], bool):
+        return None, 'confirmation param must be true or false'
+    
     return params, None
 
 
-def validate_add(params):
+def validate_add(params, my_output):
+    my_output.default('htpasswd identity provider [%s]' % (params['provider']), before_newline=True)
     params['providerInfo'] = params['k8s_handler'].get_identity_provider_htpasswd(params['provider'])
+    if params['providerInfo'] is None:
+        params['mode'] = 'post'
+        my_output.default('- not found')
+    else:
+        my_output.default('- found')
+
+    my_output.default('- %s mode' % (params['mode']))
+
     params['userMap'] = params['k8s_handler'].get_identity_provider_htpasswd_user_map()
     if params['userMap'] is None:
         return None, 'Failed to get existing htpasswd users'
 
-    if params['providerInfo'] is None:
-        params['mode'] = 'post'
-
     params['secret_namespace'] = 'openshift-config'
     params['secret_name'] = params['provider'].replace('_', '-')
-
+    my_output.default('- secret %s/%s' % (params['secret_namespace'], params['secret_name']))
     for username in params['users']:
+        my_output.default('- check user %s' % (username))
         if username in params['userMap'] and params['userMap'][username] != params['provider']:
             return None, 'User [%s] defined in another provider [%s]' % (username, params['userMap'][username])
 
     for admin in params['admins']:
+        my_output.default('- check admin %s' % (admin))
         if admin not in params['userMap']:
             if admin not in params['users']:
                 return None, 'Admin user undefined: %s' % (admin)
@@ -120,9 +140,17 @@ def validate_add(params):
 def run_patch(params, my_output):
     users = {}
 
-    data = base64.b64decode(
-        params['providerInfo']['data']
-    ).decode('utf-8')
+    if params['providerInfo']['data'] is None:
+        data = ''
+    else:
+        try:
+            data = base64.b64decode(
+                params['providerInfo']['data']
+            ).decode('utf-8')
+        except BaseException:
+            my_output.error('Failed to base64 decode data')
+            return False
+        
     for line in data.split('\n'):
         if len(line) > 0:
             users[line.split(':')[0]] = line.split(':')[1]
@@ -135,34 +163,27 @@ def run_patch(params, my_output):
         content = '%s%s:%s\n' % (content, user, users[user])
     content = content.strip('\n')
 
+    my_output.default('Generated htpasswd', before_newline=True)
+    my_output.default(content, wrap='~~~')
+
     encoded_content = base64.b64encode(
         content.encode('utf-8')
     ).decode('utf-8')
 
     kv = {}
     kv['htpasswd'] = encoded_content
-    success = params['k8s_handler'].update_secret_kv_mo(
+
+    success = params['k8s_handler'].create_or_update_secret_kv(
         params['secret_namespace'],
         params['providerInfo']['secret'],
-        kv
-    )
-    if not success:
-        my_output.error(
-            'Secret update failed: %s/%s' % (
-                params['secret_namespace'],
-                params['providerInfo']['secret']
-            )
-        )
-        return False
-
-    my_output.default(
-        'Secret %s/%s updated' % (
-            params['secret_namespace'],
-            params['providerInfo']['secret']
-        )
+        kv,
+        replace=False,
+        confirmation=params['confirmation'],
+        my_output=my_output,
+        wait=True
     )
 
-    return True
+    return success
 
 
 def run_post(params, my_output):
@@ -171,14 +192,13 @@ def run_post(params, my_output):
         if params['k8s_handler'].is_secret(params['secret_namespace'], params['provider']):
             secret_name = '%s-%s' % (params['provider'], str(uuid.uuid4()).rsplit('-', maxsplit=1)[-1])
 
-        success = params['k8s_handler'].add_identity_provider_oauth(
+        success = params['k8s_handler'].add_htpasswd_identity_provider_oauth(
             secret_name,
-            provider_name=params['provider']
+            params['provider'],
+            confirmation=params['confirmation'],
+            my_output=my_output
         )
         if not success:
-            my_output.error(
-                'OAuth update with htpasswd failed'
-            )
             return False
 
         my_output.default(
@@ -195,34 +215,25 @@ def run_post(params, my_output):
             content = '%s%s:%s\n' % (content, user, users[user])
         content = content.strip('\n')
 
+        my_output.default('Generated htpasswd', before_newline=True)
+        my_output.default(content, wrap='~~~')
+
         encoded_content = base64.b64encode(
             content.encode('utf-8')
         ).decode('utf-8')
 
         kv = {}
         kv['htpasswd'] = encoded_content
-        success = params['k8s_handler'].create_secret_kv_mo(
+
+        success = params['k8s_handler'].create_secret_kv(
             params['secret_namespace'],
             secret_name,
-            kv
+            kv,
+            confirmation=params['confirmation'],
+            my_output=my_output,
+            wait=True
         )
-        if not success:
-            my_output.error(
-                'Secret create failed: %s/%s' % (
-                    params['secret_namespace'],
-                    secret_name
-                )
-            )
-            return False
-
-        my_output.default(
-            'Secret %s/%s created' % (
-                params['secret_namespace'],
-                secret_name
-            )
-        )
-
-        return True
+        return success
 
     current = {}
 
@@ -243,34 +254,26 @@ def run_post(params, my_output):
         content = '%s%s:%s\n' % (content, user, users[user])
     content = content.strip('\n')
 
+    my_output.default('Generated htpasswd', before_newline=True)
+    my_output.default(content, wrap='~~~')
+
     encoded_content = base64.b64encode(
         content.encode('utf-8')
     ).decode('utf-8')
 
     kv = {}
     kv['htpasswd'] = encoded_content
-    success = params['k8s_handler'].update_secret_kv_mo(
+    success = params['k8s_handler'].create_or_update_secret_kv(
         params['secret_namespace'],
         params['providerInfo']['secret'],
-        kv
+        kv,
+        replace=True,
+        confirmation=params['confirmation'],
+        my_output=my_output,
+        wait=True
     )
     if not success:
-        my_output.error(
-            'Secret update failed: %s/%s' % (
-                params['secret_namespace'],
-                params['providerInfo']['secret']
-            )
-        )
         return False
-
-    my_output.default(
-        'Secret %s/%s updated' % (
-            params['secret_namespace'],
-            params['providerInfo']['secret']
-        )
-    )
-
-    success = True
 
     for current_user in current:
         if current_user not in users:
@@ -278,33 +281,18 @@ def run_post(params, my_output):
                 params['providerInfo']['name'],
                 current_user
             )
-            my_output.default(
-                'Deleting user [%s] and identity [%s]' % (
-                    current_user,
-                    identity
-                )
+
+            success = params['k8s_handler'].delete_user(
+                current_user, 
+                include_identity=True,
+                identity=identity,
+                my_output=my_output,
+                wait=True
             )
-            user_mo = params['k8s_handler'].get_user(current_user, return_mo=True, cache_enabled=False)
-            if user_mo is None:
-                my_output.default('User already deleted, checking for identity leftover')
-                if params['k8s_handler'].is_identity(identity, cache_enabled=False):
-                    if not params['k8s_handler'].delete_identity_mo(identity):
-                        my_output.error('REST API failed')
-                        success = False
+            if not success:
+                return False
 
-            if user_mo is not None:
-                if len(user_mo['identities']) > 1:
-                    my_output.default('User has multiple identities, deleting identity only')
-                    if params['k8s_handler'].is_identity(identity, cache_enabled=False):
-                        if not params['k8s_handler'].delete_identity_mo(identity):
-                            my_output.error('REST API failed')
-                            success = False
-                else:
-                    if not params['k8s_handler'].delete_user_mo(user_mo, include_identity=True):
-                        my_output.error('REST API failed')
-                        success = False
-
-    return success
+    return True
 
 
 def run(params, log_id=None):
@@ -316,20 +304,11 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
+    params = local_common.initialize(params, my_output, log_id)
+    if params is None:
         return False
-    
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
 
-    params, error = validate_add(params)
+    params, error = validate_add(params, my_output)
     if error is not None:
         my_output.error(error)
         return False
@@ -360,22 +339,16 @@ def run(params, log_id=None):
                 )
                 continue
 
-            my_output.default(
-                'Add username %s to cluster admins group' % (
-                    admin
-                )
-            )
-
             success = params['k8s_handler'].add_user_subject_cluster_role_binding(
                 'cluster-admin',
-                admin
+                admin,
+                confirmation=params['confirmation'],
+                my_output=my_output
             )
             if not success:
-                my_output.default(
-                    'Add username %s to cluster admins group failed' % (
-                        admin
-                    )
-                )
                 return False
 
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- HTPasswd Identity Provider configured')
     return True

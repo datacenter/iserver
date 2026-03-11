@@ -2,7 +2,7 @@ class K8sDeploymentOutput():
     def __init__(self):
         pass
 
-    def print_deployments(self, info):
+    def print_deployments_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

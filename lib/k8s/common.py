@@ -99,6 +99,19 @@ class K8sCommon():
 
         return '%ss' % (seconds)
 
+    def get_max_timestamp(self, current, timestamp):
+        converted = self.convert_timestamp(timestamp)
+        if converted is None:
+            return current
+
+        if current is None:
+            return converted
+        
+        if converted > current:
+            return converted
+        
+        return current
+    
     def convert_timestamp(self, timestamp):
         if timestamp is None:
             return None
@@ -372,13 +385,16 @@ class K8sCommon():
 
         return info
 
-    def get_managed_objects_info(self, object_name, cache_enabled=True):
+    def get_managed_objects_info(self, object_name, namespace=None, cache_enabled=True):
         if cache_enabled:
             value = getattr(self, object_name)
             if value is not None:
                 return value
 
-        managed_objects = getattr(self, 'get_%s_mo' % (object_name))(cache_enabled=cache_enabled)
+        if namespace is None:
+            managed_objects = getattr(self, 'get_%s_mo' % (object_name))(cache_enabled=cache_enabled)
+        else:
+            managed_objects = getattr(self, 'get_%s_mo' % (object_name))(namespace=namespace, cache_enabled=cache_enabled)
         if managed_objects is None:
             return None
 
@@ -392,16 +408,39 @@ class K8sCommon():
         setattr(self, object_name, infos)
         return infos
 
-    def get_infos(self, object_name, object_filter=None, return_mo=False, cache_enabled=True):
-        all_infos = self.get_managed_objects_info(object_name, cache_enabled=cache_enabled)
+    def get_infos(self, object_name, object_filter=None, return_mo=False, cache_enabled=True, add={}):
+        namespace = None
+        if object_filter is not None:
+            for rule in object_filter:
+                key = rule.split(':')[0]
+                value = ':'.join(rule.split(':')[1:])
+                if key == 'namespace' and '*' not in value:
+                    namespace = value
+
+        all_infos = self.get_managed_objects_info(object_name, namespace=namespace, cache_enabled=cache_enabled)
         if all_infos is None:
             return None
+
+        if not return_mo:
+            for key in add:
+                if add[key]:
+                    extended_add = 'add_%ss_%s' % (object_name, key)
+                    if not hasattr(self, extended_add):
+                        self.log.error('get_infos', 'Unsupported info add: %s' % (extended_add))
+                        continue
+
+                    all_infos = getattr(self, extended_add)(all_infos, cache_enabled=cache_enabled)
 
         infos = []
 
         for info in all_infos:
-            if not self.match_info(info['info'], object_filter):
+            extended_match = hasattr(self, 'match_%s' % (object_name))
+            if not self.match_info(info['info'], object_filter, is_extended=extended_match):
                 continue
+
+            if hasattr(self, 'match_%s' % (object_name)):
+                if not getattr(self, 'match_%s' % (object_name))(info['info'], object_filter):
+                    continue
 
             if return_mo:
                 infos.append(
@@ -438,12 +477,16 @@ class K8sCommon():
 
         return None
 
-    def match_info(self, info, object_filter):
+    def get_common_match(self):
+        return ['namespace', 'name']
+    
+    def match_info(self, info, object_filter, is_extended=False):
         if object_filter is None or len(object_filter) == 0:
             return True
 
         for rule in object_filter:
-            (key, value) = rule.split(':')
+            key = rule.split(':')[0]
+            value = ':'.join(rule.split(':')[1:])
 
             key_found = False
 
@@ -459,7 +502,12 @@ class K8sCommon():
                     if not filter_helper.match_string(value, info['name']):
                         return False
 
-            if not key_found:
+            if key == 'owner':
+                key_found = True
+                if not filter_helper.match_namespace_name(value, info['owner']):
+                    return False
+                
+            if not is_extended and not key_found:
                 self.log.error(
                     'match_info',
                     'Unsupported key [%s]: %s' % (key, json.dumps(info))
@@ -571,3 +619,15 @@ class K8sCommon():
                 return False
 
             time.sleep(5)
+
+    def cleanup_managed_object(self, managed_object, exclude=[]):
+        for key in ['creationTimestamp', 'managedFields', 'generation', 'resourceVersion', 'uid']:
+            if key in exclude:
+                continue
+            if key in managed_object['metadata']:
+                del managed_object['metadata'][key]
+
+        if 'status' in managed_object:
+            del managed_object['status']
+
+        return managed_object
