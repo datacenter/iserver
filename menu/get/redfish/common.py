@@ -17,8 +17,22 @@ def set_endpoint(ctx, params):
     redfish_endpoint_settings['inventory_type'] = params['inventory_type']
     redfish_endpoint_settings['inventory_id'] = params['inventory_id']
 
-    if params['endpoint_id'] is None:
-        params['endpoint_id'] = ip_helper.get_short_uuid()
+    if params['handler_endpoint_type'] == 'fi':
+        if 'endpoint_id' not in params or params['endpoint_id'] is None:
+            params['endpoint_id'] = endpoint_settings_handler.get_fi_endpoint_id(
+                params['endpoint_ip'],
+                params['inventory_type'],
+                params['inventory_id']
+            )
+            if params['endpoint_id'] is None:
+                params['endpoint_id'] = ip_helper.get_short_uuid()
+    else:
+        if 'endpoint_id' not in params or params['endpoint_id'] is None:
+            params['endpoint_id'] = endpoint_settings_handler.get_endpoint_id_with_ip(
+                params['endpoint_ip']
+            )
+            if params['endpoint_id'] is None:
+                params['endpoint_id'] = ip_helper.get_short_uuid()
 
     endpoint_settings_handler.set_redfish_endpoint_access(
         redfish_endpoint_settings,
@@ -26,15 +40,51 @@ def set_endpoint(ctx, params):
     )
 
 
-def get_params_from_user(ctx, params):
-    if len(params['username']) > 0:
-        params['system_id'] = None
-        params['handler_endpoint_type'] = params['endpoint_type']
+def get_params_from_user(ctx, params, cache_enabled=True):
+    if cache_enabled:
+        if len(params['username']) > 0:
+            params['system_id'] = None
+            params['handler_endpoint_type'] = params['endpoint_type']
 
-    if len(params['username']) == 0:
-        ctx.my_output.default('Endpoint not found in internal redfish database. Provide access details.')
-        params['system_id'] = None
+        if len(params['username']) == 0:
+            ctx.my_output.default('Endpoint not found in internal redfish database. Provide access details.')
+            params['system_id'] = None
 
+            params['endpoint_port'] = input('Redfish endpoint port [def. 443]: ')
+            if len(params['endpoint_port']) == 0:
+                params['endpoint_port'] = 443
+            else:
+                try:
+                    params['endpoint_port'] = int(params['endpoint_port'])
+                except BaseException:
+                    ctx.my_output.error('Port (int) value expected')
+                    params['endpoint_port'] = None
+
+            if params['endpoint_port'] is None:
+                return None
+
+            params['username'] = input('Redfish authentication username: ')
+            if len(params['username']) == 0:
+                return None
+
+            params['password'] = input('Redfish authentication password: ')
+            if len(params['password']) == 0:
+                return None
+
+            params['handler_endpoint_type'] = input('Endpoint type [ucsc, bmc, fi, dell, hp]: ')
+            if len(params['handler_endpoint_type']) == 0 or params['handler_endpoint_type'] not in ['ucsc', 'bmc', 'fi', 'dell', 'hp']:
+                return None
+
+            if params['handler_endpoint_type'] == 'fi':
+                params['inventory_type'] = input('Inventory type: ')
+                if len(params['inventory_type']) == 0:
+                    return None
+
+                params['inventory_id'] = input('Inventory id: ')
+                if len(params['inventory_id']) == 0:
+                    return None
+
+    if not cache_enabled:
         params['endpoint_port'] = input('Redfish endpoint port [def. 443]: ')
         if len(params['endpoint_port']) == 0:
             params['endpoint_port'] = 443
@@ -112,7 +162,7 @@ def get_params_from_cache(ctx, endpoint_settings_handler, params):
     return params
 
 
-def input_params(ctx, params):
+def input_params(ctx, params, cache_enabled=True):
     if len(params['endpoint_ip']) == 0:
         params['endpoint_ip'] = input('Redfish endpoint IP address: ')
         if not ip_helper.is_valid_ipv4_address(params['endpoint_ip']):
@@ -123,14 +173,18 @@ def input_params(ctx, params):
         log_id=ctx.run_id
     )
 
-    params['endpoint_id'] = endpoint_settings_handler.get_endpoint_id_with_ip(
-        params['endpoint_ip']
-    )
-    if params['endpoint_id'] is None:
-        params = get_params_from_user(ctx, params)
-    else:
-        params = get_params_from_cache(ctx, endpoint_settings_handler, params)
-    
+    if cache_enabled:
+        params['endpoint_id'] = endpoint_settings_handler.get_endpoint_id_with_ip(
+            params['endpoint_ip']
+        )
+        if params['endpoint_id'] is None:
+            params = get_params_from_user(ctx, params)
+        else:
+            params = get_params_from_cache(ctx, endpoint_settings_handler, params)
+
+    if not cache_enabled:
+        params = get_params_from_user(ctx, params, cache_enabled=False)
+
     return params
 
 
@@ -147,7 +201,7 @@ def get_redfish_handler(ctx, params, get_timeout=10):
         params['endpoint_port'],
         params['username'],
         params['password'],
-        system_id=params['system_id'],
+        system_id=None,
         get_timeout=get_timeout,
         auto_connect=True,
         ssl_verify=False,

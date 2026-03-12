@@ -165,7 +165,7 @@ class K8sOAuthLdap():
         return True
 
     def get_identity_providers_ldap(self, name=None, namespace='openshift-config', cache_enabled=True):
-        oauth_mos = self.get_oauths(cache_enabled=cache_enabled)
+        oauth_mos = self.get_oauths(user_info=True, cache_enabled=cache_enabled)
         if oauth_mos is None:
             return None
 
@@ -229,6 +229,11 @@ class K8sOAuthLdap():
                         'email: %s' % (','.join(item['attribute_email'])),
                         'preferredUsername: %s' % (','.join(item['attribute_preferredUsername']))
                     ]
+
+                    item['userCount'] = 0
+                    for idp_info in oauth_mo['idp']:
+                        if idp_info['type'] == 'LDAP' and idp_info['name'] == item['name']:
+                            item['userCount'] = idp_info['userCount']
 
                     info.append(
                         item

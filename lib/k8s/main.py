@@ -10,6 +10,7 @@ from lib.k8s.alert_manager.main import K8sAlertManager
 from lib.k8s.alert_manager_config.main import K8sAlertManagerConfig
 from lib.k8s.alert_rule.main import K8sAlertRule
 from lib.k8s.auth.main import K8sAuth
+from lib.k8s.authentication.main import K8sAuthentication
 from lib.k8s.bare_metal_host.main import K8sBareMetalHost
 from lib.k8s.build_config.main import K8sBuildConfig
 from lib.k8s.catalog_source.main import K8sCatalogSource
@@ -245,6 +246,7 @@ class K8s(
         K8sAdminJob,
         K8sApi,
         K8sAuth,
+        K8sAuthentication,
         K8sCommon,
         K8sAlertManager,
         K8sAlertRule,
@@ -488,6 +490,7 @@ class K8s(
         K8sAlertManagerConfig.__init__(self)
         K8sAlertRule.__init__(self)
         K8sAuth.__init__(self)
+        K8sAuthentication.__init__(self)
         K8sBareMetalHost.__init__(self)
         K8sBuildConfig.__init__(self)
         K8sCatalogSource.__init__(self)

@@ -25,6 +25,7 @@ class ErrorExit(Exception):
 @click.option("--inventory-type", default='', help="FI Inventory Type")
 @click.option("--inventory-id", default='', help="FI Inventory Id")
 @click.option("--timeout", "get_timeout", is_flag=False, show_default=True, default=10, type=click.INT, help="Get uri timeout")
+@click.option("--no-cache", is_flag=True, show_default=True, default=False, help="Disable endpoint cache")
 def set_redfish_power_cycle_command(
         ctx,
         endpoint_type,
@@ -34,7 +35,8 @@ def set_redfish_power_cycle_command(
         password,
         inventory_type,
         inventory_id,
-        get_timeout
+        get_timeout,
+        no_cache
         ):
     """Power cycle"""
 
@@ -52,7 +54,7 @@ def set_redfish_power_cycle_command(
         params['inventory_type'] = inventory_type
         params['inventory_id'] = inventory_id
 
-        params = redfish_common.input_params(ctx, params)
+        params = redfish_common.input_params(ctx, params, cache_enabled=not no_cache)
         if params is None:
             raise ErrorExit
         

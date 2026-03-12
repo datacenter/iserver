@@ -52,7 +52,7 @@ class K8sOAuthHtpasswd():
         return success
 
     def get_identity_providers_htpasswd(self, namespace='openshift-config', cache_enabled=True):
-        oauth_mos = self.get_oauths(cache_enabled=cache_enabled)
+        oauth_mos = self.get_oauths(user_info=True, cache_enabled=cache_enabled)
         if oauth_mos is None:
             return None
 
@@ -121,6 +121,11 @@ class K8sOAuthHtpasswd():
                     item['users'] = sorted(item['users'])
                     item['usersT'] = sorted(item['usersT'])
                     item['mappingMethod'] = identity_provider_mo['mappingMethod']
+                    item['userCount'] = 0
+                    for idp_info in oauth_mo['idp']:
+                        if idp_info['type'] == 'HTPasswd' and idp_info['name'] == item['name']:
+                            item['userCount'] = idp_info['userCount']
+
                     info.append(
                         item
                     )

@@ -41,6 +41,7 @@ class ErrorExit(Exception):
 @click.option("--max", "tree_max_execution_time", is_flag=False, type=click.INT, default=120, help="Max execution time in seconds")
 @click.option("--timeout", "get_timeout", is_flag=False, show_default=True, default=10, type=click.INT, help="Get uri timeout")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
+@click.option("--no-cache", is_flag=True, show_default=True, default=False, help="Disable endpoint cache")
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_redfish_uri_command(
         ctx,
@@ -64,6 +65,7 @@ def get_redfish_uri_command(
         tree_max_execution_time,
         get_timeout,
         output,
+        no_cache,
         devel
         ):
     """Get redfish uri resources"""
@@ -84,7 +86,7 @@ def get_redfish_uri_command(
         params['inventory_type'] = inventory_type
         params['inventory_id'] = inventory_id
 
-        params = redfish_common.input_params(ctx, params)
+        params = redfish_common.input_params(ctx, params, cache_enabled=not no_cache)
         if params is None:
             raise ErrorExit
         

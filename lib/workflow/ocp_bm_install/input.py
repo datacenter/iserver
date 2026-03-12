@@ -310,7 +310,7 @@ def run(directory, install_mode, log_id=None, offline=False):
     my_output.default('- input files loaded')
     user_settings['mode'] = install_mode
 
-    user_settings = validations.run(user_settings, my_output, log_id)
+    user_settings = validations.run(user_settings, my_output, offline, log_id)
     if user_settings is None:
         return None, None, None, None
 

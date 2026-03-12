@@ -61,7 +61,7 @@ Completed
 OpenShift Workflow - LDAP Group - Sync Prune
 ============================================
 
-OpenShift Cluster: trinity
+OpenShift Cluster: bm1
 
 Delete CronJob
 --------------

@@ -195,6 +195,23 @@ def validate_cilium_manifests(user_settings, manifests, manifests_type, my_outpu
             my_output.error('CiliumConfig manifest property spec:cilium:nativeRoutingCIDR not aligned with cluster.json cluster_network_cidr')
             return None
 
+    if user_settings['cilium']['analyze']:
+        cilium_devices = filter_helper.get_attr(cilium_config, 'spec:devices')
+        if cilium_devices is not None:
+            if '+' not in cilium_devices and '!' not in cilium_devices:
+                for cilium_device in cilium_devices.split(','):
+                    for server in user_settings['server']:
+                        if cilium_device not in server['nmstate_interface']:
+                            my_output.error('Mismatch between cilium device %s and server %s nmstate interfaces [%s]' % (cilium_device, server['hostname'], ', '.join(server['nmstate_interface'])))
+                            return None
+
+        cilium_device = filter_helper.get_attr(cilium_config, 'spec:directRoutingDevice')
+        if cilium_device is not None:
+            for server in user_settings['server']:
+                if cilium_device not in server['nmstate_interface']:
+                    my_output.error('Mismatch between cilium directRoutingDevice %s and server %s nmstate interfaces [%s]' % (cilium_device, server['hostname'], ', '.join(server['nmstate_interface'])))
+                    return None
+                
     return manifests
 
 

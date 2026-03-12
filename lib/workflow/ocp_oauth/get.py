@@ -7,6 +7,12 @@ def validate(params):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
 
+    if 'view' not in params or params['view'] is None:
+        params['view'] = ['state']
+
+    if not isinstance(params['view'], list):
+        return None, 'view param must be list'
+
     if 'verbose' not in params:
         params['verbose'] = False
 
@@ -21,6 +27,7 @@ def validate(params):
     
     allowed_keys = [
         'cluster',
+        'view',
         'check-verbose',
         'verbose'
     ]
@@ -42,14 +49,22 @@ def run(params, log_id=None):
         return False
     
     params = local_common.get_state(
-        params
+        params,
+        my_output
     )
 
-    local_common.print_state(
-        params, 
-        my_output, 
-        k8s_output_handler, 
-        summary=False
-    )
+    if 'state' in params['view']:
+        local_common.print_state_summary(
+            params, 
+            my_output, 
+            k8s_output_handler
+        )
+
+    if 'verbose' in params['view']:
+        local_common.print_state(
+            params, 
+            my_output, 
+            k8s_output_handler
+        )
 
     return True

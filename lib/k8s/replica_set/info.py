@@ -168,6 +168,17 @@ class K8sReplicaSetInfo():
         if replica_sets is None:
             return None
 
+        if len(replica_sets) > 1:
+            candidates = []
+            for replica_set in replica_sets:
+                if replica_set['replicas'] == 0:
+                    continue
+
+                candidates.append(replica_set)
+            
+            if len(candidates) == 1:
+                return candidates[0]
+            
         if len(replica_sets) == 1:
             return replica_sets[0]
 

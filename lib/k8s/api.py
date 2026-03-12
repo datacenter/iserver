@@ -44,12 +44,10 @@ class K8sApi():
         self.kind_replace_name = {           
         }
         self.kind_patch_namespace_name = { 
-            'Deployment': 'patch_namespaced_deployment'
         }
         self.kind_patch_name = {           
         }
         self.kind_delete_namespace_name = { 
-            'Deployment': 'delete_namespaced_deployment'
         }
         self.kind_delete_name = {           
         }

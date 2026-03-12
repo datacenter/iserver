@@ -1,13 +1,16 @@
 import os
+import re
 import json
+import yaml
 from lib import file_helper
+from lib import filter_helper
 from lib import ip_helper
 from lib import template
 from lib.workflow.ocp_task import create as task
 from lib.openshift import console
 
 
-def validate_base(user_settings, my_output, log_id):
+def validate_base(user_settings, my_output, offline, log_id):
     console_handler = console.Console(log_id=log_id)
 
     mandatory_keys = [
@@ -27,8 +30,9 @@ def validate_base(user_settings, my_output, log_id):
     for ntp_value in user_settings['ntp'].split(','):
         ntp_value = ntp_value.strip()
         if ip_helper.get_ip(ntp_value) is None and not ip_helper.is_valid_ipv4_address(ntp_value):
-            my_output.error('ntp must be valid ip or resolvable name')
-            return None
+            if not offline:
+                my_output.error('ntp must be valid ip or resolvable name')
+                return None
         
         ntp_sources.append(ntp_value)
 
@@ -172,6 +176,7 @@ def validate_tasks(user_settings, my_output):
 def validate_cilium(user_settings, my_output):
     settings = {}
     settings['verify'] = True
+    settings['analyze'] = True
     settings['manage'] = True
     settings['cidr'] = True
 
@@ -222,6 +227,10 @@ def validate_server(user_settings, my_output, log_id):
     for server in user_settings['server']:
         if 'hostname' not in server:
             my_output.error('Define server hostname')
+            return None
+
+        if not re.match("^[a-z0-9][a-z0-9-]{0,62}(?:[.][a-z0-9-]{1,63})*$", server['hostname']):
+            my_output.error('Server hostname [%s] does not pass required regex validation: ^[a-z0-9][a-z0-9-]{0,62}(?:[.][a-z0-9-]{1,63})*$' % (server['hostname']))
             return None
 
         if 'kube' not in server:
@@ -597,6 +606,37 @@ def validate_server(user_settings, my_output, log_id):
         my_output.debug('Server: %s' % (server['hostname']))
         my_output.debug(content, wrap='~~~', before_newline=True, after_newline=True)
         server['network_yaml'] = '\r\n'.join(content.split('\n'))
+        try:
+            nmcontent = yaml.safe_load(server['network_yaml'].replace('\r\n', '\n'))
+        except BaseException:
+            my_output.default('Server: %s' % (server['hostname']))
+            my_output.default(content, wrap='~~~', after_newline=True)
+            my_output.error('Error loading yaml content')
+            return None
+
+        server['nmstate_interface'] = []
+        nm_interface = filter_helper.get(nmcontent, 'interfaces')
+        if nm_interface is None:
+            my_output.default('Server: %s' % (server['hostname']))
+            my_output.default(content, wrap='~~~', after_newline=True)
+            my_output.error('nmstate yaml requires interfaces section')
+            return None
+        
+        for item in nm_interface:
+            interface_name = filter_helper.get(item, 'name')
+            if interface_name is None:
+                my_output.default('Server: %s' % (server['hostname']))
+                my_output.default(item, wrap='~~~', after_newline=True)
+                my_output.error('nmstate interface requires name parameter')
+                return None
+
+            if interface_name in server['nmstate_interface']:
+                my_output.default('Server: %s' % (server['hostname']))
+                my_output.default(item, wrap='~~~', after_newline=True)
+                my_output.error('nmstate interface requires unique name parameter')
+                return None
+
+            server['nmstate_interface'].append(interface_name)
 
     if kube_count == 0:
         user_settings['server'][0]['kube'] = True
@@ -720,9 +760,9 @@ def validate_iso(user_settings, my_output):
     return user_settings
 
 
-def run(user_settings, my_output, log_id):   
+def run(user_settings, my_output, offline, log_id):   
     my_output.default('- base')
-    user_settings = validate_base(user_settings, my_output, log_id)
+    user_settings = validate_base(user_settings, my_output, offline, log_id)
     if user_settings is None:
         return None
         

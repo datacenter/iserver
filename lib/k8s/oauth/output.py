@@ -6,7 +6,10 @@ class K8sOAuthOutput():
         self.my_output.my_table_ng(
             info,
             [
-                ['OAuth', 'name']
+                ['OAuth', 'name'],
+                ['Identity Provider', 'idp.name'],
+                ['Identity Type', 'idp.type'],
+                ['Identity Users', 'idp.userCount']
             ]
         )
 
@@ -15,7 +18,7 @@ class K8sOAuthOutput():
             info,
             [
                 ['OAuth', 'oauth'],
-                ['Provider', 'name'],
+                ['Htpasswd Provider', 'name'],
                 ['Secret', 'secret'],
                 ['Is Secret', 'isSecret'],
                 ['User', 'usersT']
@@ -27,7 +30,7 @@ class K8sOAuthOutput():
             info,
             [
                 ['OAuth', 'oauth'],
-                ['Provider', 'name'],
+                ['LDAP Provider', 'name'],
                 ['LDAP', 'ldapT'],
                 ['Attribute', 'attributeT'],
                 ['Usage', 'usageT']

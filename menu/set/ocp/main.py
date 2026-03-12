@@ -32,6 +32,7 @@ from menu.set.ocp.nfd import set_ocp_nfd_command
 from menu.set.ocp.nim import set_ocp_nim_command
 from menu.set.ocp.nfs import set_ocp_nfs_command
 from menu.set.ocp.nmstate import set_ocp_nmstate_command
+from menu.set.ocp.oauth import set_ocp_oauth_command
 from menu.set.ocp.odf import set_ocp_odf_command
 from menu.set.ocp.portworx import set_ocp_portworx_command
 from menu.set.ocp.prometheus import set_ocp_prometheus_command
@@ -88,6 +89,7 @@ set_ocp_menu.add_command(set_ocp_nfd_command)
 set_ocp_menu.add_command(set_ocp_nim_command)
 set_ocp_menu.add_command(set_ocp_nfs_command)
 set_ocp_menu.add_command(set_ocp_nmstate_command)
+set_ocp_menu.add_command(set_ocp_oauth_command)
 set_ocp_menu.add_command(set_ocp_odf_command)
 set_ocp_menu.add_command(set_ocp_portworx_command)
 set_ocp_menu.add_command(set_ocp_prometheus_command)

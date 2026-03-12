@@ -1,4 +1,5 @@
 import yaml
+import time
 import datetime
 from menu.common import get_confirmation
 
@@ -7,7 +8,7 @@ class K8sDeploymentUpdate():
     def __init__(self):
         pass
 
-    def restart_deployment(self, namespace, name, my_output=None):
+    def restart_deployment(self, namespace, name, my_output=None, wait=False, nap=10, max_time=180):
         if not self.is_deployment(namespace, name, cache_enabled=False):
             if my_output is not None:
                 my_output.error('Deployment [%s/%s] not found' % (namespace, name))
@@ -15,25 +16,42 @@ class K8sDeploymentUpdate():
 
         now = datetime.datetime.utcnow()
         now = str(now.isoformat("T") + "Z")
-        body = {
-            'spec': {
-                'template':{
-                    'metadata': {
-                        'annotations': {
-                            'kubectl.kubernetes.io/restartedAt': now
-                        }
+
+        body = {}
+        body['apiVersion'] = 'apps/v1'
+        body['kind'] = 'Deployment'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        body['spec'] = {
+            'template':{
+                'metadata': {
+                    'annotations': {
+                        'kubectl.kubernetes.io/restartedAt': now
                     }
                 }
             }
         }
 
-        if not self.path_resource(body):
-            if my_output is not None:
-                my_output.error('Deployment [%s/%s] patch failed' % (namespace, name))
+        if not self.patch_resource(body, object_name='deployment', my_output=my_output):
             return False
 
-        if my_output is not None:
-            my_output.default('Deployment [%s/%s] patch successful' % (namespace, name))
+        if not wait:
+            return True
+        
+        if nap > 0:
+            if my_output is not None:
+                my_output.default('Take a nap...')
+            time.sleep(10)
+
+        success = self.wait_deployment_ready_state(
+            namespace,
+            name, 
+            max_time=max_time, 
+            my_output=my_output
+        )
+        if not success:
+            return False
 
         return True
 
@@ -66,13 +84,13 @@ class K8sDeploymentUpdate():
             my_output.default('- name: %s' % (name))
             my_output.default('- replicas: %s' % (replicas))
             
-        deployment_mo = self.get_deployment(namespace, name, return_mo=True)
+        deployment_mo = self.get_deployment(namespace, name, return_mo=True, cache_enabled=False)
         if deployment_mo is None:
             if my_output is not None:
                 my_output.error('Deployment not found')
             return False
 
-        replica_set = self.get_replica_set_deployment(namespace, name)
+        replica_set = self.get_replica_set_deployment(namespace, name, cache_enabled=False)
         if replica_set is None:
             if my_output is not None:
                 my_output.error('Network operator replica set not found')

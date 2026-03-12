@@ -28,6 +28,7 @@ class ErrorExit(Exception):
 @click.option("--id", "vmedia_id", type=click.INT, default=-1, help="Virtual media id")
 @click.option("--url", default='', help="Image location")
 @click.option("--no-wait", is_flag=True, show_default=True, default=False, help="Wait for inserted")
+@click.option("--no-cache", is_flag=True, show_default=True, default=False, help="Disable endpoint cache")
 def set_redfish_vmedia_insert_command(
         ctx,
         endpoint_type,
@@ -39,7 +40,8 @@ def set_redfish_vmedia_insert_command(
         inventory_id,
         vmedia_id,
         url,
-        no_wait
+        no_wait,
+        no_cache
         ):
     """Insert virtual media (http)"""
 
@@ -57,7 +59,7 @@ def set_redfish_vmedia_insert_command(
         params['inventory_type'] = inventory_type
         params['inventory_id'] = inventory_id
 
-        params = redfish_common.input_params(ctx, params)
+        params = redfish_common.input_params(ctx, params, cache_enabled=not no_cache)
         if params is None:
             raise ErrorExit
         

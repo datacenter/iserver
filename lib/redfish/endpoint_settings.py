@@ -285,11 +285,38 @@ class RedfishEndpointSettings(Settings):
             if redfish_settings is None:
                 continue
 
+            if redfish_settings['endpoint']['type'] == 'fi':
+                continue
+
             if redfish_settings['endpoint']['ip'] == endpoint_ip:
                 return endpoint_id
 
         return None
 
+    def get_fi_endpoint_id(self, endpoint_ip, inventory_type, inventory_id):
+        endpoint_ids = self.get_endpoint_ids()
+
+        for endpoint_id in endpoint_ids:
+            redfish_settings = self.get_redfish_endpoint_settings(endpoint_id)
+            if redfish_settings is None:
+                continue
+
+            if redfish_settings['endpoint']['type'] != 'fi':
+                continue
+
+            if redfish_settings['endpoint']['ip'] != endpoint_ip:
+                continue
+
+            if redfish_settings['endpoint']['inventory_type'] != inventory_type:
+                continue
+
+            if redfish_settings['endpoint']['inventory_id'] != inventory_id:
+                continue
+
+            return endpoint_id
+
+        return None
+    
     def get_servers_redfish_settings(self, servers_mo, verify=False, bar_enabled=False):
         redfish_endpoints_settings = self.get_redfish_endpoints_settings()
         if redfish_endpoints_settings is None:

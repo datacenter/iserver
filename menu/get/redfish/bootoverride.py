@@ -28,6 +28,7 @@ class ErrorExit(Exception):
 @click.option("--inventory-type", default='', help="FI Inventory Type")
 @click.option("--inventory-id", default='', help="FI Inventory Id")
 @click.option("--timeout", "get_timeout", is_flag=False, show_default=True, default=10, type=click.INT, help="Get uri timeout")
+@click.option("--no-cache", is_flag=True, show_default=True, default=False, help="Disable endpoint cache")
 @click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
 def get_redfish_boot_override_command(
         ctx,
@@ -39,6 +40,7 @@ def get_redfish_boot_override_command(
         inventory_type,
         inventory_id,
         get_timeout,
+        no_cache,
         output
         ):
     """Get boot properties"""
@@ -57,7 +59,7 @@ def get_redfish_boot_override_command(
         params['inventory_type'] = inventory_type
         params['inventory_id'] = inventory_id
 
-        params = redfish_common.input_params(ctx, params)
+        params = redfish_common.input_params(ctx, params, cache_enabled=not no_cache)
         if params is None:
             raise ErrorExit
         

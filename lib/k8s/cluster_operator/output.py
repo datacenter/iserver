@@ -2,8 +2,23 @@ class K8sClusterOperatorOutput():
     def __init__(self):
         pass
 
-    def print_cluster_operator(self, info):
-        self.print_cluster_operators([info], summary=False)
+    def print_cluster_operator(self, info, table=True):
+        if table:
+            self.print_cluster_operators([info], summary=False)
+            return
+
+        self.my_output.dictionary_ng(
+            'Cluster operator',
+            info, 
+            [
+                ['Cluster Operator', 'name'],
+                ['Version', 'version'],
+                ['Available', 'availableTick'],
+                ['Progressing', 'progressingTick'],
+                ['Degraded', 'degradedTick'],
+                ['Upgradeable', 'upgradeableTick']
+            ]
+        )
 
     def print_cluster_operators(self, info, summary=True):
         if summary:

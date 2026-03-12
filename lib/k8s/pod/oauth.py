@@ -36,7 +36,39 @@ class K8sPodOauth():
             oauth_pods.append(pod)
 
         return oauth_pods
+
+    def is_pod_oauth_operator(self, pod):
+        if 'metadata' in pod:
+            labels_mo = filter_helper.get(pod, 'metadata:labels')
+            if labels_mo is not None:
+                if 'app' in labels_mo:
+                    if labels_mo['app'] == 'authentication-operator':
+                        return True
+                    
+        if 'metadata' not in pod:
+            if 'app' in pod['label']:
+                if pod['label']['app'] == 'authentication-operator':
+                    return True
+                            
+        return False
     
+    def get_oauth_operator_pods(self, namespace='openshift-authentication-operator', return_mo=False, cache_enabled=True):
+        pods = self.get_pods(
+            namespace=namespace,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
+        if pods is None:
+            return None
+        
+        oauth_pods = []
+        for pod in pods:
+            if not self.is_pod_oauth_operator(pod=pod):
+                continue
+            oauth_pods.append(pod)
+
+        return oauth_pods
+        
     def wait_oauth_pods_restart(self, pods, my_output=None):
         if my_output is not None:
             my_output.default('OAuth restart', before_newline=True)
