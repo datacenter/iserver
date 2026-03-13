@@ -1,5 +1,7 @@
 # Network Attachment Definition - VLAN - Functional Test
 
+[[Back]](./README.md) [[Prev]](./crd-schema-vlan.md) [[Next]](./overview-vlan.md)
+
 ## Phy interface
 
 Note: there is no need for NNCP to create vlan-subinterface on the main interface
@@ -171,4 +173,4 @@ Legend:
 *  666     3c57.31cc.1f26   dynamic  NA         F      F    Eth1/16
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Prev]](./crd-schema-vlan.md) [[Next]](./overview-vlan.md)

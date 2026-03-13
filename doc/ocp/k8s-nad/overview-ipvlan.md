@@ -1,14 +1,12 @@
 # Network Attachment Definition - IPVLAN
 
-IPVLAN CNI plugin allows connecting container interface directly to host interface, without Linux bridge, OVS or port mapping. The parent interface on the host can be interface, sub-interface or bonded interface. 
+[[Back]](./README.md) [[Prev]](./pod-ipvlan.md) [[Next]](./crd-schema-ipvlan.md)
+
+IPVLAN CNI plugin allows connecting container interface directly to host interface, without Linux ipvlan, OVS or port mapping. The parent interface on the host can be interface, sub-interface or bonded interface. 
 
 POD’s virtual interface mac-address is the same as parent interface. This rules out DHCP IP address assignment option.
 
 ![Overview](../images/nad/ipvlan_overview.png)
-
-## JSON Configuration 
-
-![JSON](../images/nad/ipvlan_json.png)
 
 ## Operating Mode
 
@@ -18,10 +16,4 @@ L3 - In this mode TX processing up to L3 happens on the stack instance attached 
 
 L3S - This is very similar to the L3 mode except that iptables (conn-tracking) works in this mode and hence it is L3-symmetric (L3s). 
 
-## Links
-
-- [CRD example](./crd-ipvlan.md)
-- [Functional test](./test-ipvlan.md)
-- [macvlan plugin](https://www.cni.dev/plugins/current/main/macvlan/)
-
-[[Back]](./README.md)
+[[Back]](./README.md) [[Prev]](./pod-ipvlan.md) [[Next]](./crd-schema-ipvlan.md)

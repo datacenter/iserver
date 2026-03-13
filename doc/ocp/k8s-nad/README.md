@@ -1,22 +1,28 @@
-# Network Attachment Definition
+# Network Attachment Definition (NAD)
 
-## Overview
+[[Back]](../Operations.md)
 
-A NAD is a Kubernetes CustomResourceDefinition (CRD) used to define additional network interfaces for pods or virtual machines. Requires Multus CNI plug-in, integrated with Kubernetes.
+A `NetworkAttachmentDefinition` is a Kubernetes CustomResourceDefinition (CRD) used to define **additional network interfaces** for pods or virtual machines. Requires Multus CNI plug-in.
 
-Key features of NADs:
-- Multi-networking: Ability to attach multiple networks to VMs.
-- Custom networking: Define virtual local area networks (VLANs), single root input/output virtualization (SR-IOV), or MacVLAN configurations.
-- Flexible IPAM: Use DHCP, static IPs, or other methods for IP allocation.
+![Overview](../images/nad/overview.png)
 
-![Architecture](../images/nad/architecture.png)
+## Features
 
-NAD Type | Overview | CRD Example | Functional Test (POD) 
---- | --- | --- | --- 
-Bridge | [Link](./overview-bridge.md) | [Link](./crd-bridge.md) | [Link](./pod-bridge.md) 
-IPVLAN | [Link](./overview-ipvlan.md) | [Link](./crd-ipvlan.md) | [Link](./pod-ipvlan.md) 
-MacVLAN | [Link](./overview-macvlan.md) | [Link](./crd-ipvlan.md) | [Link](./pod-ipvlan.md) 
-VLAN | [Link](./overview-vlan.md) | [Link](./crd-vlan.md) | [Link](./pod-vlan.md) 
+- Multi-networking: Ability to attach multiple networks to VMs
+- Custom networking: Define virtual local area networks (VLANs), single root input/output virtualization (SR-IOV), or MacVLAN configurations
+- Flexible IPAM: Use DHCP, static IPs, or other methods for IP allocation
+
+> [!CAUTION]
+> Multus and NAD is ships-in-the-night for Kubernetes i.e. no Kubernetes features via NAD interface
+
+## Types
+
+Type | Overview | CRD Schema | Example | Plugin
+--- | --- | --- | --- | --- 
+Bridge | [Link](./overview-bridge.md) | [Link](./crd-schema-bridge.md) | [Link](./example-bridge.md) | [Link](https://www.cni.dev/plugins/current/main/bridge/)
+IPVLAN | [Link](./overview-ipvlan.md) | [Link](./crd-schema-ipvlan.md) | [Link](./example-ipvlan.md) | [Link](https://www.cni.dev/plugins/current/main/ipvlan/)
+MacVLAN | [Link](./overview-macvlan.md) | [Link](./crd-schema-macvlan.md) | [Link](./example-macvlan.md) | [Link](https://www.cni.dev/plugins/current/main/macvlan/)
+VLAN | [Link](./overview-vlan.md) | [Link](./crd-schema-vlan.md) | [Link](./example-vlan.md) | [Link](https://www.cni.dev/plugins/current/main/vlan/)
 
 ## Life Cycle Management Commands
 

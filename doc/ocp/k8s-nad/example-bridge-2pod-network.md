@@ -1,6 +1,8 @@
-# Network Attachment Definition - Bridge - Functional Test
+# Bridge NAD - Example - Across the network
 
-## Pods w/nad
+[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-ipam-host-local.md) [[Next]](./example-bridge-l2.md)
+
+## Provision
 
 ```
 apiVersion: k8s.cni.cncf.io/v1
@@ -136,15 +138,9 @@ default via 10.128.3.215 dev eth0 mtu 1450
 Default gateway
 
 ```
-$ oc exec -it pod1 -- ping 10.1.1.1 -c 3
+$ oc exec -it pod1 -- ping 10.1.1.1 -c 1
 PING 10.1.1.1 (10.1.1.1) 56(84) bytes of data.
 64 bytes from 10.1.1.1: icmp_seq=1 ttl=64 time=0.051 ms
-64 bytes from 10.1.1.1: icmp_seq=2 ttl=64 time=0.043 ms
-64 bytes from 10.1.1.1: icmp_seq=3 ttl=64 time=0.037 ms
-
---- 10.1.1.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2046ms
-rtt min/avg/max/mdev = 0.037/0.043/0.051/0.005 ms
 ```
 
 ```
@@ -232,15 +228,9 @@ default via 10.128.1.155 dev eth0 mtu 1450
 Default gateway
 
 ```
-$ oc exec -it pod2 -- ping 10.1.2.1 -c 3
+$ oc exec -it pod2 -- ping 10.1.2.1 -c 1
 PING 10.1.2.1 (10.1.2.1) 56(84) bytes of data.
 64 bytes from 10.1.2.1: icmp_seq=1 ttl=64 time=0.071 ms
-64 bytes from 10.1.2.1: icmp_seq=2 ttl=64 time=0.036 ms
-64 bytes from 10.1.2.1: icmp_seq=3 ttl=64 time=0.070 ms
-
---- 10.1.2.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2043ms
-rtt min/avg/max/mdev = 0.036/0.059/0.071/0.016 ms
 ```
 
 ```
@@ -299,23 +289,19 @@ Requires IP route entries on both hosts
 host w/pod1
 
 ```
-$ sudo ip route add 10.1.2.0/28 via 10.58.24.98
+$ sudo ip route add 10.1.2.0/28 via 10.100.100.98
 ```
 
 host w/pod2
 
 ```
-$ sudo ip route add 10.1.1.0/28 via 10.58.24.97
+$ sudo ip route add 10.1.1.0/28 via 10.100.100.97
 ```
 
 ```
-$ oc exec -it pod1 -- ping 10.1.2.1 -c 3
+$ oc exec -it pod1 -- ping 10.1.2.1 -c 1
 PING 10.1.2.1 (10.1.2.1) 56(84) bytes of data.
 64 bytes from 10.1.2.1: icmp_seq=1 ttl=63 time=0.133 ms
-64 bytes from 10.1.2.1: icmp_seq=2 ttl=63 time=0.116 ms
-64 bytes from 10.1.2.1: icmp_seq=3 ttl=63 time=0.096 ms
-
---- 10.1.2.1 ping statistics ---
 ```
 
-[[Back]](./README.md)
+[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-ipam-host-local.md) [[Next]](./example-bridge-l2.md)
