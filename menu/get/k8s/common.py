@@ -5,7 +5,7 @@ from menu import validations
 from menu import progress
 
 
-def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp', filter_params={}, get_params={}):
+def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp', filter_params={}, get_params={}, view_groups=[], extra_output=[]):
     ctx.developer = False
     ctx.output = output
 
@@ -25,7 +25,7 @@ def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp',
         view,
         '|'.join(vvv),
         defv,
-        []
+        view_groups
     )
     if view is None:
         return False
@@ -85,6 +85,10 @@ def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp',
     
     ctx.busy = False
 
+    if managed_objects is None:
+        ctx.my_output.error('Failed to get %s' % (object_name))
+        return False
+    
     if output == 'json':
         ctx.my_output.default(
             json.dumps(
@@ -97,8 +101,12 @@ def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp',
     for item in view:
         getattr(k8s_output_handler, 'print_%ss_%s' % (object_name, item))(managed_objects)
 
+    ctx.my_output.default('')
+
+    if len(extra_output) > 0:
+        ctx.my_output.default('\n'.join(extra_output))
     if len(filter_params) > 0:
-        ctx.my_output.default('Filter: %s' % (', '.join(filter_params.keys())), before_newline=True)
+        ctx.my_output.default('Filter: %s' % (', '.join(filter_params.keys())))
     ctx.my_output.default('View:   %s' % (views))
     
     return True

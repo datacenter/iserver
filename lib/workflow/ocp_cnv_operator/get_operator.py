@@ -79,6 +79,8 @@ def run(params, log_id=None):
         else:
             my_output.default('- %s' % (my_output.add_color('not ready', 'Red')))
 
+            k8s_output_handler.print_hyperconverged(hc_info)
+
         crds = local_common.get_cnv_crd(
             params['k8s_handler'], 
             crd=['CDI', 'NetworkAddonsConfig']

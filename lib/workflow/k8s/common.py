@@ -126,16 +126,6 @@ def get_nads(k8s_handler, namespace=None, name=None, unused=False):
     return nads
 
 
-def validate_vlan(value):
-    if not isinstance(value, int):
-        return False, 'vlan param must be int <1, 4096>'
-
-    if value < 1 or value > 4096:
-        return False, 'vlan param must be int <1, 4096>'
-    
-    return True, None
-
-
 def validate_nad_ipam(params, modes=['dhcp', 'static', 'local']):
     if 'ipam' not in params:
         return None, 'ipam required: dhcp, static, local'

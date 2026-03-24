@@ -7,24 +7,12 @@ class K8sVirtualMachineStart():
         pass
     
     def get_start_body_running(self, namespace, name):
-        body = {}
-        body['apiVersion'] = 'kubevirt.io/v1'
-        body['kind'] = 'VirtualMachine'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        body['spec'] = {}
+        body = self.get_virtual_machine_body_main(namespace, name)
         body['spec']['running'] = True
         return body
 
     def get_start_body_run_strategy(self, namespace, name):
-        body = {}
-        body['apiVersion'] = 'kubevirt.io/v1'
-        body['kind'] = 'VirtualMachine'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        body['spec'] = {}
+        body = self.get_virtual_machine_body_main(namespace, name)
         body['spec']['runStrategy'] = 'Always'
         return body
     
@@ -68,7 +56,7 @@ class K8sVirtualMachineStart():
                 if not get_confirmation():
                     return False
             
-            success, reason = self.patch_virtual_machine_mo(body)
+            success, reason = self.patch_resource(body)
             if not success:
                 if my_output is not None:
                     my_output.error('rest api failed: %s' % (reason))
@@ -86,7 +74,7 @@ class K8sVirtualMachineStart():
                 if not get_confirmation():
                     return False
             
-            success, reason = self.patch_virtual_machine_mo(body)
+            success, reason = self.patch_resource(body)
             if not success:
                 if my_output is not None:
                     my_output.error('rest api failed: %s' % (reason))

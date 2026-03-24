@@ -17,8 +17,8 @@ class K8sVirtualMachineDelete():
         info = self.get_virtual_machine(namespace, name, cache_enabled=False)
         if info is None:
             if my_output is not None:
-                my_output.error('not found')
-            return False
+                my_output.default('- already deleted')
+            return True
 
         if my_output is not None:
             my_output.default('- state: %s' % (info['status']))

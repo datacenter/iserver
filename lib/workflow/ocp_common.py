@@ -1,7 +1,9 @@
 import os
 import time
 import yaml
+import copy
 from menu import common
+from lib import file_helper
 from lib import filter_helper
 from lib import ip_helper
 from lib import log_helper
@@ -690,6 +692,7 @@ def get_subscription(k8s_handler, package, my_output=None):
 
     return subscription
 
+
 def is_cluster_ready(cluster, mcp=True, node=True, co=True, verbose=True):
     params = {}
     params['cluster'] = cluster
@@ -698,3 +701,185 @@ def is_cluster_ready(cluster, mcp=True, node=True, co=True, verbose=True):
     params['co'] = co
     params['verbose'] = verbose
     return cluster_ready.run(params)
+
+
+def check_parameters(params, rules, extras=None):
+    allowed_keys = []
+    if extras is not None:
+        for key in extras:
+            allowed_keys.append(key)
+
+    for rule in rules:
+        (name, none_allowed, cast_if_none, expected_type, range_min, range_max, allowed_values, variables) = rule
+        allowed_keys.append(name)
+        success, params[name] = check_paramater(
+            params,
+            name,
+            none_allowed=none_allowed,
+            cast_if_none=cast_if_none,
+            expected_type=expected_type,
+            range_min=range_min,
+            range_max=range_max,
+            allowed_values=allowed_values,
+            variables=variables
+        )
+        if not success:
+            return False, params[name], None
+
+    if 'wait' not in params:
+        params['wait'] = True
+
+    if 'verbose' not in params:
+        params['verbose'] = False
+
+    if not isinstance(params['verbose'], bool):
+        return None, 'verbose param must be true or false'
+    
+    if 'check-verbose' not in params:
+        params['check-verbose'] = params['verbose']
+
+    if not isinstance(params['check-verbose'], bool):
+        return None, 'check-verbose param must be true or false'
+
+    if 'confirmation' not in params:
+        params['confirmation'] = True
+
+    allowed_keys.append('wait')
+    allowed_keys.append('verbose')
+    allowed_keys.append('check-verbose')
+    allowed_keys.append('confirmation')
+
+    return True, params, allowed_keys
+
+
+def check_paramater(
+        params, 
+        name, 
+        none_allowed=False, 
+        cast_if_none=None,
+        expected_type=None, 
+        range_min=None, 
+        range_max=None, 
+        allowed_values=None, 
+        variables=None
+    ):
+    if name not in params:
+        params[name] = cast_if_none
+
+    if params[name] is None:
+        if none_allowed:
+            return True, None
+                
+        return False, 'Parameter %s required' % (name)
+    
+    value = params[name]
+    if variables is None:
+        variables = {}
+
+    if '__id__' in params and params['__id__'] is not None:
+        if '__id__' not in variables:
+            variables['__id__'] = params['__id__']
+
+    if not none_allowed and value is None:
+        return False, 'Parameter %s non-null value required' % (name)
+
+    if expected_type is not None:
+        if expected_type == 'str':
+            if not isinstance(value, str):
+                return False, 'Parameter %s of type str required' % (name)
+            
+            if allowed_values is not None:
+                if value not in allowed_values:
+                    return False, 'Parameter %s value %s must be one of: %s' % (name, value, ', '.join(allowed_values))
+
+            value = filter_helper.replace_attributes(value, variables)
+
+        if expected_type == 'k8s':
+            if not isinstance(value, str):
+                return False, 'Parameter %s of type str required' % (name)
+            
+            value = filter_helper.replace_attributes(value, variables)
+
+            if len(value.split('/')) > 2:
+                return False, 'Parameter %s in namespace/name or name syntax required' % (name)
+
+        if expected_type == 'file-text':
+            if not isinstance(value, str):
+                return False, 'Parameter %s string required' % (name)
+            
+            if file_helper.get_file_text(value) is None:
+                return False, 'Parameter %s valid text filename required' % (name)
+
+        if expected_type == 'int':
+            if not isinstance(value, int):
+                return False, 'Parameter %s of type int required' % (name)
+            
+            if range_min is not None:
+                if value < range_min:
+                    return False, 'Parameter %s must be ge %s' % (name, range_min)
+
+            if range_max is not None:
+                if value > range_max:
+                    return False, 'Parameter %s must be le %s' % (name, range_max)
+                
+        if expected_type == 'bool':
+            if not isinstance(value, bool):
+                return False, 'Parameter %s of type bool required' % (name)
+
+        if expected_type == 'dict':
+            if not isinstance(value, dict):
+                return False, 'Parameter %s of type dict required' % (name)
+            
+            new_item = {}
+            for key in value:
+                if isinstance(value[key], str):
+                    new_item[key] = filter_helper.replace_attributes(value[key], variables)
+                else:
+                    new_item[key] = value[key]
+
+            value = copy.deepcopy(new_item)
+
+        if expected_type == 'list-of-dict':
+            if not isinstance(value, list):
+                return False, 'Parameter %s of type list required' % (name)
+            
+            new_list = []
+            for item in value:
+                if not isinstance(item, dict):
+                    return False, 'Parameter %s list of dict required' % (name)
+            
+                new_item = {}
+                for key in item:
+                    if isinstance(item[key], str):
+                        new_item[key] = filter_helper.replace_attributes(item[key], variables)
+                    else:
+                        new_item[key] = item[key]
+
+                new_list.append(new_item)
+
+            value = copy.deepcopy(new_list)
+
+        if expected_type in ['list-of-str', 'list-of-cidr']:
+            if not isinstance(value, list):
+                return False, 'Parameter %s of type list required' % (name)
+            
+            if range_min is not None:
+                if len(value) < range_min:
+                    return False, 'Parameter %s list with at least % items required' % (name, range_min)
+            
+            for item in value:
+                if not isinstance(item, str):
+                    return False, 'Parameter %s list of str required' % (name)
+
+            new_list = []
+            for item in value:
+                new_list.append(filter_helper.replace_attributes(item, variables))
+
+            value = copy.deepcopy(new_list)
+
+        if expected_type == 'list-of-cidr':
+            for item in value:
+                if not ip_helper.is_valid_ipv4_cidr(item) and not ip_helper.is_valid_ipv6_cidr(item):
+                    return False, 'cidr list with v4/v6 subnets required'
+        
+    return True, value

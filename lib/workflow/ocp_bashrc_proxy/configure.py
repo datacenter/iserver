@@ -53,7 +53,7 @@ def run(params, log_id=None):
         return False
 
     if params['inherit']:
-        proxy_mo = params['k8s_handler'].get_proxy(return_mo=True)
+        proxy_mo = params['k8s_handler'].get_proxy('cluster', return_mo=True)
         if proxy_mo is None:
             my_output.error('Failed to cluster proxy settings')
             return False

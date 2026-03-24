@@ -1,7 +1,3 @@
-import yaml
-from menu.common import get_confirmation
-
-
 class K8sNamespaceCreate():
     def __init__(self):
         pass
@@ -42,43 +38,25 @@ class K8sNamespaceCreate():
         if annotations is not None and len(annotations) == 0:
             annotations = None
 
-        if my_output is not None:
-            my_output.default('Create Namespace', before_newline=True, underline=True)
-            my_output.default('- name: %s' % (name))
+        body = self.get_namespace_body(
+            name,
+            labels=labels,
+            annotations=annotations
+        )
 
-        if self.is_namespace(name, cache_enabled=False):
+        success = self.create_resource(body, object_name='namespace', my_output=my_output, confirmation=confirmation)
+        if not success:
+            return False
+
+        if wait:
             if my_output is not None:
-                my_output.default('- already defined')
-        else:
-            body = self.get_namespace_body(
-                name,
-                labels=labels,
-                annotations=annotations
-            )
-            if my_output is not None:
-                my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
+                my_output.default('Wait for namespace [timeout:60]...')
 
-            if confirmation:
-                if not get_confirmation():
-                    return False
-
-            if not self.create_namespace_mo_from_body(body):
+            if not self.wait_namespace(name, max_time=60):
                 if my_output is not None:
-                    my_output.error('REST API failed')
+                    my_output.error('Timed out')
+                
                 return False
-            
-            if my_output is not None:
-                my_output.default('Namespace created', before_newline=True, after_newline=True)
-
-            if wait:
-                if my_output is not None:
-                    my_output.default('Wait for namespace [timeout:60]...')
-
-                if not self.wait_namespace(name, max_time=60):
-                    if my_output is not None:
-                        my_output.error('Timed out')
-                    
-                    return False
 
         if labels is not None:
             if my_output is not None:

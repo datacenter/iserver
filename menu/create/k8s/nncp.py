@@ -91,7 +91,7 @@ def create_k8s_nncp_command(
                 ctx.my_output.error('REST API failed')
                 raise ErrorExit
         
-            success = k8s_handlers.wait_node_network_configuration_policy(
+            success = k8s_handlers.wait_node_network_configuration_policies_status(
                 [item['nncp']['metadata']['name']],
                 my_output=ctx.my_output
             )

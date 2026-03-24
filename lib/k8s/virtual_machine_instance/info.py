@@ -5,117 +5,120 @@ class K8sVirtualMachineInstanceInfo():
     def __init__(self):
         self.virtual_machine_instance = None
 
-    def get_virtual_machine_instance_info(self, virtual_machine_instance_mo):
-        if virtual_machine_instance_mo is None:
-            return None
-
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            virtual_machine_instance_mo
-        )
-        info.update(metadata_info)
-
-        info['cores'] = self.get(virtual_machine_instance_mo, 'spec:domain:cpu:cores')
-        info['sockets'] = self.get(virtual_machine_instance_mo, 'spec:domain:cpu:sockets')
-        info['threads'] = self.get(virtual_machine_instance_mo, 'spec:domain:cpu:threads')
-        info['memory'] = self.get(virtual_machine_instance_mo, 'spec:domain:resources:requests:memory')
-
-        info['node_name'] = self.get(virtual_machine_instance_mo, 'status:nodeName')
-
-        info['phase'] = self.get(virtual_machine_instance_mo, 'status:phase', on_error='Unknown', on_none='Unknown')
-        info['phaseT'] = info['phase']
-        if info['phaseT'] == 'Succeeded':
-            info['phaseT'] = 'Completed'
-
-        if info['phaseT'] in ['Running', 'Completed']:
-            info['__Output']['phaseT'] = 'Green'
-
-        if info['phaseT'] in ['Failed', 'Unknown']:
-            info['__Output']['phaseT'] = 'Red'
-
-        if info['phaseT'] in ['Pending']:
-            info['__Output']['phaseT'] = 'Yellow'
-
-        info['conditions'] = self.get_conditions(
-            self.get(virtual_machine_instance_mo, 'status:conditions')
-        )
-
-        if 'Paused' in info['conditions']:
-            info['phaseT'] = 'Paused'
-            info['__Output']['phaseT'] = 'Yellow'
+    def get_virtual_machine_instance_interfaces_info(self, managed_object):
+        interfaces = self.get(managed_object, 'status:interfaces', on_error=[], on_none=[])
+        devices = self.get(managed_object, 'spec:domain:devices:interfaces', on_error=[], on_none=[])
+        networks = self.get(managed_object, 'spec:networks', on_error=[], on_none=[])
+        for network in networks:
+            network['info'] = None
+            network_name = self.get(network, 'name')
             
-        info['running'] = False
-        if info['phase'] == 'Running':
-            info['running'] = True
+            if 'pod' in network:
+                network['type'] = 'pod'
+                network['info'] = 'pod'
+                for device in devices:
+                    device_name = self.get(device, 'name')
+                    if network_name is None or device_name is None:
+                        continue
 
-        info['phase_transitions'] = self.get(virtual_machine_instance_mo, 'status:phaseTransitionTimestamps', on_error=[], on_none=[])
-        for item in info['phase_transitions']:
-            item['timestamp'] = self.convert_timestamp(
-                item['phaseTransitionTimestamp']
+                    if network_name == device_name:
+                        if 'masquerade' in device:
+                            network['info'] = 'pod:masq'
+
+                        if 'binding' in device:
+                            network['info'] = 'pod:%s' % (self.get(device, 'binding:name'))
+
+            if 'multus' in network:
+                network['type'] = 'multus'
+                network['info'] = 'multus:%s' % (self.get(network, 'multus:networkName'))
+
+        infos = []
+        for device in devices:
+            info = {}
+            info['device'] = device
+            info['network'] = None
+            info['status'] = None
+            device_name = self.get(device, 'name')
+            if device_name is None:
+                continue
+
+            for interface in interfaces:
+                interface_name = self.get(interface, 'name')
+                if interface_name is None:
+                    continue
+
+                if interface_name == device_name:
+                    info['status'] = interface
+
+            for network in networks:
+                network_name = self.get(network, 'name')
+                if network_name is None:
+                    continue
+
+                if network_name == device_name:
+                    info['network'] = network
+
+            info['info'] = '[%s] %s (%s)' % (
+                info['device']['name'],
+                self.get(info, 'status:ipAddress', on_error='---', on_none='---'),
+                self.get(info, 'network:info', on_error='---', on_none='---')
             )
-        info['phase_transitions'] = sorted(
-            info['phase_transitions'],
-            key=lambda i: i['timestamp']
-        )
+            infos.append(info)
 
-        info['runtimeUser'] = self.get(virtual_machine_instance_mo, 'status:runtimeUser')
+        # for interface in info['interface']:
+        #     interface['info'] = '--'
 
-        info['interface'] = self.get(virtual_machine_instance_mo, 'spec:domain:devices:interfaces', on_error=[], on_none=[])
-        interfaces_state = self.get(virtual_machine_instance_mo, 'status:interfaces', on_error=[], on_none=[])
-        for interface in info['interface']:
-            interface['info'] = '--'
+        #     for interface_state in interfaces_state:
+        #         if interface['name'] == interface_state['name']:
+        #             interface['ip_address'] = self.get(interface_state, 'ipAddress')
+        #             interface['ip_addresses'] = self.get(interface_state, 'ipAddresses', on_error=[], on_none=[])
+        #             interface['mac'] = self.get(interface_state, 'mac')
 
-            for interface_state in interfaces_state:
-                if interface['name'] == interface_state['name']:
-                    interface['ip_address'] = self.get(interface_state, 'ipAddress')
-                    interface['ip_addresses'] = self.get(interface_state, 'ipAddresses', on_error=[], on_none=[])
-                    interface['mac'] = self.get(interface_state, 'mac')
+        #     if interface['name'] == 'default':
+        #         if 'ip_address' in interface and interface['ip_address'] is not None:
+        #             if 'masquerade' in interface and interface['masquerade'] is not None:
+        #                 interface['info'] = '%s (masq)' % (interface['ip_address'])
+        #             else:
+        #                 interface['info'] = interface['ip_address']
+        #         continue
 
-            if interface['name'] == 'default':
-                if 'ip_address' in interface and interface['ip_address'] is not None:
-                    if 'masquerade' in interface and interface['masquerade'] is not None:
-                        interface['info'] = '%s (masq)' % (interface['ip_address'])
-                    else:
-                        interface['info'] = interface['ip_address']
-                continue
+        #     if 'ip_address' in interface and interface['ip_address'] is not None:
+        #         if 'sriov' in interface and interface['sriov'] is not None:
+        #             interface['info'] = '%s (sriov)' % (interface['ip_address'])
+        #         else:
+        #             interface['info'] = interface['ip_address']
+        #         continue
 
-            if 'ip_address' in interface and interface['ip_address'] is not None:
-                if 'sriov' in interface and interface['sriov'] is not None:
-                    interface['info'] = '%s (sriov)' % (interface['ip_address'])
-                else:
-                    interface['info'] = interface['ip_address']
-                continue
+        #     if 'sriov' in interface and interface['sriov'] is not None:
+        #         interface['info'] = '%s (sriov)' % (interface['name'])
+        #     else:
+        #         interface['info'] = interface['name']
 
-            if 'sriov' in interface and interface['sriov'] is not None:
-                interface['info'] = '%s (sriov)' % (interface['name'])
-            else:
-                interface['info'] = interface['name']
+        # for network_mo in networks_mo:
+        #     for interface_info in info['interface']:
+        #         if network_mo['name'] == interface_info['name']:
+        #             interface_info['type'] = None
+        #             if 'sriov' in interface_info:
+        #                 interface_info['type'] = 'sriov'
+        #             if 'masquerade' in interface_info:
+        #                 interface_info['type'] = 'pod'
 
-        networks_mo = self.get(virtual_machine_instance_mo, 'spec:networks', on_error=[], on_none=[])
-        for network_mo in networks_mo:
-            for interface_info in info['interface']:
-                if network_mo['name'] == interface_info['name']:
-                    interface_info['type'] = None
-                    if 'sriov' in interface_info:
-                        interface_info['type'] = 'sriov'
-                    if 'masquerade' in interface_info:
-                        interface_info['type'] = 'pod'
+        #             if interface_info['type'] == 'sriov':
+        #                 sriov_network_info = self.get_sriov_network(network_mo['multus']['networkName'])
+        #                 if sriov_network_info is not None:
+        #                     interface_info['network_name'] = network_mo['multus']['networkName']
+        #                     interface_info['resource_name'] = sriov_network_info['resource_name']
+        #                     interface_info['vlanT'] = sriov_network_info['vlanT']
+        #                     interface_info['ipamT'] = sriov_network_info['ipamT']
 
-                    if interface_info['type'] == 'sriov':
-                        sriov_network_info = self.get_sriov_network(network_mo['multus']['networkName'])
-                        if sriov_network_info is not None:
-                            interface_info['network_name'] = network_mo['multus']['networkName']
-                            interface_info['resource_name'] = sriov_network_info['resource_name']
-                            interface_info['vlanT'] = sriov_network_info['vlanT']
-                            interface_info['ipamT'] = sriov_network_info['ipamT']
+        return infos
+    
+    def get_virtual_machine_instance_disks_info(self, managed_object):
+        disks = self.get(managed_object, 'spec:domain:devices:disks', on_error=[], on_none=[])
 
-        info['disk'] = self.get(virtual_machine_instance_mo, 'spec:domain:devices:disks', on_error=[], on_none=[])
-
-        volumes_spec = self.get(virtual_machine_instance_mo, 'spec:volumes', on_error=[], on_none=[])
-        volumes_state = self.get(virtual_machine_instance_mo, 'status:volumeStatus', on_error=[], on_none=[])
-        for disk in info['disk']:
+        volumes_spec = self.get(managed_object, 'spec:volumes', on_error=[], on_none=[])
+        volumes_state = self.get(managed_object, 'status:volumeStatus', on_error=[], on_none=[])
+        for disk in disks:
             disk['info'] = disk['name']
             disk['target'] = None
             disk['storage'] = None
@@ -126,7 +129,7 @@ class K8sVirtualMachineInstanceInfo():
             for volume_spec in volumes_spec:
                 if disk['name'] == volume_spec['name']:
                     if 'dataVolume' in volume_spec:
-                        disk['pvc_namespace'] = info['namespace']
+                        disk['pvc_namespace'] = managed_object['metadata']['namespace']
                         disk['pvc_name'] = volume_spec['dataVolume']['name']
                         disk['pvc_namespace_name'] = '%s/%s' % (
                             disk['pvc_namespace'],
@@ -134,7 +137,7 @@ class K8sVirtualMachineInstanceInfo():
                         )
 
                     if 'persistentVolumeClaim' in volume_spec:
-                        disk['pvc_namespace'] = info['namespace']
+                        disk['pvc_namespace'] = managed_object['metadata']['namespace']
                         disk['pvc_name'] = volume_spec['persistentVolumeClaim']['claimName']
                         disk['pvc_namespace_name'] = '%s/%s' % (
                             disk['pvc_namespace'],
@@ -152,6 +155,67 @@ class K8sVirtualMachineInstanceInfo():
                             disk['target'],
                             disk['storage']
                         )
+
+        return disks
+    
+    def get_virtual_machine_instance_info(self, managed_object):
+        if managed_object is None:
+            return None
+
+        info = {}
+        info['__Output'] = {}
+
+        metadata_info = self.get_metadata_info(
+            managed_object
+        )
+        info.update(metadata_info)
+
+        info['cores'] = self.get(managed_object, 'spec:domain:cpu:cores')
+        info['sockets'] = self.get(managed_object, 'spec:domain:cpu:sockets')
+        info['threads'] = self.get(managed_object, 'spec:domain:cpu:threads')
+        info['memory'] = self.get(managed_object, 'spec:domain:resources:requests:memory')
+
+        info['node_name'] = self.get(managed_object, 'status:nodeName')
+
+        info['phase'] = self.get(managed_object, 'status:phase', on_error='Unknown', on_none='Unknown')
+        info['phaseT'] = info['phase']
+        if info['phaseT'] == 'Succeeded':
+            info['phaseT'] = 'Completed'
+
+        if info['phaseT'] in ['Running', 'Completed']:
+            info['__Output']['phaseT'] = 'Green'
+
+        if info['phaseT'] in ['Failed', 'Unknown']:
+            info['__Output']['phaseT'] = 'Red'
+
+        if info['phaseT'] in ['Pending']:
+            info['__Output']['phaseT'] = 'Yellow'
+
+        info['conditions'] = self.get_conditions(
+            self.get(managed_object, 'status:conditions')
+        )
+
+        if 'Paused' in info['conditions']:
+            info['phaseT'] = 'Paused'
+            info['__Output']['phaseT'] = 'Yellow'
+            
+        info['running'] = False
+        if info['phase'] == 'Running':
+            info['running'] = True
+
+        info['phase_transitions'] = self.get(managed_object, 'status:phaseTransitionTimestamps', on_error=[], on_none=[])
+        for item in info['phase_transitions']:
+            item['timestamp'] = self.convert_timestamp(
+                item['phaseTransitionTimestamp']
+            )
+        info['phase_transitions'] = sorted(
+            info['phase_transitions'],
+            key=lambda i: i['timestamp']
+        )
+
+        info['runtimeUser'] = self.get(managed_object, 'status:runtimeUser')
+        info['interface'] = self.get_virtual_machine_instance_interfaces_info(managed_object)
+        info['disk'] = self.get_virtual_machine_instance_disks_info(managed_object)
 
         return info
 
@@ -172,6 +236,9 @@ class K8sVirtualMachineInstanceInfo():
                 )
                 if services is not None:
                     for vmi_service_info in services:
+                        if vmi_service_info['namespace'] != info['namespace']:
+                            continue
+                        
                         service_match = True
                         for key in vmi_service_info['selector']:
                             if key not in info['label']:

@@ -132,7 +132,7 @@ def get_k8s_nncp_command(
         ctx.my_output.default('View:   state (def)')
 
         if wait:
-            k8s_handlers.wait_node_network_configuration_policy(my_output=ctx.my_output)
+            k8s_handlers.wait_node_network_configuration_policies_status(my_output=ctx.my_output)
 
     except NoResultExit:
         ctx.busy = False

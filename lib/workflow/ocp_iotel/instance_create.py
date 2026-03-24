@@ -249,7 +249,7 @@ def get_intersight_otel_body(params):
 
     container['env'] = []
 
-    proxy = params['k8s_handler'].get_proxy()
+    proxy = params['k8s_handler'].get_proxy('cluster')
     if proxy['https_proxy'] is not None:
         env = {}
         env['name'] = 'HTTPS_PROXY'

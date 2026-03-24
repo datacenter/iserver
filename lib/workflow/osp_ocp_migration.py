@@ -292,7 +292,7 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
         return False
 
     ctx.my_output.default('Starting virtual machine instance')
-    if not k8s_handlers.create_virtual_machine_instance_mo(vmi_content):
+    if not k8s_handlers.create_resource(vmi_content):
         ctx.my_output.error(
             'Create virtual machine instance request failed'
         )

@@ -2,16 +2,14 @@ from lib import log_helper
 from lib import output_helper
 
 from lib.k8s import main as k8s
-from lib.kubevirt import main as kubevirt
 
 from lib.ocp import settings
 
 from lib.ocp.cluster.main import OcpCluster
 from lib.ocp.node.main import OcpNode
-from lib.ocp.vm.main import OcpVm
 
 
-class Ocp(OcpCluster, OcpNode, OcpVm):
+class Ocp(OcpCluster, OcpNode):
     def __init__(self, ocp_cluster_name, verbose=False, debug=False, log_id=None):
         self.verbose = verbose
         self.debug = debug
@@ -43,13 +41,5 @@ class Ocp(OcpCluster, OcpNode, OcpVm):
             log_id=log_id
         )
 
-        self.kubevirt_handler = kubevirt.Kubevirt(
-            kubeconfig_filename,
-            verbose=verbose,
-            debug=debug,
-            log_id=log_id
-        )
-
         OcpCluster.__init__(self, log_id=log_id)
         OcpNode.__init__(self)
-        OcpVm.__init__(self)

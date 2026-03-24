@@ -1,109 +1,25 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.k8s import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if '__id__' not in params:
-        params['__id__'] = None
-
-    if 'namespace' not in params or params['namespace'] is None:
-        return None, 'Namespace required'
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if params['name'].endswith('-') and params['__id__'] is not None:
-        params['name'] = '%s%s' % (
-            params['name'],
-            params['__id__']
-        )
-
-    if 'label' not in params:
-        params['label'] = {}
-
-    if not isinstance(params['label'], dict):
-        return None, 'label dict required'
-    
-    for key in params['label']:
-        if params['label'][key].endswith('-') and params['__id__'] is not None:
-            params['label'][key] = '%s%s' % (
-                params['label'][key],
-                params['__id__']
-            )
-
-    if 'selector' not in params:
-        params['selector'] = {}
-
-    if not isinstance(params['selector'], dict):
-        return None, 'selector dict required'
-    
-    for key in params['selector']:
-        if params['selector'][key].endswith('-') and params['__id__'] is not None:
-            params['selector'][key] = '%s%s' % (
-                params['selector'][key],
-                params['__id__']
-            )
-
-    if 'type' not in params or params['type'] is None:
-        return None, 'Type required'
-
-    if 'port' not in params or params['port'] is None:
-        params['port'] = []
-
-    if not isinstance(params['port'], list):
-        return None, 'port list required'
-
-    if len(params['port']) == 0:
-        return None, 'port list with members required'
-
-    for item in params['port']:
-        if not isinstance(item, dict):
-            return None, 'port list of dict required'
-
-        keys = ['name', 'port', 'target']
-        for key in keys:
-            if key not in item:
-                return None, 'port item with key %s required' % (key)
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if not isinstance(params['wait'], bool):
-        return None, 'wait param must be true or false'
-    
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        '__id__',
-        'namespace',
-        'name',
-        'label',
-        'selector',
-        'type',
-        'port',
-        'wait',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['label', True, None, 'dict', None, None, None, None],
+        ['selector', True, None, 'dict', None, None, None, None],
+        ['type', False, None, 'str', None, None, ['NodePort'], None],
+        ['port', False, None, 'list-of-dict', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
 
 
@@ -121,32 +37,42 @@ def get_base_body(params):
 
 def get_node_port_body(params):
     body = get_base_body(params)
-    if len(params['label']) > 0:
+    if params['label'] is not None and len(params['label']) > 0:
         body['metadata']['labels'] = params['label']
-    if len(params['selector']) > 0:
+    if params['selector'] is not None and len(params['selector']) > 0:
         body['spec']['selector'] = params['selector']
     body['spec']['ports'] = []
     for item in params['port']:
         port_mo = {}
-        port_mo['name'] = item['name']
-        port_mo['port'] = item['port']
-        port_mo['targetPort'] = item['target']
+        if 'name' in item:
+            port_mo['name'] = item['name']
+        if 'protocol' in item:
+            port_mo['protocol'] = item['protocol']
+        if 'port' in item:
+            port_mo['port'] = item['port']
+        if 'targetPort' in item:
+            port_mo['targetPort'] = item['targetPort']
         body['spec']['ports'].append(port_mo)
     return body
 
 
 def get_load_balancer_body(params):
     body = get_base_body(params)
-    if len(params['label']) > 0:
+    if params['label'] is not None and len(params['label']) > 0:
         body['metadata']['labels'] = params['label']
-    if len(params['selector']) > 0:
+    if params['selector'] is not None and len(params['selector']) > 0:
         body['spec']['selector'] = params['selector']
     body['spec']['ports'] = []
     for item in params['port']:
         port_mo = {}
-        port_mo['name'] = item['name']
-        port_mo['port'] = item['port']
-        port_mo['targetPort'] = item['target']
+        if 'name' in item:
+            port_mo['name'] = item['name']
+        if 'protocol' in item:
+            port_mo['protocol'] = item['protocol']
+        if 'port' in item:
+            port_mo['port'] = item['port']
+        if 'targetPort' in item:
+            port_mo['targetPort'] = item['targetPort']
         body['spec']['ports'].append(port_mo)
     return body
 
@@ -202,4 +128,8 @@ def run(params, log_id=None):
         cache_enabled=False
     )
     k8s_output_handler.print_endpoints([info])
+
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- service created')
     return True

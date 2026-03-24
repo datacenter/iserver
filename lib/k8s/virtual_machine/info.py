@@ -76,7 +76,12 @@ class K8sVirtualMachineInfo():
 
         info['run_strategy'] = self.get(virtual_machine_mo, 'spec:runStrategy')
         info['running'] = self.get(virtual_machine_mo, 'spec:running')
-
+        info['running_expected'] = False
+        if info['run_strategy'] is not None and info['run_strategy'] == 'Always':
+            info['running_expected'] = True
+        if info['running'] is not None and info['running']:
+            info['running_expected'] = True
+            
         info['created'] = self.get(virtual_machine_mo, 'status:ready', on_error=False, on_none=False)
         if info['created']:
             info['createdTick'] = '\u2713'

@@ -7,7 +7,7 @@ class K8sStorageClassDefault():
     def __init__(self):
         pass
 
-    def get_default_storage_class(self, cache_enabled=True):
+    def get_default_storage_class(self, fallback_to_single=False, cache_enabled=True):
         storage_classes = self.get_storage_classes(cache_enabled=cache_enabled)
         if storage_classes is None:
             return None
@@ -16,6 +16,9 @@ class K8sStorageClassDefault():
             if storage_class['default']:
                 return storage_class
             
+        if fallback_to_single and len(storage_classes) == 1:
+            return storage_classes[0]
+        
         return None
     
     def get_default_storage_class_name(self, cache_enabled=True):

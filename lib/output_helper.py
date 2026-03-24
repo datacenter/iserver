@@ -1032,10 +1032,62 @@ class OutputHelper():
             index += 1
         return items
     
-    def my_table_ng(self, source, info, check=True, cast_zero=False, cast_dict=False, skip=[]):
+    def my_table_ng(self, source, info, check=True, cast_zero=False, cast_dict=False, skip=[], remove_empty=[]):
         items = copy.deepcopy(source)
         if items is None:
             items = []
+
+        if len(remove_empty) > 0 and len(items) > 0:
+            to_remove = []
+            for attr in remove_empty:
+                is_empty = True
+                for item in items:
+                    if '.' in attr and attr.split('.')[0] in item:
+                        value = filter_helper.get(item, attr.replace('.', ':'))
+                        if value is not None:
+                            if isinstance(value, str):
+                                if len(value) > 0:
+                                    is_empty = False
+                                    break
+                                continue
+
+                            if isinstance(value, list):
+                                if len(value) > 0:
+                                    is_empty = False
+                                    break
+                                continue
+
+                            is_empty = False
+                            break
+
+                    if '.' not in attr and attr in item:
+                        if item[attr] is not None:
+                            if isinstance(item[attr], str):
+                                if len(item[attr]) > 0:
+                                    is_empty = False
+                                    break
+                                continue
+
+                            if isinstance(item[attr], list):
+                                if len(item[attr]) > 0:
+                                    is_empty = False
+                                    break
+                                continue
+
+                            is_empty = False
+                            break
+
+                if is_empty:
+                    to_remove.append(attr)
+
+            if len(to_remove) > 0:
+                new_info = []
+                for item in info:
+                    if item[1] in to_remove:
+                        continue
+                    new_info.append(item)
+
+                info = copy.deepcopy(new_info)
 
         headers = ['ID']
         order = ['__id__']

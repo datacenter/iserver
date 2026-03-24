@@ -6,43 +6,20 @@ class K8sProxyApi():
     def __init__(self):
         self.proxy_mo = None
 
-    def get_proxy_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.proxy_mo is not None:
-                return self.proxy_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='config.openshift.io/v1',
-                kind='Proxy'
-            )
-            self.proxy_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'proxy',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_proxy_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'proxy',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'proxy',
+    def get_proxy_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.proxy_mo
         )
+        if cache_hit:
+            return response
 
-        return self.proxy_mo
+        response, self.proxy_mo = self.get_resources(
+            'Proxy', 
+            'config.openshift.io/v1', 
+            self.proxy_mo,
+            name=name
+        )
+
+        return response

@@ -21,7 +21,7 @@ class ErrorExit(Exception):
 @click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
 @click.option("--filename", "filename", default='', callback=validations.validate_file, help="Tasks filename")
 @click.option("--validate", "validate_only", is_flag=True, show_default=True, default=False, help="Validate only")
-@click.option("--break", "break_on_error", is_flag=True, show_default=True, default=False, help="Break on error")
+@click.option("--no-break", is_flag=True, show_default=True, default=False, help="Break on error")
 @click.option("--no-reverse", is_flag=True, show_default=True, default=False, help="No reverse")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def delete_ocp_task_command(
@@ -29,7 +29,7 @@ def delete_ocp_task_command(
         cluster_name, 
         filename,
         validate_only,
-        break_on_error,
+        no_break,
         no_reverse,
         no_confirm
     ):
@@ -53,7 +53,7 @@ def delete_ocp_task_command(
             cluster_settings=cluster_settings,
             k8s_handler=k8s_handler,
             validate_only=validate_only,
-            break_on_error=break_on_error,
+            break_on_error=not no_break,
             reverse=not no_reverse,
             log_id=ctx.run_id
         )

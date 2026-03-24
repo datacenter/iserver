@@ -7,28 +7,24 @@ class K8sVirtualMachineStop():
         pass
     
     def get_stop_body_running(self, namespace, name):
-        body = {}
-        body['apiVersion'] = 'kubevirt.io/v1'
-        body['kind'] = 'VirtualMachine'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        body['spec'] = {}
+        body = self.get_virtual_machine_body_main(namespace, name)
         body['spec']['running'] = False
         return body
 
     def get_stop_body_run_strategy(self, namespace, name):
-        body = {}
-        body['apiVersion'] = 'kubevirt.io/v1'
-        body['kind'] = 'VirtualMachine'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        body['spec'] = {}
+        body = self.get_virtual_machine_body_main(namespace, name)
         body['spec']['runStrategy'] = 'Halted'
         return body
     
-    def stop_virtual_machine(self, namespace, name, confirmation=False, my_output=None, wait=True):
+    def stop_virtual_machine(
+            self, 
+            namespace, 
+            name, 
+            confirmation=False, 
+            my_output=None, 
+            wait=True,
+            error_on_none=True
+        ):
         if my_output is None:
             confirmation = False
 
@@ -39,9 +35,14 @@ class K8sVirtualMachineStop():
 
         info = self.get_virtual_machine(namespace, name, cache_enabled=False)
         if info is None:
+            if error_on_none:
+                if my_output is not None:
+                    my_output.error('not found')
+                return False
+
             if my_output is not None:
-                my_output.error('not found')
-            return False
+                my_output.default('- not found')
+            return True
 
         if my_output is not None:
             my_output.default('- state: %s' % (info['status']))
@@ -68,7 +69,7 @@ class K8sVirtualMachineStop():
                 if not get_confirmation():
                     return False
             
-            success, reason = self.patch_virtual_machine_mo(body)
+            success, reason = self.patch_resource(body)
             if not success:
                 if my_output is not None:
                     my_output.error('rest api failed: %s' % (reason))
@@ -86,10 +87,10 @@ class K8sVirtualMachineStop():
                 if not get_confirmation():
                     return False
             
-            success, reason = self.patch_virtual_machine_mo(body)
+            success = self.patch_resource(body)
             if not success:
                 if my_output is not None:
-                    my_output.error('rest api failed: %s' % (reason))
+                    my_output.error('rest api failed')
                 return False
             
             if my_output is not None:

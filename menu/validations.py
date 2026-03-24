@@ -23,7 +23,6 @@ from lib.aci import apic
 from lib.aci import settings as aci_settings
 from lib.k8s import settings as k8s_settings
 from lib.k8s import main as k8s
-from lib.kubevirt import main as kubevirt
 from lib.osp import settings as osp_settings
 from lib.osp import main as osp
 
@@ -33,7 +32,6 @@ from lib.nso import settings as nso_settings
 from lib.nso import main as nso
 from lib.ocp import settings as ocp_settings
 from lib.ocp import main as ocp
-from lib.ocp.vm import validate as ocp_deployment_validate
 from lib.ucsm import settings as ucsm_settings
 from lib.vc import vcenter
 from lib.vc import settings as vc_settings
@@ -1739,52 +1737,6 @@ def validate_k8s_yaml_file_optional(ctx, param, value):
     return value
 
 
-def validate_ocp_vm_yaml_file(ctx, filename):
-    if filename == '':
-        ctx.my_output.error('Define virtual machine deployment yaml filename')
-        return None
-
-    content = file_helper.get_file_yaml(
-        filename
-    )
-    if content is None:
-        ctx.my_output.error(
-            'File read failed: %s' % (filename)
-        )
-        return None
-
-    if 'kind' not in content:
-        ctx.my_output.error('Invalid yaml file content')
-        return None
-
-    if content['kind'] not in ['VirtualMachineDeployment', 'VirtualMachine']:
-        ctx.my_output.error('Unsupported kind property')
-        return None
-
-    ocp_deployment_validate_handler = ocp_deployment_validate.OcpDeploymentValidate(log_id=ctx.run_id)
-
-    if content['kind'] == 'VirtualMachineDeployment':
-        return ocp_deployment_validate_handler.validate(filename)
-
-    if content['kind'] == 'VirtualMachine':
-        deployment = 'kind: VirtualMachineDeployment'
-        deployment = '%s\ndeployment:' % (deployment)
-        deployment = '%s\n  name: %s' % (deployment, content['metadata']['name'])
-        deployment = '%s\n  namespace: %s' % (deployment, content['metadata']['namespace'])
-        deployment = '%s\n  vm: %s' % (deployment, os.path.basename(filename))
-        new_filename = file_helper.set_tmp_file(deployment)
-        if new_filename is None:
-            ctx.my_output.error('Failed to prepare deployment file')
-            return None
-
-        return ocp_deployment_validate_handler.validate(
-            new_filename,
-            chdir=os.path.dirname(filename)
-        )
-
-    return None
-
-
 def validate_ncs_name(ctx, param, value):
     if len(value) == 0:
         return None
@@ -2069,37 +2021,6 @@ def validate_kubernetes_name(ctx, value, cluster_type=None, silent=False, log_id
         ctx.my_output.error('Define cluster name')
         for cluster in clusters:
             ctx.my_output.default('- %s (type: %s)' % (cluster['name'], cluster['type']))
-
-    return None
-
-
-def validate_kubevirt_name(ctx, value):
-    k8s_settings_handler = k8s_settings.K8sSettings(log_id=None)
-    if len(value) == 0:
-        default_cluster_name = k8s_settings_handler.get_default_cluster()
-        if default_cluster_name is not None:
-            ctx.my_output.default(
-                'Cluster: %s' % (default_cluster_name)
-            )
-            kubeconfig = k8s_settings_handler.get_k8s_cluster(default_cluster_name)['kubeconfig']
-            return kubevirt.Kubevirt(kubeconfig_filename=kubeconfig)
-
-    if len(value) > 0:
-        cluster = k8s_settings_handler.get_k8s_cluster(value)
-        if cluster is not None:
-            ctx.my_output.default(
-                'Cluster: %s' % (cluster['name'])
-            )
-            k8s_settings_handler.set_default_cluster(cluster['name'])
-            return kubevirt.Kubevirt(kubeconfig_filename=cluster['kubeconfig'])
-
-    cluster_names = k8s_settings_handler.get_k8s_cluster_names()
-    if len(cluster_names) == 0:
-        ctx.my_output.error('No cluster defined')
-    else:
-        ctx.my_output.error('Define cluster name')
-        for cluster_name in cluster_names:
-            ctx.my_output.default('- %s' % (cluster_name))
 
     return None
 

@@ -60,7 +60,7 @@ class K8sVirtualMachineRestart():
                     if not get_confirmation():
                         return False
                 
-                success, reason = self.patch_virtual_machine_mo(body)
+                success, reason = self.patch_resource(body)
                 if not success:
                     if my_output is not None:
                         my_output.error('rest api failed: %s' % (reason))
@@ -78,7 +78,7 @@ class K8sVirtualMachineRestart():
                     if not get_confirmation():
                         return False
                 
-                success, reason = self.patch_virtual_machine_mo(body)
+                success, reason = self.patch_resource(body)
                 if not success:
                     if my_output is not None:
                         my_output.error('rest api failed: %s' % (reason))

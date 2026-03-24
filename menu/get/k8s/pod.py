@@ -191,8 +191,7 @@ def get_k8s_pod_command(
 
         if 'net' in view:
             k8s_output_handler.print_pods_net(
-                pods,
-                title=True
+                pods
             )
 
         if 'log' in view:

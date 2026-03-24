@@ -9,7 +9,6 @@ from menu.get.helm.main import get_helm_menu
 from menu.get.imc.main import get_imc_menu
 from menu.get.intersight.main import get_intersight_menu
 from menu.get.k8s.main import get_k8s_menu
-from menu.get.kv.main import get_kv_menu
 from menu.get.linux.main import get_linux_menu
 from menu.get.nc.main import get_nc_menu
 from menu.get.nx.main import get_nx_menu
@@ -43,7 +42,6 @@ get_menu.add_command(get_helm_menu)
 get_menu.add_command(get_imc_menu)
 get_menu.add_command(get_intersight_menu)
 get_menu.add_command(get_k8s_menu)
-get_menu.add_command(get_kv_menu)
 get_menu.add_command(get_linux_menu)
 get_menu.add_command(get_nc_menu)
 get_menu.add_command(get_nx_menu)

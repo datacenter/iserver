@@ -138,7 +138,7 @@ def create_ocp_migrate_command(
                 service_info=False
             )
 
-            k8s_output_handler.print_virtual_machine_instances(
+            k8s_output_handler.print_virtual_machine_instances_state(
                 virtual_machine_instances
             )
 
@@ -254,23 +254,20 @@ def create_ocp_migrate_command(
             cache_enabled=False
         )
 
-        k8s_output_handler.print_virtual_machine_instances(
+        k8s_output_handler.print_virtual_machine_instances_state(
             virtual_machine_instances
         )
 
         k8s_output_handler.print_virtual_machine_instances_phase(
-            virtual_machine_instances,
-            title=False
+            virtual_machine_instances
         )
 
-        k8s_output_handler.print_virtual_machine_instances_interface(
-            virtual_machine_instances,
-            title=False
+        k8s_output_handler.print_virtual_machine_instances_net(
+            virtual_machine_instances
         )
 
-        k8s_output_handler.print_virtual_machine_instances_service(
-            virtual_machine_instances,
-            title=False
+        k8s_output_handler.print_virtual_machine_instances_svc(
+            virtual_machine_instances
         )
 
     except ErrorExit:

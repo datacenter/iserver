@@ -79,17 +79,9 @@ class K8sNetworkAttachmentDefinitionBridge():
             confirmation = False
 
         if my_output is not None:
-            my_output.default('Create IPVLAN NAD', before_newline=True, underline=True)
+            my_output.default('Create Bridge NAD', before_newline=True, underline=True)
             my_output.default('- namespace: %s' % (namespace))
             my_output.default('- name: %s' % (name))
-            my_output.default('- bridge: %s' % (bridge))
-            my_output.default('- ipam: %s' % (ipam))
-            if address is not None:
-                my_output.default('- address: %s' % (address))
-            if gateway is not None:
-                my_output.default('- gateway: %s' % (gateway))
-            if len(route) > 0:
-                my_output.default('- route: %s' % (', '.join(route)))
 
         if not self.is_namespace(namespace):
             if my_output is not None:

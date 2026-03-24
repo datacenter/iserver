@@ -1,5 +1,6 @@
 from lib.k8s.virtual_machine.api import K8sVirtualMachineApi
 from lib.k8s.virtual_machine.info import K8sVirtualMachineInfo
+from lib.k8s.virtual_machine.create.main import K8sVirtualMachineCreate
 from lib.k8s.virtual_machine.cpu import K8sVirtualMachineCpu
 from lib.k8s.virtual_machine.delete import K8sVirtualMachineDelete
 from lib.k8s.virtual_machine.memory import K8sVirtualMachineMemory
@@ -14,6 +15,7 @@ from lib.k8s.virtual_machine.wait import K8sVirtualMachineWait
 class K8sVirtualMachine(
         K8sVirtualMachineApi,
         K8sVirtualMachineInfo,
+        K8sVirtualMachineCreate,
         K8sVirtualMachineCpu,
         K8sVirtualMachineDelete,
         K8sVirtualMachineMemory,
@@ -27,6 +29,7 @@ class K8sVirtualMachine(
     def __init__(self):
         K8sVirtualMachineApi.__init__(self)
         K8sVirtualMachineInfo.__init__(self)
+        K8sVirtualMachineCreate.__init__(self)
         K8sVirtualMachineCpu.__init__(self)
         K8sVirtualMachineDelete.__init__(self)
         K8sVirtualMachineMemory.__init__(self)

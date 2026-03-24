@@ -8,13 +8,7 @@ class K8sVirtualMachineMemory():
         pass
     
     def get_virtual_machine_memory_change_body(self, namespace, name, size):
-        body = {}
-        body['apiVersion'] = 'kubevirt.io/v1'
-        body['kind'] = 'VirtualMachine'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        body['spec'] = {}
+        body = self.get_virtual_machine_body_main(namespace, name)
         body['spec']['template'] = {}
         body['spec']['template']['spec'] = {}
         body['spec']['template']['spec']['domain'] = {}
@@ -62,7 +56,7 @@ class K8sVirtualMachineMemory():
             if not get_confirmation():
                 return False
         
-        success, reason = self.patch_virtual_machine_mo(body)
+        success, reason = self.patch_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed: %s' % (reason))

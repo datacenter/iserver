@@ -1,53 +1,29 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.k8s import common as local_common
-
+from lib.workflow import ocp_common
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'namespace' not in params or params['namespace'] is None:
-        return None, 'Namespace required'
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if 'bridge' not in params or params['bridge'] is None:
-        return None, 'Bridge name required'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['bridge', False, None, 'str', None, None, None, None],
+        ['default', False, False, 'bool', None, None, None, None],
+        ['ipam', False, None, 'str', None, None, ['static', 'local'], None],
+        ['address', True, None, 'str', None, None, None, None],
+        ['gateway', True, None, 'str', None, None, None, None],
+        ['route', True, [], 'list-of-str', None, None, None, None]
+    ]
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['type', '__type__'])
+    if not success:
+        return None, params
 
     params, reason = local_common.validate_nad_ipam(params, modes=['static', 'local'])
     if params is None:
         return None, reason
 
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        'namespace',
-        'name',
-        'bridge',
-        'ipam',
-        'address',
-        'gateway',
-        'route',
-        'verbose',
-        'check-verbose',
-        'confirmation'
-    ]
     return local_common.sanitize_params(params, allowed_keys), None
 
 
@@ -90,4 +66,8 @@ def run(params, log_id=None):
         return False
     
     k8s_output_handler.print_nads([info])
+
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- nad created')
     return True

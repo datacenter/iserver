@@ -4,12 +4,6 @@ class K8sNamespaceDelete():
 
     def check_namespace_usage_and_state(self, namespace, my_output=None, show_details=False, underline=False, before_newline=True):
         used = False
-        state = {}
-        state['pod'] = True
-        state['deployment'] = True
-        state['replica_set'] = True
-        state['daemon_set'] = True
-        state['pvc'] = True
 
         if my_output is not None:
             my_output.default('Namespace [%s] resources' % (namespace), underline=underline, before_newline=before_newline)
@@ -27,10 +21,6 @@ class K8sNamespaceDelete():
                     my_output.default('- no pods')
             else:
                 used = True
-                for pod in pods:
-                    if not pod['running']:
-                        state['pod'] = False
-
                 if my_output is not None:
                     if show_details:
                         my_output.default('- pod')
@@ -57,10 +47,6 @@ class K8sNamespaceDelete():
                     my_output.default('- no deployments')
             else:
                 used = True
-                for deployment in deployments:
-                    if not deployment['ready']:
-                        state['deployment'] = False
-
                 if my_output is not None:
                     if show_details:
                         my_output.default('- deployment')
@@ -86,10 +72,6 @@ class K8sNamespaceDelete():
                     my_output.default('- no daemon sets')
             else:
                 used = True
-                for daemon_set in daemon_sets:
-                    if not daemon_set['ready']:
-                        state['ready'] = False
-
                 if my_output is not None:
                     if show_details:
                         my_output.default('- daemon set')
@@ -180,6 +162,25 @@ class K8sNamespaceDelete():
                     if not show_details:
                         my_output.default('- pvc [%s]' % (len(pvcs)))
 
+        namespace_udns = self.get_namespace_udns(namespace, cache_enabled=False)
+        if namespace_udns is not None:
+            if len(namespace_udns) == 0:
+                if my_output is not None:
+                    my_output.default('- no user defined networks')
+            else:
+                used = True
+                if my_output is not None:
+                    if show_details:
+                        my_output.default('- user defined network')
+                        for namespace_udn in namespace_udns:
+                            my_output.default(
+                                '\t[%s]' % (
+                                    namespace_udn
+                                )
+                            )
+
+                    if not show_details:
+                        my_output.default('- user defined network [%s]' % (len(namespace_udns)))
 
         return used
     

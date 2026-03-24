@@ -13,20 +13,35 @@ class K8sPodInfo():
         networks = []
 
         annotations = self.get(pod_mo, 'metadata:annotations', on_error={}, on_none={})
-        if 'k8s.v1.cni.cncf.io/networks-status' in annotations:
+        if 'k8s.v1.cni.cncf.io/network-status' in annotations:
             networks_mo = json.loads(
-                annotations['k8s.v1.cni.cncf.io/networks-status']
+                annotations['k8s.v1.cni.cncf.io/network-status']
             )
             for network_mo in networks_mo:
                 network_info = {}
+                network_info['__Output'] = {}
                 network_info['name'] = network_mo['name']
                 network_info['interface'] = network_mo['interface']
                 network_info['mac'] = self.get(network_mo, 'mac')
                 network_info['ips'] = self.get(network_mo, 'ips', on_error=[], on_none=[])
+                network_info['ipT'] = ','.join(network_info['ips'])
                 network_info['default'] = self.get(network_mo, 'default', on_error=False, on_none=False)
+                if network_info['default']:
+                    network_info['defaultTick'] = '\u2713'
+                    network_info['__Output']['defaultTick'] = 'Green'
+                else:
+                    network_info['defaultTick'] = '\u2717'
+                    network_info['__Output']['defaultTick'] = 'Red'
                 network_info['device-info'] = self.get(network_mo, 'device-info', on_error={}, on_none={})
                 network_info['pci'] = self.get(network_mo, 'device-info:pci:pci-address')
                 network_info['dns'] = self.get(network_mo, 'dns', on_error={}, on_none={})
+                network_info['dnsT'] = None
+                if len(network_info['dns']) > 0:
+                    network_info['dnsT'] = json.dumps(
+                        network_info['dns'],
+                        indent=2
+                    ).split('\n')
+
                 networks.append(
                     network_info
                 )
@@ -586,10 +601,15 @@ class K8sPodInfo():
             info['host_name'] = node_info['name']
 
         info['host_network'] = self.get(pod_mo, 'spec:host_network', on_error=False, on_none=False)
+        if info['host_network']:
+            info['host_networkTick'] = '\u2713'
+        else:
+            info['host_networkTick'] = '\u2717'
+
         info['network'] = self.get_pod_networks_info(
             pod_mo
         )
-        info['net_count'] = len(info['network']) + 1
+        info['net_count'] = len(info['network'])
         return info
 
     def add_pod_info(self, info, services=None):
@@ -633,7 +653,7 @@ class K8sPodInfo():
         return info
 
     def get_pods_info(self, namespace=None, cache_enabled=True):
-        if cache_enabled:
+        if namespace is None and cache_enabled:
             if self.pod is not None:
                 return self.pod
 
@@ -844,6 +864,11 @@ class K8sPodInfo():
             
         return True
 
+    def is_pod_virt_launcher(self, pod_info):
+        labels = {}
+        labels['kubevirt.io'] = 'virt-launcher'
+        return self.check_pod_with_label(pod_info, labels)
+    
     def get_pod_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
         pod_mo = self.get_pod_mo(
             namespace=namespace, 

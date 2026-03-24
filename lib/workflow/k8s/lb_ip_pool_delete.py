@@ -1,54 +1,21 @@
 from lib import output_helper
 from lib.workflow.k8s import common as local_common
 from lib.workflow.ocp_cilium_cni import common as cilium_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if '__id__' not in params:
-        params['__id__'] = None
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if params['name'].endswith('-') and params['__id__'] is not None:
-        params['name'] = '%s%s' % (
-            params['name'],
-            params['__id__']
-        )
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if not isinstance(params['wait'], bool):
-        return None, 'wait param must be true or false'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        '__id__',
-        'name',
-        'wait',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
 
 
@@ -76,4 +43,7 @@ def run(params, log_id=None):
     if not success:
         return False
 
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- lb ip pool deleted')
     return True

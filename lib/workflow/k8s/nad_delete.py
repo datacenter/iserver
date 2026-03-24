@@ -1,42 +1,26 @@
+import copy
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.k8s import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'namespace' not in params:
-        params['namespace'] = None
-
-    if 'name' not in params:
-        params['name'] = None
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        'namespace',
-        'name',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['type', False, None, 'str', None, None, None, None],
+        ['bridge', True, None, 'str', None, None, None, None],
+        ['nncp-on-delete', True, False, 'bool', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
 
 
@@ -64,26 +48,58 @@ def run(params, log_id=None):
         return False
     
     if len(nads) == 0:
-        my_output.default('No nad found')
-        return True
-    
-    k8s_output_handler.print_nads(nads)
+        my_output.default('Nad %s/%s already deleted' % (params['namespace'], params['name']))
+    else:
+        k8s_output_handler.print_nads(nads)
 
-    if params['confirmation']:
-        if not get_confirmation():
+        if params['confirmation']:
+            if not get_confirmation():
+                return False
+
+        success = True
+        for nad_info in nads:
+            nad_success = params['k8s_handler'].delete_nad(
+                nad_info['namespace'],
+                nad_info['name'],
+                my_output=my_output, 
+                wait=True
+            )
+            success = success and nad_success
+
+        if not success:
+            my_output.error('Some delete api calls failed', before_newline=True)
             return False
 
-    success = True
-    for nad_info in nads:
-        nad_success = params['k8s_handler'].delete_nad(
-            nad_info['namespace'],
-            nad_info['name'],
-            my_output=my_output, 
-            wait=True
-        )
-        success = success and nad_success
+    if params['type'] == 'bridge' and params['nncp-on-delete']:
+        my_output.default('Checking linux bridge [%s] existence...' % (params['bridge']))
+        states = params['k8s_handler'].get_node_network_states(cache_enabled=False)
+        if states is None:
+            my_output.default('- failed to get nmstate instance')
+        else:
+            for item in states:
+                for interface in item['interface']:
+                    if interface['type'] != 'linux-bridge':
+                        continue
 
-    if not success:
-        my_output.error('Some delete api calls failed', before_newline=True)
+                    if interface['name'] == params['bridge']:
+                        to_print = copy.deepcopy(item)
+                        to_print['interface'] = [interface]
+                        k8s_output_handler.print_node_network_states_lb([to_print])
 
-    return success
+                        if len(interface['bridge_port']) > 0:
+                            my_output.default('Skipping as it has members', before_newline=True)
+                            continue
+
+                        my_output.default('Deleting bridge via nncp', before_newline=True)
+
+                        params['k8s_handler'].delete_bridge_via_node_network_configuration_policy(
+                            interface['name'],
+                            node=item['name'],
+                            my_output=my_output,
+                            confirmation=params['confirmation']
+                        )
+
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- nad deleted')
+    return True

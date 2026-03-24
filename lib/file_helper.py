@@ -88,7 +88,31 @@ def get_file(filename):
     return content
 
 
-def get_file_text(filename):
+def get_word_attribute(word):
+    if '${' in word:
+        pattern = word.split('${')[1]
+        if '}' in pattern:
+            value = pattern.split('}')[0]
+            return value
+    return None
+
+def get_content_attributes(content):
+    attributes = []
+    for line in content.split('\n'):
+        for word in line.split(' '):
+            attribute = get_word_attribute(word)
+            if attribute is not None:
+                attributes.append(attribute)
+    return attributes
+
+
+def is_content_attributes(content):
+    if len(get_content_attributes(content)) == 0:
+        return False
+    return True
+
+
+def get_file_text(filename, vars=None):
     if not os.path.isfile(filename):
         return None
 
@@ -99,6 +123,10 @@ def get_file_text(filename):
     except BaseException:
         return None
 
+    if vars is not None:
+        for key in vars:
+            content = content.replace('${%s}' % (key), str(vars[key]))
+        
     return content
 
 

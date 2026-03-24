@@ -5,19 +5,19 @@ class K8sNamespaceInfo():
     def __init__(self):
         self.namespace = None
 
-    def get_namespace_info(self, namespace_mo):
-        if namespace_mo is None:
+    def get_namespace_info(self, managed_object):
+        info = self.get_base_info(
+            managed_object
+        )
+        if info is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
+        info['udn'] = self.is_namespace_udn_enabled(managed_object=managed_object)
+        if info['udn']:
+            info['udnTick'] = '\u2713'
+            info['__Output']['udnTick'] = 'Green'
 
-        metadata_info = self.get_metadata_info(
-            namespace_mo
-        )
-        info.update(metadata_info)
-
-        info['phase'] = self.get(namespace_mo, 'status:phase')
+        info['phase'] = self.get(managed_object, 'status:phase')
         if info['phase'] is not None and info['phase'] == 'Active':
             info['__Output']['phase'] = 'Green'
         else:

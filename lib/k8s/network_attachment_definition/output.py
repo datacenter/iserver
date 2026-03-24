@@ -17,7 +17,7 @@ class K8sNetworkAttachmentDefinitionOutput():
             [
                 ['Network Attachment Definition', 'namespace_nameT'],
                 ['Type', 'config.type'],
-                ['SR-IOV Resource', 'resource_name'],
+                ['SR-IOV', 'resource_name'],
                 ['Config', 'configT'],
                 ['Age', 'age']
             ]

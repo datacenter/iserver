@@ -1,93 +1,28 @@
-from lib import ip_helper
 from lib import output_helper
-from lib.k8s import output as k8s_output
 from lib.workflow.k8s import common as local_common
 from lib.workflow.ocp_cilium_cni import common as cilium_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if '__id__' not in params:
-        params['__id__'] = None
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if params['name'].endswith('-') and params['__id__'] is not None:
-        params['name'] = '%s%s' % (
-            params['name'],
-            params['__id__']
-        )
-
-    if 'cidr' not in params or params['cidr'] is None:
-        return None, 'cidr required'
-
-    if 'cidr' not in params:
-        params['cidr'] = []
-
-    if not isinstance(params['cidr'], list):
-        return None, 'cidr list required'
-
-    if len(params['cidr']) == 0:
-        return None, 'cidr list with subnets required'
-    
-    for item in params['cidr']:
-        if not ip_helper.is_valid_ipv4_cidr(item) and not ip_helper.is_valid_ipv6_cidr(item):
-            return None, 'cidr list with v4/v6 subnets required'
-        
-    if 'selector' not in params:
-        params['selector'] = {}
-
-    if not isinstance(params['selector'], dict):
-        return None, 'selector dict required'
-    
-    for key in params['selector']:
-        if params['selector'][key].endswith('-') and params['__id__'] is not None:
-            params['selector'][key] = '%s%s' % (
-                params['selector'][key],
-                params['__id__']
-            )
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if not isinstance(params['wait'], bool):
-        return None, 'wait param must be true or false'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        '__id__',
-        'name',
-        'selector',
-        'cidr',
-        'wait',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None]
+        ['cidr', False, None, 'list-of-cidr', 1, None, None, None],
+        ['selector', True, {}, 'dict', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
     my_output.default('OpenShift Workflow - LB IP Pool - Create', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
@@ -113,4 +48,7 @@ def run(params, log_id=None):
     if not success:
         return False
 
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- lb ip pool created')
     return True

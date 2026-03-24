@@ -6,61 +6,25 @@ from lib.k8s import output as k8s_output
 from lib.workflow import ocp_common
 from lib.workflow.k8s import common as local_common
 from lib.linux import settings
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'namespace' not in params or params['namespace'] is None:
-        return None, 'Namespace required'
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if 'storage_class' not in params:
-        params['storage_class'] = None
-
-    if 'source' not in params:
-        params['source'] = None
-
-    if 'size' not in params:
-        params['size'] = None
-        
-    if params['size'] is None:
-        return None, 'Data volume size required'
-
-    if 'secret' not in params:
-        params['secret'] = None
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        'namespace',
-        'name',
-        'storage_class',
-        'type',
-        'size',
-        'source',
-        'secret',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['storage_class', True, None, 'str', None, None, None, None],
+        ['source', True, None, 'str', None, None, None, None],
+        ['size', False, None, 'str', None, None, None, None],
+        ['secret', True, None, 'str', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
 
 
@@ -112,7 +76,6 @@ def run(params, log_id=None):
 
     if params['source'] is not None:
         if ip_helper.is_url_valid(params['source']):
-            source_type = 'url'
             success = params['k8s_handler'].create_data_volume(
                 params['namespace'], 
                 params['name'], 
@@ -223,4 +186,8 @@ def run(params, log_id=None):
         return False
     
     k8s_output_handler.print_data_volumes([info])
+
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- data volume created')
     return True

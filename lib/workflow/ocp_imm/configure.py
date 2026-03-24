@@ -79,7 +79,7 @@ def run(params, log_id=None):
         return False
     
     my_output.default('Cluster node physical interfaces', before_newline=True, after_newline=True)
-    k8s_output_handler.print_node_network_state_ethernet(states, brief=True)
+    k8s_output_handler.print_node_network_states_eth(states, brief=True)
 
     my_output.default('Collect Intersight servers information', before_newline=True, underline=True)
     servers = intersight_helper.get_all_servers_net(

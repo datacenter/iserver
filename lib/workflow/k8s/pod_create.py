@@ -1,122 +1,27 @@
-import yaml
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.k8s import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if '__id__' not in params:
-        params['__id__'] = None
-
-    if 'namespace' not in params or params['namespace'] is None:
-        return None, 'Namespace required'
-
-    if 'name' not in params or params['name'] is None:
-        return None, 'Name required'
-
-    if params['name'].endswith('-') and params['__id__'] is not None:
-        params['name'] = '%s%s' % (
-            params['name'],
-            params['__id__']
-        )
-
-    if 'label' not in params:
-        params['label'] = {}
-
-    if not isinstance(params['label'], dict):
-        return None, 'label dict required'
-    
-    for key in params['label']:
-        if params['label'][key].endswith('-') and params['__id__'] is not None:
-            params['label'][key] = '%s%s' % (
-                params['label'][key],
-                params['__id__']
-            )
-
-    if 'node' not in params:
-        params['node'] = None
-
-    if 'app' not in params or params['app'] is None:
-        return None, 'Application type required'
-
-    if params['app'] not in ['netshoot']:
-        return None, 'Unsupported app type'
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if not isinstance(params['wait'], bool):
-        return None, 'wait param must be true or false'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        '__id__',
-        'namespace',
-        'name',
-        'label',
-        'node',
-        'app',
-        'wait',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['__id__', True, None, None, None, None, None, None],
+        ['namespace', False, None, 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['label', True, None, 'dict', None, None, None, None],
+        ['node', True, None, 'str', None, None, None, None],
+        ['app', False, None, 'str', None, None, ['netshoot', 'nginx'], None],
+        ['network', False, [], 'list-of-str', None, None, None, None],
+        ['udn-port', False, [], 'list-of-str', None, None, None, None]
     ]
+
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
+    if not success:
+        return None, params
+
     return local_common.sanitize_params(params, allowed_keys), None
-
-
-def get_base_body(params):
-    body = {}
-    body['apiVersion'] = 'v1'
-    body['kind'] = 'Pod'
-    body['metadata'] = {}
-    body['metadata']['namespace'] = params['namespace']
-    body['metadata']['name'] = params['name']
-    if len(params['label']) > 0:
-        body['metadata']['labels'] = params['label']
-    body['spec'] = {}
-    body['spec']['containers'] = []
-    if params['node'] is not None:
-        body['spec']['nodeName'] = params['node']  
-    return body
-
-
-def get_netshoot_body(params):
-    container_mo = {}
-    container_mo['command'] = ['sleep', 'infinite']
-    container_mo['image'] = 'nicolaka/netshoot:latest'
-    container_mo['securityContext'] = {}
-    container_mo['securityContext']['runAsUser'] = 0
-    container_mo['securityContext']['capabilities'] = {}
-    container_mo['securityContext']['capabilities']['add'] = ['IPC_LOCK', 'SYS_RESOURCE', 'NET_RAW']
-    container_mo['name'] = 'netshoot'
-
-    body = get_base_body(params)
-    body['spec']['containers'].append(container_mo)
-    return body
-
-
-def get_pod_body(params):
-    if params['app'] == 'netshoot':
-        return get_netshoot_body(params)    
-    return None
 
 
 def run(params, log_id=None):
@@ -133,7 +38,7 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    body = get_pod_body(params)
+    body = params['k8s_handler'].get_pod_template_body(params)
     if body is None:
         my_output.error('Exception in processing input data')
         return False
@@ -155,4 +60,9 @@ def run(params, log_id=None):
         cache_enabled=False
     )
     k8s_output_handler.print_pods_state([info])
+    k8s_output_handler.print_pods_net([info])
+    
+    my_output.default('')
+    my_output.default('Completed tasks')
+    my_output.default('- pod created')
     return True

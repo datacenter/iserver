@@ -653,102 +653,21 @@ class K8sPodOutput():
             table=True
         )
 
-    def print_pods_net(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'POD - Networking [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        new_info = []
-        for item in info:
-            new_item = {}
-            new_item['__Output'] = {}
-            new_item['nameT'] = []
-            new_item['nameT'].append(
-                item['namespace']
-            )
-            new_item['nameT'].append(
-                item['name']
-            )
-            new_item['container_state_summary'] = item['container_state_summary']
-            new_item['phaseT'] = item['phaseT']
-            new_item['__Output']['phaseT'] = item['__Output']['phaseT']
-
-            if item['host_network']:
-                new_item['host_network_tick'] = '\u2713'
-            else:
-                new_item['host_network_tick'] = '\u2717'
-
-            new_item['network'] = item['network']
-            for network_info in new_item['network']:
-                if network_info['mac'] is None:
-                    network_info['mac'] = '--'
-
-                network_info['ip'] = ','.join(
-                    network_info['ips']
-                )
-
-                if len(network_info['dns']) > 0:
-                    network_info['dnsT'] = json.dumps(network_info['dns'])
-                else:
-                    network_info['dnsT'] = '--'
-
-                if network_info['pci'] is None:
-                    network_info['pciT'] = '--'
-                else:
-                    network_info['pciT'] = network_info['pci']
-
-                if network_info['default']:
-                    network_info['default'] = '\u2713'
-                else:
-                    network_info['default'] = '\u2717'
-
-            new_info.append(
-                new_item
-            )
-
-        order = [
-            'nameT',
-            'host_network_tick',
-            'network.interface',
-            'network.name',
-            'network.default',
-            'network.mac',
-            'network.ip',
-            'network.dnsT',
-            'network.pciT'
-        ]
-
-        headers = [
-            'Pod',
-            'HostNet',
-            'Intf',
-            'Network',
-            'Def',
-            'MAC',
-            'IP',
-            'DNS',
-            'PCI'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                new_info,
-                order,
-                ['nameT', 'network']
-            ),
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+    def print_pods_net(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Pod', 'namespace_nameT'],
+                ['HostNet', 'host_networkTick'],
+                ['Intf', 'network.interface'],
+                ['Network', 'network.name'],
+                ['Def', 'network.defaultTick'],
+                ['MAC', 'network.mac'],
+                ['IP', 'network.ipT'],
+                ['dnsT', 'network.dnsT'],
+                ['pciT', 'network.pci']
+            ],
+            remove_empty=['network.dnsT', 'network.pci']
         )
 
     def print_pods_log(self, info, title=False):

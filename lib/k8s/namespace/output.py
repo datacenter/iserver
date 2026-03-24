@@ -5,46 +5,31 @@ class K8sNamespaceOutput():
     def __init__(self):
         pass
 
-    def print_namespaces(self, info, title=False, select=False):
-        if title:
-            self.my_output.default(
-                'Namespace [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = []
-        headers = []
-        if select:
-            order.append('__id')
-            headers.append('Index')
-
-        order = order + [
-            'name',
-            'phase',
-            'age'
-        ]
-
-        headers = headers + [
-            'Namespace',
-            'Status',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_namespaces_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Namespace', 'name'],
+                ['Status', 'phase'],
+                ['Age', 'age']
+            ]
         )
 
+    def print_namespaces_udn(self, info):
+        items = []
+        for item in info:
+            if item['udn']:
+                items.append(item)
+
+        self.my_output.my_table_ng(
+            items,
+            [
+                ['Namespace', 'name'],
+                ['Status', 'phase'],
+                ['Age', 'age']
+            ]
+        )
+        
     def select_namespace(self, info):
         self.my_output.default(
             'Select Namespace [#%s]' % (len(info)),
@@ -63,7 +48,7 @@ class K8sNamespaceOutput():
             item['__id'] = index
             index = index + 1
 
-        self.print_namespaces(new_info, title=False, select=True)
+        self.print_namespaces_state(new_info, title=False, select=True)
 
         while True:
             answer = input("Select namespace using index value (0 to break): ")

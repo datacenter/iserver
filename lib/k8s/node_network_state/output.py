@@ -13,7 +13,7 @@ class K8sNodeNetworkStateOutput():
                 before_newline=True
             )
 
-    def print_node_network_state_dns(self, state, title=False):
+    def print_node_network_states_dns(self, state, title=False):
         if title:
             self.my_output.default(
                 'Node Network State - DNS [#%s]' % (len(state)),
@@ -43,7 +43,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_route(self, state, title=False):
+    def print_node_network_states_route(self, state, title=False):
         if title:
             self.my_output.default(
                 'Node Network State - Route [#%s]' % (len(state)),
@@ -83,7 +83,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_bond(self, state, options=False, ethtool=False, title=False):
+    def print_node_network_states_bond(self, state, options=False, ethtool=False, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -207,7 +207,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_ethernet(self, state, ethtool=False, title=False, brief=False):
+    def print_node_network_states_eth(self, state, ethtool=False, title=False, brief=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -348,7 +348,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_lldp(self, state, title=False):
+    def print_node_network_states_lldp(self, state, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -426,7 +426,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_vf(self, state, ethtool=False, title=False):
+    def print_node_network_states_vf(self, state, ethtool=False, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -549,7 +549,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_vlan(self, state, ethtool=False, title=False):
+    def print_node_network_states_vlan(self, state, ethtool=False, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -658,7 +658,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_lb(self, state, options=False, ethtool=False, title=False):
+    def print_node_network_states_lb(self, state, options=False, ethtool=False, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -785,7 +785,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_lb_interfaces(self, state):
+    def print_node_network_states_lb_interfaces(self, state):
         ports = []
 
         info = copy.deepcopy(state)
@@ -854,7 +854,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_ovs(self, state, options=False, ethtool=False, title=False):
+    def print_node_network_states_ovs(self, state, options=False, ethtool=False, title=False):
         interfaces = []
 
         info = copy.deepcopy(state)
@@ -937,7 +937,7 @@ class K8sNodeNetworkStateOutput():
             table=True
         )
 
-    def print_node_network_state_ovs_interfaces(self, state, ethtool=False):
+    def print_node_network_states_ovs_interfaces(self, state, ethtool=False):
         interfaces = []
 
         info = copy.deepcopy(state)

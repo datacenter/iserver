@@ -214,6 +214,7 @@ from lib.k8s.tracing_policy_namespaced.main import K8sTracingPolicyNamespaced
 from lib.k8s.tuned.main import K8sTuned
 from lib.k8s.upload_token_request.main import K8sUploadTokenRequest
 from lib.k8s.user.main import K8sUser
+from lib.k8s.user_defined_network.main import K8sUserDefinedNetwork
 from lib.k8s.vast_cluster.main import K8sVastCluster
 from lib.k8s.vast_driver.main import K8sVastDriver
 from lib.k8s.vast_storage.main import K8sVastStorage
@@ -454,6 +455,7 @@ class K8s(
         K8sTuned,
         K8sUploadTokenRequest,
         K8sUser,
+        K8sUserDefinedNetwork,
         K8sVastCluster,
         K8sVastDriver,
         K8sVastStorage,
@@ -694,6 +696,7 @@ class K8s(
         K8sTuned.__init__(self)
         K8sUploadTokenRequest.__init__(self)
         K8sUser.__init__(self)
+        K8sUserDefinedNetwork.__init__(self)
         K8sVastCluster.__init__(self)
         K8sVastDriver.__init__(self)
         K8sVastStorage.__init__(self)

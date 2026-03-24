@@ -74,6 +74,9 @@ class K8sDeploymentInfo():
         if return_mo:
             return managed_object
         
+        if managed_object is None:
+            return None
+        
         return self.get_deployment_info(managed_object)
 
     def is_deployment(self, namespace, name, cache_enabled=True, optimized=False):

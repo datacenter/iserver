@@ -1,13 +1,9 @@
 import sys
-import json
-import threading
 import traceback
 import click
 
-from lib.k8s import output as k8s_output
 from menu.get.k8s import common
 from menu import validations
-from menu import progress
 
 
 class Failure(Exception):
@@ -15,10 +11,6 @@ class Failure(Exception):
 
 
 class ErrorExit(Exception):
-    pass
-
-
-class NoResultExit(Exception):
     pass
 
 
@@ -41,20 +33,6 @@ def get_k8s_dep_command(
         ):
     """Get k8s deployment"""
 
-    # iserver get k8s dep
-
-    # ctx.developer = devel
-    # ctx.output = output
-    # view = validations.validate_view(
-    #     ctx,
-    #     view,
-    #     'state|metadata|all',
-    #     'state',
-    #     []
-    # )
-    # if view is None:
-    #     sys.exit(1)
-
     try:
         success = common.get(
             ctx,
@@ -69,84 +47,6 @@ def get_k8s_dep_command(
         if not success:
             raise ErrorExit
         
-        # k8s_output_handler = k8s_output.K8sOutput(log_id=ctx.run_id)
-        # k8s_handlers = validations.validate_kubernetes_name(ctx, cluster, cluster_type='ocp', log_id=ctx.run_id)
-        # if k8s_handlers is None:
-        #     raise ErrorExit
-
-        # object_filter = []
-
-        # if namespace is not None:
-        #     object_filter.append(
-        #         'namespace:%s' % (namespace)
-        #     )
-
-        # if name is not None:
-        #     object_filter.append(
-        #         'name:%s' % (name)
-        #     )
-
-        # if owner is not None:
-        #     object_filter.append(
-        #         'owner:%s' % (owner)
-        #     )
-
-        # if output not in ['json', 'mo']:
-        #     ctx.busy = True
-        #     threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
-
-        # if k8s_handlers.get_api() is None:
-        #     ctx.busy = False
-        #     ctx.my_output.error(
-        #         'Connection to kubernetes cluster failed'
-        #     )
-        #     raise ErrorExit
-
-        # if output == 'mo':
-        #     deployments = k8s_handlers.get_deployments(
-        #         object_filter=object_filter,
-        #         return_mo=True
-        #     )
-        #     ctx.my_output.default(
-        #         json.dumps(
-        #             deployments,
-        #             indent=4
-        #         )
-        #     )
-        #     return
-
-        # deployments = k8s_handlers.get_deployments(
-        #     object_filter=object_filter
-        # )
-
-        # ctx.busy = False
-
-        # if output == 'json':
-        #     ctx.my_output.default(
-        #         json.dumps(
-        #             deployments,
-        #             indent=4
-        #         )
-        #     )
-        #     return
-
-        # if 'state' in view:
-        #     k8s_output_handler.print_deployments_state(
-        #         deployments
-        #     )
-
-        # if 'metadata' in view:
-        #     k8s_output_handler.print_deployments_metadata(
-        #         deployments
-        #     )
-
-        # ctx.my_output.default('Filter: namespace, name, owner', before_newline=True)
-        # ctx.my_output.default('View:   state (def), metadata, all')
-
-    except NoResultExit:
-        ctx.busy = False
-        sys.exit(666)
-
     except ErrorExit:
         ctx.busy = False
         sys.exit(1)

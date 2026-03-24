@@ -46,7 +46,7 @@ def validate_create(task, cluster_name, confirmation, cluster_settings=None, k8s
     
     # Proxy settings from cluster state
 
-    proxy = k8s_handler.get_proxy()
+    proxy = k8s_handler.get_proxy('cluster')
     if proxy is None:
         return None, 'Failed to get proxy settings'
     

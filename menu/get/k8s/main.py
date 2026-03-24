@@ -94,6 +94,7 @@ from menu.get.k8s.tgspn import get_k8s_tgspn_command
 from menu.get.k8s.tgtp import get_k8s_tgtp_command
 from menu.get.k8s.tgtpn import get_k8s_tgtpn_command
 from menu.get.k8s.tuned import get_k8s_tuned_command
+from menu.get.k8s.udn import get_k8s_udn_command
 from menu.get.k8s.user import get_k8s_user_command
 from menu.get.k8s.va import get_k8s_va_command
 from menu.get.k8s.vastc import get_k8s_vastc_command
@@ -223,6 +224,7 @@ get_k8s_menu.add_command(get_k8s_tgspn_command)
 get_k8s_menu.add_command(get_k8s_tgtp_command)
 get_k8s_menu.add_command(get_k8s_tgtpn_command)
 get_k8s_menu.add_command(get_k8s_tuned_command)
+get_k8s_menu.add_command(get_k8s_udn_command)
 get_k8s_menu.add_command(get_k8s_user_command)
 get_k8s_menu.add_command(get_k8s_va_command)
 get_k8s_menu.add_command(get_k8s_vastc_command)

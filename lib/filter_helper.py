@@ -1,3 +1,4 @@
+import copy
 import re
 import time
 
@@ -751,6 +752,45 @@ def compare_list(list1, list2):
     return True
 
 
+def compare_dict(dict1, dict2):
+    if dict1 is None or dict2 is None:
+        return False
+    
+    if not isinstance(dict1, dict):
+        return False
+    
+    if not isinstance(dict2, dict):
+        return False
+    
+    if len(dict1) != len(dict2):
+        return False
+    
+    for item in dict1:
+        if item not in dict2:
+            return False
+        
+        if type(dict1[item]) != type(dict2[item]):
+            return False
+        
+        if isinstance(dict1[item], int):
+            if dict1[item] != dict2[item]:
+                return False
+            
+        if isinstance(dict1[item], str):
+            if dict1[item] != dict2[item]:
+                return False
+
+        if isinstance(dict1[item], list):
+            if not compare_list(dict1[item], dict2[item]):
+                return False
+
+        if isinstance(dict1[item], dict):
+            if not compare_dict(dict1[item], dict2[item]):
+                return False
+
+    return True
+
+
 def json_fixup(output):
     if output is None:
         return None
@@ -775,3 +815,22 @@ def json_fixup(output):
         output = '{}'
         
     return output
+
+
+def replace_attributes(content, variables):
+    if content is None:
+        return None
+
+    if variables is None:
+        return content
+
+    my_variables = copy.deepcopy(variables)
+    for key in my_variables:
+        try:
+            pattern = '${%s}' % (key)
+            content = content.replace(pattern, str(my_variables[key]))
+
+        except BaseException:
+            pass
+
+    return content

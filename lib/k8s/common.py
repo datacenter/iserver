@@ -152,6 +152,9 @@ class K8sCommon():
         return self.convert_age(int(time.time()) - timestamp)
 
     def get_base_info(self, managed_object, condition_map=None):
+        if managed_object is None:
+            return None
+        
         info = {}
         info['__Output'] = {}
 
@@ -515,7 +518,18 @@ class K8sCommon():
 
         return True
 
-    def wait_managed_object(self, object_name, name, namespace=None, match_properties={}, break_properties={}, my_output=None, prompt=None, max_time=60):
+    def wait_managed_object(
+            self, 
+            object_name, 
+            name, 
+            namespace=None, 
+            match_properties={}, 
+            break_properties={}, 
+            my_output=None,
+            prompt=None, 
+            max_time=60,
+            log_error_on_timeout=True
+        ):
         if my_output is not None and prompt is not None:
             if len(match_properties) > 0:
                 my_output.default('%s with %s' % (prompt, json.dumps(match_properties)))
@@ -546,8 +560,8 @@ class K8sCommon():
                 failure = False
                 failure_on = None
                 for key in break_properties:
-                    if self.get(info, key) != break_properties[key]:
-                        failure_on = key
+                    if self.get(info, key) == break_properties[key]:
+                        failure_on = '%s:%s' % (key, break_properties[key])
                         failure = True
                         break
 
@@ -561,16 +575,17 @@ class K8sCommon():
 
             duration = int(time.time()) - start_time
             if duration > max_time:
-                if namespace is None:
-                    self.log.error(
-                        'k8s.wait_managed_object',
-                        'Max time reached [%s]: %s' % (object_name, name)
-                    )
-                else:
-                    self.log.error(
-                        'k8s.wait_managed_object',
-                        'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
-                    )
+                if log_error_on_timeout:
+                    if namespace is None:
+                        self.log.error(
+                            'k8s.wait_managed_object',
+                            'Max time reached [%s]: %s' % (object_name, name)
+                        )
+                    else:
+                        self.log.error(
+                            'k8s.wait_managed_object',
+                            'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
+                        )
 
                 if my_output is not None:
                     my_output.error('timed out')
@@ -579,7 +594,16 @@ class K8sCommon():
 
             time.sleep(5)
 
-    def wait_no_managed_object(self, object_name, name, namespace=None, my_output=None, prompt=None, max_time=60):
+    def wait_no_managed_object(
+            self, 
+            object_name, 
+            name, 
+            namespace=None, 
+            my_output=None, 
+            prompt=None, 
+            max_time=60,
+            log_error_on_timeout=True
+        ):
         if my_output is not None and prompt is not None:
             my_output.default(prompt)
 
@@ -602,16 +626,17 @@ class K8sCommon():
 
             duration = int(time.time()) - start_time
             if duration > max_time:
-                if namespace is None:
-                    self.log.error(
-                        'k8s.wait_no_managed_object',
-                        'Max time reached [%s]: %s' % (object_name, name)
-                    )
-                else:
-                    self.log.error(
-                        'k8s.wait_no_managed_object',
-                        'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
-                    )
+                if log_error_on_timeout:
+                    if namespace is None:
+                        self.log.error(
+                            'k8s.wait_no_managed_object',
+                            'Max time reached [%s]: %s' % (object_name, name)
+                        )
+                    else:
+                        self.log.error(
+                            'k8s.wait_no_managed_object',
+                            'Max time reached [%s]: %s/%s' % (object_name, namespace, name)
+                        )
 
                 if my_output is not None:
                     my_output.error('timed out')

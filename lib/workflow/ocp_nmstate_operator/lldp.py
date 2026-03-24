@@ -193,7 +193,7 @@ def enable_nns(params, log_id=None):
             title=False
         )
 
-    success = params['k8s_handler'].wait_node_network_configuration_policy(
+    success = params['k8s_handler'].wait_node_network_configuration_policies_status(
         policy_names=policy_names,
         my_output=my_output
     )

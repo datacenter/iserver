@@ -19,12 +19,20 @@ class K8sProxyInfo():
         info['no_proxy'] = self.get(proxy_mo, 'spec:noProxy')
         return info
 
-    def get_proxy(self, return_mo=False, cache_enabled=True):
+    def get_proxy(self, name, return_mo=False, cache_enabled=True):
         proxy_mo = self.get_proxy_mo(cache_enabled=cache_enabled)
         if proxy_mo is None or len(proxy_mo) != 1:
+            return None
+        
+        if proxy_mo[0]['metadata']['name'] != name:
             return None
         
         if return_mo:
             return proxy_mo[0]
         
         return self.get_proxy_info(proxy_mo[0])
+    
+    def is_proxy(self, name, cache_enabled=True):
+        if self.get_proxy(name, cache_enabled=cache_enabled):
+            return True
+        return False

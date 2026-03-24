@@ -2,7 +2,7 @@ class K8sVirtualMachineInstanceOutput():
     def __init__(self):
         pass
 
-    def print_virtual_machine_instances(self, info):
+    def print_virtual_machine_instances_state(self, info):
         self.my_output.my_table_ng(
             info,
             [
@@ -19,50 +19,15 @@ class K8sVirtualMachineInstanceOutput():
             ]
         )
 
-    def print_virtual_machine_instances_metadata(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Virtual Machine Instance - Metadata [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        for item in info:
-            if item['owner'] is None:
-                item['ownerT'] = ['--']
-            else:
-                item['ownerT'] = item['owner'].split('/')
-
-        order = [
-            'namespace_name',
-            'ownerT',
-            'labelT',
-            'annotationT'
-        ]
-
-        headers = [
-            'VMI',
-            'Owner',
-            'Label',
-            'Annotation'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['annotationT', 'labelT', 'ownerT']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+    def print_virtual_machine_instances_metadata(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['VM Instance', 'namespace_nameT'],
+                ['Owner', 'ownerT'],
+                ['Label', 'labelT'],
+                ['Annotation', 'annotationT']
+            ]
         )
 
     def print_virtual_machine_instances_phase(self, info, title=False):
@@ -107,18 +72,7 @@ class K8sVirtualMachineInstanceOutput():
             table=True
         )
 
-    def print_virtual_machine_instances_interface(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Virtual Machine Instance - Interface [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
+    def print_virtual_machine_instances_net(self, info):
         interfaces = []
         for item in info:
             for item_interface in item['interface']:
@@ -172,18 +126,7 @@ class K8sVirtualMachineInstanceOutput():
             table=True
         )
 
-    def print_virtual_machine_instances_service(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Virtual Machine Instance - Service (running-only) [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
+    def print_virtual_machine_instances_svc(self, info):
         order = [
             'namespace_name',
             'service.namespace_name',

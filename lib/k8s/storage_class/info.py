@@ -20,6 +20,13 @@ class K8sStorageClassInfo():
         info['volumeBindingMode'] = self.get(storage_class_mo, 'volumeBindingMode')
         info['reclaimPolicy'] = self.get(storage_class_mo, 'reclaimPolicy')
         info['provisioner'] = self.get(storage_class_mo, 'provisioner')
+        info['csiType'] = None
+        if info['provisioner'] is not None:
+            if info['provisioner'] == 'topolvm.io':
+                info['csiType'] = 'LVM'
+            if 'ceph' in info['provisioner']:
+                info['csiType'] = 'ODF'
+
         info['allowVolumeExpansion'] = self.get(storage_class_mo, 'allowVolumeExpansion')
         info['reclaimPolicy'] = self.get(storage_class_mo, 'reclaimPolicy')
 
