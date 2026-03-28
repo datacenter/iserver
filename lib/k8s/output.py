@@ -43,6 +43,7 @@ from lib.k8s.cluster_quota.output import K8sClusterQuotaOutput
 from lib.k8s.cluster_role.output import K8sClusterRoleOutput
 from lib.k8s.cluster_role_binding.output import K8sClusterRoleBindingOutput
 from lib.k8s.cluster_service_version.output import K8sClusterServiceVersionOutput
+from lib.k8s.cluster_user_defined_network.output import K8sClusterUserDefinedNetworkOutput
 from lib.k8s.cluster_version.output import K8sClusterVersionOutput
 from lib.k8s.clusterwide_private_network.output import K8sClusterwidePrivateNetworkOutput
 from lib.k8s.cni.output import K8sCniOutput
@@ -279,6 +280,7 @@ class K8sOutput(
     K8sClusterRoleOutput,
     K8sClusterRoleBindingOutput,
     K8sClusterServiceVersionOutput,
+    K8sClusterUserDefinedNetworkOutput,
     K8sClusterVersionOutput,
     K8sClusterwidePrivateNetworkOutput,
     K8sCniOutput,
@@ -519,6 +521,7 @@ class K8sOutput(
         K8sClusterQuotaOutput.__init__(self)
         K8sClusterRoleBindingOutput.__init__(self)
         K8sClusterServiceVersionOutput.__init__(self)
+        K8sClusterUserDefinedNetworkOutput.__init__(self)
         K8sClusterVersionOutput.__init__(self)
         K8sClusterwidePrivateNetworkOutput.__init__(self)
         K8sCniOutput.__init__(self)

@@ -226,7 +226,9 @@ def validate_file_absolute(ctx, param, filename):
         raise click.BadParameter('File %s not found' % (filename))
 
     if not os.path.isabs(filename):
-        raise click.BadParameter('Absolute path required')
+        filename = os.path.join(os.getcwd(), filename)
+        if not os.path.isfile(filename):
+            raise click.BadParameter('Absolute path required')
     
     return filename
 

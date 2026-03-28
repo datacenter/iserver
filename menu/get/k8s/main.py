@@ -14,6 +14,7 @@ from menu.get.k8s.cquota import get_k8s_cquota_command
 from menu.get.k8s.crb import get_k8s_crb_command
 from menu.get.k8s.crd import get_k8s_crd_command
 from menu.get.k8s.csv import get_k8s_csv_command
+from menu.get.k8s.cudn import get_k8s_cudn_command
 from menu.get.k8s.cv import get_k8s_cv_command
 from menu.get.k8s.dc import get_k8s_dc_command
 from menu.get.k8s.dep import get_k8s_dep_command
@@ -144,6 +145,7 @@ get_k8s_menu.add_command(get_k8s_cquota_command)
 get_k8s_menu.add_command(get_k8s_crb_command)
 get_k8s_menu.add_command(get_k8s_crd_command)
 get_k8s_menu.add_command(get_k8s_csv_command)
+get_k8s_menu.add_command(get_k8s_cudn_command)
 get_k8s_menu.add_command(get_k8s_cv_command)
 get_k8s_menu.add_command(get_k8s_dc_command)
 get_k8s_menu.add_command(get_k8s_dep_command)

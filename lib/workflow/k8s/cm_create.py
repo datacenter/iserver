@@ -41,6 +41,10 @@ def validate(params):
             if '__id__' not in variables:
                 variables['__id__'] = params['__id__']
 
+        if '__variables__' in params:
+            for global_var in params['__variables__']:
+                variables[global_var] = params['__variables__'][global_var]
+                
         cm_vars = filter_helper.get(params['content'][key], 'vars', on_error={}, on_none={})
         if not isinstance(cm_vars, dict):
             return None, 'Config map data with vars dict required'

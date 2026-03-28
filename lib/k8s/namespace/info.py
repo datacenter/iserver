@@ -6,6 +6,9 @@ class K8sNamespaceInfo():
         self.namespace = None
 
     def get_namespace_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )
@@ -52,7 +55,8 @@ class K8sNamespaceInfo():
             return True
 
         for rule in object_filter:
-            (key, value) = rule.split(':')
+            key = rule.split(':')[0]
+            value = ':'.join(rule.split(':')[1:])
 
             key_found = False
 
@@ -61,6 +65,26 @@ class K8sNamespaceInfo():
                 if not filter_helper.match_string(value, namespace_info['name']):
                     return False
 
+            if key == 'label':
+                key_found = True
+                found = False
+                labels = self.get(namespace_info, 'label')
+                if labels is None:
+                    return False
+
+                for label in labels:
+                    if label == value.split(':')[0]:
+                        if len(value.split(':')) == 1:
+                            found = True
+                            break
+
+                        if labels[label] == value.split(':')[1]:
+                            found = True
+                            break
+
+                if not found:
+                    return False
+                
             if not key_found:
                 self.log.error(
                     'match_namespace',

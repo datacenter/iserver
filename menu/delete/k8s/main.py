@@ -11,6 +11,7 @@ from menu.delete.k8s.locvd import delete_k8s_locvd_command
 from menu.delete.k8s.locvs import delete_k8s_locvs_command
 from menu.delete.k8s.nad import delete_k8s_nad_command
 from menu.delete.k8s.nncp import delete_k8s_nncp_command
+from menu.delete.k8s.ns import delete_k8s_ns_command
 from menu.delete.k8s.pod import delete_k8s_pod_command
 from menu.delete.k8s.pvc import delete_k8s_pvc_command
 from menu.delete.k8s.sec import delete_k8s_sec_command
@@ -39,6 +40,7 @@ delete_k8s_menu.add_command(delete_k8s_locvd_command)
 delete_k8s_menu.add_command(delete_k8s_locvs_command)
 delete_k8s_menu.add_command(delete_k8s_nad_command)
 delete_k8s_menu.add_command(delete_k8s_nncp_command)
+delete_k8s_menu.add_command(delete_k8s_ns_command)
 delete_k8s_menu.add_command(delete_k8s_pod_command)
 delete_k8s_menu.add_command(delete_k8s_pvc_command)
 delete_k8s_menu.add_command(delete_k8s_sec_command)

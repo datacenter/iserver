@@ -182,6 +182,26 @@ class K8sNamespaceDelete():
                     if not show_details:
                         my_output.default('- user defined network [%s]' % (len(namespace_udns)))
 
+        namespace_cudns = self.get_namespace_cudns(namespace, cache_enabled=False)
+        if namespace_cudns is not None:
+            if len(namespace_cudns) == 0:
+                if my_output is not None:
+                    my_output.default('- no cluster user defined networks')
+            else:
+                used = True
+                if my_output is not None:
+                    if show_details:
+                        my_output.default('- cluster user defined network')
+                        for namespace_cudn in namespace_cudns:
+                            my_output.default(
+                                '\t[%s]' % (
+                                    namespace_cudn
+                                )
+                            )
+
+                    if not show_details:
+                        my_output.default('- cluster user defined network [%s]' % (len(namespace_cudns)))
+
         return used
     
     def remove_namespace_finalizers(self, namespace):

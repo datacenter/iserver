@@ -98,6 +98,8 @@ def get(ctx, cluster_name, object_name, output, view, views, cluster_type='ocp',
         )
         return True
 
+    ctx.my_output.json_output(managed_objects)
+
     for item in view:
         getattr(k8s_output_handler, 'print_%ss_%s' % (object_name, item))(managed_objects)
 

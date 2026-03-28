@@ -13,6 +13,7 @@ def get_function_map():
     fmap['pod'] = 'pod'
     fmap['service'] = 'service'
     fmap['ovn-udn'] = 'ovn_udn'
+    fmap['ovn-cudn'] = 'ovn_cudn'
     fmap['virtual-machine'] = 'vm'
     return fmap
 
@@ -48,6 +49,7 @@ def validate(operation, task, cluster_name, confirmation, cluster_settings=None,
     if tasks_id is None:
         return None, 'k8s.__id__ invalid'
     namespace = filter_helper.get(task, 'namespace')
+    honor = filter_helper.get(task, '__honor__', on_error=True, on_none=True)
 
     if 'items' in task:
         if not isinstance(task['items'], list):
@@ -56,6 +58,7 @@ def validate(operation, task, cluster_name, confirmation, cluster_settings=None,
         items = []
         for item in task['items']:
             item_type = filter_helper.get(item, '__type__')
+            
             if item_type not in fmap:
                 return None, 'Unsupported type: %s' % (item_type)
 
@@ -67,8 +70,9 @@ def validate(operation, task, cluster_name, confirmation, cluster_settings=None,
                 if operation == 'create' and filter_helper.get(item, '__no_create__', on_error=False, on_none=False):
                     continue
                 
-                if operation == 'delete' and filter_helper.get(item, '__no_delete__', on_error=False, on_none=False):
-                    continue
+                if honor:
+                    if operation == 'delete' and filter_helper.get(item, '__no_delete__', on_error=False, on_none=False):
+                        continue
 
                 new_item = copy.deepcopy(item)
                 if task_id is not None and '${__id__}' not in item['name']:
@@ -81,6 +85,8 @@ def validate(operation, task, cluster_name, confirmation, cluster_settings=None,
                 new_item['cluster'] = cluster_name
                 new_item['confirmation'] = confirmation
                 new_item['base_directory'] = cluster_settings['directory']
+                new_item['__honor__'] = honor
+                new_item['__variables__'] = filter_helper.get(task, '__variables__', on_error={}, on_none={})
                 
                 if namespace is not None and 'namespace' not in new_item:
                     new_item['namespace'] = namespace

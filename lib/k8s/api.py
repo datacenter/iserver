@@ -593,8 +593,8 @@ class K8sApi():
             if 'namespace' in item['metadata']:
                 namespace_mo = item['metadata']['namespace']
                 if namespace_mo not in namespaced_objects:
-                    namespaced_objects[namespace] = []
-                namespaced_objects[namespace].append(
+                    namespaced_objects[namespace_mo] = []
+                namespaced_objects[namespace_mo].append(
                     item
                 )
 
@@ -824,7 +824,7 @@ class K8sApi():
                 self.log.error('k8s.create_resource', traceback.format_exc())
                 self.log.k8s(
                     'create',
-                    '%s [%s] [name:%s] [response:%s]' % (kind, api_version, name, str(response)),
+                    '%s [%s] [name:%s]' % (kind, api_version, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )

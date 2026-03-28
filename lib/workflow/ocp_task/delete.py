@@ -5,7 +5,7 @@ from lib import output_helper
 from lib.workflow.ocp_task import common
 
 
-def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confirmation=True):
+def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confirmation=True, honor=True):
     if not isinstance(tasks, list):
         return None, 'tasks list required'
     
@@ -28,9 +28,11 @@ def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confi
             if not filter_helper.get(task[task_name], '__enabled__', on_error=True, on_none=True):
                 continue
 
-            if filter_helper.get(task[task_name], '__no_delete__', on_error=False, on_none=False):
-                continue
+            if honor:
+                if filter_helper.get(task[task_name], '__no_delete__', on_error=False, on_none=False):
+                    continue
 
+            task[task_name]['__honor__'] = honor
             fmodule = importlib.import_module('lib.workflow.%s.task' % (fmap[task_name]))
             task_def = {}
             task_def[task_name], error = getattr(fmodule, 'validate_delete')(
@@ -50,13 +52,14 @@ def validate(tasks, cluster_name, cluster_settings=None, k8s_handler=None, confi
     return new_tasks, None
 
 
-def run(tasks, cluster_name, confirmation=True, cluster_settings=None, k8s_handler=None, validate_only=False, break_on_error=True, log_id=None, reverse=True):
+def run(tasks, cluster_name, confirmation=True, cluster_settings=None, k8s_handler=None, validate_only=False, break_on_error=True, honor=True, log_id=None, reverse=True):
     my_output = output_helper.OutputHelper(log_id=log_id)
 
     resolved_tasks, error = validate(
         tasks,
         cluster_name,
         cluster_settings=cluster_settings,
+        honor=honor,
         k8s_handler=k8s_handler,
         confirmation=confirmation
     )
@@ -85,8 +88,9 @@ def run(tasks, cluster_name, confirmation=True, cluster_settings=None, k8s_handl
             if not filter_helper.get(task[task_name], '__enabled__', on_error=True, on_none=True):
                 continue
 
-            if filter_helper.get(task[task_name], '__no_delete__', on_error=False, on_none=False):
-                continue
+            if honor:
+                if filter_helper.get(task[task_name], '__no_delete__', on_error=False, on_none=False):
+                    continue
 
             fmodule = importlib.import_module('lib.workflow.%s.task' % (fmap[task_name]))
             task_success = getattr(fmodule, 'delete')(

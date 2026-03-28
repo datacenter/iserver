@@ -709,8 +709,18 @@ def check_parameters(params, rules, extras=None):
         for key in extras:
             allowed_keys.append(key)
 
+    if '__variables__' not in params:
+        params['__variables__'] = {}
+    
     for rule in rules:
         (name, none_allowed, cast_if_none, expected_type, range_min, range_max, allowed_values, variables) = rule
+        if variables is None:
+            variables = {}
+
+        for global_var in params['__variables__']:
+            if global_var not in variables:
+                variables[global_var] = params['__variables__'][global_var]
+                
         allowed_keys.append(name)
         success, params[name] = check_paramater(
             params,
@@ -725,7 +735,7 @@ def check_parameters(params, rules, extras=None):
         )
         if not success:
             return False, params[name], None
-
+    
     if 'wait' not in params:
         params['wait'] = True
 

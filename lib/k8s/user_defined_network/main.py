@@ -25,5 +25,5 @@ class K8sUserDefinedNetwork(
         K8sUserDefinedNetworkL2.__init__(self)
         K8sUserDefinedNetworkL3.__init__(self)
         K8sUserDefinedNetworkMatch.__init__(self)
-        K8sUserDefinedNetworkNamespace
+        K8sUserDefinedNetworkNamespace.__init__(self)
         K8sUserDefinedNetworkWait.__init__(self)

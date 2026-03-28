@@ -41,4 +41,4 @@ class K8sSecretInfo():
         if not self.is_secret(namespace, name, cache_enabled=False):
             return name
         
-        return 'name-%s' % (ip_helper.get_short_uuid())
+        return '%s-%s' % (name, ip_helper.get_short_uuid())

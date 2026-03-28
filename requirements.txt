@@ -13,7 +13,6 @@ pyVmomi
 intersight
 kubernetes
 openshift-client
-git+https://github.com/kubevirt/client-python.git
 openshift
 ncclient
 pysnmp

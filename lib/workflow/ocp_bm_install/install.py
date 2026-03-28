@@ -517,27 +517,24 @@ def boot_from_iso(user_settings, cluster_id, cluster_info, my_output, log, log_i
 def wait_boot_from_iso(user_settings, cluster_id, console_handler, my_output, log_id):
     openshift_output_handler = openshift_output.OpenshiftOutput(log_id=log_id)
 
-    bmc_addresses = None
-    serial_numbers = None
+    bmc_addresses = []
+    serial_numbers = []
 
-    if user_settings['server'][0]['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
-        bmc_addresses = []
-        for server in user_settings['server']:
+    for server in user_settings['server']:
+        if server['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
             bmc_addresses.append(
                 server['redfish']['endpoint_ip']
             )
 
-    if user_settings['server'][0]['redfish']['endpoint_type'] == 'fi':
-        serial_numbers = []
-        for server in user_settings['server']:
+        if server['redfish']['endpoint_type'] in ['fi']:
             serial_numbers.append(
                 server['serial']
             )
 
     success = console_handler.wait_assisted_install_cluster_hosts_discovered(
         cluster_id,
-        bmc_addresses=bmc_addresses,
-        serial_numbers=serial_numbers,
+        bmc_addresses,
+        serial_numbers,
         my_output=my_output,
         openshift_output=openshift_output_handler
     )
@@ -550,41 +547,38 @@ def wait_boot_from_iso(user_settings, cluster_id, console_handler, my_output, lo
 def update_cluster_settings(user_settings, cluster_id, console_handler, my_output):
     my_output.default('Change hostnames and roles')
 
-    server_hostname = {}
-    server_role = {}
-    if user_settings['server'][0]['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
-        server_key = 'bmc'
-        for server in user_settings['server']:
-            key = server['redfish']['endpoint_ip']
-            server_hostname[key] = server['hostname']
-            server_role[key] = server['role']
-            my_output.default(
-                '- Server [%s] hostname [%s] role [%s]' % (
-                    key,
-                    server['hostname'],
-                    server['role']
-                )
-            )
+    servers = []
 
-    if user_settings['server'][0]['redfish']['endpoint_type'] == 'fi':
-        server_key = 'serial'
-        for server in user_settings['server']:
-            key = server['serial']
-            server_hostname[key] = server['hostname']
-            server_role[key] = server['role']
-            my_output.default(
-                '- Server [%s] hostname [%s] role [%s]' % (
-                    key,
-                    server['hostname'],
-                    server['role']
-                )
+    for server in user_settings['server']:
+        if server['redfish']['endpoint_type'] in ['ucsc', 'bmc']:
+            info = {}
+            info['key'] = 'bmc'
+            info['value'] = server['redfish']['endpoint_ip']
+            info['hostname'] = server['hostname']
+            info['role'] = server['role']
+            servers.append(info)
+
+        if server['redfish']['endpoint_type'] in ['fi']:
+            info = {}
+            info['key'] = 'serial'
+            info['value'] = server['serial']
+            info['hostname'] = server['hostname']
+            info['role'] = server['role']
+            servers.append(info)
+
+    for server in servers:
+        my_output.default(
+            '- Server [%s:%s] hostname [%s] role [%s]' % (
+                server['key'],
+                server['value'],
+                server['hostname'],
+                server['role']
             )
+        )
 
     success = console_handler.update_assisted_install_cluster_hosts_hostname(
         cluster_id,
-        server_key,
-        server_hostname,
-        server_role
+        servers
     )
     if not success:
         my_output.error('Hostname/role update failed')

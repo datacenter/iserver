@@ -1,6 +1,7 @@
 from lib import ip_helper
 from lib import output_helper
 from lib.workflow.k8s import common as local_common
+from lib.workflow.k8s import cm_create
 from lib.workflow import ocp_common
 
 
@@ -19,7 +20,7 @@ def validate(params):
         ['cores', True, None, 'int', 1, 16, None, None],
         ['threads', True, None, 'int', 1, 16, None, None],
         ['sockets', True, None, 'int', 1, 16, None, None],
-        ['day0', True, None, 'str', None, None, None, None],
+        ['day0', False, None, 'str', None, None, None, None],
         ['interface', True, None, 'list-of-dict', None, None, None, None],
         ['selector', True, None, 'dict', None, None, None, None]
     ]
@@ -79,7 +80,18 @@ def get_variables(params, my_output):
         if not params['k8s_handler'].is_node(variables['node'], cache_enabled=False):
             my_output.error('node not found: %s' % (variables['node']))
             return None
+    
+    if 'day0' in variables:
+        if len(variables['day0'].split('/')) == 1:
+            day0_namespace = params['namespace']
+            day0_name = variables['day0']
+        else:
+            (day0_namespace, day0_name) = variables['day0'].split('/')
         
+        if not params['k8s_handler'].is_config_map(day0_namespace, day0_name, cache_enabled=False):
+            my_output.error('config map not found: %s/%s' % (day0_namespace, day0_name))
+            return None
+
     return variables
 
 

@@ -7,23 +7,25 @@ class K8sNetworkAttachmentDefinitionInfo():
     def __init__(self):
         self.nad = None
 
-    def get_nad_info(self, nad_mo):
-        if nad_mo is None:
+    def get_nad_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
+        info = self.get_base_info(
+            managed_object
+        )
+        if info is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            nad_mo
-        )
-        info.update(metadata_info)
-
-        info['resource_name'] = self.get(nad_mo, 'metadata:annotations:k8s.v1.cni.cncf.io/resourceName')
+        info['resource_name'] = self.get(managed_object, 'metadata:annotations:k8s.v1.cni.cncf.io/resourceName')
         info['config'] = json.loads(
-            self.get(nad_mo, 'spec:config')
+            self.get(managed_object, 'spec:config')
         )
 
+        info['cudn'] = None
+        if info['ownerT'][0] is not None and info['ownerT'][0] == 'ClusterUserDefinedNetwork':
+            info['cudn'] = info['ownerT'][1]
+            
         return info
 
     def get_nads_info(self, cache_enabled=True):

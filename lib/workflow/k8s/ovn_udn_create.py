@@ -46,7 +46,7 @@ def run(params, log_id=None):
             return False
         
         if params['primary']:
-            udn = params['k8s_handler'].get_namespace_primary_udn(params['namespace'])
+            udn = params['k8s_handler'].get_namespace_primary_udn(params['namespace'], cache_enabled=False)
             if udn is not None and udn != params['name']:
                 my_output.error('Namespace %s already has primary udn %s' % (
                     params['namespace'],
@@ -73,7 +73,7 @@ def run(params, log_id=None):
             return False
         
         if params['primary']:
-            udn = params['k8s_handler'].get_namespace_primary_udn(params['namespace'])
+            udn = params['k8s_handler'].get_namespace_primary_udn(params['namespace'], cache_enabled=False)
             if udn is not None and udn != params['name']:
                 my_output.error('Namespace %s already has primary udn %s' % (
                     params['namespace'],

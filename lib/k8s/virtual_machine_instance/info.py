@@ -258,6 +258,15 @@ class K8sVirtualMachineInstanceInfo():
                                     vmi_service_info['namespace_name']
                                 )
 
+            info['serviceT'] = []
+            for item in info['service']:
+                info['serviceT'].append(
+                    '%s:%s' % (
+                        item['type'],
+                        item['ports']
+                    )
+                )
+                
             info['serviceCount'] = len(
                 info['service']
             )
