@@ -144,7 +144,12 @@ def get_data(user_settings):
     data['cpu_architecture'] = user_settings['cpu_architecture']
     data['cluster_network_cidr'] = user_settings['cluster_network_cidr']
     data['cluster_network_host_prefix'] = user_settings['cluster_network_host_prefix']
+    data['cluster_networks'] = [dict(
+        cidr=user_settings['cluster_network_cidr'],
+        host_prefix=user_settings['cluster_network_host_prefix']
+    )]
     data['service_network_cidr'] = user_settings['service_network_cidr']
+    data['service_networks'] = [dict(cidr=user_settings['service_network_cidr'])]
     data['high_availability_mode'] = user_settings['high_availability_mode']
     data['http_proxy'] = user_settings['http_proxy']
     data['https_proxy'] = user_settings['https_proxy']
