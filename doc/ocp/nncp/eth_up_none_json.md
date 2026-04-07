@@ -1,27 +1,33 @@
 ## Interface Ethernet 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Enable interface with no IP address | [Link](./eth_up_none_cli.md) | See Below | [Link](./eth_up_none_nncp.md) | [Link](./eth_up_none_outcome.md)
 
-### Input
-
 ```
 [
-    {
-        "node": "_all_",
-        "policy": "my-policy",
-        "delete": true,
-        "check": true,
-        "interfaces": [
+  {
+    "k8s": {
+      "items": [
+        {
+          "node": "__all__",
+          "policy": "my-policy",
+          "delete": true,
+          "check": true,
+          "interfaces": [
             {
-                "type": "eth",
-                "name": "eno1",
-                "state": "up",
-                "ipv4": "none"
+              "type": "eth",
+              "name": "eno1",
+              "state": "up",
+              "ipv4": "none"
             }
-        ]
+          ]
+        }
+      ]
     }
+  }
 ]
 ```
 
@@ -29,47 +35,8 @@ Notes:
 - delete (true|false(def)) attribute controls if nncp policy is deleted once it is applied
 - check (true(def)|false) attribute controls if logical checks are made against the NodeNetworkState object per node e.g., interface name
 - node attribute controls on the nodeSelector value in NNCP CRD
-  - value "_all_" has no associated nodeSelector value
-  - value "_workers_" configures "node-role.kubernetes.io/worker: ''" as nodeSelector
+  - value "__all__" has no associated nodeSelector value
+  - value "__workers__" configures "node-role.kubernetes.io/worker: ''" as nodeSelector
   - any other value is expected to be proper node name in the clsuter and configures "kubernetes.io/hostname: 'value" as nodeSelector
-
-### Execution
-
-```
-# iserver create k8s nncp --file C:\tmp\nncp.json --no-confirm
-Cluster: my-cluster (type: ocp)
-
-Get nns data
-------------
-- my-node
-
-Check nns data
---------------
-- my-node ethernet interface found: eno1
-
-Generated CRDs
---------------
-
-apiVersion: nmstate.io/v1
-kind: NodeNetworkConfigurationPolicy
-metadata:
-  name: my-policy
-spec:
-  desiredState:
-    interfaces:
-    - ipv4:
-        enabled: false
-      name: eno1
-      state: up
-      type: ethernet
-
-
-
-Create NNCP
------------
-- my-policy
-Waiting for [1]: my-policy
-NNCP deleted
-```
 
 [[Back]](./README.md)

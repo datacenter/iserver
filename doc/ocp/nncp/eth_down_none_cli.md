@@ -1,6 +1,8 @@
 ## Interface Ethernet 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Disable interface with no IP address | See below | [Link](./eth_down_none_json.md) | [Link](./eth_down_none_nncp.md) | [Link](./eth_down_none_outcome.md)
 
@@ -31,8 +33,8 @@ IPv4 (none, dhcp, cidrv4): none
 Select target node
 ------------------
 - my-node
-- _workers_
-- _all_ [default]
+- __workers__
+- __all__ [default]
 Value:
 
 Delete policy once applied

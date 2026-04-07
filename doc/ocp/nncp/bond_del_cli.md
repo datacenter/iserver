@@ -1,6 +1,8 @@
 ## Inteface Bond 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete bond | See below | [Link](./bond_del_json.md) | [Link](./bond_del_nncp.md) | [Link](./bond_del_outcome.md)
 
@@ -29,8 +31,8 @@ Value: absent
 Select target node
 ------------------
 - ocp-bm1
-- _workers_
-- _all_ [default]
+- __workers__
+- __all__ [default]
 Value:
 
 Delete policy once applied

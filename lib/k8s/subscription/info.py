@@ -206,3 +206,94 @@ class K8sSubscriptionInfo():
         if self.get_subscription_by_package(package, cache_enabled=cache_enabled):
             return True
         return False
+
+    def is_subscription_ready(self, subscription_name, resources, my_output=None, details=False, break_on_error=False, cache_enabled=False):
+        if my_output is not None and details:
+            my_output.default('Operator resources', before_newline=True, underline=True)
+
+        for resource in resources:
+            if resource['type'] not in ['deployment', 'daemonset']:
+                if my_output is not None:
+                    my_output.error('Unsupported resource type: %s' % (resource['type']))                    
+                return False
+
+        if not cache_enabled:
+            resource_types = []
+            for resource in resources:
+                if resource['type'] not in resource_types:
+                    resource_types.append(resource['type'])
+
+            for resource_type in resource_types:
+                if resource_type == 'deployment':
+                    self.get_deployments(cache_enabled=False)
+
+                if resource_type == 'daemonset':
+                    self.get_daemon_sets(cache_enabled=False)
+
+
+        ready = True
+        for resource in resources:
+            if 'optional' not in resource:
+                resource['optional'] = False
+
+            if resource['type'] == 'deployment':
+                success = self.is_deployment_ready(resource['namespace'], resource['name'], cache_enabled=True)
+
+            if resource['type'] == 'daemonset':
+                success = self.is_daemon_set_ready(resource['namespace'], resource['name'], cache_enabled=True)
+
+            if not success and not resource['optional']:
+                ready = False
+
+            if my_output is not None and details:
+                if success:
+                    my_output.default(
+                        '- %s %s/%s: %s' % (
+                            resource['type'],
+                            resource['namespace'], 
+                            resource['name'],
+                            my_output.add_color('ready', 'Green')
+                        )
+                    )
+                
+                if not success:
+                    if resource['optional']:
+                        my_output.default(
+                            '- (optional) %s %s/%s: %s' % (
+                                resource['type'],
+                                resource['namespace'], 
+                                resource['name'],
+                                my_output.add_color('not ready', 'Yellow')
+                            )
+                        )
+                    else:
+                        my_output.default(
+                            '- %s %s/%s: %s' % (
+                                resource['type'],
+                                resource['namespace'], 
+                                resource['name'],
+                                my_output.add_color('not ready', 'Red')
+                            )
+                        )
+
+            if not ready and break_on_error:
+                break
+
+        if not ready:
+            if my_output is not None:
+                my_output.default(
+                    'Subscription %s %s' % (
+                        subscription_name,
+                        my_output.add_color('not ready', 'Red')
+                    )
+                )
+        
+        if my_output is not None:
+            my_output.default(
+                'Subscription %s %s' % (
+                    subscription_name,
+                    my_output.add_color('ready', 'Green')
+                )
+
+            )
+        return True

@@ -1,5 +1,7 @@
 # MMState Operator - Create Operator
 
+[[Back]](./README.md)
+
 ## Workflow
 
 - create openshift-nmstate namespace
@@ -12,7 +14,7 @@
 
 None
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/nmstate/operator_create.png)
 

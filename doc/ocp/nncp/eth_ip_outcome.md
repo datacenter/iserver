@@ -1,6 +1,8 @@
 ## Interface Ethernet
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Configure IP address | [Link](./eth_ip_cli.md) | [Link](./eth_ip_json.md) | [Link](./eth_ip_nncp.md) | See Below
 

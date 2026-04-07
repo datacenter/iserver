@@ -10,6 +10,7 @@ def get_function_map():
     fmap['lb-ip-pool'] = 'lb_ip_pool'
     fmap['namespace'] = 'namespace'
     fmap['nad'] = 'nad'
+    fmap['nncp'] = 'nncp'
     fmap['pod'] = 'pod'
     fmap['service'] = 'service'
     fmap['ovn-udn'] = 'ovn_udn'

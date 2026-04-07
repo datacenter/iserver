@@ -37,13 +37,19 @@ class K8sClusterUserDefinedNetworkLocalnet():
             name,
             namespace,
             phy,
-            subnets=[]
+            subnets=[],
+            labels={}
         ):
         body = {}
         body['apiVersion'] = 'k8s.ovn.org/v1'
         body['kind'] = 'ClusterUserDefinedNetwork'
         body['metadata'] = {}
         body['metadata']['name'] = name
+        if len(labels) > 0:
+            body['metadata']['labels'] = {}
+            for label in labels:
+                body['metadata']['labels'][label] = labels[label]
+                
         body['spec'] = {}
         body['spec']['namespaceSelector'] = {}
         body['spec']['namespaceSelector']['matchExpressions'] = []
@@ -78,6 +84,7 @@ class K8sClusterUserDefinedNetworkLocalnet():
             namespace,
             phy,
             subnets=[],
+            labels={},
             confirmation=False, 
             my_output=None, 
             wait=True
@@ -86,7 +93,8 @@ class K8sClusterUserDefinedNetworkLocalnet():
             name,
             namespace,
             phy, 
-            subnets=subnets
+            subnets=subnets,
+            labels=labels
         )
         if not self.create_resource(body, object_name='cluster_user_defined_network', my_output=my_output, confirmation=confirmation):
             return False

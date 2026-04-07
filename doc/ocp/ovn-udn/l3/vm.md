@@ -2,6 +2,10 @@
 
 [[Back]](./overview.md) [[Prev](./pod.md)] [[Next]](./task.md)
 
+
+> [!CAUTION]
+> IP DHCP fails on primary interface; this is known OpenShift limitation that has no path to resolution
+
 ## Connection to POD CIDR
 
 - Virtual Machine **may** connect to Kubernetes POD CIDR as primary interface
@@ -27,9 +31,6 @@
       - name: default
         pod: {}
 ```
-
-> [!CAUTION]
-> IP DHCP fails on primary interface; not sure if this is a bug
 
 ## Connection to secondary UDN w/l3 topology
 

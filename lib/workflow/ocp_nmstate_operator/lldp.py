@@ -169,7 +169,8 @@ def enable_nns(params, log_id=None):
 
             success, policy_name = params['k8s_handler'].set_nncp_interface_lldp_enabled(
                 interface['name'],
-                node_name=node_name
+                node_name=node_name,
+                wait=False
             )
             if not success:
                 params['success'] = False
@@ -188,10 +189,7 @@ def enable_nns(params, log_id=None):
     object_filter = ['names:%s' % (','.join(policy_names))]
     policies = params['k8s_handler'].get_node_network_configuration_policies(object_filter=object_filter, cache_enabled=False)
     if policies is not None:
-        k8s_output_handler.print_node_network_configuration_policy(
-            policies,
-            title=False
-        )
+        k8s_output_handler.print_node_network_configuration_policys_state(policies)
 
     success = params['k8s_handler'].wait_node_network_configuration_policies_status(
         policy_names=policy_names,
@@ -202,10 +200,7 @@ def enable_nns(params, log_id=None):
 
     policies = params['k8s_handler'].get_node_network_configuration_policies(object_filter=object_filter, cache_enabled=False)
     if policies is not None:
-        k8s_output_handler.print_node_network_configuration_policy(
-            policies,
-            title=False
-        )
+        k8s_output_handler.print_node_network_configuration_policys_state(policies)
 
     if not params['settings']['delete-nncp']:
         my_output.default('Node network policies not deleted (based on user flag)')

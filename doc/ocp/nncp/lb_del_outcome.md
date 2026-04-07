@@ -1,6 +1,8 @@
 ## Linux Bridge
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete linux bridge | [Link](./lb_del_cli.md) | [Link](./lb_del_json.md) | [Link](./lb_del_nncp.md) | See Below
 

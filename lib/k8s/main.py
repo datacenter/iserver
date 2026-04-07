@@ -12,6 +12,7 @@ from lib.k8s.alert_rule.main import K8sAlertRule
 from lib.k8s.auth.main import K8sAuth
 from lib.k8s.authentication.main import K8sAuthentication
 from lib.k8s.bare_metal_host.main import K8sBareMetalHost
+from lib.k8s.bgp_session_state.main import K8sBgpSessionState
 from lib.k8s.build_config.main import K8sBuildConfig
 from lib.k8s.catalog_source.main import K8sCatalogSource
 from lib.k8s.certificate.main import K8sCertificate
@@ -70,6 +71,8 @@ from lib.k8s.egress_router.main import K8sEgressRouter
 from lib.k8s.endpoint.main import K8sEndpoint
 from lib.k8s.event.main import K8sEvent
 from lib.k8s.forklift_controller.main import K8sForkliftController
+from lib.k8s.frr_configuration.main import K8sFrrConfiguration
+from lib.k8s.frr_node_state.main import K8sFrrNodeState
 from lib.k8s.grafana.main import K8sGrafana
 from lib.k8s.grafana_alert_rule_group.main import K8sGrafanaAlertRuleGroup
 from lib.k8s.grafana_contact_point.main import K8sGrafanaContactPoint
@@ -171,6 +174,7 @@ from lib.k8s.resource_quota.main import K8sResourceQuota
 from lib.k8s.role.main import K8sRole
 from lib.k8s.role_binding.main import K8sRoleBinding
 from lib.k8s.route.main import K8sRoute
+from lib.k8s.route_advertisement.main import K8sRouteAdvertisement
 from lib.k8s.sandbox_policy.main import K8sSandboxPolicy
 from lib.k8s.sandbox_policy_namespaced.main import K8sSandboxPolicyNamespaced
 from lib.k8s.secret.main import K8sSecret
@@ -254,6 +258,7 @@ class K8s(
         K8sAlertRule,
         K8sAlertManagerConfig,
         K8sBareMetalHost,
+        K8sBgpSessionState,
         K8sBuildConfig,
         K8sCatalogSource,
         K8sCdi,
@@ -312,6 +317,8 @@ class K8s(
         K8sEndpoint,
         K8sEvent,
         K8sForkliftController,
+        K8sFrrConfiguration,
+        K8sFrrNodeState,
         K8sGrafana,
         K8sGrafanaAlertRuleGroup,
         K8sGrafanaContactPoint,
@@ -413,6 +420,7 @@ class K8s(
         K8sRole,
         K8sRoleBinding,
         K8sRoute,
+        K8sRouteAdvertisement,
         K8sSandboxPolicy,
         K8sSandboxPolicyNamespaced,
         K8sSecret,
@@ -496,6 +504,7 @@ class K8s(
         K8sAuth.__init__(self)
         K8sAuthentication.__init__(self)
         K8sBareMetalHost.__init__(self)
+        K8sBgpSessionState.__init__(self)
         K8sBuildConfig.__init__(self)
         K8sCatalogSource.__init__(self)
         K8sCdi.__init__(self)
@@ -554,6 +563,8 @@ class K8s(
         K8sEndpoint.__init__(self)
         K8sEvent.__init__(self)
         K8sForkliftController.__init__(self)
+        K8sFrrConfiguration.__init__(self)
+        K8sFrrNodeState.__init__(self)
         K8sGrafana.__init__(self)
         K8sGrafanaAlertRuleGroup.__init__(self)
         K8sGrafanaContactPoint.__init__(self)
@@ -655,6 +666,7 @@ class K8s(
         K8sRole.__init__(self)
         K8sRoleBinding.__init__(self)
         K8sRoute.__init__(self)
+        K8sRouteAdvertisement.__init__(self)
         K8sSandboxPolicy.__init__(self)
         K8sSandboxPolicyNamespaced.__init__(self)
         K8sSecret.__init__(self)

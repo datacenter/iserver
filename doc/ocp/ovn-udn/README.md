@@ -1,4 +1,4 @@
-# User Defined Network (UDN)
+# OVNKubernetes - User Defined Network (UDN)
 
 [[Back]](../Operations.md) [[Cluster User Defined Network]](../ovn-cudn/README.md)
 
@@ -33,6 +33,10 @@ L2 | Primary | :white_check_mark: w/overlay | :white_check_mark: w/masq | :white
 L3 | Primary | :white_check_mark: w/overlay | :white_check_mark: w/masq | :white_check_mark: | :white_check_mark: | :x:
 L2 | Secondary | :white_check_mark: w/overlay | :x: | :x: | :x: | :white_check_mark:
 L3 | Secondary | :white_check_mark: w/overlay | :x: | :x: | :x: | :white_check_mark:
+
+## Limitations
+
+- Virtual machine primary interface does not work with L3 topology ([Link](./l3/vm.md))
 
 ## Life Cycle Management Commands
 

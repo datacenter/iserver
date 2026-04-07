@@ -21,60 +21,50 @@ None
 ## Example
 
 ```
-# iserver delete ocp nfd       
-OpenShift Cluster: bm1
-
+# iserver delete ocp nfd --cluster bm1
 
 OpenShift Workflow - Node Feature Discover Operator - Delete Operator
 =====================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-nfd",
-    "name": "nfd",
-    "operator-group-name": "nfd-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+Operator
+--------
+- subscription          : openshift-nfd/nfd
+- package               : openshift-marketplace/redhat-operators/nfd
+- channel               : stable
+- install plan          : openshift-nfd/install-gt7fs
+- install plan approved : ✓
+- installed csv         : nfd.4.21.0-202603230446
+- latest_csv            : ✓
 
 
-Delete Node Feature Discovery Instances
----------------------------------------
-- openshift-nfd/nfd-instance
-- wait for no nfd instance
+Delete NodeFeatureDiscovery
+---------------------------
+- namespace: openshift-nfd
+- name: nfd-instance
+- deleted
+- wait for no NodeFeatureDiscovery openshift-nfd/nfd-instance [timeout:60s]
 
 Delete Subscription
 -------------------
 - subscription: openshift-nfd/nfd
 - checking cluster service version...
-- csv found and will be deleted: openshift-nfd/nfd.4.18.0-202509240837
+- csv found and will be deleted: openshift-nfd/nfd.4.21.0-202603230446
 - wait for no subscription
-- check cluster service version: openshift-nfd/nfd.4.18.0-202509240837
+- check cluster service version: openshift-nfd/nfd.4.21.0-202603230446
 - wait for no csv
-Wait for deployments deleted (optional: False)...
-- openshift-nfd/nfd-controller-manager
-- openshift-nfd/nfd-master
-Wait for deamon sets deleted...
-- openshift-nfd/nfd-worker
+Wait for no deployment openshift-nfd/nfd-master (optional: False, timout: 180s)...
+Wait for no deployment openshift-nfd/nfd-controller-manager (optional: False, timout: 180s)...
+Wait for no daemonset (optional: False, timout: 180s)...
+Subscription nfd resources gone
 
 Delete Operator Group
 ---------------------
 - namespace: openshift-nfd
 - name: nfd-operator-group
 - wait for no operator group
-
-Delete Namespace
-----------------
-- name: openshift-nfd
 
 Namespace [openshift-nfd] resources
 - no pods
@@ -83,6 +73,12 @@ Namespace [openshift-nfd] resources
 - no replica sets
 - no services
 - no pvcs
+- no user defined networks
+- no cluster user defined networks
+
+Delete Namespace
+----------------
+- name: openshift-nfd
 - wait for no namespace
 
 Completed tasks

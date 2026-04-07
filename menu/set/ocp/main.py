@@ -34,6 +34,7 @@ from menu.set.ocp.nfs import set_ocp_nfs_command
 from menu.set.ocp.nmstate import set_ocp_nmstate_command
 from menu.set.ocp.oauth import set_ocp_oauth_command
 from menu.set.ocp.odf import set_ocp_odf_command
+from menu.set.ocp.ovn_bgp import set_ocp_ovn_bgp
 from menu.set.ocp.portworx import set_ocp_portworx_command
 from menu.set.ocp.prometheus import set_ocp_prometheus_command
 from menu.set.ocp.serverless import set_ocp_serverless_command
@@ -91,6 +92,7 @@ set_ocp_menu.add_command(set_ocp_nfs_command)
 set_ocp_menu.add_command(set_ocp_nmstate_command)
 set_ocp_menu.add_command(set_ocp_oauth_command)
 set_ocp_menu.add_command(set_ocp_odf_command)
+set_ocp_menu.add_command(set_ocp_ovn_bgp)
 set_ocp_menu.add_command(set_ocp_portworx_command)
 set_ocp_menu.add_command(set_ocp_prometheus_command)
 set_ocp_menu.add_command(set_ocp_serverless_command)

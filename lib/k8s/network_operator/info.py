@@ -1,94 +1,53 @@
-import yaml
-from lib import filter_helper
-from menu.common import get_confirmation
-
-
 class K8sNetworkOperatorInfo():
     def __init__(self):
         self.network_operator = None
 
-    def get_network_operator_info(self, network_operator_mo):
-        if network_operator_mo is None:
-            return None
+    def get_network_operator_info(self, managed_object):
+        info = self.get_base_info(managed_object, condition_map={})
 
-        info = {}
-        info['__Output'] = {}
+        info['title'] = '%s %s' % (info['name'], self.get(info, 'status:version'))
+        info['cni'] = self.get(managed_object, 'spec:defaultNetwork:type')
+        info['cidrT'] = []
+        for item in self.get(info, 'spec:clusterNetwork', on_error=[], on_none=[]):
+            info['cidrT'].append('Pod %s/%s' % (item['cidr'], item['hostPrefix']))
+        for item in self.get(info, 'spec:serviceNetwork', on_error=[], on_none=[]):
+            info['cidrT'].append('Svc %s' % (item))
+        info['settingsT'] = []
 
-        metadata_info = self.get_metadata_info(
-            network_operator_mo
-        )
-        info.update(metadata_info)
+        keys = [
+            'deployKubeProxy',
+            'disableMultiNetwork',
+            'disableNetworkDiagnostics',
+            'logLevel',
+            'managementState',
+            'operatorLogLevel',
+        ]
+        for key in keys:
+            value = self.get(managed_object, 'spec:%s' % (key))
+            if value is not None:
+                info['settingsT'].append('%s:%s' % (key, value))
 
-        info['spec'] = self.get(network_operator_mo, 'spec')
-        info['status'] = self.get(network_operator_mo, 'status')
+        extras = []
+        if 'FRR' in self.get(managed_object, 'spec:additionalRoutingCapabilities:providers', on_error=[], on_none=[]):
+            extras.append('frr-k8s')
+
+        if self.get(managed_object, 'spec:defaultNetwork:ovnKubernetesConfig:routeAdvertisements') == 'Enabled':
+            extras.append('route advertisement')
+
+        if len(extras) > 0:
+            info['settingsT'].append('---')
+            info['settingsT'] = info['settingsT'] + extras
+
         return info
 
-    def get_network_operators_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.network_operator is not None:
-                return self.network_operator
-
-        managed_objects = self.get_network_operator_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
-
-        self.network_operator = []
-        for managed_object in managed_objects:
-            network_operator_info = {}
-            network_operator_info['info'] = self.get_network_operator_info(
-                managed_object
-            )
-            network_operator_info['mo'] = managed_object
-            self.network_operator.append(
-                network_operator_info
-            )
-
-        return self.network_operator
-
-    def match_network_operator(self, network_operator_info, object_filter):
-        if object_filter is None or len(object_filter) == 0:
-            return True
-
-        for rule in object_filter:
-            (key, value) = rule.split(':')
-
-            key_found = False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_string(value, network_operator_info['name']):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_network_operator',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
     def get_network_operators(self, object_filter=None, return_mo=False, cache_enabled=True):
-        all_network_operators = self.get_network_operators_info(cache_enabled=cache_enabled)
-        if all_network_operators is None:
-            return None
-
-        network_operators = []
-
-        for network_operator_info in all_network_operators:
-            if not self.match_network_operator(network_operator_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                network_operators.append(
-                    network_operator_info['mo']
-                )
-                continue
-
-            network_operators.append(
-                network_operator_info['info']
-            )
-
-        return network_operators
+        infos = self.get_infos(
+            'network_operator', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+        return infos
 
     def is_network_operator(self, name, cache_enabled=True):
         if self.get_network_operator(name, cache_enabled=cache_enabled) is None:
@@ -96,82 +55,56 @@ class K8sNetworkOperatorInfo():
         return True
 
     def get_network_operator(self, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'name:%s' % (name)
-        )
-        network_operators = self.get_network_operators(
-            object_filter=object_filter,
-            return_mo=return_mo,
+        return self.get_info(
+            'network_operator', 
+            name,
+            return_mo=return_mo, 
             cache_enabled=cache_enabled
         )
-        if network_operators is None:
-            return None
-
-        if len(network_operators) == 1:
-            return network_operators[0]
-
-        return None
 
     def get_cluster_network_operator(self, return_mo=False, cache_enabled=True):
-        info = self.get_network_operator('cluster', return_mo=return_mo, cache_enabled=cache_enabled)
-        if info is None:
-            return None
-        return info
+        return self.get_network_operator(
+            'cluster', 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+    
+    def is_cluster_network_operator_progressing(self, cache_enabled=True):
+        return self.get(
+            self.get_cluster_network_operator(cache_enabled=cache_enabled),
+            'Progressing'
+        ) == 'True'
     
     def get_cluster_network_operator_type(self, cache_enabled=True):
-        info = self.get_cluster_network_operator(cache_enabled=cache_enabled)
-        if info is None:
-            return info
-        return info['network_operator_type']
+        return self.get(
+            self.get_cluster_network_operator(cache_enabled=cache_enabled), 
+            'spec:defaultNetwork:type'
+        )
     
     def is_cluster_network_operator_ovn(self, cache_enabled=True):
-        info = self.get_cluster_network_operator_type(cache_enabled=cache_enabled)
-        if info is not None and info == 'OVNKubernetes':
-            return True
-        return False
+        return self.get_cluster_network_operator_type(cache_enabled=cache_enabled) == 'OVNKubernetes'
+
+    def is_ovn_frr_enabled(self, cache_enabled=True):
+        # "spec": {
+        #     "additionalRoutingCapabilities": {
+        #       "providers": ["FRR"]
+        #     }
+        # }
+        managed_object = self.cleanup_managed_object(
+            self.get_cluster_network_operator(return_mo=True, cache_enabled=cache_enabled)
+        )
+        providers_mo = self.get(managed_object, 'spec:additionalRoutingCapabilities:providers', on_error=[], on_none=[])
+        return 'FRR' in providers_mo
     
-    def get_cluster_network_operator_body(self, network_operator_type, cidr, host_prefix, kube_proxy_replacement=False):
-        body = {}
-        body['apiVersion'] = 'operator.openshift.io/v1'
-        body['kind'] = 'Network'
-        body['metadata'] = dict(name='cluster')
-        body['spec'] = {}
-        body['spec']['defaultNetowkr'] = dict(type=network_operator_type)
-        network_mo = {}
-        network_mo['cidr'] = cidr
-        network_mo['hostPrefix'] = host_prefix
-        body['spec']['clusterNetwork'] = [network_mo]
-        body['spec']['deployKubeProxy'] = kube_proxy_replacement
-        body['status'] = None
-        return body
-
-    def set_cluster_network_operator_type(self, network_operator_type, cidr, host_prefix, kube_proxy_replacement=False, confirmation=False, my_output=None, wait=True):
-        if my_output is None:
-            confirmation = False
-
-        if my_output is not None:
-            my_output.default('Set Cluster Network Operator Type', before_newline=True, underline=True)
-            my_output.default('- type: %s' % (network_operator_type))
-            my_output.default('- cidr: %s' % (cidr))
-            my_output.default('- host prefix: %s' % (host_prefix))
-            my_output.default('- kube proxy replaceement: %s' % (kube_proxy_replacement))
-            
-        body = self.get_cluster_network_operator_body(network_operator_type, cidr, host_prefix, kube_proxy_replacement=kube_proxy_replacement)
-        if my_output is not None:
-            my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
-
-        if confirmation:
-            if not get_confirmation():
-                return False     
-
-        success = self.patch_network_operator_mo(body)
-        if not success:
-            if my_output is not None:
-                my_output.error('patch failed')
-            return False
-        
-        if my_output is not None:
-            my_output.default('Patch successful')
-
-        return True
+    def is_ovn_frr_ra_enabled(self, cache_enabled=True):
+        # "spec": {
+        #     "defaultNetwork": {
+        #         "ovnKubernetesConfig": {
+        #             "routeAdvertisements": "Enabled"
+        #         }
+        #     }
+        # }
+        managed_object = self.cleanup_managed_object(
+            self.get_cluster_network_operator(return_mo=True, cache_enabled=cache_enabled)
+        )
+        return self.get(managed_object, 'spec:defaultNetwork:ovnKubernetesConfig:routeAdvertisements') == 'Enabled'

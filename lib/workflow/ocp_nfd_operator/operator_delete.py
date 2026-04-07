@@ -1,31 +1,17 @@
-import json
 from lib import output_helper
-from lib.workflow.ocp_access import check as ocp_check
 from lib.workflow.ocp_nfd_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
@@ -37,45 +23,43 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    subscription = params['k8s_handler'].get_subscription_by_package(
-        params['name'],
-        return_mo=False,
-        cache_enabled=False
+    subscription = ocp_common.get_subscription(
+        params['k8s_handler'],
+        params['__default__']['name'],
+        my_output=my_output
     )
-    if subscription is None:
-        my_output.default('Subscription already deleted: %s' % (params['name']))
-    else:
+    if subscription is not None:
         success = params['k8s_handler'].delete_node_feature_discoveries(
-            my_output=my_output, 
+            my_output=my_output,
             wait=True
         )
         if not success:
             return False
-        
+
         success = params['k8s_handler'].delete_nfd_subscription(
             subscription['namespace'],
             subscription['name'],
-            my_output=my_output, 
+            my_output=my_output,
             wait=True
         )
         if not success:
             return False
 
     success = params['k8s_handler'].delete_operator_group_in_namespace(
-        params['namespace'],
+        params['__default__']['namespace'],
         my_output=my_output,
         wait=True
     )
     if not success:
         return False
 
-    if params['delete-namespace']:
+    if params['__default__']['delete-namespace']:
         success = params['k8s_handler'].delete_namespace(
-            params['namespace'],
+            params['__default__']['namespace'],
             my_output=my_output,
             wait=True
         )

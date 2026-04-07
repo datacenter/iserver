@@ -357,6 +357,11 @@ class OutputHelper():
 
         return values
 
+    def add_color_bool(self, value, title):
+        if value:
+            return self.add_color(title, 'Green')
+        return self.add_color(title, 'Red')
+    
     def add_color(self, value, color):
         if color == 'Red':
             return colorama.Fore.RED + str(value) + colorama.Fore.RESET
@@ -1141,7 +1146,7 @@ class OutputHelper():
 
                 if len(item[key]) > 1:
                     row_separator = True
-                    
+        
         if len(expand) == 0:
             self.my_table(
                 items,

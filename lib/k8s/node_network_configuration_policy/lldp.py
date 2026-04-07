@@ -2,11 +2,16 @@ class K8sNodeNetworkConfigurationPolicyLldp():
     def __init__(self):
         pass
 
-    def set_nncp_interface_lldp_enabled(self, interface_name, policy_name=None, node_name=None):
-        policy = {}
-        policy['apiVersion'] = 'nmstate.io/v1'
-        policy['kind'] = 'NodeNetworkConfigurationPolicy'
-        policy['metadata'] = {}
+    def get_nncp_interface_lldp_enable_body(
+            self, 
+            interface_name, 
+            policy_name=None, 
+            node_name=None,            
+        ):
+        body = {}
+        body['apiVersion'] = 'nmstate.io/v1'
+        body['kind'] = 'NodeNetworkConfigurationPolicy'
+        body['metadata'] = {}
 
         if policy_name is None:
             if node_name is not None:
@@ -14,26 +19,49 @@ class K8sNodeNetworkConfigurationPolicyLldp():
             else:
                 policy_name = 'enable-lldp-%s' % (interface_name)
 
-        policy['metadata']['name'] = self.get_new_nncp_name(policy_name)
+        body['metadata']['name'] = self.get_new_nncp_name(policy_name)
 
-        policy['spec'] = {}
-        policy['spec']['nodeSelector'] = {}
+        body['spec'] = {}
+        body['spec']['nodeSelector'] = {}
 
         if node_name is not None:
-            policy['spec']['nodeSelector']['kubernetes.io/hostname'] = node_name
+            body['spec']['nodeSelector']['kubernetes.io/hostname'] = node_name
         else:
-            policy['spec']['nodeSelector']['node-role.kubernetes.io/worker'] = '""'
+            body['spec']['nodeSelector']['node-role.kubernetes.io/worker'] = '""'
 
-        policy['spec']['desiredState'] = {}
-        policy['spec']['desiredState']['interfaces'] = []
+        body['spec']['desiredState'] = {}
+        body['spec']['desiredState']['interfaces'] = []
 
         interface_mo = {}
         interface_mo['name'] = interface_name
         interface_mo['type'] = 'ethernet'
         interface_mo['lldp'] = {}
         interface_mo['lldp']['enabled'] = True
-        policy['spec']['desiredState']['interfaces'].append(
+        body['spec']['desiredState']['interfaces'].append(
             interface_mo
         )
 
-        return self.create_node_network_configuration_policy(policy), policy['metadata']['name']
+        return body
+    
+    def set_nncp_interface_lldp_enabled(
+            self, 
+            interface_name, 
+            policy_name=None, 
+            node_name=None,
+            confirmation=False, 
+            my_output=None, 
+            wait=True
+        ):
+
+        body = self.get_nncp_interface_lldp_enable_body(
+            interface_name, 
+            policy_name=policy_name, 
+            node_name=node_name
+        )
+        success = self.create_node_network_configuration_policy(
+            body,
+            confirmation=confirmation,
+            my_output=my_output,
+            wait=wait
+        )
+        return success, body['metadata']['name']

@@ -1,6 +1,8 @@
 ## Inteface Bond 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete bond | [Link](./bond_del_cli.md) | [Link](./bond_del_json.md) | See Below | [Link](./bond_del_outcome.md)
 

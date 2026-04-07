@@ -1,6 +1,13 @@
 class K8sSubscriptionNfd():
     def __init__(self):
-        pass
+        self.subscription_nfd_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-nfd', 'name': 'nfd-controller-manager'}
+        ]
+
+        self.instance_nfd_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-nfd', 'name': 'nfd-master'},
+            {'type': 'daemonset', 'namespace': 'openshift-nfd', 'name': 'nfd-worker'}
+        ]
 
     def create_nfd_subscription(self, namespace, name, channel, confirmation=False, my_output=None, wait=True):
         success = self.create_subscription(
@@ -42,63 +49,22 @@ class K8sSubscriptionNfd():
         
         return True
 
-    def is_subscription_nfd_ready(self, with_instance=False):
-        deployments = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-master'}
-        ]
-
-        instance_deployments = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-master'}
-        ]
-
+    def is_subscription_nfd_ready(self, with_instance=False, my_output=None, details=False, break_on_error=False, cache_enabled=False):
+        resources = self.subscription_nfd_resources
         if with_instance:
-            deployments.extend(instance_deployments)
+            resources.extend(self.instance_nfd_resources)
 
-        for deployment in deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
-                return False
-
-        return True
+        return self.is_subscription_ready('nfd', resources, my_output=my_output, details=details, break_on_error=break_on_error, cache_enabled=cache_enabled)
     
-    def wait_subscription_nfd_ready(self, my_output=None, with_instance=False):
-        deployments = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-controller-manager'}
-        ]
-        instance_deployments = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-master'}
-        ]
-
+    def wait_subscription_nfd_ready(self, with_instance=False, my_output=None):
+        resources = self.subscription_nfd_resources
         if with_instance:
-            deployments.extend(instance_deployments)
+            resources.extend(self.instance_nfd_resources)
 
-        success = self.wait_deployments_ready_state(deployments, my_output=my_output, optional=True)
-        if not success:
-            return False
-
-        if with_instance:
-            daemon_sets = [
-                {'namespace': 'openshift-nfd', 'name': 'nfd-worker'}
-            ]
-            success = self.wait_daemon_sets_ready_state(daemon_sets, my_output=my_output, optional=True)
-            if not success:
-                return False
-
-        return True
+        return self.wait_subscription_resources_ready('nfd', resources, my_output=my_output)
 
     def wait_no_subscription_nfd(self, my_output=None):
-        deployments = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-controller-manager'},
-            {'namespace': 'openshift-nfd', 'name': 'nfd-master'}
-        ]
-        success = self.wait_no_deployments(deployments, my_output=my_output, optional=False)
-        if not success:
-            return False
-
-        daemon_sets = [
-            {'namespace': 'openshift-nfd', 'name': 'nfd-worker'}
-        ]
-        success = self.wait_no_daemon_sets(daemon_sets, my_output=my_output, optional=False)
-        if not success:
-            return False
-
-        return True
+        resources = self.subscription_nfd_resources
+        resources.extend(self.instance_nfd_resources)
+        return self.wait_no_subscription_resources('nfd', resources, my_output=my_output)
+    

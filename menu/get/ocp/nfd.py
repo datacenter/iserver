@@ -23,7 +23,7 @@ def get_ocp_nfd_command(ctx, cluster_name, verbose):
     try:
         params = {}
         params['cluster'] = cluster_name
-        params['verbose'] = verbose
+        params['annotation'] = verbose
 
         success = ocp_installer.run(
             params,

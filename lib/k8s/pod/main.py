@@ -9,6 +9,7 @@ from lib.k8s.pod.delete import K8sPodDelete
 from lib.k8s.pod.nvidia_driver import K8sPodNvidiaDriver
 from lib.k8s.pod.oauth import K8sPodOauth
 from lib.k8s.pod.openshift_prometheus import K8sPodOpenshiftPrometheus
+from lib.k8s.pod.ovn_frr import K8sPodOvnFrr
 from lib.k8s.pod.template.main import K8sPodTemplate
 from lib.k8s.pod.wait import K8sPodWait
 
@@ -25,6 +26,7 @@ class K8sPod(
         K8sPodNvidiaDriver,
         K8sPodOauth,
         K8sPodOpenshiftPrometheus,
+        K8sPodOvnFrr,
         K8sPodTemplate,
         K8sPodWait
         ):
@@ -40,5 +42,6 @@ class K8sPod(
         K8sPodNvidiaDriver.__init__(self)
         K8sPodOauth.__init__(self)
         K8sPodOpenshiftPrometheus.__init__(self)
+        K8sPodOvnFrr.__init__(self)
         K8sPodTemplate.__init__(self)
         K8sPodWait.__init__(self)

@@ -1,6 +1,8 @@
 ## Interface Ethernet
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Enable interface with no IP address | [Link](./eth_up_none_cli.md) | [Link](./eth_up_none_json.md) | [Link](./eth_up_none_nncp.md) | See Below
 

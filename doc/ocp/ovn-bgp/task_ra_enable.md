@@ -1,0 +1,88 @@
+# OVNKubernetes BGP - Enable Route Advertisement
+
+## Input
+
+```
+[
+    {
+        "ovn-bgp": {
+            "ra": {}
+        }
+    }
+]
+```
+
+Notes:
+- `ra` triggers [workflow execution](./ra_enable.md)
+
+## Example
+
+```
+# iserver set ocp task --cluster bm1 --file C:\tmp\task.json 
+
+Cluster: bm1 (type: ocp)
+
+OpenShift Workflow - OVNKubernetes - Enable frr-k8s route advertisement
+=======================================================================
+
+OpenShift Cluster: bm1
+
++----+------------------+---------------+---------------------------+----------------------+---------------------------------+
+| ID | Network Operator | CNI           | Condition                 | CIDR                 | Settings                        |
++----+------------------+---------------+---------------------------+----------------------+---------------------------------+
+| 1  | cluster 4.21.4   | OVNKubernetes | V Available               | Pod 10.244.0.0/14/23 | deployKubeProxy:False           | 
+|    |                  |               | X Degraded                | Svc 172.244.0.0/16   | disableMultiNetwork:False       | 
+|    |                  |               | X ManagementStateDegraded |                      | disableNetworkDiagnostics:False | 
+|    |                  |               | X Progressing             |                      | logLevel:Normal                 | 
+|    |                  |               | V Upgradeable             |                      | managementState:Managed         | 
+|    |                  |               |                           |                      | operatorLogLevel:Normal         | 
+|    |                  |               |                           |                      | ---                             | 
+|    |                  |               |                           |                      | frr-k8s                         | 
++----+------------------+---------------+---------------------------+----------------------+---------------------------------+
+
+Patch Network
+-------------
+- name: cluster
+
+~~~
+apiVersion: operator.openshift.io/v1
+kind: Network
+metadata:
+  name: cluster
+spec:
+  additionalRoutingCapabilities:
+    providers:
+    - FRR
+  clusterNetwork:
+  - cidr: 10.244.0.0/14
+    hostPrefix: 23
+  defaultNetwork:
+    ovnKubernetesConfig:
+      routeAdvertisements: Enabled
+  deployKubeProxy: false
+  disableMultiNetwork: false
+  disableNetworkDiagnostics: false
+  logLevel: Normal
+  managementState: Managed
+  operatorLogLevel: Normal
+  serviceNetwork:
+  - 172.244.0.0/16
+  useMultiNetworkPolicy: false
+
+~~~
+Network [cluster] patched
+- wait for Network cluster [timeout:120s] with {"Progressing_status": "True"}
+- wait for Network cluster [timeout:360s] with {"Progressing_status": "False"}
+- wait for no Pod openshift-ovn-kubernetes/ovnkube-control-plane-958fd69c7-ngrkc [timeout:120s]
+- wait for no Pod openshift-ovn-kubernetes/ovnkube-control-plane-958fd69c7-wwxmc [timeout:120s]
+- wait for no Pod openshift-ovn-kubernetes/ovnkube-node-2srqs [timeout:120s]
+- wait for no Pod openshift-ovn-kubernetes/ovnkube-node-4j59m [timeout:120s]
+- wait for no Pod openshift-ovn-kubernetes/ovnkube-node-7nsbl [timeout:120s]
+Wait for deployment openshift-ovn-kubernetes/ovnkube-control-plane ready (optional: False, allow zero replicas: False, timout: 180s)...
+Wait for daemonset ready (optional: False, timout: 180s)...
+
+Completed tasks
+- OVN frr-k8s route advertisement enabled
+```
+
+[[Back]](./README.md)

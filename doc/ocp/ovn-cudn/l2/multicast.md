@@ -12,7 +12,7 @@
 - 2x c8kv vms per namespace, each in different node
 
 > [!CAUTION]
-> Multicast works within namespace (not sure if by design or due to bug)
+> Multicast works within namespace only, not across namespaces; known limitation
 
 ## CUDN
 

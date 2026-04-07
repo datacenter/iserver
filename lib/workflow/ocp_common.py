@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import yaml
 import copy
@@ -12,6 +13,7 @@ from lib.linux import main as linux
 from lib.k8s import main as k8s
 from lib.ocp import settings as ocp_settings
 from lib.workflow.ocp_cluster import ready as cluster_ready
+from lib.workflow.ocp_access import check as ocp_check
 
 
 def check_cluster_init_fqdn(user_settings, my_output, log_id):
@@ -666,7 +668,7 @@ def get_subscription(k8s_handler, package, my_output=None):
     )
     if subscription is None:
         if my_output is not None:
-            my_output.error('Operator not found: %s' % (package))
+            my_output.default('Operator %s: %s' % (my_output.add_color('not found', 'Red'), package))
         return None
 
     if my_output is not None:
@@ -820,6 +822,17 @@ def check_paramater(
             if file_helper.get_file_text(value) is None:
                 return False, 'Parameter %s valid text filename required' % (name)
 
+        if expected_type == 'file-k8s':
+            if not isinstance(value, str):
+                return False, 'Parameter %s string required' % (name)
+            
+            content = file_helper.get_file_yaml(value) 
+            if content is None:
+                return False, 'Parameter %s valid yaml filename required' % (name)
+            
+            if 'kind' not in content:
+                return False, 'Parameter %s valid kube yaml filename required' % (name)
+
         if expected_type == 'int':
             if not isinstance(value, int):
                 return False, 'Parameter %s of type int required' % (name)
@@ -891,5 +904,52 @@ def check_paramater(
             for item in value:
                 if not ip_helper.is_valid_ipv4_cidr(item) and not ip_helper.is_valid_ipv6_cidr(item):
                     return False, 'cidr list with v4/v6 subnets required'
-        
+
+        if expected_type == 'list-of-ip':
+            for item in value:
+                if not ip_helper.is_valid_ipv4_address(item) and not ip_helper.is_valid_ipv6_address(item):
+                    return False, 'list with v4/v6 addresses required'
+                        
     return True, value
+
+
+def sanitize_params(params, allowed_keys, defaults=None):
+    new_params = {}
+    for key in params:
+        if key in allowed_keys:
+            new_params[key] = params[key]
+
+    new_params['__default__'] = {}
+    if defaults is not None:
+        for key in defaults:
+            new_params['__default__'][key] = defaults[key]
+
+    return new_params
+
+
+def workflow_init(params, my_output, log_id, hide={}):
+    if params['verbose']:
+        my_output.default('Workflow Parameters', underline=True)
+        display_params = copy.deepcopy(params)
+        for key in hide:
+            if key in display_params and display_params[key] is not None:
+                display_params[key] = '*** user defined ***'
+        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
+    else:
+        my_output.debug('Workflow Parameters', underline=True)
+        display_params = copy.deepcopy(params)
+        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
+
+    ocp_check_params = {}
+    ocp_check_params['cluster'] = params['cluster']
+    ocp_check_params['verbose'] = params['check-verbose']
+    ocp_params, errors = ocp_check.run(
+        ocp_check_params,
+        log_id=log_id
+    )
+    if errors is not None:
+        my_output.error(errors)
+        return None
+
+    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
+    return params

@@ -1,6 +1,8 @@
 ## Linux Bridge 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Add linux bridge | [Link](./lb_add_cli.md) | [Link](./lb_add_json.md) | See Below | [Link](./lb_add_outcome.md)
 

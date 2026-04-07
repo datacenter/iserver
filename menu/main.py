@@ -62,7 +62,7 @@ def print_version(ctx, param, value):
         version = 'unknown'
 
     click.echo('Version %s' % (version))
-    click.echo('Project: https://wwwin-github.cisco.com/emear-telcocloud/iserver')
+    click.echo('Project: https://github.com/datacenter/iserver/')
     ctx.exit()
 
 

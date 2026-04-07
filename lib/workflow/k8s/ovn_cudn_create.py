@@ -14,6 +14,7 @@ def validate(params):
         ['topology', False, None, 'str', None, None, ['l2', 'l3', 'localnet'], None],
         ['phy', True, None, 'str', None, None, None, None],
         ['subnets', False, [], 'list', None, None, None, None],
+        ['labels', True, {}, 'dict', None, None, None, None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
     if not success:
@@ -74,6 +75,7 @@ def run(params, log_id=None):
             params['namespace'],
             params['primary'],
             subnets=params['subnets'],
+            labels=params['labels'],
             confirmation=params['confirmation'], 
             my_output=my_output, 
             wait=params['wait']
@@ -102,6 +104,7 @@ def run(params, log_id=None):
             params['namespace'],
             params['primary'],
             params['subnets'],
+            labels=params['labels'],
             confirmation=params['confirmation'], 
             my_output=my_output, 
             wait=params['wait']
@@ -120,6 +123,7 @@ def run(params, log_id=None):
             params['namespace'],
             params['phy'],
             subnets=params['subnets'],
+            labels=params['labels'],
             confirmation=params['confirmation'], 
             my_output=my_output, 
             wait=params['wait']

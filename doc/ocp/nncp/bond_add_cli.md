@@ -1,6 +1,8 @@
 ## Inteface Bond 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Add bond | See below | [Link](./bond_add_json.md) | [Link](./bond_add_nncp.md) | [Link](./bond_add_outcome.md)
 
@@ -42,8 +44,8 @@ Miimon option: 140
 Select target node
 ------------------
 - ocp-bm1
-- _workers_
-- _all_ [default]
+- __workers__
+- __all__ [default]
 Value:
 
 Delete policy once applied

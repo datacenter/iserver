@@ -1,6 +1,8 @@
 ## Inteface VLAN 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete VLAN | See below | [Link](./vlan_del_json.md) | [Link](./vlan_del_nncp.md) | [Link](./vlan_del_outcome.md)
 
@@ -31,8 +33,8 @@ Value: absent
 Select target node
 ------------------
 - my-node
-- _workers_
-- _all_ [default]
+- __workers__
+- __all__ [default]
 Value:
 
 Delete policy once applied

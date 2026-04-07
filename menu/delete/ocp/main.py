@@ -21,6 +21,7 @@ from menu.delete.ocp.nfd import delete_ocp_nfd_command
 from menu.delete.ocp.nim import delete_ocp_nim_command
 from menu.delete.ocp.nmstate import delete_ocp_nmstate_command
 from menu.delete.ocp.odf import delete_ocp_odf_command
+from menu.delete.ocp.ovn_bgp import delete_ocp_ovn_bgp
 from menu.delete.ocp.portworx import delete_ocp_portworx_command
 from menu.delete.ocp.prometheus import delete_ocp_prometheus_command
 from menu.delete.ocp.serverless import delete_ocp_serverless_command
@@ -62,10 +63,11 @@ delete_ocp_menu.add_command(delete_ocp_lso_command)
 delete_ocp_menu.add_command(delete_ocp_lvm_command)
 delete_ocp_menu.add_command(delete_ocp_minio_command)
 delete_ocp_menu.add_command(delete_ocp_mtv_command)
-delete_ocp_menu.add_command(delete_ocp_odf_command)
 delete_ocp_menu.add_command(delete_ocp_nfd_command)
 delete_ocp_menu.add_command(delete_ocp_nim_command)
 delete_ocp_menu.add_command(delete_ocp_nmstate_command)
+delete_ocp_menu.add_command(delete_ocp_odf_command)
+delete_ocp_menu.add_command(delete_ocp_ovn_bgp)
 delete_ocp_menu.add_command(delete_ocp_portworx_command)
 delete_ocp_menu.add_command(delete_ocp_prometheus_command)
 delete_ocp_menu.add_command(delete_ocp_serverless_command)

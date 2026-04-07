@@ -17,7 +17,7 @@ class ErrorExit(Exception):
 @click.pass_obj
 @click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['all'], help="[dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf|route|all]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['all'], help="[dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf|route|ethtool|all]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 def get_k8s_nns_command(
         ctx,
@@ -35,7 +35,7 @@ def get_k8s_nns_command(
             'node_network_state',
             output,
             view,
-            'all (def), dns, route, intf, bond, eth, vlan, vf, lb, ovs, lldp',
+            'all (def), dns, route, intf, bond, eth, vlan, vf, lb, ovs, lldp, ethtool',
             view_groups=['intf:bond,eth,lb,ovs,vf,vlan'],
             cluster_type='ocp',
             filter_params=dict(name=name)

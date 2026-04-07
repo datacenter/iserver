@@ -27,6 +27,7 @@ from menu.get.ocp.nim import get_ocp_nim_command
 from menu.get.ocp.nmstate import get_ocp_nmstate_command
 from menu.get.ocp.oauth import get_ocp_oauth_command
 from menu.get.ocp.odf import get_ocp_odf_command
+from menu.get.ocp.ovn_bgp import get_ocp_ovn_bgp_command
 from menu.get.ocp.portworx import get_ocp_portworx_command
 from menu.get.ocp.prometheus import get_ocp_prometheus_command
 from menu.get.ocp.serverless import get_ocp_serverless_command
@@ -76,6 +77,7 @@ get_ocp_menu.add_command(get_ocp_nim_command)
 get_ocp_menu.add_command(get_ocp_nmstate_command)
 get_ocp_menu.add_command(get_ocp_oauth_command)
 get_ocp_menu.add_command(get_ocp_odf_command)
+get_ocp_menu.add_command(get_ocp_ovn_bgp_command)
 get_ocp_menu.add_command(get_ocp_portworx_command)
 get_ocp_menu.add_command(get_ocp_prometheus_command)
 get_ocp_menu.add_command(get_ocp_serverless_command)

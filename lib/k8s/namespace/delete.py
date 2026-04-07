@@ -216,13 +216,9 @@ class K8sNamespaceDelete():
         return self.set_namespace_mo(namespace_mo)
     
     def delete_namespace(self, namespace, my_output=None, check_usage=True, wait=True, finalizers=False):
-        if my_output is not None:
-            my_output.default('Delete Namespace', before_newline=True, underline=True)
-            my_output.default('- name: %s' % (namespace))
-
         if not self.is_namespace(namespace):
             if my_output is not None:
-                my_output.default('- already deleted')
+                my_output.default('Namespace %s already deleted' % (namespace), before_newline=True)
             return True
     
         if check_usage:
@@ -237,6 +233,10 @@ class K8sNamespaceDelete():
                     my_output.error('Namespace used and cannot be deleted')
 
                 return False
+
+        if my_output is not None:
+            my_output.default('Delete Namespace', before_newline=True, underline=True)
+            my_output.default('- name: %s' % (namespace))
     
         success = self.delete_namespace_mo(namespace)
         if not success:

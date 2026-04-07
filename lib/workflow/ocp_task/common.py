@@ -25,6 +25,7 @@ def get_task_map():
     fmap['nim'] = 'ocp_nim_operator'
     fmap['nmstate'] = 'ocp_nmstate_operator'
     fmap['ocp-proxy'] = 'ocp_proxy'
+    fmap['ovn-bgp'] = 'ocp_ovn_bgp'
     fmap['odf'] = 'ocp_odf_operator'
     fmap['portworx'] = 'ocp_portworx_operator'
     fmap['prometheus'] = 'ocp_prometheus'

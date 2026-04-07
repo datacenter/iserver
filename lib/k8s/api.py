@@ -1191,13 +1191,6 @@ class K8sApi():
                 my_output.error('Kubernetes api not ready')
             return False
 
-        if my_output is not None:
-            my_output.default('Delete %s' % (kind), before_newline=True, underline=True)
-            if namespace is not None:
-                my_output.default('- namespace: %s' % (namespace))
-            if name is not None:
-                my_output.default('- name: %s' % (name))
-
         if object_name is not None:
             if namespace is None:
                 found = getattr(self, 'is_%s' % (object_name))(
@@ -1210,8 +1203,19 @@ class K8sApi():
 
             if not found:
                 if my_output is not None:
-                    my_output.default('- %s' % (my_output.add_color('already deleted', 'Green')))
+                    if namespace is None:
+                        my_output.default('%s %s %s' % (kind, name, my_output.add_color('already deleted', 'Green')), before_newline=True)
+                    else:
+                        my_output.default('%s %s/%s %s' % (kind, namespace, name, my_output.add_color('already deleted', 'Green')), before_newline=True)
+
                 return True
+
+        if my_output is not None:
+            my_output.default('Delete %s' % (kind), before_newline=True, underline=True)
+            if namespace is not None:
+                my_output.default('- namespace: %s' % (namespace))
+            if name is not None:
+                my_output.default('- name: %s' % (name))
 
         start_time = int(time.time() * 1000)
 

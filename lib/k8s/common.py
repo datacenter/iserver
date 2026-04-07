@@ -373,9 +373,15 @@ class K8sCommon():
             info['%sTick' % (key)] = '\u2717'
             info['__Output']['%sTick' % (key)] = 'Red'
 
+        conditions = []
         conditions_mo = self.get(managed_object, 'status:conditions')
         if conditions_mo is not None:
             for condition_mo in conditions_mo:
+                condition_status = self.get(condition_mo, 'status')
+                conditions.append(dict(key=condition_mo['type'], value=condition_status))
+                if len(condition_map) == 0:
+                    info['%s_status' % (condition_mo['type'])] = condition_status
+
                 for key in condition_map:
                     if condition_mo['type'] == condition_map[key]:
                         info['%s_status' % (key)] = self.get(condition_mo, 'status')
@@ -385,6 +391,17 @@ class K8sCommon():
                             info[key] = True
                             info['%sTick' % (key)] = '\u2713'
                             info['__Output']['%sTick' % (key)] = 'Green'
+
+        info['conditionT'] = []
+        conditions = sorted(
+            conditions,
+            key=lambda i: i['key'].lower()
+        )
+        for condition in conditions:
+            if condition['value'] in ['True', '"True"']:
+                info['conditionT'].append('\u2713 %s' % (condition['key']))
+            else:
+                info['conditionT'].append('\u2717 %s' % (condition['key']))
 
         return info
 
@@ -505,6 +522,17 @@ class K8sCommon():
                     if not filter_helper.match_string(value, info['name']):
                         return False
 
+            if key == 'names':
+                key_found = True
+                value_found = False
+                for name in value.split(','):
+                    if filter_helper.match_string(name, info['name']):
+                        value_found = True
+                        break
+
+                if not value_found:
+                    return False
+                
             if key == 'owner':
                 key_found = True
                 if not filter_helper.match_namespace_name(value, info['owner']):
@@ -656,3 +684,17 @@ class K8sCommon():
             del managed_object['status']
 
         return managed_object
+    
+    def add_tick(self, info, attribute_name, success_value, property_name, bool_attribute=None):
+        value = self.get(info, attribute_name)
+        if value == success_value:
+            info[property_name] = '\u2713'
+            info['__Output'][property_name] = 'Green'
+            if bool_attribute is not None:
+                info[bool_attribute] = True
+        else:
+            info[property_name] = '\u2717'
+            info['__Output'][property_name] = 'Red'
+            if bool_attribute is not None:
+                info[bool_attribute] = False
+        return info

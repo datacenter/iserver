@@ -695,21 +695,32 @@ def _get(value, key):
 
     return '__ERROR'
 
+
 def get(managed_object, key, on_error=None, on_none=None):
     if managed_object is None:
         return on_error
 
-    if not isinstance(managed_object, dict):
-        return on_error
+    if isinstance(managed_object, dict):
+        value = _get(managed_object, key)
+        if value == '__ERROR':
+            return on_error
 
-    value = _get(managed_object, key)
-    if value == '__ERROR':
-        return on_error
+        if value is None:
+            return on_none
 
-    if value is None:
-        return on_none
+        return value
 
-    return value
+    if isinstance(managed_object, list):
+        values = []
+        for item in managed_object:
+            if not isinstance(item, dict):
+                return on_error
+            
+            values.append(get(item, key, on_error=on_error, on_none=on_none))
+
+        return values
+        
+    return on_error
 
 
 def is_dict_in_dict(dict1, dict2):

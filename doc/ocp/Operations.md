@@ -29,11 +29,12 @@ Networking
 - [Network Attachment Definition (NAD)](./k8s-nad/README.md)
 - [SR-IOV](./sriov/README.md)
 
-OVN-Kubernetes
+CNI: OVN-Kubernetes
 - [Cluster user defined network](./ovn-cudn/README.md)
 - [User defined network](./ovn-udn/README.md)
+- [BGP](./ovn-bgp/README.md)
 
-Cilium
+CNI: Cilium
 - [Operator](./cilium-operator/README.md)
 - [Agent](./cilium-agent/README.md)
 - [Configuration](./cilium-config/README.md)

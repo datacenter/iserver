@@ -1,5 +1,7 @@
 # NMState Operator - Delete via Task
 
+[[Back]](./README.md)
+
 ## Input
 
 ```

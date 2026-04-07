@@ -8,6 +8,7 @@ from lib.k8s.alert_rule.output import K8sAlertRuleOutput
 from lib.k8s.auth.output import K8sAuthOutput
 from lib.k8s.authentication.output import K8sAuthenticationOutput
 from lib.k8s.bare_metal_host.output import K8sBareMetalHostOutput
+from lib.k8s.bgp_session_state.output import K8sBgpSessionStateOutput
 from lib.k8s.build_config.output import K8sBuildConfigOutput
 from lib.k8s.catalog_source.output import K8sCatalogSourceOutput
 from lib.k8s.cdi.output import K8sCdiOutput
@@ -66,6 +67,8 @@ from lib.k8s.egress_router.output import K8sEgressRouterOutput
 from lib.k8s.endpoint.output import K8sEndpointOutput
 from lib.k8s.event.output import K8sEventOutput
 from lib.k8s.forklift_controller.output import K8sForkliftControllerOutput
+from lib.k8s.frr_configuration.output import K8sFrrConfigurationOutput
+from lib.k8s.frr_node_state.output import K8sFrrNodeStateOutput
 from lib.k8s.grafana.output import K8sGrafanaOutput
 from lib.k8s.grafana_alert_rule_group.output import K8sGrafanaAlertRuleGroupOutput
 from lib.k8s.grafana_contact_point.output import K8sGrafanaContactPointOutput
@@ -165,6 +168,7 @@ from lib.k8s.resource_quota.output import K8sResourceQuotaOutput
 from lib.k8s.role.output import K8sRoleOutput
 from lib.k8s.role_binding.output import K8sRoleBindingOutput
 from lib.k8s.route.output import K8sRouteOutput
+from lib.k8s.route_advertisement.output import K8sRouteAdvertisementOutput
 from lib.k8s.sandbox_policy.output import K8sSandboxPolicyOutput
 from lib.k8s.sandbox_policy_namespaced.output import K8sSandboxPolicyNamespacedOutput
 from lib.k8s.secret.output import K8sSecretOutput
@@ -245,6 +249,7 @@ class K8sOutput(
     K8sAuthOutput,
     K8sAuthenticationOutput,
     K8sBareMetalHostOutput,
+    K8sBgpSessionStateOutput,
     K8sBuildConfigOutput,
     K8sCatalogSourceOutput,
     K8sCdiOutput,
@@ -303,6 +308,8 @@ class K8sOutput(
     K8sEndpointOutput,
     K8sEventOutput,
     K8sForkliftControllerOutput,
+    K8sFrrConfigurationOutput,
+    K8sFrrNodeStateOutput,
     K8sGrafanaOutput,
     K8sGrafanaAlertRuleGroupOutput,
     K8sGrafanaContactPointOutput,
@@ -402,6 +409,7 @@ class K8sOutput(
     K8sRoleOutput,
     K8sRoleBindingOutput,
     K8sRouteOutput,
+    K8sRouteAdvertisementOutput,
     K8sSandboxPolicyOutput,
     K8sSandboxPolicyNamespacedOutput,
     K8sSecretOutput,
@@ -487,6 +495,7 @@ class K8sOutput(
         K8sAuthOutput.__init__(self)
         K8sAuthenticationOutput.__init__(self)
         K8sBareMetalHostOutput.__init__(self)
+        K8sBgpSessionStateOutput.__init__(self)
         K8sBuildConfigOutput.__init__(self)
         K8sCatalogSourceOutput.__init__(self)
         K8sCdiOutput.__init__(self)
@@ -544,6 +553,8 @@ class K8sOutput(
         K8sEndpointOutput.__init__(self)
         K8sEventOutput.__init__(self)
         K8sForkliftControllerOutput.__init__(self)
+        K8sFrrConfigurationOutput.__init__(self)
+        K8sFrrNodeStateOutput.__init__(self)
         K8sGrafanaOutput.__init__(self)
         K8sGrafanaDashboardOutput.__init__(self)
         K8sGrafanaDatasourceOutput.__init__(self)
@@ -634,6 +645,7 @@ class K8sOutput(
         K8sResourceQuotaOutput.__init__(self)
         K8sRoleBindingOutput.__init__(self)
         K8sRouteOutput.__init__(self)
+        K8sRouteAdvertisementOutput.__init__(self)
         K8sSandboxPolicyOutput.__init__(self)
         K8sSandboxPolicyNamespacedOutput.__init__(self)
         K8sSecretOutput.__init__(self)

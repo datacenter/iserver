@@ -3,10 +3,6 @@ class K8sSubscriptionDelete():
         pass
 
     def delete_subscription(self, namespace, name, my_output=None, wait=True):
-        if my_output is not None:
-            my_output.default('Delete Subscription', before_newline=True, underline=True)
-            my_output.default('- subscription: %s/%s' % (namespace, name))        
-
         subscription_info = self.get_subscription_by_package(
             name,
             return_mo=False,
@@ -14,9 +10,13 @@ class K8sSubscriptionDelete():
         )
         if subscription_info is None:
             if my_output is not None:
-                my_output.default('- already deleted')
+                my_output.default('Subscription %s/%s %s' % (namespace, name, my_output.add_color('already deleted', 'Green')), before_newline=True)
             return True
         
+        if my_output is not None:
+            my_output.default('Delete Subscription', before_newline=True, underline=True)
+            my_output.default('- subscription: %s/%s' % (namespace, name))        
+
         if my_output is not None:
             my_output.default('- checking cluster service version...')
 

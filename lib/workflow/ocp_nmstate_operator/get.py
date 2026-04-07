@@ -114,10 +114,7 @@ def run(params, log_id=None):
         my_output.error('Failed to get nncp')
         return False
     
-    k8s_output_handler.print_node_network_configuration_policy(
-        nncps,
-        title=True
-    )
+    k8s_output_handler.print_node_network_configuration_policys_state(nncps)
     nnces = params['k8s_handler'].get_node_network_configuration_enactments()
     if nnces is None:
         my_output.error('Failed to get nnce')

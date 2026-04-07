@@ -1,1042 +1,217 @@
-import copy
-
-
 class K8sNodeNetworkStateOutput():
     def __init__(self):
         pass
 
-    def print_node_network_state(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Node Network State [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-    def print_node_network_states_dns(self, state, title=False):
-        if title:
-            self.my_output.default(
-                'Node Network State - DNS [#%s]' % (len(state)),
-                underline=True,
-                before_newline=True
-            )
-
-        order = [
-            'name',
-            'dns.search',
-            'dns.server'
-        ]
-
-        headers = [
-            'Node NNS',
-            'Search',
-            'Server'
-        ]
-
-        self.my_output.my_table(
-            state,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+    def print_node_network_states_dns(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Node', 'name'],
+                ['DNS Search', 'dns.search'],
+                ['DNS Server', 'dns.server']
+            ]
         )
 
-    def print_node_network_states_route(self, state, title=False):
-        if title:
-            self.my_output.default(
-                'Node Network State - Route [#%s]' % (len(state)),
-                underline=True,
-                before_newline=True
-            )
-
-        order = [
-            'name',
-            'route.destination',
-            'route.next-hop-address',
-            'route.next-hop-interface',
-            'route.metric',
-            'route.table-id'
-        ]
-
-        headers = [
-            'Node',
-            'Destination',
-            'NH',
-            'Interface',
-            'Metric',
-            'Table'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                state,
-                order,
-                ['route']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+    def print_node_network_states_route(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Node', 'name'],
+                ['Table', 'route.table-id'],
+                ['Destination', 'route.destination'],
+                ['Next Hop', 'route.next-hop-address'],
+                ['Interface', 'route.next-hop-interface'],
+                ['Metric', 'route.metric']
+            ],
+            remove_empty=['route.metric']
         )
 
-    def print_node_network_states_bond(self, state, options=False, ethtool=False, title=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
+    def print_node_network_states_bond(self, info):
+        bonds = []
         for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'bond':
-                    continue
+            for bond in item['bond']:
+                bonds.append(bond)
 
-                interface['node_name'] = item['name']
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interface['lacp_optionT'] = []
-                for key in interface['lacp_option']:
-                    interface['lacp_optionT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['lacp_option'][key]
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
+        self.my_output.my_table_ng(
+            bonds,
+            [
+                ['Node', 'node_name'],
+                ['Bond', 'name'],
+                ['State', 'stateTick'],
+                ['MTU', 'mtu'],
+                ['MAC', 'mac'],
+                ['Mode', 'lacp_mode'],
+                ['Port', 'lacp_port'],
+                ['LLDP', 'lldp_enabledTick'],
+                ['VLAN', 'vlanTick'],
+                ['IPv4', 'ipv4'],
+                ['IPv6', 'ipv6'],
+                ['LACP Options', 'lacp_optionT'],
+                ['Ethtool', 'ethtoolT']
+            ]
         )
 
-        if title:
-            self.my_output.default(
-                'Node Network State - Bond Interface [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac',
-            'lacp_mode',
-            'lacp_port',
-            'lldp_enabledTick',
-            'vlanTick',
-            'ipv4',
-            'ipv6'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'State',
-            'MTU',
-            'MAC',
-            'Mode',
-            'Port',
-            'LLDP',
-            'VLAN',
-            'IPv4',
-            'IPv6'
-        ]
-
-        to_expand = ['ipv4', 'ipv6', 'lacp_port']
-
-        if options:
-            order.append('lacp_optionT')
-            headers.append('LACP Options')
-            to_expand.append('lacp_optionT')
-
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_eth(self, state, ethtool=False, title=False, brief=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
+    def print_node_network_states_eth(self, info, brief=False):
+        ethernets = []
         for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'ethernet':
-                    continue
+            for ethernet in item['ethernet']:
+                ethernets.append(ethernet)
 
-                if interface['state'] == 'ignore':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                if interface['ethernet_duplex'] is None:
-                    interface['ethernet_duplex'] = '--'
-
-                if interface['ethernet_speed'] is None:
-                    interface['ethernet_speed'] = '--'
-
-                if interface['lacp_parent'] is None:
-                    interface['lacp_parent'] = '--'
-
-                if interface['bridge'] is None:
-                    interface['bridge'] = '--'
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
+        if brief:
+            self.my_output.my_table_ng(
+                ethernets,
+                [
+                    ['Node', 'node_name'],
+                    ['Ethernet', 'name'],
+                    ['State', 'stateTick'],
+                    ['MTU', 'mtu'],
+                    ['MAC', 'mac']
+                ]
             )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - Ethernet Interface [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'State',
-            'MTU',
-            'MAC'
-        ]
 
         if not brief:
-            order = order + [
-                'ethernet_autoTick',
-                'ethernet_duplex',
-                'ethernet_speed',
-                'ethernet_sriov_vfs_summary',
-                'lldp_enabledTick',
-                'lacp_parent',
-                'vlanTick',
-                'ovsTick',
-                'bridge',
-                'ipv4',
-                'ipv6'
+            self.my_output.my_table_ng(
+                ethernets,
+                [
+                    ['Node', 'node_name'],
+                    ['Ethernet', 'name'],
+                    ['State', 'stateTick'],
+                    ['MTU', 'mtu'],
+                    ['MAC', 'mac'],
+                    ['Auto', 'ethernet_autoTick'],
+                    ['Duplex', 'ethernet_duplex'],
+                    ['Speed', 'ethernet_speed'],
+                    ['SR-IOV', 'ethernet_sriov_vfs_summary'],
+                    ['LLDP', 'lldp_enabledTick'],
+                    ['LACP', 'lacp_parent'],
+                    ['VLAN', 'vlanTick'],
+                    ['OVS', 'ovsTick'],
+                    ['LB', 'bridge'],
+                    ['IPv4', 'ipv4'],
+                    ['IPv6', 'ipv6']
+                ]
+            )
+
+    def print_node_network_states_lldp(self, info):
+        ethernets = []
+        for item in info:
+            for ethernet in item['ethernet']:
+                ethernets.append(ethernet)
+
+        self.my_output.my_table_ng(
+            ethernets,
+            [
+                ['Node', 'node_name'],
+                ['Ethernet', 'name'],
+                ['MAC', 'mac'],
+                ['State', 'stateTick'],
+                ['LLDP', 'lldp_enabledTick'],
+                ['Nei System', 'lldp_neighbors.system'],
+                ['Nei Interface', 'lldp_neighbors.interface']
+            ],
+            cast_zero=True
+        )
+
+    def print_node_network_states_vf(self, info):
+        vfs = []
+        for item in info:
+            for vf in item['vf']:
+                vfs.append(vf)
+
+        self.my_output.my_table_ng(
+            vfs,
+            [
+                ['Node', 'node_name'],
+                ['VF', 'name'],
+                ['State', 'stateTick'],
+                ['MTU', 'mtu'],
+                ['MAC', 'mac'],
+                ['Auto', 'ethernet_autoTick'],
+                ['Duplex', 'ethernet_duplex'],
+                ['Speed', 'ethernet_speed'],
+                ['IPv4', 'ipv4'],
+                ['IPv6', 'ipv6'],
+                ['Spoof', 'vf.spoof-check'],
+                ['Trust', 'vf.trust'],
+                ['VLAN', 'vf.vlan-id']
             ]
+        )
 
-            headers = headers + [
-                'Auto',
-                'Duplex',
-                'Speed',
-                'SR-IOV',
-                'LLDP',
-                'LACP',
-                'VLAN',
-                'OVS',
-                'LB',
-                'IPv4',
-                'IPv6'
+    def print_node_network_states_vlan(self, info):
+        vlans = []
+        for item in info:
+            for vlan in item['vlan']:
+                vlans.append(vlan)
+
+        self.my_output.my_table_ng(
+            vlans,
+            [
+                ['Node', 'node_name'],
+                ['VLAN', 'name'],
+                ['State', 'stateTick'],
+                ['MTU', 'mtu'],
+                ['MAC', 'mac'],
+                ['IPv4', 'ipv4'],
+                ['IPv6', 'ipv6'],
+                ['Base Intf', 'vlan_base'],
+                ['VLAN ID', 'vlan_id']
             ]
-            
-        to_expand = ['ipv4', 'ipv6']
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
         )
 
-    def print_node_network_states_lldp(self, state, title=False):
+    def print_node_network_states_lb(self, info):
+        lbs = []
+        for item in info:
+            for lb in item['lb']:
+                lbs.append(lb)
+
+        self.my_output.my_table_ng(
+            lbs,
+            [
+                ['Node', 'node_name'],
+                ['LB', 'name'],
+                ['State', 'stateTick'],
+                ['MTU', 'mtu'],
+                ['MAC', 'mac'],
+                ['Interface', 'bridge_port.name'],
+                ['LLDP', 'lldp_enabledTick'],
+                ['IPv4', 'ipv4'],
+                ['IPv6', 'ipv6'],
+                ['Bridge Options', 'bridge_optionT']
+            ]
+        )
+
+    def print_node_network_states_ovs(self, info):
+        ovses = []
+        for item in info:
+            for ovs in item['ovs']:
+                ovses.append(ovs)
+
+        self.my_output.my_table_ng(
+            ovses,
+            [
+                ['Node', 'node_name'],
+                ['OVS', 'name'],
+                ['State', 'stateTick'],
+                ['Interface', 'bridge_port.name'],
+                ['Localnet', 'localnet'],
+                ['LLDP', 'lldp_enabledTick'],
+                ['Bridge Options', 'bridge_optionT']
+            ]
+        )
+
+    def print_node_network_states_ethtool(self, info):
         interfaces = []
-
-        info = copy.deepcopy(state)
         for item in info:
             for interface in item['interface']:
-                if interface['type'] != 'ethernet':
-                    continue
+                if 'ethtoolT' in interface:
+                    interfaces.append(interface)
 
-                if interface['state'] == 'ignore':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                if interface['lldp_neighbors'] is None:
-                    interface['lldp_neighbors'] = []
-
-                if len(interface['lldp_neighbors']) == 0:
-                    interface['lldp_neighbors'].append(
-                        dict(
-                            system='--',
-                            interface='--'
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
+        self.my_output.my_table_ng(
             interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - Ethernet Interface - LLDP [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        order = [
-            'node_name',
-            'name',
-            'mac',
-            'stateTick',
-            'lldp_enabledTick',
-            'lldp_neighbors.system',
-            'lldp_neighbors.interface'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'MAC',
-            'State',
-            'LLDP',
-            'Nei System',
-            'Nei Interface'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                ['lldp_neighbors']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_vf(self, state, ethtool=False, title=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'vf':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                if interface['ethernet_duplex'] is None:
-                    interface['ethernet_duplex'] = '--'
-
-                if interface['ethernet_speed'] is None:
-                    interface['ethernet_speed'] = '--'
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - SR-IOV VF [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(interfaces) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac',
-            'ethernet_autoTick',
-            'ethernet_duplex',
-            'ethernet_speed',
-            'ipv4',
-            'ipv6',
-            'vf.spoof-check',
-            'vf.trust',
-            'vf.vlan-id'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'State',
-            'MTU',
-            'MAC',
-            'Auto',
-            'Duplex',
-            'Speed',
-            'IPv4',
-            'IPv6',
-            'Spoof',
-            'Trust',
-            'VLAN'
-        ]
-
-        to_expand = ['ipv4', 'ipv6']
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_vlan(self, state, ethtool=False, title=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'vlan':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - VLAN Interface [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(interfaces) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac',
-            'ipv4',
-            'ipv6',
-            'vlan_base',
-            'vlan_id'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'State',
-            'MTU',
-            'MAC',
-            'IPv4',
-            'IPv6',
-            'Base Intf',
-            'VLAN ID'
-        ]
-
-        to_expand = ['ipv4', 'ipv6']
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_lb(self, state, options=False, ethtool=False, title=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'linux-bridge':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interface['bridge_optionT'] = []
-                for key in interface['bridge_option']:
-                    interface['bridge_optionT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['bridge_option'][key]
-                        )
-                    )
-
-                if len(interface['bridge_port']) == 0:
-                    interface['bridge_port'].append(dict(name='--'))
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - Linux Bridge [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(interfaces) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac',
-            'bridge_port.name',
-            'lldp_enabledTick',
-            'ipv4',
-            'ipv6'
-        ]
-
-        headers = [
-            'Node',
-            'Bridge',
-            'State',
-            'MTU',
-            'MAC',
-            'Interface',
-            'LLDP',
-            'IPv4',
-            'IPv6'
-        ]
-
-        to_expand = ['ipv4', 'ipv6', 'bridge_port']
-
-        if options:
-            order.append('bridge_optionT')
-            headers.append('Bridge Options')
-            to_expand.append('bridge_optionT')
-
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_lb_interfaces(self, state):
-        ports = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'linux-bridge':
-                    continue
-
-                for lb_port_info in interface['bridge_port']:
-                    port_info = lb_port_info
-                    port_info['node_name'] = item['name']
-                    port_info['lb_name'] = interface['name']
-                    port_info['vlan_rangeT'] = '--'
-                    if 'vlan_range' in port_info:
-                        port_info['vlan_rangeT'] = ','.join(port_info['vlan_range'])
-
-                    ports.append(
-                        port_info
-                    )
-
-        ports = sorted(
-            ports,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['lb_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if len(ports) == 0:
-            return
-
-        order = [
-            'node_name',
-            'lb_name',
-            'name',
-            'stp-hairpin-mode',
-            'stp-path-cost',
-            'stp-priority',
-            'vlan_enabled',
-            'vlan_native',
-            'vlan_mode',
-            'vlan_rangeT'
-        ]
-
-        headers = [
-            'Node',
-            'Bridge',
-            'Interface',
-            'STP Hairpin',
-            'STP Cost',
-            'STP Prio',
-            'VLAN',
-            'Native',
-            'Mode',
-            'Range'
-        ]
-
-        self.my_output.my_table(
-            ports,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_ovs(self, state, options=False, ethtool=False, title=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'ovs-bridge':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                interface['bridge_optionT'] = []
-                for key in interface['bridge_option']:
-                    interface['bridge_optionT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['bridge_option'][key]
-                        )
-                    )
-
-                if len(interface['bridge_port']) == 0:
-                    interface['bridge_port'].append(dict(name='--'))
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if title:
-            self.my_output.default(
-                'Node Network State - OVS [#%s]' % (len(interfaces)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(interfaces) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'node_name',
-            'name',
-            'state',
-            'bridge_port.name',
-            'lldp_enabledTick'
-        ]
-
-        headers = [
-            'Node',
-            'Bridge',
-            'State',
-            'Interface',
-            'LLDP'
-        ]
-
-        to_expand = ['bridge_port']
-
-        if options:
-            order.append('bridge_optionT')
-            headers.append('Bridge Options')
-            to_expand.append('bridge_optionT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
-        )
-
-    def print_node_network_states_ovs_interfaces(self, state, ethtool=False):
-        interfaces = []
-
-        info = copy.deepcopy(state)
-        for item in info:
-            for interface in item['interface']:
-                if interface['type'] != 'ovs-interface':
-                    continue
-
-                interface['node_name'] = item['name']
-
-                if interface['mtu'] is None:
-                    interface['mtu'] = '--'
-
-                if interface['mac'] is None:
-                    interface['mac'] = '--'
-
-                interface['ipv4'] = []
-                if interface['v4enabled']:
-                    interface['ipv4'].append('Enabled')
-                    if interface['v4dhcp']:
-                        interface['ipv4'].append('DHCPv4: yes')
-                    else:
-                        interface['ipv4'].append('DHCPv4: no')
-                    interface['ipv4'] = interface['ipv4'] + interface['v4address']
-                if len(interface['ipv4']) == 0:
-                    interface['ipv4'] = ['--']
-
-                interface['ipv6'] = []
-                if interface['v4enabled']:
-                    interface['ipv6'].append('Enabled')
-                    if interface['v6dhcp']:
-                        interface['ipv6'].append('DHCPv6: yes')
-                    else:
-                        interface['ipv6'].append('DHCPv6: no')
-                    interface['ipv6'] = interface['ipv6'] + interface['v6address']
-                if len(interface['ipv6']) == 0:
-                    interface['ipv6'] = ['--']
-
-                interface['ethtoolT'] = []
-                for key in interface['ethtool']:
-                    interface['ethtoolT'].append(
-                        '%s = %s' % (
-                            key,
-                            interface['ethtool'][key]
-                        )
-                    )
-
-                interfaces.append(
-                    interface
-                )
-
-        interfaces = sorted(
-            interfaces,
-            key=lambda i: (
-                i['node_name'].lower(),
-                i['name'].lower()
-            )
-        )
-
-        if len(interfaces) == 0:
-            return
-
-        order = [
-            'node_name',
-            'name',
-            'stateTick',
-            'mtu',
-            'mac',
-            'ipv4',
-            'ipv6'
-        ]
-
-        headers = [
-            'Node',
-            'Interface',
-            'State',
-            'MTU',
-            'MAC',
-            'IPv4',
-            'IPv6'
-        ]
-
-        to_expand = ['ipv4', 'ipv6']
-
-        if ethtool:
-            order.append('ethtoolT')
-            headers.append('Ethtool')
-            to_expand.append('ethtoolT')
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                interfaces,
-                order,
-                to_expand
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+            [
+                ['Node', 'node_name'],
+                ['Interface', 'name'],
+                ['Type', 'type'],
+                ['Ethtool', 'ethtoolT']
+            ]
         )

@@ -2,6 +2,9 @@
 
 [[Back]](./overview.md) [[Prev](./pod.md)] [[Next]](./task.md)
 
+> [!CAUTION]
+> IP DHCP fails on primary interface; this is known OpenShift limitation that has no path to resolution
+
 ## Connection to POD CIDR
 
 - Virtual Machine **may** connect to Kubernetes POD CIDR as primary interface
@@ -14,8 +17,6 @@
 - [cudn](./cudn.md) must be configured with role:Primary
 - the cudn/nad name is not explicitly defined, `l2bridge` binding value is used instead
 
-> [!CAUTION]
-> c8kv vm does not get ip on primary interface; not sure yet if that's a bug
 
 ```
   template:

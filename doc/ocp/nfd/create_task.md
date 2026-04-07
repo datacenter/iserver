@@ -41,40 +41,11 @@ None
 # iserver set ocp task --filename C:\tmp\task.json --no-confirm --cluster bm1
 OpenShift Cluster: bm1
 
-Cluster: bm1 (type: ocp)
-
-OpenShift Workflow - Create Tasks
-=================================
-
-Validate Input
---------------
-Completed
-
-
 OpenShift Workflow - Node Feature Discover Operator - Create Operator
 =====================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "channel": "stable",
-    "instance": null,
-    "check-verbose": true,
-    "namespace": "openshift-nfd",
-    "name": "nfd",
-    "operator-group-name": "nfd-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
+Operator not found: nfd
 
 Create Namespace
 ----------------
@@ -87,9 +58,7 @@ metadata:
   name: openshift-nfd
 
 ~~~
-
-Namespace created
-
+Namespace [openshift-nfd] created
 Wait for namespace [timeout:60]...
 
 Create Operator Group
@@ -119,10 +88,11 @@ Subscription: openshift-nfd/nfd
 Source: openshift-marketplace/redhat-operators/nfd
 Install plan approval: Automatic
 Getting subscription and packege manifest information...
+Resolving channel name...
 Channel: stable
-- CSV [nfd.4.18.0-202509240837]
+- CSV [nfd.4.21.0-202603230446]
 - CSV Display name [Node Feature Discovery Operator]
-- CVS Version [4.18.0-202509240837]
+- CVS Version [4.21.0-202603230446]
 - CSV Provider [{'name': 'Red Hat', 'url': 'https://github.com/openshift/cluster-nfd-operator'}]
 - CSV Maturity [stable]
 
@@ -144,13 +114,25 @@ spec:
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-pvwvk
+Install plan: install-s5x2w
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- openshift-nfd/nfd-controller-manager
+Wait for deployment openshift-nfd/nfd-controller-manager ready (optional: False, allow zero replicas: False, timout: 600s)...
+Subscription nfd ready
 
-Create NFD Default Instance
+
+Operator
+--------
+- subscription          : openshift-nfd/nfd
+- package               : openshift-marketplace/redhat-operators/nfd
+- channel               : stable
+- install plan          : openshift-nfd/install-s5x2w
+- install plan approved : ✓
+- installed csv         : nfd.4.21.0-202603230446
+- latest_csv            : ✓
+
+
+Create NodeFeatureDiscovery
 ---------------------------
 - namespace: openshift-nfd
 - name: nfd-instance
@@ -163,73 +145,137 @@ metadata:
   namespace: openshift-nfd
 spec:
   customConfig:
-    configData: '#    - name: "more.kernel.features"
-
+    configData: |-
+      #    - name: "more.kernel.features"
       #      matchOn:
-
       #      - loadedKMod: ["example_kmod3"]
-
       #    - name: "more.features.by.nodename"
-
       #      value: customValue
-
       #      matchOn:
-
       #      - nodename: ["special-.*-node-.*"]
-
-      '
   operand:
     imagePullPolicy: IfNotPresent
     servicePort: 12000
   workerConfig:
-    configData: "core:\n#  labelWhiteList:\n#  noPublish: false\n  sleepInterval:\
-      \ 60s\n#  sources: [all]\n#  klog:\n#    addDirHeader: false\n#    alsologtostderr:\
-      \ false\n#    logBacktraceAt:\n#    logtostderr: true\n#    skipHeaders: false\n\
-      #    stderrthreshold: 2\n#    v: 0\n#    vmodule:\n##   NOTE: the following\
-      \ options are not dynamically run-time \n##          configurable and require\
-      \ a nfd-worker restart to take effect\n##          after being changed\n#  \
-      \  logDir:\n#    logFile:\n#    logFileMaxSize: 1800\n#    skipLogHeaders: false\n\
-      sources:\n#  cpu:\n#    cpuid:\n##     NOTE: whitelist has priority over blacklist\n\
-      #      attributeBlacklist:\n#        - \"BMI1\"\n#        - \"BMI2\"\n#    \
-      \    - \"CLMUL\"\n#        - \"CMOV\"\n#        - \"CX16\"\n#        - \"ERMS\"\
-      \n#        - \"F16C\"\n#        - \"HTT\"\n#        - \"LZCNT\"\n#        -\
-      \ \"MMX\"\n#        - \"MMXEXT\"\n#        - \"NX\"\n#        - \"POPCNT\"\n\
-      #        - \"RDRAND\"\n#        - \"RDSEED\"\n#        - \"RDTSCP\"\n#     \
-      \   - \"SGX\"\n#        - \"SSE\"\n#        - \"SSE2\"\n#        - \"SSE3\"\n\
-      #        - \"SSE4.1\"\n#        - \"SSE4.2\"\n#        - \"SSSE3\"\n#      attributeWhitelist:\n\
-      #  kernel:\n#    kconfigFile: \"/path/to/kconfig\"\n#    configOpts:\n#    \
-      \  - \"NO_HZ\"\n#      - \"X86\"\n#      - \"DMI\"\n  pci:\n    deviceClassWhitelist:\n\
-      \      - \"0200\"\n      - \"03\"\n      - \"12\"\n    deviceLabelFields:\n\
-      #      - \"class\"\n      - \"vendor\"\n#      - \"device\"\n#      - \"subsystem_vendor\"\
-      \n#      - \"subsystem_device\"\n#  usb:\n#    deviceClassWhitelist:\n#    \
-      \  - \"0e\"\n#      - \"ef\"\n#      - \"fe\"\n#      - \"ff\"\n#    deviceLabelFields:\n\
-      #      - \"class\"\n#      - \"vendor\"\n#      - \"device\"\n#  custom:\n#\
-      \    - name: \"my.kernel.feature\"\n#      matchOn:\n#        - loadedKMod:\
-      \ [\"example_kmod1\", \"example_kmod2\"]\n#    - name: \"my.pci.feature\"\n\
-      #      matchOn:\n#        - pciId:\n#            class: [\"0200\"]\n#      \
-      \      vendor: [\"15b3\"]\n#            device: [\"1014\", \"1017\"]\n#    \
-      \    - pciId :\n#            vendor: [\"8086\"]\n#            device: [\"1000\"\
-      , \"1100\"]\n#    - name: \"my.usb.feature\"\n#      matchOn:\n#        - usbId:\n\
-      #          class: [\"ff\"]\n#          vendor: [\"03e7\"]\n#          device:\
-      \ [\"2485\"]\n#        - usbId:\n#          class: [\"fe\"]\n#          vendor:\
-      \ [\"1a6e\"]\n#          device: [\"089a\"]\n#    - name: \"my.combined.feature\"\
-      \n#      matchOn:\n#        - pciId:\n#            vendor: [\"15b3\"]\n#   \
-      \         device: [\"1014\", \"1017\"]\n#          loadedKMod : [\"vendor_kmod1\"\
-      , \"vendor_kmod2\"]\n"
+    configData: |-
+      core:
+      #  labelWhiteList:
+      #  noPublish: false
+        sleepInterval: 60s
+      #  sources: [all]
+      #  klog:
+      #    addDirHeader: false
+      #    alsologtostderr: false
+      #    logBacktraceAt:
+      #    logtostderr: true
+      #    skipHeaders: false
+      #    stderrthreshold: 2
+      #    v: 0
+      #    vmodule:
+      ##   NOTE: the following options are not dynamically run-time
+      ##          configurable and require a nfd-worker restart to take effect
+      ##          after being changed
+      #    logDir:
+      #    logFile:
+      #    logFileMaxSize: 1800
+      #    skipLogHeaders: false
+      sources:
+      #  cpu:
+      #    cpuid:
+      ##     NOTE: whitelist has priority over blacklist
+      #      attributeBlacklist:
+      #        - "BMI1"
+      #        - "BMI2"
+      #        - "CLMUL"
+      #        - "CMOV"
+      #        - "CX16"
+      #        - "ERMS"
+      #        - "F16C"
+      #        - "HTT"
+      #        - "LZCNT"
+      #        - "MMX"
+      #        - "MMXEXT"
+      #        - "NX"
+      #        - "POPCNT"
+      #        - "RDRAND"
+      #        - "RDSEED"
+      #        - "RDTSCP"
+      #        - "SGX"
+      #        - "SSE"
+      #        - "SSE2"
+      #        - "SSE3"
+      #        - "SSE4.1"
+      #        - "SSE4.2"
+      #        - "SSSE3"
+      #      attributeWhitelist:
+      #  kernel:
+      #    kconfigFile: "/path/to/kconfig"
+      #    configOpts:
+      #      - "NO_HZ"
+      #      - "X86"
+      #      - "DMI"
+        pci:
+          deviceClassWhitelist:
+            - "0200"
+            - "03"
+            - "12"
+          deviceLabelFields:
+      #      - "class"
+            - "vendor"
+      #      - "device"
+      #      - "subsystem_vendor"
+      #      - "subsystem_device"
+      #  usb:
+      #    deviceClassWhitelist:
+      #      - "0e"
+      #      - "ef"
+      #      - "fe"
+      #      - "ff"
+      #    deviceLabelFields:
+      #      - "class"
+      #      - "vendor"
+      #      - "device"
+      #  custom:
+      #    - name: "my.kernel.feature"
+      #      matchOn:
+      #        - loadedKMod: ["example_kmod1", "example_kmod2"]
+      #    - name: "my.pci.feature"
+      #      matchOn:
+      #        - pciId:
+      #            class: ["0200"]
+      #            vendor: ["15b3"]
+      #            device: ["1014", "1017"]
+      #        - pciId :
+      #            vendor: ["8086"]
+      #            device: ["1000", "1100"]
+      #    - name: "my.usb.feature"
+      #      matchOn:
+      #        - usbId:
+      #          class: ["ff"]
+      #          vendor: ["03e7"]
+      #          device: ["2485"]
+      #        - usbId:
+      #          class: ["fe"]
+      #          vendor: ["1a6e"]
+      #          device: ["089a"]
+      #    - name: "my.combined.feature"
+      #      matchOn:
+      #        - pciId:
+      #            vendor: ["15b3"]
+      #            device: ["1014", "1017"]
+      #          loadedKMod : ["vendor_kmod1", "vendor_kmod2"]
 
 ~~~
-
-NFD instance created
-
-Wait for nfd instance [timeout:60]...
-Wait for nfd instance resources...
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- openshift-nfd/nfd-controller-manager
-- openshift-nfd/nfd-master
-Wait for deamon sets ready...
-- openshift-nfd/nfd-worker
+NodeFeatureDiscovery [openshift-nfd/nfd-instance] created
+- wait for NodeFeatureDiscovery openshift-nfd/nfd-instance [timeout:60s]
+Wait for deployment openshift-nfd/nfd-controller-manager ready (optional: False, allow zero replicas: False, timout: 600s)...
+Wait for deployment openshift-nfd/nfd-master ready (optional: False, allow zero replicas: False, timout: 600s)...
+Wait for daemonset ready (optional: False, timout: 600s)...
+Subscription nfd ready
 Wait for annotations on all worker nodes
-Node [ocp-bm1] annotations found
+Node [bm1-1] annotations found
+Node [bm1-2] annotations found
+Node [bm1-3] annotations found
 
 Completed tasks
 - Namespace created

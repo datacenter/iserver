@@ -1,15 +1,6 @@
 # NMState Operator - Get node network state
 
-## Workflow
-
-NMState operator supports NodeNetworkState (nns) CRD that provides networking state details for every cluster node. 
-
-iserver gathers the status part of nns object and shows the output in table format. 
-
-## Requirements
-
-- NMState operator installed and instance created
-- ssh access to cluster nodes
+[[Back]](./README.md)
 
 ## Runtime options
 

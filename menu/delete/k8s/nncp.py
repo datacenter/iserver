@@ -73,10 +73,7 @@ def delete_k8s_nncp_command(
             ctx.my_output.default('No object found')
             return
 
-        k8s_output_handler.print_node_network_configuration_policy(
-            policies,
-            title=True
-        )
+        k8s_output_handler.print_node_network_configuration_policys_state(policies)
 
         if not no_confirm:
             value = input('Confirm (Y/N) ')

@@ -1,6 +1,8 @@
 ## Inteface VLAN 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete VLAN | [Link](./vlan_del_cli.md) | [Link](./vlan_del_json.md) | See Below | [Link](./vlan_del_outcome.md)
 

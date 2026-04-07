@@ -29,4 +29,3 @@ class K8sClusterUserDefinedNetworkOutput():
             ],
             remove_empty=['reasonT']
         )
-

@@ -1,6 +1,8 @@
 ## Linux Bridge 
 
-Intent | CLI | JSON | NNCP CRD | Outcome
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
 --- | --- | --- | --- | ---
 Delete linux bridge | See below | [Link](./lb_del_json.md) | [Link](./lb_del_nncp.md) | [Link](./lb_del_outcome.md)
 
@@ -38,8 +40,8 @@ IPv4 (none, dhcp, cidrv4): 10.66.66.66/24
 Select target node
 ------------------
 - my-node
-- _workers_
-- _all_ [default]
+- __workers__
+- __all__ [default]
 Value:
 
 Delete policy once applied
