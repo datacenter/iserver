@@ -3,7 +3,7 @@ import time
 
 class FiCache():
     def __init__(self):
-        pass
+        self.fan_module_moids = {}
 
     def set_intersight_cache(self, key, fi_moids, device_moids, serial, filter_length_threshold=20, cache_ttl=None):
         if key == 'summary':
@@ -86,7 +86,7 @@ class FiCache():
             target_moids = []
             target_fi_moids = []
             for fi_moid in fi_moids:
-                if target_fi_moids is None or not self.cache_handler.is_intersight_cache('eth', subdirectory=fi_moid, cache_ttl=cache_ttl):
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('eth', subdirectory=fi_moid, cache_ttl=cache_ttl):
                     target_fi_moids.append(
                         fi_moid
                     )
@@ -177,7 +177,7 @@ class FiCache():
             target_moids = []
             target_fi_moids = []
             for fi_moid in fi_moids:
-                if target_fi_moids is None or not self.cache_handler.is_intersight_cache('pc', subdirectory=fi_moid, cache_ttl=cache_ttl):
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('pc', subdirectory=fi_moid, cache_ttl=cache_ttl):
                     target_fi_moids.append(
                         fi_moid
                     )
@@ -261,6 +261,269 @@ class FiCache():
 
             return
 
+        if key == 'fan_module':
+            cache_hits = []
+            target_fi_moids = []
+            for fi_moid in fi_moids:
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('fan_module', subdirectory=fi_moid, cache_ttl=cache_ttl):
+                    target_fi_moids.append(
+                        fi_moid
+                    )
+                else:
+                    fan_modules_mo = self.cache_handler.get_intersight_cache_entry(
+                        'fan_module',
+                        subdirectory=fi_moid,
+                        cache_ttl=cache_ttl
+                    )
+                    if fan_modules_mo is None:
+                        self.log_handler.debug(
+                            'fi.set_intersight_cache',
+                            'fan module cache failed: %s' % (fi_moid)
+                        )
+                    else:
+                        self.fan_module_moids[fi_moid] = []
+                        for fi_fan_module_mo in fan_modules_mo:
+                            self.fan_module_moids[fi_moid].append(
+                                fi_fan_module_mo['Moid']
+                            )
+
+                    cache_hits.append(
+                        fi_moid
+                    )
+
+            if len(cache_hits) > 0:
+                self.log_handler.debug(
+                    'fi.set_intersight_cache',
+                    'fan module cache hit: %s' % (cache_hits)
+                )
+
+            if len(target_fi_moids) == 0:
+                return
+
+            fi_managed_objects = {}
+            for target_moid in target_fi_moids:
+                fi_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_fi_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_fi_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
+                moids_list = []
+                for moid in chunk_target_moids:
+                    moids_list.append('\'%s\'' % (moid))
+                moids_filter = ', '.join(moids_list)
+                
+                self.fan_module_handler.set_get_expand('Fans')
+                self.fan_module_handler.set_get_filter(
+                    "Parent/Moid in (%s)" % (moids_filter)
+                )
+
+                self.log_handler.debug(
+                    'fi_info.set_intersight_cache',
+                    'fan module miss w/filter: %s' % (chunk_target_moids)
+                )
+
+                managed_objects = self.fan_module_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'fi_info.set_intersight_cache',
+                        'fan module failed'
+                    )
+                    return
+
+                for fi_moid in target_fi_moids:
+                    for managed_object in managed_objects:
+                        if managed_object['Parent']['Moid'] == fi_moid:
+                            fi_managed_objects[fi_moid].append(
+                                managed_object
+                            )
+
+            for target_moid in target_fi_moids:
+                self.cache_handler.set_intersight_cache_entry(
+                    'fan_module',
+                    fi_managed_objects[target_moid],
+                    subdirectory=target_moid
+                )
+
+            return
+
+        if key == 'psu':
+            cache_hits = []
+            target_fi_moids = []
+            for fi_moid in fi_moids:
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('psu', subdirectory=fi_moid, cache_ttl=cache_ttl):
+                    target_fi_moids.append(
+                        fi_moid
+                    )
+                else:
+                    cache_hits.append(
+                        fi_moid
+                    )
+
+            if len(cache_hits) > 0:
+                self.log_handler.debug(
+                    'fi.set_intersight_cache',
+                    'psu cache hit: %s' % (cache_hits)
+                )
+
+            if len(target_fi_moids) == 0:
+                return
+
+            fi_managed_objects = {}
+            for target_moid in target_fi_moids:
+                fi_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_fi_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_fi_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
+                moids_list = []
+                for moid in chunk_target_moids:
+                    moids_list.append('\'%s\'' % (moid))
+                moids_filter = ', '.join(moids_list)
+
+                self.psu_handler.set_get_filter(
+                    "Parent/Moid in (%s)" % (moids_filter)
+                )
+
+                self.log_handler.debug(
+                    'fi_info.set_intersight_cache',
+                    'psu miss w/filter: %s' % (chunk_target_moids)
+                )
+
+                managed_objects = self.psu_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'fi_info.set_intersight_cache',
+                        'summary failed'
+                    )
+                    return
+
+                for fi_moid in target_fi_moids:
+                    for managed_object in managed_objects:
+                        if managed_object['Parent']['Moid'] == fi_moid:
+                            fi_managed_objects[fi_moid].append(
+                                managed_object
+                            )
+
+
+            for target_moid in target_fi_moids:
+                self.cache_handler.set_intersight_cache_entry(
+                    'psu',
+                    fi_managed_objects[target_moid],
+                    subdirectory=target_moid
+                )
+
+            return
+
+        if key == 'storage':
+            cache_hits = []
+            target_fi_moids = []
+            for fi_moid in fi_moids:
+                if cache_ttl is None or not self.cache_handler.is_intersight_cache('storage', subdirectory=fi_moid, cache_ttl=cache_ttl):
+                    target_fi_moids.append(
+                        fi_moid
+                    )
+                else:
+                    cache_hits.append(
+                        fi_moid
+                    )
+
+            if len(cache_hits) > 0:
+                self.log_handler.debug(
+                    'fi.set_intersight_cache',
+                    'storage cache hit: %s' % (cache_hits)
+                )
+
+            if len(target_fi_moids) == 0:
+                return
+
+            fi_managed_objects = {}
+            for target_moid in target_fi_moids:
+                fi_managed_objects[target_moid] = []
+
+            chunk_id = 0
+            while True:
+                if chunk_id >= len(target_fi_moids):
+                    break
+
+                chunk_target_moids = []
+                index = 0
+                for target_moid in target_fi_moids:
+                    if index >= chunk_id and len(chunk_target_moids) < filter_length_threshold:
+                        chunk_target_moids.append(
+                            target_moid
+                        )
+
+                    index = index + 1
+
+                chunk_id = chunk_id + len(chunk_target_moids)
+
+                moids_list = []
+                for moid in chunk_target_moids:
+                    moids_list.append('\'%s\'' % (moid))
+                moids_filter = ', '.join(moids_list)
+
+                self.storage_handler.set_get_filter(
+                    "Parent/Moid in (%s)" % (moids_filter)
+                )
+
+                self.log_handler.debug(
+                    'fi_info.set_intersight_cache',
+                    'storage miss w/filter: %s' % (chunk_target_moids)
+                )
+
+                managed_objects = self.storage_handler.get_all()
+                if managed_objects is None:
+                    self.log_handler.error(
+                        'fi_info.set_intersight_cache',
+                        'summary failed'
+                    )
+                    return
+
+                for fi_moid in target_fi_moids:
+                    for managed_object in managed_objects:
+                        if managed_object['Parent']['Moid'] == fi_moid:
+                            fi_managed_objects[fi_moid].append(
+                                managed_object
+                            )
+
+
+            for target_moid in target_fi_moids:
+                self.cache_handler.set_intersight_cache_entry(
+                    'storage',
+                    fi_managed_objects[target_moid],
+                    subdirectory=target_moid
+                )
+
+            return
+
         self.log_handler.error(
             'fi.set_intersight_cache',
             'Unsupported key: %s' % (key)
@@ -293,6 +556,15 @@ class FiCache():
 
         if 'pc' in cache_settings and cache_settings['pc']:
             keys.append('pc')
+
+        if 'fan' in cache_settings and cache_settings['fan']:
+            keys.append('fan_module')
+
+        if 'psu' in cache_settings and cache_settings['psu']:
+            keys.append('psu')
+
+        if 'storage' in cache_settings and cache_settings['storage']:
+            keys.append('storage')
 
         if len(keys) > 0:
             for key in keys:

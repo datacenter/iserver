@@ -63,14 +63,24 @@ class EquipmentPsuInfo():
             info['StateTick'] = '\u2717'
             info['__Output']['StateTick'] = 'Red'
 
+        info['__Output']['Voltage'] = 'Red'
         if info['Voltage'].lower() == 'ok':
             info['__Output']['Voltage'] = 'Green'
-        else:
-            info['__Output']['Voltage'] = 'Red'
+
+        if info['Voltage'].lower() == 'unknown':
+            del info['__Output']['Voltage']
+            info['Voltage'] = None
+
+        try:
+            voltage = float(info['Voltage'])
+            del info['__Output']['Voltage']
+        except BaseException:
+            pass
 
         if info['Presence'].lower() == 'equipped':
             info['PresenceTick'] = '\u2713'
             info['__Output']['PresenceTick'] = 'Green'
+            info['__Output']['Presence'] = 'Green'
         else:
             info['PresenceTick'] = '\u2717'
             info['__Output']['PresenceTick'] = 'Red'

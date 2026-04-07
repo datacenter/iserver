@@ -1,5 +1,4 @@
-import json
-
+from lib import filter_helper
 from lib.intersight import fi_extra_attributes
 from lib.intersight.fi_filter import FiFilter
 from lib.intersight.fi_cache import FiCache
@@ -25,6 +24,16 @@ class FiInfo(FiCache, FiFilter):
                 settings
             )
 
+            matched = True
+            for item in match_rules['name']:
+                if not filter_helper.match_string(item, fi_info['Name']):
+                    matched = False
+
+            if not matched:
+                if bar_handler is not None:
+                    bar_handler.next()
+                continue
+        
             fis_info.append(
                 fi_info
             )

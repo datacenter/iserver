@@ -148,10 +148,10 @@ def get_files_text(location, yaml_only=False):
 
     for filename in filenames:
         content = get_file_text(filename)
-
         if yaml_only:
             try:
-                ycontent = yaml.safe_load(content)
+                for item in content.split('---'):
+                    ycontent = yaml.safe_load(item)
             except BaseException:
                 content = None
 

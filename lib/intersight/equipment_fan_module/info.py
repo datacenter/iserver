@@ -2,21 +2,18 @@ class EquipmentFanModuleInfo():
     def __init__(self):
         pass
 
-    def get_info(self, managed_object):
+    def get_info(self, managed_object, include_fans=False):
         if managed_object is None:
             return None
 
         info = {}
         info['__Output'] = {}
-        for key in ['Moid', 'ModuleId', 'OperState', 'Presence', 'Dn']:
+        for key in ['Moid', 'ModuleId', 'OperState', 'Presence', 'Dn', 'Model', 'PartNumber', 'Vendor']:
             info[key] = None
             if key in managed_object:
                 info[key] = managed_object[key]
 
         info['Name'] = 'Fan Module %s' % (info['ModuleId'])
-        if 'Fans' not in managed_object:
-            print(managed_object)
-
         info['FanCount'] = len(managed_object['Fans'])
         info['FanMoids'] = []
         for fan in managed_object['Fans']:
@@ -27,7 +24,7 @@ class EquipmentFanModuleInfo():
         else:
             info['__Output']['Presence'] = 'Red'
 
-        if info['OperState'].lower() in ['operable', 'ok']:
+        if info['OperState'].lower() in ['operable', 'ok', 'powered on']:
             info['__Output']['OperState'] = 'Green'
         else:
             info['__Output']['OperState'] = 'Red'
@@ -47,5 +44,11 @@ class EquipmentFanModuleInfo():
             info['__Output']['On'] = 'Red'
             info['StateTick'] = '\u2717'
             info['__Output']['StateTick'] = 'Red'
+
+        if include_fans:
+            info['Fans'] = sorted(
+                managed_object['Fans'],
+                key=lambda i: i['FanId']
+            )
 
         return info

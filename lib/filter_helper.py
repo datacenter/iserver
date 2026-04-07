@@ -845,3 +845,30 @@ def replace_attributes(content, variables):
             pass
 
     return content
+
+
+def flatten(items, subitem, map={}):
+    if not isinstance(items, list):
+        return None
+
+    new_items = []
+    for item in items:
+        if subitem not in item:
+            continue
+
+        if isinstance(item[subitem], dict):
+            new_item = copy.deepcopy(item[subitem])
+            for key in map:
+                new_item[map[key]] = get(item, key)
+
+            new_items.append(new_item)
+
+        if isinstance(item[subitem], list):
+            for sitem in item[subitem]:
+                new_item = copy.deepcopy(sitem)
+                for key in map:
+                    new_item[map[key]] = get(item, key)
+
+                new_items.append(new_item)
+
+    return new_items

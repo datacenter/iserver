@@ -2,42 +2,21 @@ from lib import file_helper
 from lib import ip_helper
 from lib import output_helper
 from menu import common
-from lib.workflow.ocp_cli import common as local_common
+from lib.workflow import ocp_common
+
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'namespace' not in params:
-        params['namespace'] = None
-
-    if 'location' not in params or params['location'] is None or len(params['location']) == 0:
-        return None, 'File locations with kube crds required'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    allowed_keys = [
-        'cluster',
-        'namespace',
-        'location',
-        'verbose',
-        'check-verbose',
-        'confirmation'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['namespace', True, None, 'str', None, None, None, None],
+        ['location', False, [], 'list-of-str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys), None
+
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
@@ -48,13 +27,17 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, ssh_required=True)
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
     
     destination = '/tmp/%s.yaml' % (ip_helper.get_short_uuid())
     for location in params['location']:
+        my_output.default('Checking location [%s]...' % (location), before_newline=True)
         contents = file_helper.get_files_text(location, yaml_only=True)
+        if len(contents) == 0:
+            my_output.default('No valid yaml content found')
+
         for filename in contents:
             my_output.default('File: %s' % (filename), before_newline=True)
             my_output.default(contents[filename], wrap='~~~')

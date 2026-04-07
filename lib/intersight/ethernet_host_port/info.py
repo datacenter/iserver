@@ -4,6 +4,7 @@ class EthernetHostPortInfo():
 
     def get_info(self, managed_object):
         info = {}
+        info['__Output'] = {}
         info['Moid'] = managed_object['Moid']
         info['Dn'] = managed_object['Dn']
         info['Name'] = '%s/%s/%s' % (

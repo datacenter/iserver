@@ -1,9 +1,14 @@
+import copy
 from lib import ip_helper
 from lib import log_helper
 from lib.intersight import cache as intersight_cache
 from lib.intersight.network_element_summary import main as network_element_summary
 from lib.intersight.ethernet_physical_port import main as ethernet_physical_port
 from lib.intersight.ethernet_port_channel import main as ethernet_port_channel
+from lib.intersight.equipment_fan_module import main as equipment_fan_module
+from lib.intersight.equipment_fan import main as equipment_fan
+from lib.intersight.equipment_psu import main as equipment_psu
+from lib.intersight.storage_item import main as storage_item
 
 
 class FiExtraAttributes():
@@ -20,9 +25,13 @@ class FiExtraAttributes():
             log_id=log_id
         )
 
+        self.fan_module_handler = equipment_fan_module.EquipmentFanModule(iaccount, log_id=log_id)
+        self.fan_handler = equipment_fan.EquipmentFan(iaccount, log_id=log_id)
         self.network_element_summary_handler = network_element_summary.NetworkElementSummary(iaccount, log_id=log_id)
         self.ethernet_physical_port_handler = ethernet_physical_port.EthernetPhysicalPort(iaccount, log_id=log_id)
         self.ethernet_port_channel_handler = ethernet_port_channel.EthernetPortChannel(iaccount, log_id=log_id)
+        self.psu_handler = equipment_psu.EquipmentPsu(iaccount, log_id=log_id)
+        self.storage_handler = storage_item.StorageItem(iaccount, log_id=log_id)
 
     def add_summary_info(self):
         managed_objects = self.cache_handler.get_intersight_cache_entry(
@@ -43,6 +52,29 @@ class FiExtraAttributes():
         for key in summary_info:
             if key not in self.fi_info or self.fi_info[key] is None:
                 self.fi_info[key] = summary_info[key]
+
+        self.fi_info['NameT'] = '%s [ID:%s]' % (self.fi_info['Name'], self.fi_info['SwitchId'])
+        self.fi_info['Inventory'] = []
+
+        inventory_info = {}
+        inventory_info['Order'] = 1
+        inventory_info['SubOrder'] = 1
+        inventory_info['Type'] = 'FI'
+        inventory_info['Name'] = 'Chassis'
+        for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+            inventory_info[key] = ''
+            if key in self.fi_info:
+                inventory_info[key] = self.fi_info[key]
+                if inventory_info[key] is None:
+                    inventory_info[key] = ''
+
+        if len(inventory_info['Pid']) == 0:
+            inventory_info['Pid'] = inventory_info['Model']
+
+        inventory_info['FiMoid'] = self.fi_info['Moid']
+        self.fi_info['Inventory'].append(
+            inventory_info
+        )
 
     def add_eth_info(self):
         self.fi_info['Ethernet'] = []
@@ -114,6 +146,139 @@ class FiExtraAttributes():
             key=lambda i: i['PortChannelId']
         )
 
+    def add_fan_module_info(self):
+        self.fi_info['FanModule'] = []
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'fan_module',
+            subdirectory=self.fi_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_fan_module_info',
+                'No cache:%s' % (self.fi_info['Moid'])
+            )
+            return
+
+        for managed_object in managed_objects:
+            fan_module_info = self.fan_module_handler.get_info(
+                managed_object,
+                include_fans=True
+            )
+            fans_info = []
+            for fan_mo in fan_module_info['Fans']:
+                fan_info = self.fan_handler.get_info(
+                    fan_mo
+                )
+                fans_info.append(fan_info)
+                
+            fan_module_info['Fans'] = copy.deepcopy(fans_info)
+            self.fi_info['FanModule'].append(
+                fan_module_info
+            )
+
+        self.fi_info['FanModule'] = sorted(
+            self.fi_info['FanModule'],
+            key=lambda i: i['ModuleId']
+        )
+
+        for fan_module_info in self.fi_info['FanModule']:
+            for fan_info in fan_module_info['Fans']:
+                if fan_info['Presence'] == 'equipped':
+                    inventory_info = {}
+                    inventory_info['Order'] = 2
+                    inventory_info['SubOrder'] = (fan_info['FanModuleId'] + 1) * 10 + fan_info['FanId']
+                    inventory_info['Type'] = 'Fan'
+                    inventory_info['Name'] = fan_info['Name']
+                    for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                        inventory_info[key] = ''
+                        if key in fan_info:
+                            inventory_info[key] = fan_info[key]
+                            if inventory_info[key] is None:
+                                inventory_info[key] = ''
+
+                    inventory_info['FiMoid'] = self.fi_info['Moid']
+
+                    self.fi_info['Inventory'].append(
+                        inventory_info
+                    )
+
+
+    def add_psu_info(self):
+        self.fi_info['Psu'] = []
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'psu',
+            subdirectory=self.fi_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_psu_info',
+                'No cache:%s' % (self.fi_info['Moid'])
+            )
+            return
+
+        for managed_object in managed_objects:
+            psu_info = self.psu_handler.get_info(
+                managed_object
+            )
+            self.fi_info['Psu'].append(
+                psu_info
+            )
+
+        self.fi_info['Psu'] = sorted(
+            self.fi_info['Psu'],
+            key=lambda i: i['Name']
+        )
+
+        for psu_info in self.fi_info['Psu']:
+            if psu_info['Presence'] == 'equipped':
+                inventory_info = {}
+                inventory_info['Order'] = 3
+                inventory_info['SubOrder'] = psu_info['Id']
+                inventory_info['Type'] = 'PSU'
+                inventory_info['Id'] = psu_info['Id']
+                inventory_info['Name'] = 'PSU #%s' % (psu_info['Id'])
+                for key in ['Model', 'Vendor', 'Serial', 'Pid']:
+                    inventory_info[key] = ''
+                    if key in psu_info:
+                        inventory_info[key] = psu_info[key]
+                        if inventory_info[key] is None:
+                            inventory_info[key] = ''
+
+                inventory_info['FiMoid'] = self.fi_info['Moid']
+
+                self.fi_info['Inventory'].append(
+                    inventory_info
+                )
+
+    def add_storage_info(self):
+        self.fi_info['Storage'] = []
+        managed_objects = self.cache_handler.get_intersight_cache_entry(
+            'storage',
+            subdirectory=self.fi_info['Moid'],
+            check_ttl=False
+        )
+        if managed_objects is None:
+            self.log_handler.error(
+                'add_storage_info',
+                'No cache:%s' % (self.fi_info['Moid'])
+            )
+            return
+
+        for managed_object in managed_objects:
+            storage_info = self.storage_handler.get_info(
+                managed_object
+            )
+            self.fi_info['Storage'].append(
+                storage_info
+            )
+
+        self.fi_info['Storage'] = sorted(
+            self.fi_info['Storage'],
+            key=lambda i: i['Name']
+        )
+
     def add_common_attributes(self, fi_mo):
         keys = [
             'Dn',
@@ -151,6 +316,10 @@ class FiExtraAttributes():
                 continue
 
             self.fi_info[key] = fi_mo[key]
+
+        self.fi_info['ManagementModeT'] = self.fi_info['ManagementMode']
+        if self.fi_info['ManagementModeT'] == 'Intersight':
+            self.fi_info['ManagementModeT'] = 'IMM'
 
         self.fi_info['ManagementIp'] = '%s/%s' % (
             self.fi_info['OutOfBandIpAddress'],
@@ -223,7 +392,6 @@ class FiExtraAttributes():
         self.fi_info['__Output'] = {}
 
         self.add_common_attributes(fi_mo)
-
         if 'summary' in settings and settings['summary']:
             self.add_summary_info()
 
@@ -245,5 +413,14 @@ class FiExtraAttributes():
                 self.fi_info['NumPcUp'],
                 self.fi_info['NumPcConfigured']
             )
+
+        if 'fan' in settings and settings['fan']:
+            self.add_fan_module_info()
+
+        if 'psu' in settings and settings['psu']:
+            self.add_psu_info()
+
+        if 'storage' in settings and settings['storage']:
+            self.add_storage_info()
 
         return self.fi_info

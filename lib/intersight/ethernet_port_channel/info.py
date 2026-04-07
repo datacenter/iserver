@@ -21,6 +21,7 @@ class EthernetPortChannelInfo():
         ]
 
         info = {}
+        info['__Output'] = {}
         for key in keys:
             if key not in managed_object:
                 info[key] = None
@@ -28,4 +29,8 @@ class EthernetPortChannelInfo():
 
             info[key] = managed_object[key]
 
+        info['__Output']['OperState'] = 'Green'
+        if info['OperState'] != 'up':
+            info['__Output']['OperState'] = 'Red'
+            
         return info

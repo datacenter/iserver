@@ -927,7 +927,7 @@ def sanitize_params(params, allowed_keys, defaults=None):
     return new_params
 
 
-def workflow_init(params, my_output, log_id, hide={}):
+def workflow_init(params, my_output, log_id, ssh_required=False, hide={}):
     if params['verbose']:
         my_output.default('Workflow Parameters', underline=True)
         display_params = copy.deepcopy(params)
@@ -952,4 +952,7 @@ def workflow_init(params, my_output, log_id, hide={}):
         return None
 
     params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
+    if ssh_required:
+        params['ssh_handler'] = get_management_node_ssh_handler(params['cluster'], log_id=log_id)
+
     return params

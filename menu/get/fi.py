@@ -29,7 +29,8 @@ class ErrorExit(Exception):
 @click.option("--serial", "serial_filter", multiple=True, help="Select by serial")
 @click.option("--model", "model_filter", multiple=True, help="Select by model")
 @click.option("--ttl", "user_cache_ttl", default=None, help="Cache TTL")
-@click.option("--view", "-v", default=['state|eth|pc|fc|fpc|all'], help="[state]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="['state|eth|pc|fc|fpc|fanm|fan|psu|storage|inv|all']", show_default=True, multiple=True)
+@click.option("--csv", "csv", default=None, help="CSV filename supported for selected views")
 @click.option("--output", "-o", type=click.Choice(['default', 'json', 'yaml'], case_sensitive=False), default='default', show_default=True)
 @click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
 def get_fi_command(
@@ -40,6 +41,7 @@ def get_fi_command(
         model_filter,
         user_cache_ttl,
         view,
+        csv,
         output,
         devel
         ):
@@ -53,7 +55,7 @@ def get_fi_command(
     view = validations.validate_view(
         ctx,
         view,
-        'state|eth|pc|fc|fpc|all',
+        'state|eth|pc|fc|fpc|fanm|fan|psu|storage|inv|all',
         'state',
         []
     )
@@ -123,6 +125,18 @@ def get_fi_command(
         if 'fpc' in view:
             settings['fpc'] = True
 
+        settings['fan'] = False
+        if 'fan' in view or 'fanm' in view or 'inv' in view:
+            settings['fan'] = True
+
+        settings['psu'] = False
+        if 'psu' in view or 'inv' in view:
+            settings['psu'] = True
+
+        settings['storage'] = False
+        if 'storage' in view:
+            settings['storage'] = True
+
         if output not in ['json']:
             ctx.my_output.default('Collect fi api objects...')
 
@@ -160,49 +174,17 @@ def get_fi_command(
             ctx.log_prompt = False
             return
 
-        if 'state' in view:
-            fi_output_handler.print_state(
+        for item in view:
+            getattr(fi_output_handler, 'print_%s' % (item))(fis_info)
+
+        if 'inv' in view and csv is not None:
+            fi_output_handler.print_csv(
                 fis_info,
-                title=True
+                csv
             )
-
-        if 'eth' in view:
-            for fi_info in fis_info:
-                fi_output_handler.print_eth(
-                    fi_info,
-                    title=True
-                )
-
-        if 'eth' in view:
-            for fi_info in fis_info:
-                fi_output_handler.print_eth(
-                    fi_info,
-                    title=True
-                )
-
-        if 'pc' in view:
-            for fi_info in fis_info:
-                fi_output_handler.print_pc(
-                    fi_info,
-                    title=True
-                )
-
-        if 'fc' in view:
-            for fi_info in fis_info:
-                fi_output_handler.print_fc(
-                    fi_info,
-                    title=True
-                )
-
-        if 'fpc' in view:
-            for fi_info in fis_info:
-                fi_output_handler.print_fpc(
-                    fi_info,
-                    title=True
-                )
-
+            
         ctx.my_output.default('Filter: name, serial, model', before_newline=True)
-        ctx.my_output.default('View:   state (def), etc, pc, fc, fpc, all')
+        ctx.my_output.default('View:   state (def), eth, pc, fc, fpc, fanm, fan, psu, storage, inv, all')
 
     except ErrorExit:
         ctx.busy = False

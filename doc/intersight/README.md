@@ -7,6 +7,7 @@ Uses Intersight API calls to provide the state and control on Intersight managed
 Inventory
 - [Chassis](./ChassisInventory.md)
 - [Server](./ServerInventory.md)
+- [Fabric Interconnect](./FiInventory.md)
 - Power and Thermal
 
 Server Control

@@ -4,6 +4,7 @@ class EthernetPhysicalPortInfo():
 
     def get_info(self, managed_object):
         info = {}
+        info['__Output'] = {}
         info['Moid'] = managed_object['Moid']
         info['Dn'] = managed_object['Dn']
         info['Name'] = '%s/%s' % (
@@ -11,17 +12,29 @@ class EthernetPhysicalPortInfo():
             managed_object['PortId']
         )
         info['AdminState'] = managed_object['AdminState']
+        info['__Output']['AdminState'] = 'Green'
+        if info['AdminState'] != 'Enabled':
+            info['__Output']['AdminState'] = 'Red'
         info['AggregatePortId'] = managed_object['AggregatePortId']
         info['MacAddress'] = managed_object['MacAddress']
         info['Mode'] = managed_object['Mode']
         info['OperSpeed'] = managed_object['OperSpeed']
         info['OperState'] = managed_object['OperState']
+        info['__Output']['OperState'] = 'Green'
+        if info['OperState'] != 'up':
+            info['__Output']['OperState'] = 'Red'
         info['PortId'] = managed_object['PortId']
         info['PortChannelId'] = managed_object['PortChannelId']
         info['Role'] = managed_object['Role']
+        info['RoleT'] = info['Role']
+        if info['RoleT'] == 'unknown':
+            info['RoleT'] = None
         info['SlotId'] = managed_object['SlotId']
         info['SwitchId'] = managed_object['SwitchId']
         info['TransceiverType'] = managed_object['TransceiverType']
+        info['TransceiverTypeT'] = managed_object['TransceiverType']
+        if info['TransceiverTypeT'] == 'unknown':
+            info['TransceiverTypeT'] = None
 
         if 'AcknowledgedPeerInterface' in managed_object:
             if managed_object['AcknowledgedPeerInterface'] is None:
