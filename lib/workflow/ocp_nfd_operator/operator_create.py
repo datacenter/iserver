@@ -17,61 +17,6 @@ def validate(params):
     return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
-# def validate(params):
-#     if 'cluster' not in params or params['cluster'] is None:
-#         return None, 'Cluster name required'
-    
-#     if 'channel' not in params:
-#         params['channel'] = 'stable'
-
-#     if 'instance' not in params:
-#         params['instance'] = None
-
-#     if 'filename' in params:
-#         try:
-#             if not os.path.isabs(params['filename']):
-#                 params['filename'] = os.path.join(
-#                     params['base_directory'],
-#                     params['filename']
-#                 )
-#         except BaseException:
-#             return None, 'Policy file path detection failed'
-        
-#         params['instance'] = file_helper.get_file_yaml(
-#             params['filename']
-#         )
-#         if params['instance'] is None:
-#             return None, 'Yaml file read failed: %s' % (params['filename'])
-        
-#         if 'kind' not in params['instance']:
-#             return None, 'Invalid yaml file content: %s' % (params['filename'])
-
-#     if 'confirmation' not in params:
-#         params['confirmation'] = True
-
-#     if 'verbose' not in params:
-#         params['verbose'] = False
-
-#     if not isinstance(params['verbose'], bool):
-#         return None, 'verbose param must be true or false'
-    
-#     if 'check-verbose' not in params:
-#         params['check-verbose'] = params['verbose']
-
-#     if not isinstance(params['check-verbose'], bool):
-#         return None, 'check-verbose param must be true or false'
-    
-#     allowed_keys = [
-#         'cluster',
-#         'channel',
-#         'instance',
-#         'confirmation',
-#         'verbose',
-#         'check-verbose'
-#     ]
-#     return local_common.sanitize_params(params, allowed_keys), None
-
-
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     my_output.default('OpenShift Workflow - Node Feature Discover Operator - Create Operator', before_newline=True, after_newline=True, double_underline=True)
@@ -80,10 +25,6 @@ def run(params, log_id=None):
     if error is not None:
         my_output.error(error)
         return False
-
-    # params = local_common.initialize(params, my_output, log_id)
-    # if params is None:
-    #     return False
 
     params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
@@ -95,16 +36,6 @@ def run(params, log_id=None):
         my_output=my_output
     )
     if subscription is None:
-        #     return True
-                
-        # subscription = params['k8s_handler'].get_subscription_by_package(
-        #     params['name'],
-        #     return_mo=False,
-        #     cache_enabled=False
-        # )
-        # if subscription is not None:
-        #     my_output.default('NFD Operator already created')
-        # else:
         success = params['k8s_handler'].create_namespace(
             params['__default__']['namespace'],
             confirmation=params['confirmation'],
@@ -155,11 +86,6 @@ def run(params, log_id=None):
             return False
         
     if instance_body is None:
-        # subscription = params['k8s_handler'].get_subscription_by_package(
-        #     params['name'],
-        #     return_mo=False,
-        #     cache_enabled=False
-        # )
         instance_body = params['k8s_handler'].get_nfd_package_channel_example(
             subscription['spec']['channel'],
             'NodeFeatureDiscovery'

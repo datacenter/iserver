@@ -2,6 +2,9 @@
 
 [[Back]](./README.md)
 
+> [!NOTE]
+> Use `__all__` value for all frr configurations
+
 ```
 # iserver delete ocp ovn-bgp --mode config --config another-session      
 

@@ -206,3 +206,25 @@ class K8sDaemonSetInfo():
             my_output.default('Daemon set [%s/%s] patch successful' % (namespace, name))
 
         return True
+
+    def get_daemon_set_resources(self, namespace, name, cache_enabled=True):
+        resources = {}
+        resources['pod'] = []
+
+        info = self.get_daemon_set(namespace, name, cache_enabled=cache_enabled)
+        if info is None:
+            return resources
+
+        pods = self.get_pods_daemon_set(info['namespace'], info['name'], cache_enabled=cache_enabled)
+        if pods is None:
+            return resources
+
+        for pod in pods:
+            resources['pod'].append(
+                dict(
+                    namespace=pod['namespace'],
+                    name=pod['name']
+                )
+            )
+
+        return resources

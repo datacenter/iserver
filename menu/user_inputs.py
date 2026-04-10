@@ -308,6 +308,13 @@ def get_selection(ctx, prompt, options):
     return string_fixup(value)
 
 
+def get_bool(ctx, prompt):
+    selection = get_selection(ctx, prompt, ['T', 'F'])
+    if selection == 'T':
+        return True
+    return False
+
+
 def get_yaml_file(ctx, prompt, empty=False):
     while True:
         value = input('%s: ' % (prompt))

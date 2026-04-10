@@ -39,14 +39,29 @@ def run(params, log_id=None):
     if not ra_enabled:
         my_output.default('Route advertisement %s' % (my_output.add_color('not enabled', 'Red')))
         return False    
+    
+    if params['config'] == '__all__':
+        configs = params['k8s_handler'].get_route_advertisements(cache_enabled=False)
+        if configs is None:
+            my_output.error('Failed to get route advertisements')
+            return False
         
-    success = params['k8s_handler'].delete_route_advertisement(
-        params['config'], 
-        my_output=my_output, 
-        wait=params['wait']
-    )
-    if not success:
-        return False
+        for config in configs:
+            success = params['k8s_handler'].delete_route_advertisement(
+                config['name'], 
+                my_output=my_output, 
+                wait=params['wait']
+            )
+            if not success:
+                return False
+    else:
+        success = params['k8s_handler'].delete_route_advertisement(
+            params['config'], 
+            my_output=my_output, 
+            wait=params['wait']
+        )
+        if not success:
+            return False
     
     my_output.default('')
     my_output.default('Completed tasks')

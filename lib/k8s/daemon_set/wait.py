@@ -17,7 +17,7 @@ class K8sDaemonSetWait():
     
     def wait_daemon_set_ready_state(self, namespace, name, max_time=600, my_output=None, optional=False, log_on_error=False):
         if my_output is not None:
-            my_output.default('Wait for daemonset ready (optional: %s, timout: %ss)...' % (optional, max_time))
+            my_output.default('Wait for daemonset %s/%s ready (optional: %s, timeout: %ss)...' % (namespace, name, optional, max_time))
 
         start_time = int(time.time())
         while True:
@@ -73,47 +73,19 @@ class K8sDaemonSetWait():
 
         return all_ready
 
-    def wait_no_daemon_set(self, namespace, name, max_time=180, my_output=None, optional=False, log_on_error=False):
-        if my_output is not None:
-            my_output.default('Wait for no daemonset (optional: %s, timout: %ss)...' % (optional, max_time))
+    def wait_no_daemon_set(self, namespace, name, max_time=180, prompt='DaemonSet', my_output=None, optional=False, log_error_on_timeout=False):
+        return self.wait_no_managed_object(
+            'daemon_set',
+            name,
+            namespace=namespace,
+            my_output=my_output,
+            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            max_time=max_time,
+            optional=optional,
+            log_error_on_timeout=log_error_on_timeout
+        )
 
-        start_time = int(time.time())
-        while True:
-            daemon_set = self.get_daemon_set(
-                namespace,
-                name,
-                cache_enabled=False
-            )
-            if daemon_set is None:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                if optional and daemon_set is not None:
-                    if my_output is not None:
-                        my_output.default('Success with optional condition')
-
-                    if log_on_error:
-                        self.log.debug(
-                            'k8s.wait_no_daemon_set',
-                            'Max time reached but ds optional: %s/%s' % (namespace, name)
-                        )
-                    return True
-
-                if my_output is not None:
-                    my_output.default(my_output.add_color('timed out', 'Red'))
-
-                if log_on_error:
-                    self.log.error(
-                        'k8s.wait_no_daemon_set',
-                        'Max time reached: %s/%s' % (namespace, name)
-                    )
-
-                return False
-
-            time.sleep(5)
-
-    def wait_no_daemon_sets(self, daemon_sets, max_time=180, my_output=None, optional=False, log_on_error=False, break_on_error=True):
+    def wait_no_daemon_sets(self, daemon_sets, max_time=180, my_output=None, optional=False, log_error_on_timeout=False, break_on_error=True):
         all_gone = True
         for daemon_set in daemon_sets:
             success = self.wait_no_daemon_set(
@@ -122,7 +94,7 @@ class K8sDaemonSetWait():
                 my_output=my_output,
                 max_time=max_time,
                 optional=optional,
-                log_on_error=log_on_error
+                log_error_on_timeout=log_error_on_timeout
             )
             if not success:
                 all_gone = False

@@ -115,7 +115,29 @@ class K8sSubscriptionWait():
                 return False
 
         gone = True
+        expanded = []
         for resource in resources:
+            expanded.append(resource)
+            if 'resources' not in resource:
+                continue
+            
+            if 'rs' in resource['resources']:
+                for replica_set in resource['resources']['rs']:
+                    new_resource = {}
+                    new_resource['type'] = 'replica_set'
+                    new_resource['namespace'] = replica_set['namespace']
+                    new_resource['name'] = replica_set['name']
+                    expanded.append(new_resource)
+
+            if 'pod' in resource['resources']:
+                for pod in resource['resources']['pod']:
+                    new_resource = {}
+                    new_resource['type'] = 'pod'
+                    new_resource['namespace'] = pod['namespace']
+                    new_resource['name'] = pod['name']
+                    expanded.append(new_resource)
+
+        for resource in expanded:
             if 'optional' not in resource:
                 resource['optional'] = False
 
@@ -132,7 +154,7 @@ class K8sSubscriptionWait():
                     my_output=my_output, 
                     optional=resource['optional'], 
                     max_time=resource['max_time'],
-                    log_on_error=resource['log_on_error']
+                    log_error_on_timeout=resource['log_on_error']
                 )
 
             if resource['type'] == 'daemonset':
@@ -142,7 +164,26 @@ class K8sSubscriptionWait():
                     my_output=my_output, 
                     optional=resource['optional'], 
                     max_time=resource['max_time'],
-                    log_on_error=resource['log_on_error']
+                    log_error_on_timeout=resource['log_on_error']
+                )
+
+            if resource['type'] == 'replica_set':
+                success = self.wait_no_replica_set(
+                    resource['namespace'], 
+                    resource['name'], 
+                    my_output=my_output, 
+                    optional=resource['optional'], 
+                    max_time=resource['max_time'],
+                    log_error_on_timeout=resource['log_on_error']
+                )
+
+            if resource['type'] == 'pod':
+                success = self.wait_no_pod(
+                    resource['namespace'], 
+                    resource['name'], 
+                    my_output=my_output, 
+                    max_time=resource['max_time'],
+                    log_error_on_timeout=resource['log_on_error']
                 )
 
             if not success:

@@ -7,6 +7,7 @@ from menu.delete.ocp.connector import delete_ocp_connector
 from menu.delete.ocp.cilium.main import delete_ocp_cilium_menu
 from menu.delete.ocp.cluster.main import delete_ocp_cluster_menu
 from menu.delete.ocp.cnv import delete_ocp_cnv_command
+from menu.delete.ocp.file import delete_ocp_file_command
 from menu.delete.ocp.gpu import delete_ocp_gpu_command
 from menu.delete.ocp.grafana import delete_ocp_grafana_command
 from menu.delete.ocp.htpasswd import delete_ocp_htpasswd_command
@@ -15,6 +16,7 @@ from menu.delete.ocp.iotel import delete_ocp_iotel_command
 from menu.delete.ocp.ldap import delete_ocp_ldap_command
 from menu.delete.ocp.lso import delete_ocp_lso_command
 from menu.delete.ocp.lvm import delete_ocp_lvm_command
+from menu.delete.ocp.metallb import delete_ocp_metallb_command
 from menu.delete.ocp.minio import delete_ocp_minio_command
 from menu.delete.ocp.mtv import delete_ocp_mtv_command
 from menu.delete.ocp.nfd import delete_ocp_nfd_command
@@ -53,6 +55,7 @@ delete_ocp_menu.add_command(delete_ocp_connector)
 delete_ocp_menu.add_command(delete_ocp_cilium_menu)
 delete_ocp_menu.add_command(delete_ocp_cluster_menu)
 delete_ocp_menu.add_command(delete_ocp_cnv_command)
+delete_ocp_menu.add_command(delete_ocp_file_command)
 delete_ocp_menu.add_command(delete_ocp_gpu_command)
 delete_ocp_menu.add_command(delete_ocp_grafana_command)
 delete_ocp_menu.add_command(delete_ocp_htpasswd_command)
@@ -61,6 +64,7 @@ delete_ocp_menu.add_command(delete_ocp_iotel_command)
 delete_ocp_menu.add_command(delete_ocp_ldap_command)
 delete_ocp_menu.add_command(delete_ocp_lso_command)
 delete_ocp_menu.add_command(delete_ocp_lvm_command)
+delete_ocp_menu.add_command(delete_ocp_metallb_command)
 delete_ocp_menu.add_command(delete_ocp_minio_command)
 delete_ocp_menu.add_command(delete_ocp_mtv_command)
 delete_ocp_menu.add_command(delete_ocp_nfd_command)

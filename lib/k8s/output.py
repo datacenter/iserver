@@ -8,6 +8,9 @@ from lib.k8s.alert_rule.output import K8sAlertRuleOutput
 from lib.k8s.auth.output import K8sAuthOutput
 from lib.k8s.authentication.output import K8sAuthenticationOutput
 from lib.k8s.bare_metal_host.output import K8sBareMetalHostOutput
+from lib.k8s.bfd_profile.output import K8sBfdProfileOutput
+from lib.k8s.bgp_advertisement.output import K8sBgpAdvertisementOutput
+from lib.k8s.bgp_peer.output import K8sBgpPeerOutput
 from lib.k8s.bgp_session_state.output import K8sBgpSessionStateOutput
 from lib.k8s.build_config.output import K8sBuildConfigOutput
 from lib.k8s.catalog_source.output import K8sCatalogSourceOutput
@@ -48,6 +51,7 @@ from lib.k8s.cluster_user_defined_network.output import K8sClusterUserDefinedNet
 from lib.k8s.cluster_version.output import K8sClusterVersionOutput
 from lib.k8s.clusterwide_private_network.output import K8sClusterwidePrivateNetworkOutput
 from lib.k8s.cni.output import K8sCniOutput
+from lib.k8s.community.output import K8sCommunityOutput
 from lib.k8s.config_map.output import K8sConfigMapOutput
 from lib.k8s.cron_job.output import K8sCronJobOutput
 from lib.k8s.custom_resource_definition.output import K8sCustomResourceDefinitionOutput
@@ -89,6 +93,7 @@ from lib.k8s.identity.output import K8sIdentityOutput
 from lib.k8s.image_stream.output import K8sImageStreamOutput
 from lib.k8s.ingress.output import K8sIngressOutput
 from lib.k8s.installplan.output import K8sInstallplanOutput
+from lib.k8s.ip_address_pool.output import K8sIpAddressPoolOutput
 from lib.k8s.isovalent_bgp_advertisement.output import K8sIsovalentBGPAdvertisementOutput
 from lib.k8s.isovalent_bgp_cluster_config.output import K8sIsovalentBGPClusterConfigOutput
 from lib.k8s.isovalent_bgp_node_config.output import K8sIsovalentBGPNodeConfigOutput
@@ -109,6 +114,7 @@ from lib.k8s.logical_volume.output import K8sLogicalVolumeOutput
 from lib.k8s.lvm_cluster.output import K8sLvmClusterOutput
 from lib.k8s.machine_config.output import K8sMachineConfigOutput
 from lib.k8s.machine_config_pool.output import K8sMachineConfigPoolOutput
+from lib.k8s.metallb.output import K8sMetalLbOutput
 from lib.k8s.migration.output import K8sMigrationOutput
 from lib.k8s.migration_policy.output import K8sMigrationPolicyOutput
 from lib.k8s.mutating_webhook.output import K8sMutatingWebhookOutput
@@ -249,6 +255,9 @@ class K8sOutput(
     K8sAuthOutput,
     K8sAuthenticationOutput,
     K8sBareMetalHostOutput,
+    K8sBfdProfileOutput,
+    K8sBgpAdvertisementOutput,
+    K8sBgpPeerOutput,
     K8sBgpSessionStateOutput,
     K8sBuildConfigOutput,
     K8sCatalogSourceOutput,
@@ -289,6 +298,7 @@ class K8sOutput(
     K8sClusterVersionOutput,
     K8sClusterwidePrivateNetworkOutput,
     K8sCniOutput,
+    K8sCommunityOutput,
     K8sConfigMapOutput,
     K8sCronJobOutput,
     K8sCustomResourceDefinitionOutput,
@@ -330,6 +340,7 @@ class K8sOutput(
     K8sImageStreamOutput,
     K8sIngressOutput,
     K8sInstallplanOutput,
+    K8sIpAddressPoolOutput,
     K8sIsovalentBGPAdvertisementOutput,
     K8sIsovalentBGPClusterConfigOutput,
     K8sIsovalentBGPNodeConfigOutput,
@@ -350,6 +361,7 @@ class K8sOutput(
     K8sLvmClusterOutput,
     K8sMachineConfigOutput,
     K8sMachineConfigPoolOutput,
+    K8sMetalLbOutput,
     K8sMigrationOutput,
     K8sMigrationPolicyOutput,
     K8sMutatingWebhookOutput,
@@ -495,6 +507,9 @@ class K8sOutput(
         K8sAuthOutput.__init__(self)
         K8sAuthenticationOutput.__init__(self)
         K8sBareMetalHostOutput.__init__(self)
+        K8sBfdProfileOutput.__init__(self)
+        K8sBgpAdvertisementOutput.__init__(self)
+        K8sBgpPeerOutput.__init__(self)
         K8sBgpSessionStateOutput.__init__(self)
         K8sBuildConfigOutput.__init__(self)
         K8sCatalogSourceOutput.__init__(self)
@@ -534,6 +549,7 @@ class K8sOutput(
         K8sClusterVersionOutput.__init__(self)
         K8sClusterwidePrivateNetworkOutput.__init__(self)
         K8sCniOutput.__init__(self)
+        K8sCommunityOutput.__init__(self)
         K8sConfigMapOutput.__init__(self)
         K8sCronJobOutput.__init__(self)
         K8sCustomResourceDefinitionOutput.__init__(self)
@@ -567,6 +583,7 @@ class K8sOutput(
         K8sImageStreamOutput.__init__(self)
         K8sIngressOutput.__init__(self)
         K8sInstallplanOutput.__init__(self)
+        K8sIpAddressPoolOutput.__init__(self)
         K8sIsovalentBGPAdvertisementOutput.__init__(self)
         K8sIsovalentBGPClusterConfigOutput.__init__(self)
         K8sIsovalentBGPNodeConfigOutput.__init__(self)
@@ -587,6 +604,7 @@ class K8sOutput(
         K8sLvmClusterOutput.__init__(self)
         K8sMachineConfigOutput.__init__(self)
         K8sMachineConfigPoolOutput.__init__(self)
+        K8sMetalLbOutput.__init__(self)
         K8sMigrationOutput.__init__(self)
         K8sMigrationPolicyOutput.__init__(self)
         K8sMutatingWebhookOutput.__init__(self)

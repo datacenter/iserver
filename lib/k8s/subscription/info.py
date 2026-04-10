@@ -297,3 +297,24 @@ class K8sSubscriptionInfo():
 
             )
         return True
+    
+    def get_subscription_resources(self, resources, extra=None, cache_enabled=True):
+        if extra is not None:
+            resources.extend(extra)
+
+        for resource in resources:
+            if resource['type'] == 'deployment':
+                resource['resources'] = self.get_deployment_resources(
+                    resource['namespace'],
+                    resource['name'],
+                    cache_enabled=cache_enabled
+                )
+
+            if resource['type'] == 'daemonset':
+                resource['resources'] = self.get_daemon_set_resources(
+                    resource['namespace'],
+                    resource['name'],
+                    cache_enabled=cache_enabled
+                )
+
+        return resources

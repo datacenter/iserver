@@ -33,6 +33,7 @@ CNI: OVN-Kubernetes
 - [Cluster user defined network](./ovn-cudn/README.md)
 - [User defined network](./ovn-udn/README.md)
 - [BGP](./ovn-bgp/README.md)
+- [MetalLB](./ovn-metallb/README.md)
 
 CNI: Cilium
 - [Operator](./cilium-operator/README.md)

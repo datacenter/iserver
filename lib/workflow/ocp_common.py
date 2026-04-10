@@ -658,13 +658,13 @@ def run_node_cli(k8s_handler, cluster_name, node_name, command, my_output=None, 
     return True
 
 
-def get_subscription(k8s_handler, package, my_output=None):
+def get_subscription(k8s_handler, package, my_output=None, brief=False, cache_enabled=False):
     subscription = k8s_handler.get_subscription_by_package(
         package,
         csv_info=True,
         plan_info=True,
         return_mo=False,
-        cache_enabled=False
+        cache_enabled=cache_enabled
     )
     if subscription is None:
         if my_output is not None:
@@ -672,6 +672,10 @@ def get_subscription(k8s_handler, package, my_output=None):
         return None
 
     if my_output is not None:
+        if brief:
+            my_output.default('Operator %s %s' % (package, my_output.add_color('found', 'Green')))
+            return subscription
+        
         try:
             subscription['__Output']['installplan.approvedTick'] = subscription['installplan']['__Output']['approvedTick']
         except BaseException:
@@ -888,7 +892,7 @@ def check_paramater(
             
             if range_min is not None:
                 if len(value) < range_min:
-                    return False, 'Parameter %s list with at least % items required' % (name, range_min)
+                    return False, 'Parameter %s list with at least %s items required' % (name, range_min)
             
             for item in value:
                 if not isinstance(item, str):
@@ -909,7 +913,23 @@ def check_paramater(
             for item in value:
                 if not ip_helper.is_valid_ipv4_address(item) and not ip_helper.is_valid_ipv6_address(item):
                     return False, 'list with v4/v6 addresses required'
-                        
+
+        if expected_type == 'list-of-ip-range':
+            for item in value:
+                if ip_helper.is_valid_ipv4_cidr(item) or ip_helper.is_valid_ipv6_cidr(item):
+                    continue
+
+                if len(item.split('-')) != 2:
+                    return False, 'list with v4/v6 addresses range required'
+                
+                if ip_helper.is_valid_ipv4_address(item.split('-')[0]) and ip_helper.is_valid_ipv4_address(item.split('-')[1]):
+                    continue
+                
+                if ip_helper.is_valid_ipv6_address(item.split('-')[0]) and ip_helper.is_valid_ipv6_address(item.split('-')[1]):
+                    continue
+
+                return False, 'list with v4/v6 addresses range required'
+
     return True, value
 
 

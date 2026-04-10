@@ -630,6 +630,7 @@ class K8sCommon():
             my_output=None, 
             prompt=None, 
             max_time=60,
+            optional=False,
             log_error_on_timeout=True
         ):
         if my_output is not None and prompt is not None:
@@ -654,6 +655,24 @@ class K8sCommon():
 
             duration = int(time.time()) - start_time
             if duration > max_time:
+                if optional:
+                    if my_output is not None:
+                        my_output.default('Success with optional condition')
+
+                    if log_error_on_timeout:
+                        if namespace is None:
+                            self.log.error(
+                                'k8s.wait_no_managed_object',
+                                'Max time reached [%s] but optional: %s' % (object_name, name)
+                            )
+                        else:
+                            self.log.error(
+                                'k8s.wait_no_managed_object',
+                                'Max time reached [%s] but optional: %s/%s' % (object_name, namespace, name)
+                            )
+                        
+                    return True
+                
                 if log_error_on_timeout:
                     if namespace is None:
                         self.log.error(

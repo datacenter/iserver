@@ -25,6 +25,7 @@ from menu.set.ocp.iotel import set_ocp_iotel_command
 from menu.set.ocp.ldap import set_ocp_ldap_command
 from menu.set.ocp.lso import set_ocp_lso_command
 from menu.set.ocp.lvm import set_ocp_lvm_command
+from menu.set.ocp.metallb import set_ocp_metallb_command
 from menu.set.ocp.minio import set_ocp_minio_command
 from menu.set.ocp.mtv import set_ocp_mtv_command
 from menu.set.ocp.node.main import set_ocp_node_menu
@@ -83,6 +84,7 @@ set_ocp_menu.add_command(set_ocp_iotel_command)
 set_ocp_menu.add_command(set_ocp_ldap_command)
 set_ocp_menu.add_command(set_ocp_lso_command)
 set_ocp_menu.add_command(set_ocp_lvm_command)
+set_ocp_menu.add_command(set_ocp_metallb_command)
 set_ocp_menu.add_command(set_ocp_minio_command)
 set_ocp_menu.add_command(set_ocp_mtv_command)
 set_ocp_menu.add_command(set_ocp_node_menu)

@@ -100,3 +100,37 @@ class K8sDeploymentInfo():
             return False
         
         return info['ready']
+
+    def get_deployment_resources(self, namespace, name, cache_enabled=True):
+        resources = {}
+        resources['rs'] = []
+        resources['pod'] = []
+
+        info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
+        if info is None:
+            return resources
+
+        replica_sets = self.get_replica_set_deployments(namespace, name, cache_enabled=cache_enabled)
+        if replica_sets is None:
+            return resources
+        
+        for replica_set in replica_sets:
+            resources['rs'].append(
+                dict(
+                    namespace=replica_set['namespace'],
+                    name=replica_set['name']
+                )
+            )
+            pods = self.get_pods_replica_set(namespace, replica_set['name'], cache_enabled=cache_enabled)
+            if pods is None:
+                continue
+
+            for pod in pods:
+                resources['pod'].append(
+                    dict(
+                        namespace=pod['namespace'],
+                        name=pod['name']
+                    )
+                )
+
+        return resources

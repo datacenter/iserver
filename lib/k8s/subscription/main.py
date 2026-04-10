@@ -8,6 +8,7 @@ from lib.k8s.subscription.gpu import K8sSubscriptionGpu
 from lib.k8s.subscription.grafana import K8sSubscriptionGrafana
 from lib.k8s.subscription.lso import K8sSubscriptionLocalStorage
 from lib.k8s.subscription.lvm import K8sSubscriptionLvm
+from lib.k8s.subscription.metallb import K8sSubscriptionMetallb
 from lib.k8s.subscription.minio import K8sSubscriptionMinio
 from lib.k8s.subscription.mtv import K8sSubscriptionMtv
 from lib.k8s.subscription.nfd import K8sSubscriptionNfd
@@ -38,6 +39,7 @@ class K8sSubscription(
         K8sSubscriptionGrafana,
         K8sSubscriptionLocalStorage,
         K8sSubscriptionLvm,
+        K8sSubscriptionMetallb,
         K8sSubscriptionMinio,
         K8sSubscriptionMtv,
         K8sSubscriptionNfd,
@@ -67,6 +69,7 @@ class K8sSubscription(
         K8sSubscriptionGrafana.__init__(self)
         K8sSubscriptionLocalStorage.__init__(self)
         K8sSubscriptionLvm.__init__(self)
+        K8sSubscriptionMetallb.__init__(self)
         K8sSubscriptionMinio.__init__(self)
         K8sSubscriptionMtv.__init__(self)
         K8sSubscriptionNfd.__init__(self)

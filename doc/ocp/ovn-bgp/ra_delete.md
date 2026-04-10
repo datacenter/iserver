@@ -2,6 +2,9 @@
 
 [[Back]](./README.md)
 
+> [!NOTE]
+> Use `__all__` value for all route advertisement configurations
+
 ```
 # iserver delete ocp ovn-bgp --mode ra-config --config cudn
 

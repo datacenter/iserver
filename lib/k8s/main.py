@@ -12,6 +12,9 @@ from lib.k8s.alert_rule.main import K8sAlertRule
 from lib.k8s.auth.main import K8sAuth
 from lib.k8s.authentication.main import K8sAuthentication
 from lib.k8s.bare_metal_host.main import K8sBareMetalHost
+from lib.k8s.bfd_profile.main import K8sBfdProfile
+from lib.k8s.bgp_advertisement.main import K8sBgpAdvertisement
+from lib.k8s.bgp_peer.main import K8sBgpPeer
 from lib.k8s.bgp_session_state.main import K8sBgpSessionState
 from lib.k8s.build_config.main import K8sBuildConfig
 from lib.k8s.catalog_source.main import K8sCatalogSource
@@ -53,6 +56,7 @@ from lib.k8s.cluster_user_defined_network.main import K8sClusterUserDefinedNetwo
 from lib.k8s.cluster_version.main import K8sClusterVersion
 from lib.k8s.clusterwide_private_network.main import K8sClusterwidePrivateNetwork
 from lib.k8s.cni.main import K8sCni
+from lib.k8s.community.main import K8sCommunity
 from lib.k8s.config_map.main import K8sConfigMap
 from lib.k8s.custom_resource_definition.main import K8sCustomResourceDefinition
 from lib.k8s.daemon_set.main import K8sDaemonSet
@@ -95,6 +99,7 @@ from lib.k8s.infrastructure_config.main import K8sInfrastructureConfig
 from lib.k8s.ingress.main import K8sIngress
 from lib.k8s.ingress_config.main import K8sIngressConfig
 from lib.k8s.installplan.main import K8sInstallplan
+from lib.k8s.ip_address_pool.main import K8sIpAddressPool
 from lib.k8s.isovalent_bgp_advertisement.main import K8sIsovalentBGPAdvertisement
 from lib.k8s.isovalent_bgp_cluster_config.main import K8sIsovalentBGPClusterConfig
 from lib.k8s.isovalent_bgp_node_config.main import K8sIsovalentBGPNodeConfig
@@ -115,6 +120,7 @@ from lib.k8s.logical_volume.main import K8sLogicalVolume
 from lib.k8s.lvm_cluster.main import K8sLvmCluster
 from lib.k8s.machine_config.main import K8sMachineConfig
 from lib.k8s.machine_config_pool.main import K8sMachineConfigPool
+from lib.k8s.metallb.main import K8sMetalLb
 from lib.k8s.migration.main import K8sMigration
 from lib.k8s.migration_policy.main import K8sMigrationPolicy
 from lib.k8s.mutating_webhook.main import K8sMutatingWebhook
@@ -258,6 +264,9 @@ class K8s(
         K8sAlertRule,
         K8sAlertManagerConfig,
         K8sBareMetalHost,
+        K8sBfdProfile,
+        K8sBgpAdvertisement,
+        K8sBgpPeer,
         K8sBgpSessionState,
         K8sBuildConfig,
         K8sCatalogSource,
@@ -298,6 +307,7 @@ class K8s(
         K8sClusterVersion,
         K8sClusterwidePrivateNetwork,
         K8sCni,
+        K8sCommunity,
         K8sConfigMap,
         K8sCronJob, 
         K8sCustomResourceDefinition,
@@ -341,6 +351,7 @@ class K8s(
         K8sIngress,
         K8sIngressConfig,
         K8sInstallplan,
+        K8sIpAddressPool,
         K8sIsovalentBGPAdvertisement,
         K8sIsovalentBGPClusterConfig,
         K8sIsovalentBGPNodeConfig,
@@ -361,6 +372,7 @@ class K8s(
         K8sLvmCluster,
         K8sMachineConfig,
         K8sMachineConfigPool,
+        K8sMetalLb,
         K8sMigration,
         K8sMigrationPolicy,
         K8sMutatingWebhook,
@@ -504,6 +516,9 @@ class K8s(
         K8sAuth.__init__(self)
         K8sAuthentication.__init__(self)
         K8sBareMetalHost.__init__(self)
+        K8sBfdProfile.__init__(self)
+        K8sBgpAdvertisement.__init__(self)
+        K8sBgpPeer.__init__(self)
         K8sBgpSessionState.__init__(self)
         K8sBuildConfig.__init__(self)
         K8sCatalogSource.__init__(self)
@@ -544,6 +559,7 @@ class K8s(
         K8sClusterVersion.__init__(self)
         K8sClusterwidePrivateNetwork.__init__(self)
         K8sCni.__init__(self)
+        K8sCommunity.__init__(self)
         K8sConfigMap.__init__(self)
         K8sCronJob.__init__(self)
         K8sCustomResourceDefinition.__init__(self)
@@ -587,6 +603,7 @@ class K8s(
         K8sIngress.__init__(self)
         K8sIngressConfig.__init__(self)
         K8sInstallplan.__init__(self)
+        K8sIpAddressPool.__init__(self)
         K8sIsovalentBGPAdvertisement.__init__(self)
         K8sIsovalentBGPClusterConfig.__init__(self)
         K8sIsovalentBGPNodeConfig.__init__(self)
@@ -607,6 +624,7 @@ class K8s(
         K8sLvmCluster.__init__(self)
         K8sMachineConfig.__init__(self)
         K8sMachineConfigPool.__init__(self)
+        K8sMetalLb.__init__(self)
         K8sMigration.__init__(self)
         K8sMigrationPolicy.__init__(self)
         K8sMutatingWebhook.__init__(self)

@@ -1718,3 +1718,119 @@ class OutputHelper():
     
     def my_yaml(self, content, before_newline=False, wrap=None):
         self.default(yaml.dump(content), before_newline=before_newline, wrap=wrap)
+
+    def get_value(self, prompt, empty=False):
+        value = ''
+        while len(value) == 0:
+            value = input('%s: ' % (prompt))
+            if empty:
+                break
+
+        return value.strip()
+
+    def get_integer(self, prompt, min_value=None, max_value=None, default=None):
+        value = None
+        while value is None:
+            if default is None:
+                input_value = input('%s: ' % (prompt))
+            else:
+                input_value = input('%s [%s]: ' % (prompt, default))
+                
+            try:
+                int_value = int(input_value)
+            except BaseException:
+                int_value = default
+
+            if int_value is None:
+                continue
+
+            if min_value is not None and int_value < min_value:
+                continue
+
+            if max_value is not None and int_value > max_value:
+                continue
+
+            value = int_value
+            break
+
+        return value
+
+    def get_ip_address(self, prompt, empty=False, default=None):
+        value = ''
+        while len(value) == 0:
+            if default is None:
+                value = input('%s: ' % (prompt))
+            else:
+                value = input('%s [%s]: ' % (prompt, default))
+
+            if len(value) == 0:
+                if default is not None:
+                    value = default
+                    break
+
+                if empty:
+                    break
+
+            if not ip_helper.is_valid_ipv4_address(value):
+                value = ''
+
+        return value.strip()
+
+    def get_cidr(self, prompt, empty=False):
+        value = ''
+        while len(value) == 0:
+            value = input('%s: ' % (prompt))
+
+            if len(value) == 0 and empty:
+                break
+
+            if not ip_helper.is_valid_ipv4_cidr(value):
+                value = ''
+
+        return value.strip()
+
+    def get_prefix_length(self, prompt, empty=False):
+        value = ''
+        while len(value) == 0:
+            value = input('%s: ' % (prompt))
+
+            if len(value) == 0 and empty:
+                break
+
+            try:
+                if int(value) < 8 or int(value) > 30:
+                    value = ''
+            except BaseException:
+                value = ''
+
+        return int(value)
+
+    def get_selection(self, prompt, options, default=None):
+        if default is None:
+            self.default('%s:' % (prompt))
+        else:
+            self.default('%s [%s]:' % (prompt, default))
+        for allowed_value in options:
+            self.default('- %s' % (allowed_value))
+
+        value = ''
+        while len(value) == 0 or value not in options:
+            value = input('Value: ')
+            if len(value) == 0 and default is not None:
+                value = default
+
+        return value.strip()
+
+
+    def get_bool(self, prompt, default=None):
+        if default is not None:
+            if default:
+                default_value = 'T'
+            else:
+                default_value = 'F'
+
+        selection = self.get_selection(prompt, ['T', 'F'], default=default_value)
+        if selection == 'T':
+            return True
+        
+        return False

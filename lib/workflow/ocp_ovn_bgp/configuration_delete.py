@@ -35,14 +35,30 @@ def run(params, log_id=None):
         my_output.default('FRR %s' % (my_output.add_color('not enabled', 'Red')))
         return False
     
-    success = params['k8s_handler'].delete_frr_configuration(
-        params['__default__']['namespace'], 
-        params['config'], 
-        my_output=my_output, 
-        wait=params['wait']
-    )
-    if not success:
-        return False
+    if params['config'] == '__all__':
+        configs = params['k8s_handler'].get_frr_configurations(cache_enabled=False)
+        if configs is None:
+            my_output.error('Failed to get frr configurations')
+            return False
+
+        for config in configs:
+            success = params['k8s_handler'].delete_frr_configuration(
+                params['__default__']['namespace'], 
+                config['name'], 
+                my_output=my_output, 
+                wait=params['wait']
+            )
+            if not success:
+                return False
+    else:
+        success = params['k8s_handler'].delete_frr_configuration(
+            params['__default__']['namespace'], 
+            params['config'], 
+            my_output=my_output, 
+            wait=params['wait']
+        )
+        if not success:
+            return False
     
     my_output.default('')
     my_output.default('Completed tasks')

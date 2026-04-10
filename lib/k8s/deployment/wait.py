@@ -20,7 +20,7 @@ class K8sDeploymentWait():
             if prompt is not None:
                 my_output.default(prompt)
             else:
-                my_output.default('Wait for deployment %s/%s ready (optional: %s, allow zero replicas: %s, timout: %ss)...' % (namespace, name, optional, allow_zero_replicas, max_time))
+                my_output.default('Wait for deployment %s/%s ready (optional: %s, allow zero replicas: %s, timeout: %ss)...' % (namespace, name, optional, allow_zero_replicas, max_time))
 
         start_time = int(time.time())
         while True:
@@ -87,57 +87,28 @@ class K8sDeploymentWait():
 
         return all_ready
 
-    def wait_no_deployment(self, namespace, name, max_time=180, optional=False, my_output=None, log_on_error=False):
-        if my_output is not None:
-            my_output.default('Wait for no deployment %s/%s (optional: %s, timout: %ss)...' % (namespace, name, optional, max_time))
+    def wait_no_deployment(self, namespace, name, max_time=180, prompt='Deployment', optional=False, my_output=None, log_error_on_timeout=False):
+        return self.wait_no_managed_object(
+            'deployment',
+            name,
+            namespace=namespace,
+            my_output=my_output,
+            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            max_time=max_time,
+            optional=optional,
+            log_error_on_timeout=log_error_on_timeout
+        )
 
-        start_time = int(time.time())
-        while True:
-            deployment = self.get_deployment_optimized(
-                namespace,
-                name,
-                cache_enabled=False
-            )
-            if deployment is None:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                if optional:
-                    if my_output is not None:
-                        my_output.default('Success with optional condition')
-
-                    if log_on_error:
-                        self.log.error(
-                            'k8s.wait_no_deployment',
-                            'Max time reached but deployment optional: %s/%s' % (namespace, name)
-                        )
-                        
-                    return True
-
-                if my_output is not None:
-                    my_output.default(my_output.add_color('timed out', 'Red'))
-
-                if log_on_error:
-                    self.log.error(
-                        'k8s.wait_no_deployment',
-                        'Max time reached: %s/%s' % (namespace, name)
-                    )
-
-                return False
-
-            time.sleep(5)
-
-    def wait_no_deployments(self, deployments, max_time=180, my_output=None, optional=False, log_on_error=False, break_on_error=True):
+    def wait_no_deployments(self, deployments, max_time=180, my_output=None, optional=False, log_error_on_timeout=False, break_on_error=True):
         all_gone = True
         for deployment in deployments:
-            success = self.wait_no_daemon_set(
+            success = self.wait_no_deployment(
                 deployment['namespace'],
                 deployment['name'],
                 my_output=my_output,
                 max_time=max_time,
                 optional=optional,
-                log_on_error=log_on_error
+                log_error_on_timeout=log_error_on_timeout
             )
             if not success:
                 all_gone = False

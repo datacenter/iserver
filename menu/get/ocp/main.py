@@ -20,6 +20,7 @@ from menu.get.ocp.iotel import get_ocp_iotel_command
 from menu.get.ocp.ldap import get_ocp_ldap_command
 from menu.get.ocp.lso import get_ocp_lso_command
 from menu.get.ocp.lvm import get_ocp_lvm_command
+from menu.get.ocp.metallb import get_ocp_metallb_command
 from menu.get.ocp.minio import get_ocp_minio_command
 from menu.get.ocp.mtv import get_ocp_mtv_command
 from menu.get.ocp.nfd import get_ocp_nfd_command
@@ -70,6 +71,7 @@ get_ocp_menu.add_command(get_ocp_iotel_command)
 get_ocp_menu.add_command(get_ocp_ldap_command)
 get_ocp_menu.add_command(get_ocp_lso_command)
 get_ocp_menu.add_command(get_ocp_lvm_command)
+get_ocp_menu.add_command(get_ocp_metallb_command)
 get_ocp_menu.add_command(get_ocp_minio_command)
 get_ocp_menu.add_command(get_ocp_mtv_command)
 get_ocp_menu.add_command(get_ocp_nfd_command)

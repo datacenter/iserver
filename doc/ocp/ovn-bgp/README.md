@@ -15,7 +15,7 @@ OpenShift Container Platform supports BGP routing through FRRouting (FRR). FRR-K
 - must be [enabled](./kb/enable.md) with optional [route advertisement feature](./kb/enable_route_advertisement.md)
 - FRR-k8s configuration controlled with [FRRConfiguration CRD](./kb/configuration.md) and [RouteAdvertisements CRD](./kb/route_advertisement.md)
 - BGP state exposed with [FRRNodeState CRD](./kb/node_state.md) and [BGPSessionState CRD](./kb/session_state.md)
-- integrates with [MetalLB for service advertisement](../ovn-metallb/README.md)
+- can integrate with [MetalLB for service advertisement](../ovn-metallb/README.md)
 
 ## Examples
 
@@ -57,6 +57,7 @@ iserver delete ocp ovn-bgp --mode feature | disable ovn frr-k8s | [Link](./featu
 iserver delete ocp ovn-bgp --mode ra | disable ovn route advertisement | [Link](./ra_disable.md)
 iserver delete ocp ovn-bgp --mode config | delete frr configuraton | [Link](./configuration_delete.md)
 iserver delete ocp ovn-bgp --mode ra-config | delete route advertisement | [Link](./ra_delete.md)
+iserver delete ocp ovn-bgp --mode wipe | wipe frr-k8s and ra | [Link](./wipe.md)
 iserver delete ocp task | in task way | [Link](./delete_task.md)
 
 [[Back]](../Operations.md)
