@@ -171,6 +171,84 @@ def generate_nncp_lb(data):
 
     return interface_mo
 
+def generate_nncp_ovs(data):
+    interface_mo = {}
+    interface_mo['name'] = data['name']
+    interface_mo['type'] = 'ovs-bridge'
+    interface_mo['state'] = data['state']
+
+    if interface_mo['state'] == 'absent':
+        return interface_mo
+    
+    interface_mo['bridge'] = {}
+
+    if 'patch' in data:
+        interface_mo['bridge']['allow-extra-patch-ports'] = data['patch']
+    
+    if 'stp' in data:
+        if 'options' not in interface_mo['bridge']:
+            interface_mo['bridge']['options'] = {}
+
+        interface_mo['bridge']['options']['stp'] = data['stp']
+
+    if 'mcast' in data:
+        if 'options' not in interface_mo['bridge']:
+            interface_mo['bridge']['options'] = {}
+
+        interface_mo['bridge']['options']['mcast-snooping-enable'] = data['mcast']
+
+    if 'port' in data:
+        interface_mo['bridge']['port'] = []
+        if isinstance(data['port'], str):
+            interface_mo['bridge']['port'].append(
+                data['port']
+            )
+
+        if isinstance(data['port'], list):
+            for item in data['port']:
+                interface_mo['bridge']['port'].append(
+                    dict(name=item)
+                )
+
+    return interface_mo
+
+def generate_nncp_vrf(data):
+    interface_mo = {}
+    interface_mo['name'] = data['name']
+    interface_mo['type'] = 'vrf'
+    interface_mo['state'] = data['state']
+
+    if interface_mo['state'] == 'absent':
+        return interface_mo
+    
+    interface_mo['vrf'] = {}
+
+    if 'port' in data:
+        interface_mo['vrf']['port'] = []
+        if isinstance(data['port'], str):
+            for item in data['port'].split(','):
+                interface_mo['vrf']['port'].append(
+                    item
+                )
+
+        if isinstance(data['port'], list):
+            for item in data['port']:
+                interface_mo['vrf']['port'].append(
+                    item
+                )
+
+    if 'table' in data:
+        interface_mo['vrf']['route-table-id'] = data['table']
+
+    return interface_mo
+
+def generate_nncp_ovn(data):
+    ovn_mo = {}
+    ovn_mo['localnet'] = data['localnet']
+    ovn_mo['bridge'] = data['bridge']
+    ovn_mo['state'] = data['state']
+    return ovn_mo
+
 def run(params, my_output):
     item = nncp_validate.run(params, my_output)
     if item is None:
@@ -203,7 +281,7 @@ def run(params, my_output):
 
     nncp_mo['spec']['desiredState'] = {}
 
-    if 'interfaces' in item:
+    if 'interfaces' in item and len(item['interfaces']) > 0:
         nncp_mo['spec']['desiredState']['interfaces'] = []
         for interface in item['interfaces']:
             if interface['type'] == 'vlan':
@@ -226,7 +304,25 @@ def run(params, my_output):
                     generate_nncp_lb(interface)
                 )
 
-    if 'routes' in item:
+            if interface['type'] == 'ovs':
+                nncp_mo['spec']['desiredState']['interfaces'].append(
+                    generate_nncp_ovs(interface)
+                )
+
+            if interface['type'] == 'vrf':
+                nncp_mo['spec']['desiredState']['interfaces'].append(
+                    generate_nncp_vrf(interface)
+                )
+
+    if 'ovn' in item and len(item['ovn']) > 0:
+        nncp_mo['spec']['desiredState']['ovn'] = {}
+        nncp_mo['spec']['desiredState']['ovn']['bridge-mappings'] = []
+        for ovn in item['ovn']:
+            nncp_mo['spec']['desiredState']['ovn']['bridge-mappings'].append(
+                generate_nncp_ovn(ovn)
+            )
+
+    if 'routes' in item and len(item['routes']) > 0:
         nncp_mo['spec']['desiredState']['routes'] = {}
         nncp_mo['spec']['desiredState']['routes']['config'] = []
         for route in item['routes']:

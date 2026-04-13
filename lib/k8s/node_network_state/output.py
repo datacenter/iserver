@@ -215,3 +215,15 @@ class K8sNodeNetworkStateOutput():
                 ['Ethtool', 'ethtoolT']
             ]
         )
+
+    def print_node_network_states_state(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Node', 'name'],
+                ['Interface', 'interfaceT'],
+                ['Bridge', 'bridgeT'],
+                ['DNS', 'dnsT'],
+                ['Route', 'routeT']
+            ]
+        )

@@ -911,5 +911,6 @@ class K8sNodeNetworkStateInterfaceInfo():
             interfaces_info,
             self.get(managed_object, 'status:currentState:ovn:bridge-mappings', on_error=[], on_none=[])
         )
+        info['ovn'] = self.get(managed_object, 'status:currentState:ovn:bridge-mappings', on_error=[], on_none=[])
         info['vf'] = self.get_node_network_state_interfaces_vf_info(node_name, interfaces_info)
         return info

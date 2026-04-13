@@ -15,6 +15,7 @@ The ClusterUserDefinedNetwork (CUDN) custom resource (CR) provides cluster-scope
     - [L2](./l2/overview.md) - flat L2 subnet across the nodes (bridging)
     - [L3](./l3/overview.md) - similar to POD CIDR with per node subnets (routing)
     - [localnet](./localnet/overview.md) - connects secondary network to physical underlay
+- [ovn-bgp integration](../ovn-bgp/example/cudn-l3/README.md) incl. [vrf-lite option](../ovn-bgp/example/cudn-l3-vrflite/README.md)
 
 ## Networking
 

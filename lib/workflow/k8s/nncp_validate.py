@@ -3,6 +3,74 @@ import json
 from lib import ip_helper
 
 
+def check_ovn(k8s_handler, item, check, node, my_output):
+    data = {}
+
+    if 'localnet' not in item:
+        my_output.error('localnet attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+
+    data['localnet'] = item['localnet']
+
+    if 'bridge' not in item:
+        my_output.error('bridge attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+
+    data['bridge'] = item['bridge']
+
+    if 'state' not in item:
+        my_output.error('state attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+
+    if item['state'] not in ['present', 'absent']:
+        my_output.error('state attribute present or absent value expected')
+        my_output.default(json.dumps(item))
+        return None
+            
+    data['state'] = item['state']
+
+    if check:
+        nns = get_nncp_input_nns(
+            k8s_handler,
+            node,
+            my_output
+        )
+        if nns is None:
+            return None
+        
+        my_output.default('Check nns data', before_newline=True)
+        for item in nns:
+            interface_found = False
+            for interface_mo in item['interface']:
+                if interface_mo['type'] not in ['ovs-bridge']:
+                    continue
+
+                if interface_mo['name'] == data['bridge']:
+                    interface_found = True
+                    break
+
+            if not interface_found:
+                my_output.default(
+                    '- %s ovs bridge interface not found: %s' % (
+                        item['name'],
+                        data['bridge']
+                    )
+                )
+
+            if interface_found:
+                my_output.default(
+                    '- %s ovs interface found: %s' % (
+                        item['name'],
+                        data['bridge']
+                    )
+                )
+
+    return data
+
+
 def check_route(k8s_handler, item, check, node, my_output):
     data = {}
 
@@ -65,7 +133,7 @@ def check_route(k8s_handler, item, check, node, my_output):
         if nns is None:
             return None
         
-        my_output.default('Check nns data', underline=True, before_newline=True)
+        my_output.default('Check nns data', before_newline=True)
         for item in nns:
             interface_found = False
             for interface_mo in item['interface']:
@@ -96,7 +164,7 @@ def check_route(k8s_handler, item, check, node, my_output):
 
 
 def get_nncp_input_nns(k8s_handler, node, my_output):
-    my_output.default('Get nns data', underline=True, before_newline=True)
+    my_output.default('Get nns data', before_newline=True)
     node_names = []
     if node == '__all__':
         node_names = k8s_handler.get_nodes_name()
@@ -164,7 +232,7 @@ def check_nncp_input_eth(k8s_handler, item, check, node, my_output):
         if nns is None:
             return None
         
-        my_output.default('Check nns data', underline=True, before_newline=True)
+        my_output.default('Check nns data', before_newline=True)
         for item in nns:
             interface_found = False
             for interface_mo in item['interface']:
@@ -198,27 +266,6 @@ def check_nncp_input_vlan(k8s_handler, item, check, node, my_output):
     data = {}
     data['type'] = 'vlan'
 
-    if 'base' not in item:
-        my_output.error('base attribute expected')
-        my_output.default(json.dumps(item))
-        return None
-    
-    data['base'] = item['base']
-
-    if 'vlan' not in item:
-        my_output.error('vlan attribute expected')
-        my_output.default(json.dumps(item))
-        return None
-    
-    try:
-        vlan_id = int(item['vlan'])
-    except BaseException:
-        my_output.error('vlan attribute must be integer')
-        my_output.default(json.dumps(item))
-        return None
-    
-    data['vlan_id'] = vlan_id
-
     if 'state' not in item:
         my_output.error('state attribute expected')
         my_output.default(json.dumps(item))
@@ -230,6 +277,33 @@ def check_nncp_input_vlan(k8s_handler, item, check, node, my_output):
         return None
     
     data['state'] = item['state']
+
+    if 'base' not in item:
+        if len(item['name'].split('.')) != 2:
+            my_output.error('base attribute expected')
+            my_output.default(json.dumps(item))
+            return None
+        
+        item['base'] = item['name'].split('.')[0]
+    
+    data['base'] = item['base']
+
+    if 'vlan' not in item:
+        if len(item['name'].split('.')) != 2:
+            my_output.error('vlan attribute expected')
+            my_output.default(json.dumps(item))
+            return None
+    
+        item['vlan'] = item['name'].split('.')[1]
+
+    try:
+        vlan_id = int(item['vlan'])
+    except BaseException:
+        my_output.error('vlan attribute must be integer')
+        my_output.default(json.dumps(item))
+        return None
+    
+    data['vlan_id'] = vlan_id
 
     if data['state'] == 'up':
         data['ipv4'] = None
@@ -244,7 +318,7 @@ def check_nncp_input_vlan(k8s_handler, item, check, node, my_output):
 
                 data['ipv4'] = item['ipv4']
     
-    if check:
+    if data['state'] == 'up' and check:
         nns = get_nncp_input_nns(
             k8s_handler,
             node,
@@ -253,7 +327,7 @@ def check_nncp_input_vlan(k8s_handler, item, check, node, my_output):
         if nns is None:
             return None
         
-        my_output.default('Check nns data', underline=True, before_newline=True)
+        my_output.default('Check nns data', before_newline=True)
         for item in nns:
             interface_found = False
             for interface_mo in item['interface']:
@@ -390,7 +464,7 @@ def check_nncp_input_bond(k8s_handler, item, check, node, my_output):
         if nns is None:
             return None
         
-        my_output.default('Check nns data', underline=True, before_newline=True)
+        my_output.default('Check nns data', before_newline=True)
         for item in nns:
             interface_found = False
             for interface_mo in item['interface']:
@@ -516,7 +590,7 @@ def check_nncp_input_lb(k8s_handler, item, check, node, my_output):
         if nns is None:
             return None
         
-        my_output.default('Check nns data', underline=True, before_newline=True)
+        my_output.default('Check nns data', before_newline=True)
         for item in nns:
             interface_found = False
             for interface_mo in item['interface']:
@@ -572,7 +646,219 @@ def check_nncp_input_lb(k8s_handler, item, check, node, my_output):
     return data
 
 
+def check_nncp_input_ovs(k8s_handler, item, check, node, my_output):
+    data = {}
+    data['type'] = 'ovs'
+
+    if 'name' not in item:
+        my_output.error('name attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    data['name'] = item['name']
+
+    if 'state' not in item:
+        my_output.error('state attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    if item['state'] not in ['up', 'absent']:
+        my_output.error('state attribute value up or absent expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    data['state'] = item['state']
+
+    if data['state'] == 'up':
+        if 'port' not in item:
+            my_output.error('port attribute expected')
+            my_output.default(json.dumps(item))
+            return None
+        
+        if len(item['port'].split(',')) > 1:
+            my_output.error('single upstream interface expected')
+            my_output.default(json.dumps(item))
+            return None
+        
+        data['port'] = item['port']
+
+        if 'stp' in item:
+            if not isinstance(item['stp'], bool):
+                my_output.error('stp boolean expected')
+                my_output.default(json.dumps(item))
+                return None
+
+            data['stp'] = item['stp']
+
+        if 'patch' in item:
+            if not isinstance(item['patch'], bool):
+                my_output.error('patch boolean expected')
+                my_output.default(json.dumps(item))
+                return None
+
+            data['patch'] = item['patch']
+
+        if 'mcast' in item:
+            if not isinstance(item['mcast'], bool):
+                my_output.error('mcast boolean expected')
+                my_output.default(json.dumps(item))
+                return None
+
+            data['mcast'] = item['mcast']
+
+    if check:
+        nns = get_nncp_input_nns(
+            k8s_handler,
+            node,
+            my_output
+        )
+        if nns is None:
+            return None
+        
+        my_output.default('Check nns data', before_newline=True)
+        for item in nns:
+            interface_found = False
+            for interface_mo in item['interface']:
+                if interface_mo['type'] not in ['ovs-bridge']:
+                    continue
+
+                if interface_mo['name'] == data['name']:
+                    interface_found = True
+                    break
+
+            if not interface_found:
+                my_output.default(
+                    '- %s ovs bridge interface not found: %s' % (
+                        item['name'],
+                        data['name']
+                    )
+                )
+
+            if interface_found:
+                my_output.default(
+                    '- %s ovs interface found: %s' % (
+                        item['name'],
+                        data['name']
+                    )
+                )
+
+            if data['state'] == 'up':
+                interface_found = False
+                for interface_mo in item['interface']:
+                    if interface_mo['type'] not in ['ethernet', 'bond', 'vlan']:
+                        continue
+
+                    if interface_mo['name'] == data['port']:
+                        interface_found = True
+                        break
+
+                if not interface_found:
+                    my_output.default(
+                        '- [WARNING] %s upstream interface not found: %s' % (
+                            item['name'],
+                            data['port']
+                        )
+                    )
+
+                if interface_found:
+                    my_output.default(
+                        '- %s upstream interface found: %s' % (
+                            item['name'],
+                            data['port']
+                        )
+                    )
+
+    return data
+
+
+def check_nncp_input_vrf(k8s_handler, item, check, node, my_output):
+    data = {}
+    data['type'] = 'vrf'
+
+    if 'name' not in item:
+        my_output.error('name attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    data['name'] = item['name']
+
+    if 'state' not in item:
+        my_output.error('state attribute expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    if item['state'] not in ['up', 'absent']:
+        my_output.error('state attribute value up or absent expected')
+        my_output.default(json.dumps(item))
+        return None
+    
+    data['state'] = item['state']
+
+    if data['state'] == 'up':
+        if 'port' not in item:
+            my_output.error('port attribute expected')
+            my_output.default(json.dumps(item))
+            return None
+        
+        data['port'] = item['port']
+
+        if 'table' not in item:
+            my_output.error('table attribute expected')
+            my_output.default(json.dumps(item))
+            return None
+        
+        if not isinstance(item['table'], int):
+            my_output.error('table int expected')
+            my_output.default(json.dumps(item))
+            return None
+
+        data['table'] = item['table']
+
+    if data['state'] == 'up' and check:
+        nns = get_nncp_input_nns(
+            k8s_handler,
+            node,
+            my_output
+        )
+        if nns is None:
+            return None
+        
+        my_output.default('Check nns data', before_newline=True)
+        for interface_name in data['port'].split(','):
+            for item in nns:
+                interface_found = False
+                for interface_mo in item['interface']:
+                    if interface_mo['name'] == interface_name:
+                        interface_found = True
+                        break
+
+                if not interface_found:
+                    my_output.default(
+                        '- %s vrf interface not found: %s' % (
+                            item['name'],
+                            interface_name
+                        )
+                    )
+
+                if interface_found:
+                    my_output.default(
+                        '- %s vrf interface found: %s' % (
+                            item['name'],
+                            interface_name
+                        )
+                    )
+
+    return data
+
+
 def run(params, my_output):
+    my_output.default('Check input data', before_newline=True)
+    to_print = {}
+    for key in ['node', 'delete', 'check', 'interfaces', 'routes', 'ovn']:
+        if key in params:
+            to_print[key] = params[key]
+    my_output.default(json.dumps(to_print, indent=4), wrap='~~~', after_newline=True)
+
     if not isinstance(params, dict):
         my_output.error('dict params expected')
         return None
@@ -599,6 +885,19 @@ def run(params, my_output):
         my_output.error('check attribute bool value expected')
         return None
 
+    if 'ovn' in params:
+        new_ovns = []
+        for ovn in params['ovn']:
+            new_ovn = check_ovn(params['k8s_handler'], ovn, params['check'], params['node'], my_output)
+            if new_ovn is None:
+                return None
+
+            new_ovns.append(
+                new_ovn
+            )
+
+        params['ovn'] = copy.deepcopy(new_ovns)
+
     if 'routes' in params:
         new_routes = []
         for route in params['routes']:
@@ -619,7 +918,7 @@ def run(params, my_output):
                 my_output.error('interface.type attribute expected')
                 return None
 
-            supported_types = ['bond', 'eth', 'lb', 'vlan']
+            supported_types = ['bond', 'eth', 'lb', 'vlan', 'ovs', 'vrf']
             if interface['type'] not in supported_types:
                 my_output.error('unsupported interface.type value')
                 return None
@@ -636,6 +935,12 @@ def run(params, my_output):
 
             if interface['type'] == 'lb':
                 new_interface = check_nncp_input_lb(params['k8s_handler'], interface, params['check'], params['node'], my_output)
+
+            if interface['type'] == 'ovs':
+                new_interface = check_nncp_input_ovs(params['k8s_handler'], interface, params['check'], params['node'], my_output)
+
+            if interface['type'] == 'vrf':
+                new_interface = check_nncp_input_vrf(params['k8s_handler'], interface, params['check'], params['node'], my_output)
 
             if new_interface is None:
                 return None

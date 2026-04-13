@@ -19,7 +19,8 @@ class K8sNodeNetworkConfigurationPolicyCreate():
             body,
             confirmation=False, 
             my_output=None, 
-            wait=True
+            wait=True,
+            max_time=0
         ):
         if not self.create_resource(body, object_name='node_network_configuration_policy', my_output=my_output, confirmation=confirmation):
             return False
@@ -35,11 +36,14 @@ class K8sNodeNetworkConfigurationPolicyCreate():
         if not success:
             return False
 
+        if max_time == 0:
+            max_time = 180
+
         success = self.wait_node_network_configuration_policy(
             body['metadata']['name'],
             match_properties={'status':'Available'},
             break_properties={'status':'Degraded'},
-            max_time=180,
+            max_time=max_time,
             my_output=my_output
         )
         if not success:

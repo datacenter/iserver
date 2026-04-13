@@ -10,15 +10,77 @@
   --name TEXT                     Filter by name
   --only                          No fixup state with ip commands
   --verbose                       Include verbose
-  -v, --view TEXT                 [dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf
-                                  |route|all]  [default: all]
+  -v, --view TEXT                 [state|dns|route|bond|eth|lb|lldp|ovs|vf|vlan|intf|route|ethtool|all]  [default: state]
   -o, --output [default|mo|json]  [default: default]
 ```
-
-## Example
+## Example (view:state)
 
 ```
-# iserver get k8s nns --cluster my-cluster
+# iserver get k8s nns --cluster my-cluster -v state
+
++----+-------+---------------------+-----------------------------------------------------+----------------+----------------------------------+
+| ID | Node  | Interface           | Bridge                                              | DNS            | Route                            |
++----+-------+---------------------+-----------------------------------------------------+----------------+----------------------------------+
+| 1  | bm1-1 | Eth 4/10            | V br-ex                                             | domain.com     | Entries: 22                      |
+|    |       | V eno5 lldp:1       | eno5.666                                            | ---            | ---                              |
+|    |       | V eno6 lldp:1       | patch-br-ex_bm1-1-to-br-int                         | 100.200.50.100 | table 7: 1                       |
+|    |       | X eno7              | patch-br-ex_cluster_udn_tenant.blue_bm1-1-to-br-int |                | table 254 [main]: 11             |
+|    |       | X eno8              | patch-br-ex_cluster_udn_tenant.red_bm1-1-to-br-int  |                | table 20833 [vrf:tenant-blue]: 5 |
+|    |       | X enp1s0f0          | ---                                                 |                | table 20835 [vrf:tenant-red]: 5  |
+|    |       | X enp1s0f1          | V ovs-localnet-y                                    |                | ---                              | 
+|    |       | V ens11f0 lldp:1    | ens11f0                                             |                | vrf tenant-blue [20833]: 5       |
+|    |       | V ens11f1 lldp:1    |                                                     |                | vrf tenant-red [20835]: 5        |
+|    |       | X ens9f0            |                                                     |                | ---                              |
+|    |       | X ens9f1            |                                                     |                | nh ovn-k8s-mp0 [7,254]: 3        |
+|    |       | ---                 |                                                     |                | nh br-ex [254,20833,20835]: 7    |
+|    |       | Vlan 1/1            |                                                     |                | nh bond666 [254]: 6              |
+|    |       | V eno5.666          |                                                     |                | nh ovn-k8s-mp3 [20833]: 3        |
+|    |       | ---                 |                                                     |                | nh ovn-k8s-mp4 [20835]: 3        |
+|    |       | Bond 1/1            |                                                     |                |                                  |
+|    |       | V bond666 [ens11f1] |                                                     |                |                                  |
++----+-------+---------------------+-----------------------------------------------------+----------------+----------------------------------+
+| 2  | bm1-2 | Eth 6/10            | V br-ex                                             | domain.com     | Entries: 18                      |
+|    |       | V eno5 lldp:1       | eno5.666                                            | ---            | ---                              |
+|    |       | V eno6 lldp:1       | patch-br-ex_bm1-2-to-br-int                         | 100.200.50.100 | table 7: 1                       |
+|    |       | X eno7              | patch-br-ex_cluster_udn_tenant.blue_bm1-2-to-br-int |                | table 254 [main]: 7              |
+|    |       | X eno8              | patch-br-ex_cluster_udn_tenant.red_bm1-2-to-br-int  |                | table 1485 [vrf:tenant-blue]: 5  |
+|    |       | X enp1s0f0          | ---                                                 |                | table 1487 [vrf:tenant-red]: 5   |
+|    |       | X enp1s0f1          | V ovs-localnet-y                                    |                | ---                              |
+|    |       | V ens11f0 lldp:1    | ens11f0                                             |                | vrf tenant-blue [1485]: 5        |
+|    |       | V ens11f1 lldp:1    |                                                     |                | vrf tenant-red [1487]: 5         |
+|    |       | V ens9f0 lldp:1     |                                                     |                | ---                              |
+|    |       | V ens9f1 lldp:1     |                                                     |                | nh ovn-k8s-mp0 [7,254]: 3        |
+|    |       | ---                 |                                                     |                | nh br-ex [254,1485,1487]: 7      |
+|    |       | Vlan 1/1            |                                                     |                | nh bond666 [254]: 2              |
+|    |       | V eno5.666          |                                                     |                | nh ovn-k8s-mp3 [1485]: 3         |
+|    |       | ---                 |                                                     |                | nh ovn-k8s-mp4 [1487]: 3         |
+|    |       | Bond 1/1            |                                                     |                |                                  |
+|    |       | V bond666 [ens11f1] |                                                     |                |                                  |
++----+-------+---------------------+-----------------------------------------------------+----------------+----------------------------------+
+| 3  | bm1-3 | Eth 6/10            | V br-ex                                             | domain.com     | Entries: 18                      |
+|    |       | V eno5 lldp:1       | eno5.666                                            | ---            | ---                              |
+|    |       | V eno6 lldp:1       | patch-br-ex_bm1-3-to-br-int                         | 100.200.50.100 | table 7: 1                       |
+|    |       | X eno7              | patch-br-ex_cluster_udn_tenant.blue_bm1-3-to-br-int |                | table 254 [main]: 7              |
+|    |       | X eno8              | patch-br-ex_cluster_udn_tenant.red_bm1-3-to-br-int  |                | table 1550 [vrf:tenant-blue]: 5  |
+|    |       | X enp1s0f0          | ---                                                 |                | table 1552 [vrf:tenant-red]: 5   |
+|    |       | X enp1s0f1          | V ovs-localnet-y                                    |                | ---                              |
+|    |       | V ens11f0 lldp:1    | ens11f0                                             |                | vrf tenant-blue [1550]: 5        |
+|    |       | V ens11f1 lldp:1    |                                                     |                | vrf tenant-red [1552]: 5         |
+|    |       | V ens9f0 lldp:1     |                                                     |                | ---                              |
+|    |       | V ens9f1 lldp:1     |                                                     |                | nh ovn-k8s-mp0 [7,254]: 3        |
+|    |       | ---                 |                                                     |                | nh br-ex [254,1550,1552]: 7      |
+|    |       | Vlan 1/1            |                                                     |                | nh bond666 [254]: 2              |
+|    |       | V eno5.666          |                                                     |                | nh ovn-k8s-mp3 [1550]: 3         |
+|    |       | ---                 |                                                     |                | nh ovn-k8s-mp4 [1552]: 3         |
+|    |       | Bond 1/1            |                                                     |                |                                  |
+|    |       | V bond666 [ens11f1] |                                                     |                |                                  |
++----+-------+---------------------+-----------------------------------------------------+----------------+----------------------------------+
+```
+
+## Example (view:all)
+
+```
+# iserver get k8s nns --cluster my-cluster -v all
 
 Node Network State - DNS [#1]
 -----------------------------

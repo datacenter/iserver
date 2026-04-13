@@ -8,12 +8,14 @@ def validate(params):
     rules = [
         ['cluster', False, None, 'str', None, None, None, None],
         ['__id__', True, None, None, None, None, None, None],
-        ['node', False, None, 'str', None, None, None, None],
-        ['policy', False, None, 'str', None, None, None, None],
-        ['delete', True, False, 'bool', None, None, None, None],
+        ['node', True, '__all__', 'str', None, None, None, None],
+        ['policy', True, 'my-policy', 'str', None, None, None, None],
+        ['delete', True, True, 'bool', None, None, None, None],
         ['check', True, True, 'bool', None, None, None, None],
+        ['timeout', True, 360, 'int', None, None, None, None],
         ['interfaces', True, [], 'list-of-dict', None, None, None, None],
-        ['routes', True, [], 'list-of-dict', None, None, None, None]
+        ['routes', True, [], 'list-of-dict', None, None, None, None],
+        ['ovn', True, [], 'list-of-dict', None, None, None, None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules, extras=['__type__'])
     if not success:
@@ -43,7 +45,8 @@ def run(params, log_id=None):
         body['nncp'],
         confirmation=params['confirmation'], 
         my_output=my_output, 
-        wait=True
+        wait=True,
+        max_time=params['timeout']
     )
     if not success:
         return False
