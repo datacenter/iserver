@@ -1,6 +1,6 @@
 # OVNKubernetes BGP - Cluster User Defined Network (L3)
 
-[[Back]](../../README.md)
+[[Back]](../../README.md) [[VRF-Lite]](../cudn-l3-vrflite/README.md)
 
 ![Overview](../../../images/ovn-bgp/cudn.png)
 
@@ -63,4 +63,4 @@ Details
 - [frr state](./frr-cudn.md)
 - [leaf state](./nxos-cudn.md)
 
-[[Back]](../../README.md)
+[[Back]](../../README.md) [[VRF-Lite]](../cudn-l3-vrflite/README.md)
