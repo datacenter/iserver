@@ -26,7 +26,7 @@ class K8sCommon():
 
         return '__ERROR'
 
-    def get(self, managed_object, key, on_error=None, on_none=None):
+    def get(self, managed_object, key, on_error=None, on_none=None, on_empty=None):
         if managed_object is None:
             return on_error
 
@@ -40,6 +40,9 @@ class K8sCommon():
         if value is None:
             return on_none
 
+        if on_empty is not None and isinstance(value, str) and len(value) == 0:
+            return on_empty
+        
         return value
 
     def convert_object(self, item):
@@ -692,12 +695,16 @@ class K8sCommon():
 
             time.sleep(5)
 
-    def cleanup_managed_object(self, managed_object, exclude=[]):
-        for key in ['creationTimestamp', 'managedFields', 'generation', 'resourceVersion', 'uid']:
+    def cleanup_managed_object(self, managed_object, exclude=[], include=[]):
+        for key in ['creationTimestamp', 'managedFields', 'generation', 'resourceVersion', 'uid', 'finalizers']:
             if key in exclude:
                 continue
             if key in managed_object['metadata']:
                 del managed_object['metadata'][key]
+
+            for key in include:
+                if key in managed_object['metadata']:
+                    del managed_object['metadata'][key]
 
         if 'status' in managed_object:
             del managed_object['status']

@@ -11,7 +11,7 @@ Management
 - [Web terminal](./web-terminal/README.md)
 - [Tasks](./Tasks.md)
 - [Operators](./operator/README.md)
-- [Node reload](./reload/README.md)
+- [Node power management](./node-power/README.md)
 - [Image registry](./image-registry/manual.md)
 
 Configuration

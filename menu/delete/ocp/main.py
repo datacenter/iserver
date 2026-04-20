@@ -1,6 +1,7 @@
 import click
 
 from menu.delete.ocp.ai import delete_ocp_ai_command
+from menu.delete.ocp.bmh import delete_ocp_bmh_command
 from menu.delete.ocp.cert_manager import delete_ocp_cert_manager_command
 from menu.delete.ocp.cli_web import delete_ocp_cli_web
 from menu.delete.ocp.connector import delete_ocp_connector
@@ -49,6 +50,7 @@ def delete_ocp_menu(ctx):
 
 
 delete_ocp_menu.add_command(delete_ocp_ai_command)
+delete_ocp_menu.add_command(delete_ocp_bmh_command)
 delete_ocp_menu.add_command(delete_ocp_cert_manager_command)
 delete_ocp_menu.add_command(delete_ocp_cli_web)
 delete_ocp_menu.add_command(delete_ocp_connector)

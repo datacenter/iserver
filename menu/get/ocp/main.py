@@ -2,6 +2,7 @@ import click
 
 from menu.get.ocp.ai import get_ocp_ai_command
 from menu.get.ocp.bashrc import get_ocp_bashrc_command
+from menu.get.ocp.bmh import get_ocp_bmh_command
 from menu.get.ocp.cert_manager import get_ocp_cert_manager_command
 from menu.get.ocp.connector import get_ocp_connector
 from menu.get.ocp.ntp import get_ocp_ntp_command
@@ -53,6 +54,7 @@ def get_ocp_menu(ctx):
 
 get_ocp_menu.add_command(get_ocp_ai_command)
 get_ocp_menu.add_command(get_ocp_bashrc_command)
+get_ocp_menu.add_command(get_ocp_bmh_command)
 get_ocp_menu.add_command(get_ocp_cert_manager_command)
 get_ocp_menu.add_command(get_ocp_connector)
 get_ocp_menu.add_command(get_ocp_ntp_command)

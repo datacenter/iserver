@@ -36,3 +36,10 @@ class K8sProxyInfo():
         if self.get_proxy(name, cache_enabled=cache_enabled):
             return True
         return False
+
+    def is_proxy_configured(self):
+        info = self.get_proxy('cluster')
+        if info is not None:
+            if info['http_proxy'] is not None and len(info['http_proxy']) > 0:
+                return True
+        return False

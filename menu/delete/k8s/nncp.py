@@ -60,7 +60,7 @@ def delete_k8s_nncp_command(
             )
             raise ErrorExit
 
-        policies = k8s_handlers.get_node_network_configuration_policies(
+        policies = k8s_handlers.get_node_network_configuration_policys(
             object_filter=object_filter,
             cache_enabled=False
         )

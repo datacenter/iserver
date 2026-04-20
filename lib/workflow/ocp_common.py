@@ -709,7 +709,7 @@ def is_cluster_ready(cluster, mcp=True, node=True, co=True, verbose=True):
     return cluster_ready.run(params)
 
 
-def check_parameters(params, rules, extras=None):
+def check_parameters(params, rules, extras=None, nested={}):
     allowed_keys = []
     if extras is not None:
         for key in extras:
@@ -742,6 +742,32 @@ def check_parameters(params, rules, extras=None):
         if not success:
             return False, params[name], None
     
+        if expected_type == 'list-of-dict' and name in nested:
+            new_value = []
+            for item in params[name]:
+                new_item = {}
+                for nested_rule in nested[name]:
+                    (nested_name, nested_none_allowed, nested_cast_if_none, nested_expected_type, nested_range_min, nested_range_max, nested_allowed_values, nested_variables) = nested_rule
+                    success, new_item[nested_name] = check_paramater(
+                        item,
+                        nested_name,
+                        none_allowed=nested_none_allowed,
+                        cast_if_none=nested_cast_if_none,
+                        expected_type=nested_expected_type,
+                        range_min=nested_range_min,
+                        range_max=nested_range_max,
+                        allowed_values=nested_allowed_values,
+                        variables=nested_variables
+                    )
+                    if not success:
+                        return False, 'parameter %s member error: %s' % (name, new_item[nested_name]), None
+
+                new_value.append(
+                    new_item
+                )
+
+            params[name] = new_value
+
     if 'wait' not in params:
         params['wait'] = True
 
@@ -810,6 +836,15 @@ def check_paramater(
 
             value = filter_helper.replace_attributes(value, variables)
 
+        if expected_type == 'ip':
+            if not ip_helper.is_valid_ipv4_address(value) and not ip_helper.is_valid_ipv6_address(value):
+                return False, 'parameter %s ip address value required' % (name)
+
+        if expected_type == 'mac':
+            value = ip_helper.reformat_mac(value)
+            if value is None:
+                return False, 'parameter %s mac address value required' % (name)
+                            
         if expected_type == 'k8s':
             if not isinstance(value, str):
                 return False, 'Parameter %s of type str required' % (name)
@@ -886,6 +921,10 @@ def check_paramater(
 
             value = copy.deepcopy(new_list)
 
+            if range_min is not None:
+                if len(value) < range_min:
+                    return False, 'Parameter %s must have at least %s entry' % (name, range_min)
+                
         if expected_type in ['list-of-str', 'list-of-cidr']:
             if not isinstance(value, list):
                 return False, 'Parameter %s of type list required' % (name)

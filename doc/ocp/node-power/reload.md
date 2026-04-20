@@ -1,5 +1,7 @@
 # Node - Graceful reload
 
+[[Back]](./README.md)
+
 Follows [Rebooting a node gracefully](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/nodes/working-with-nodes#nodes-nodes-rebooting-gracefully_nodes-nodes-rebooting) OpenShift documentation.
 
 ## Workflow

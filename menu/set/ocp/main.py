@@ -4,6 +4,7 @@ from menu.set.ocp.cilium.main import set_ocp_cilium_menu
 
 from menu.set.ocp.ai import set_ocp_ai_command
 from menu.set.ocp.bashrc import set_ocp_bashrc_command
+from menu.set.ocp.bmh import set_ocp_bmh_command
 from menu.set.ocp.cert_manager import set_ocp_cert_manager_command
 from menu.set.ocp.cli_butane import set_ocp_cli_butane
 from menu.set.ocp.cli_cilium import set_ocp_cli_cilium
@@ -63,6 +64,7 @@ set_ocp_menu.add_command(set_ocp_cilium_menu)
 
 set_ocp_menu.add_command(set_ocp_ai_command)
 set_ocp_menu.add_command(set_ocp_bashrc_command)
+set_ocp_menu.add_command(set_ocp_bmh_command)
 set_ocp_menu.add_command(set_ocp_cert_manager_command)
 set_ocp_menu.add_command(set_ocp_cli_butane)
 set_ocp_menu.add_command(set_ocp_cli_cilium)

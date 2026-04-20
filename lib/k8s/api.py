@@ -1025,7 +1025,7 @@ class K8sApi():
                 self.log.error('k8s.patch_resource', traceback.format_exc())
                 self.log.k8s(
                     'patch',
-                    '%s [%s] [ns:%s] [name:%s] [response:%s]' % (kind, api_version, namespace, name, str(response)),
+                    '%s [%s] [ns:%s] [name:%s' % (kind, api_version, namespace, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )

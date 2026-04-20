@@ -1,40 +1,20 @@
 import time
 from lib import output_helper
-from lib.workflow.ocp_node import common as local_common
-from lib.workflow import ocp_common as global_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'node' not in params or len(params['node']) == 0:
-        return None, 'nodes required'
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if 'sequential' not in params:
-        params['sequential'] = True
-
-    if 'max-time' not in params:
-        params['max-time'] = 600
-
-    if 'check-verbose' not in params:
-        params['check-verbose'] = True
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'node',
-        'wait',
-        'sequential',
-        'max-time',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['node', False, None, 'list-of-str', 1, None, None, None],
+        ['sequential', True, True, 'bool', None, None, None, None],
+        ['max-time', True, 600, 'int', 1, 1800, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
@@ -46,7 +26,7 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
     
@@ -56,7 +36,7 @@ def run(params, log_id=None):
             return False
         
     for node_name in params['node']:
-        success = global_common.run_node_cli(
+        success = ocp_common.run_node_cli(
             params['k8s_handler'], 
             params['cluster'], 
             node_name, 
@@ -70,7 +50,7 @@ def run(params, log_id=None):
         if params['sequential']:
             if params['wait']:
                 time.sleep(10)
-                success = global_common.wait_node(
+                success = ocp_common.wait_node(
                     params['k8s_handler'], 
                     params['cluster'], 
                     node_name, 
@@ -83,7 +63,7 @@ def run(params, log_id=None):
     if not params['sequential'] and params['wait']:
         time.sleep(10)
         for node_name in params['node']:
-            success = global_common.wait_node(
+            success = ocp_common.wait_node(
                 params['k8s_handler'], 
                 params['cluster'], 
                 node_name, 

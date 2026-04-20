@@ -133,7 +133,7 @@ def run(params, log_id=None):
         bare_metal_host_mo['spec']['bmc']['disableCertificateVerification'] = params['check-ssl']
         my_output.default(json.dumps(bare_metal_host_mo['spec']['bmc'], indent=4))
 
-        success = params['k8s_handler'].set_bare_metal_host_mo(bare_metal_host_mo)
+        success = params['k8s_handler'].replace_resource(bare_metal_host_mo)
         if not success:
             my_output.error('Failed to update BareMetalHost object')
             return False

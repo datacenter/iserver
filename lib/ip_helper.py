@@ -85,6 +85,14 @@ def is_valid_mac_address(address, mac_address_format='colon'):
     return False
 
 
+def reformat_mac(address):
+    address = normalize_mac_address(address)
+    if len(address) != 12:
+        return None
+    
+    return ':'.join(address[i:i+2] for i in range(0,12,2))
+
+
 def is_valid_ipv4_address(address):
     try:
         socket.inet_pton(socket.AF_INET, address)
