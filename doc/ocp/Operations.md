@@ -22,6 +22,7 @@ Configuration
 Hardware
 - [Intersight Server Discovery](./imm/README.md)
 - [Node Feature Discovery](./nfd/README.md)
+- [Metal Kubed](./metal-kubed/README.md)
 
 Networking
 - [NMState](./nmstate/README.md)
