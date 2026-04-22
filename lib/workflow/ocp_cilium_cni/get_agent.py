@@ -1,51 +1,21 @@
-import yaml
 from lib.k8s import output as k8s_output
 from lib import output_helper
-from lib import filter_helper
+from lib.workflow.ocp_cilium_cni import agent_version
 from lib.workflow.ocp_cilium_cni import common as local_common
-from lib.workflow import ocp_common as global_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'agent' not in params:
-        params['agent'] = None
-
-    if 'pod' not in params:
-        params['pod'] = True
-
-    if not isinstance(params['pod'], bool):
-        return None, 'pod param must be true or false'
-    
-    if 'logs' not in params:
-        params['logs'] = False
-
-    if not isinstance(params['logs'], bool):
-        return None, 'logs param must be true or false'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'agent',
-        'pod',
-        'logs',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['agent', True, None, 'str', None, None, None, None],
+        ['view', False, None, 'list-of-str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
@@ -58,14 +28,14 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, api_check=False)
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
 
-    if params['pod']:
+    if 'pod' in params['view']:
         local_common.show_agents(params, my_output, k8s_output_handler)
 
-    if params['logs']:
+    if 'logs' in params['view']:
         pods = params['k8s_handler'].get_cilium_agent_logs(
             agent=params['agent'], 
             cache_enabled=False
@@ -76,5 +46,15 @@ def run(params, log_id=None):
             for pod in pods:
                 my_output.default('Cilium Agent [%s/%s]' % (pod['namespace'], pod['name']), underline=True, before_newline=True)
                 my_output.default(pod['logs'], wrap='~~~')
+
+    if 'version' in params['view']:
+        cparams = {}
+        cparams['cluster'] = params['cluster']
+        cparams['k8s_handler'] = params['k8s_handler']
+        cparams['initialize'] = False
+        cparams['silent'] = True
+        success = agent_version.run(cparams, log_id=log_id)
+        if not success:
+            return False
 
     return True

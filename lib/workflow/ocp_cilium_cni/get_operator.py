@@ -3,52 +3,21 @@ from lib.k8s import output as k8s_output
 from lib import output_helper
 from lib import filter_helper
 from lib.workflow.ocp_cilium_cni import common as local_common
-from lib.workflow import ocp_common as global_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'config' not in params:
-        params['config'] = False
-
-    if not isinstance(params['config'], bool):
-        return None, 'config param must be true or false'
-    
-    if 'pod' not in params:
-        params['pod'] = True
-
-    if not isinstance(params['pod'], bool):
-        return None, 'pod param must be true or false'
-    
-    if 'logs' not in params:
-        params['logs'] = False
-
-    if not isinstance(params['logs'], bool):
-        return None, 'logs param must be true or false'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'config',
-        'pod',
-        'logs',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['config', True, False, 'bool', None, None, None, None],
+        ['pod', True, True, 'bool', None, None, None, None],
+        ['logs', True, False, 'bool', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
@@ -61,9 +30,10 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, api_check=False)
-    if params is None:
-        return False
+    if params['initialize']:
+        params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+        if params is None:
+            return False
 
     if params['config']:
         cilium_config = params['k8s_handler'].get_cilium_config()
@@ -84,7 +54,7 @@ def run(params, log_id=None):
         local_common.show_operators(params, my_output, k8s_output_handler)
 
     if params['logs']:
-        lease = params['k8s_handler'].get_lease_optimized(
+        lease = params['k8s_handler'].get_lease(
             params['namespace'],
             params['operator-lease'],
             cache_enabled=False

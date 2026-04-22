@@ -3,6 +3,9 @@ class K8sDeploymentInfo():
         self.deployment = None
 
     def get_deployment_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )
@@ -56,49 +59,26 @@ class K8sDeploymentInfo():
         )
         return infos
 
-    def get_deployment(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_deployment(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'deployment', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-    def get_deployment_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
-        managed_object = self.get_deployment_mo(
-            namespace=namespace, 
-            name=name, 
-            cache_enabled=cache_enabled
-        )
-        if return_mo:
-            return managed_object
-        
-        if managed_object is None:
-            return None
-        
-        return self.get_deployment_info(managed_object)
-
-    def is_deployment(self, namespace, name, cache_enabled=True, optimized=False):
-        if optimized:
-            info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
-        else:
-            info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
-
+    def is_deployment(self, namespace, name, cache_enabled=True, optimized=True):
+        info = self.get_deployment(namespace, name, cache_enabled=cache_enabled, optimized=optimized)
         if info is None:
-            return False
-        
+            return False       
         return True
 
-    def is_deployment_ready(self, namespace, name, cache_enabled=True, optimized=False):
-        if optimized:
-            info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
-        else:
-            info = self.get_deployment(namespace, name, cache_enabled=cache_enabled)
-
+    def is_deployment_ready(self, namespace, name, cache_enabled=True, optimized=True):
+        info = self.get_deployment(namespace, name, cache_enabled=cache_enabled, optimized=optimized)
         if info is None:
             return False
-        
         return info['ready']
 
     def get_deployment_resources(self, namespace, name, cache_enabled=True):
@@ -106,7 +86,7 @@ class K8sDeploymentInfo():
         resources['rs'] = []
         resources['pod'] = []
 
-        info = self.get_deployment_optimized(namespace, name, cache_enabled=cache_enabled)
+        info = self.get_deployment(namespace, name, cache_enabled=cache_enabled, optimized=True)
         if info is None:
             return resources
 

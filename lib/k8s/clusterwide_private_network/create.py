@@ -95,7 +95,7 @@ class K8sClusterwidePrivateNetworkCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_clusterwide_private_network_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

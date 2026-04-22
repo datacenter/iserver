@@ -49,17 +49,18 @@ class K8sNetworkOperatorInfo():
         )
         return infos
 
-    def is_network_operator(self, name, cache_enabled=True):
-        if self.get_network_operator(name, cache_enabled=cache_enabled) is None:
+    def is_network_operator(self, name, cache_enabled=True, optimized=True):
+        if self.get_network_operator(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_network_operator(self, name, return_mo=False, cache_enabled=True):
+    def get_network_operator(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'network_operator', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
     def get_cluster_network_operator(self, return_mo=False, cache_enabled=True):

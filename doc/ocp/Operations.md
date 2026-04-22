@@ -20,6 +20,7 @@ Configuration
 - [NTP](./ntp/README.md)
 
 Hardware
+- [Cisco Intersight Plugin](./intersight/README.md)
 - [Intersight Server Discovery](./imm/README.md)
 - [Node Feature Discovery](./nfd/README.md)
 - [Metal Kubed](./metal-kubed/README.md)

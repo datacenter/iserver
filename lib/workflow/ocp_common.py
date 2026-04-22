@@ -14,6 +14,7 @@ from lib.k8s import main as k8s
 from lib.ocp import settings as ocp_settings
 from lib.workflow.ocp_cluster import ready as cluster_ready
 from lib.workflow.ocp_access import check as ocp_check
+from lib.workflow.ocp_cilium_cni import common as cilium_common
 
 
 def check_cluster_init_fqdn(user_settings, my_output, log_id):
@@ -276,7 +277,7 @@ def add_operator(params, my_output=None):
     if my_output is not None:
         my_output.default('Wait for install plan %s finished...' % (params['install_plan_name']))
 
-    if not params['k8s_handler'].wait_installplan_install_plan_ready(target_namespace, params['install_plan_name']):
+    if not params['k8s_handler'].wait_installplan_ready(target_namespace, params['install_plan_name']):
         params['success'] = False
         params['error'] = 'Installation has not finished'
         return params
@@ -658,7 +659,38 @@ def run_node_cli(k8s_handler, cluster_name, node_name, command, my_output=None, 
     return True
 
 
-def get_subscription(k8s_handler, package, my_output=None, brief=False, cache_enabled=False):
+def print_subscription(subscription, my_output, brief=False):
+    if my_output is None:
+        return
+    
+    if brief:
+        my_output.default('Subscription %s %s' % (subscription['package'], my_output.add_color('found', 'Green')))
+        return
+    
+    try:
+        subscription['__Output']['installplan.approvedTick'] = subscription['installplan']['__Output']['approvedTick']
+    except BaseException:
+        pass
+    
+    dictionary(
+        my_output, 
+        'Operator',
+        subscription,
+        [
+            ['subscription', 'namespace_name'],
+            ['package', 'packageT'],
+            ['channel', 'channel'],
+            ['install plan', 'install_planT'],
+            ['install plan approved', 'installplan.approvedTick'],
+            ['installed csv', 'csvT'],
+            ['latest_csv', 'csvTick']
+        ],
+        underline=False,
+        start='\n'
+    )
+
+
+def get_subscription(k8s_handler, package, my_output=None, output_on_error_only=False, brief=False, cache_enabled=False):
     subscription = k8s_handler.get_subscription_by_package(
         package,
         csv_info=True,
@@ -668,34 +700,11 @@ def get_subscription(k8s_handler, package, my_output=None, brief=False, cache_en
     )
     if subscription is None:
         if my_output is not None:
-            my_output.default('Operator %s: %s' % (my_output.add_color('not found', 'Red'), package))
+            my_output.default('Subscription %s: %s' % (my_output.add_color('not found', 'Red'), package))
         return None
 
-    if my_output is not None:
-        if brief:
-            my_output.default('Operator %s %s' % (package, my_output.add_color('found', 'Green')))
-            return subscription
-        
-        try:
-            subscription['__Output']['installplan.approvedTick'] = subscription['installplan']['__Output']['approvedTick']
-        except BaseException:
-            pass
-        
-        dictionary(
-            my_output, 
-            'Operator',
-            subscription,
-            [
-                ['subscription', 'namespace_name'],
-                ['package', 'packageT'],
-                ['channel', 'channel'],
-                ['install plan', 'install_planT'],
-                ['install plan approved', 'installplan.approvedTick'],
-                ['installed csv', 'csvT'],
-                ['latest_csv', 'csvTick']
-            ]
-        )
-
+    if not output_on_error_only:
+        print_subscription(subscription, my_output, brief=brief)
     return subscription
 
 
@@ -768,6 +777,12 @@ def check_parameters(params, rules, extras=None, nested={}):
 
             params[name] = new_value
 
+    if 'initialize' not in params:
+        params['initialize'] = True
+
+    if 'silent' not in params:
+        params['silent'] = False
+
     if 'wait' not in params:
         params['wait'] = True
 
@@ -786,6 +801,8 @@ def check_parameters(params, rules, extras=None, nested={}):
     if 'confirmation' not in params:
         params['confirmation'] = True
 
+    allowed_keys.append('initialize')
+    allowed_keys.append('silent')
     allowed_keys.append('wait')
     allowed_keys.append('verbose')
     allowed_keys.append('check-verbose')
@@ -983,10 +1000,16 @@ def sanitize_params(params, allowed_keys, defaults=None):
         for key in defaults:
             new_params['__default__'][key] = defaults[key]
 
+    if 'k8s_handler' in params:
+        new_params['k8s_handler'] = params['k8s_handler']
+
+    if 'ssh_handler' in params:
+        new_params['ssh_handler'] = params['ssh_handler']
+
     return new_params
 
 
-def workflow_init(params, my_output, log_id, ssh_required=False, hide={}):
+def workflow_init(params, my_output, log_id, ssh_required=False, cilium_required=False, hide={}):
     if params['verbose']:
         my_output.default('Workflow Parameters', underline=True)
         display_params = copy.deepcopy(params)
@@ -1013,5 +1036,11 @@ def workflow_init(params, my_output, log_id, ssh_required=False, hide={}):
     params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
     if ssh_required:
         params['ssh_handler'] = get_management_node_ssh_handler(params['cluster'], log_id=log_id)
+        if params['ssh_handler'] is None:
+            return None
+
+    if cilium_required:
+        if not cilium_common.is_cilium(params, my_output):
+            return None
 
     return params

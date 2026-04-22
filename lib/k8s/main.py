@@ -99,6 +99,7 @@ from lib.k8s.infrastructure_config.main import K8sInfrastructureConfig
 from lib.k8s.ingress.main import K8sIngress
 from lib.k8s.ingress_config.main import K8sIngressConfig
 from lib.k8s.installplan.main import K8sInstallplan
+from lib.k8s.intersight.main import K8sIntersight
 from lib.k8s.ip_address_pool.main import K8sIpAddressPool
 from lib.k8s.isovalent_bgp_advertisement.main import K8sIsovalentBGPAdvertisement
 from lib.k8s.isovalent_bgp_cluster_config.main import K8sIsovalentBGPClusterConfig
@@ -151,6 +152,7 @@ from lib.k8s.object_store.main import K8sObjectStore
 from lib.k8s.object_transfer.main import K8sObjectTransfer
 from lib.k8s.ocs_initialization.main import K8sOcsInitialization
 from lib.k8s.openstack_volume_populator.main import K8sOpenstackVolumePopulator
+from lib.k8s.operator_console.main import K8sOperatorConsole
 from lib.k8s.operator_group.main import K8sOperatorGroup
 from lib.k8s.ovirt_volume_populator.main import K8sOvirtVolumePopulator
 from lib.k8s.package.main import K8sPackage
@@ -351,6 +353,7 @@ class K8s(
         K8sIngress,
         K8sIngressConfig,
         K8sInstallplan,
+        K8sIntersight,
         K8sIpAddressPool,
         K8sIsovalentBGPAdvertisement,
         K8sIsovalentBGPClusterConfig,
@@ -403,6 +406,7 @@ class K8s(
         K8sObjectTransfer,
         K8sOcsInitialization,
         K8sOpenstackVolumePopulator,
+        K8sOperatorConsole,
         K8sOperatorGroup,
         K8sOvirtVolumePopulator,
         K8sPackage,
@@ -603,6 +607,7 @@ class K8s(
         K8sIngress.__init__(self)
         K8sIngressConfig.__init__(self)
         K8sInstallplan.__init__(self)
+        K8sIntersight.__init__(self)
         K8sIpAddressPool.__init__(self)
         K8sIsovalentBGPAdvertisement.__init__(self)
         K8sIsovalentBGPClusterConfig.__init__(self)
@@ -655,6 +660,7 @@ class K8s(
         K8sObjectTransfer.__init__(self)
         K8sOcsInitialization.__init__(self)
         K8sOpenstackVolumePopulator.__init__(self)
+        K8sOperatorConsole.__init__(self)
         K8sOperatorGroup.__init__(self)
         K8sOvirtVolumePopulator.__init__(self)
         K8sPackage.__init__(self)

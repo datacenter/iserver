@@ -34,7 +34,7 @@ class K8sPodCiliumTimescape():
 
     def get_cilium_timescape_pods(self, return_mo=False, cache_enabled=False):
         pods = self.get_pods(
-            object_filter=['namespace:%s' % self.cilium_namespace],
+            namespace=self.cilium_namespace,
             service_info=True,
             return_mo=return_mo,
             cache_enabled=cache_enabled

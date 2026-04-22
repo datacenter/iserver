@@ -98,15 +98,16 @@ class K8sAuthenticationInfo():
         )
         return infos
 
-    def get_authentication(self, name, return_mo=False, cache_enabled=True):
+    def get_authentication(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'authentication', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-    def is_authentication(self, name, cache_enabled=True):
-        if self.get_authentication(name, cache_enabled=cache_enabled) is None:
+    def is_authentication(self, name, cache_enabled=True, optimized=True):
+        if self.get_authentication(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True

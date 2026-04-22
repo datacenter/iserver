@@ -340,7 +340,7 @@ def run(ctx, osp_handlers, osp_virtual_machine_info, k8s_handlers, namespace, vm
                 ctx.my_output.error('Service already exists')
                 return False
 
-            if not k8s_handlers.create_service_mo(service_content[service_name]):
+            if not k8s_handlers.create_resource(service_content[service_name]):
                 ctx.my_output.error('Service create failed')
                 return False
 

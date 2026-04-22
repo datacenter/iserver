@@ -423,7 +423,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'Service':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_service(body['metadata']['namespace'], body['metadata']['name']):
-                success = params['k8s_handler'].create_service_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False

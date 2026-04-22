@@ -6,6 +6,21 @@ class K8sServiceCreate():
     def __init__(self):
         pass
     
+    def get_service_base_body(self, namespace, name, labels=None):
+        body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Service'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        if labels is not None:
+            body['metadata']['labels'] = {}
+            for key in labels:
+                body['metadata']['labels'][key] = labels[key]
+
+        body['spec'] = {}
+        return body
+        
     def create_service(
             self, 
             namespace, 
@@ -35,7 +50,7 @@ class K8sServiceCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_service_mo(body):
+        if not self.create_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

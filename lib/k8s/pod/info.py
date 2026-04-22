@@ -806,7 +806,10 @@ class K8sPodInfo():
 
         services = None
         if service_info:
-            services = self.get_services(cache_enabled=cache_enabled)
+            service_object_filter=None
+            if namespace is not None:
+                service_object_filter = ['namespace:%s' % (namespace)]
+            services = self.get_services(object_filter=service_object_filter, cache_enabled=cache_enabled)
         
         if namespace is not None:
             if object_filter is None:
@@ -869,41 +872,23 @@ class K8sPodInfo():
         labels['kubevirt.io'] = 'virt-launcher'
         return self.check_pod_with_label(pod_info, labels)
     
-    def get_pod_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
-        pod_mo = self.get_pod_mo(
-            namespace=namespace, 
-            name=name, 
-            cache_enabled=cache_enabled
+    def get_pod(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
+        info = self.get_info(
+            'pod', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-        if return_mo:
-            return pod_mo
-        
-        return self.get_pod_info(pod_mo)
+        return info
 
-    def get_pod(self, namespace, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'namespace:%s' % (namespace)
-        )
-        object_filter.append(
-            'name:%s' % (name)
-        )        
-        pods = self.get_pods(object_filter=object_filter, return_mo=return_mo, cache_enabled=cache_enabled)
-        if pods is None:
-            return None
-
-        if len(pods) == 1:
-            return pods[0]
-        
     def get_pods_daemon_set(self, namespace, daemon_set_name, cache_enabled=True):
         object_filter = []
         object_filter.append(
-            'namespace:%s' % (namespace)
-        )
-        object_filter.append(
             'owner:DaemonSet/%s' % (daemon_set_name)
         )        
-        pods = self.get_pods(object_filter=object_filter, cache_enabled=cache_enabled)
+        pods = self.get_pods(namespace=namespace, object_filter=object_filter, cache_enabled=cache_enabled)
         if pods is None:
             return None
 
@@ -912,12 +897,9 @@ class K8sPodInfo():
     def get_pods_replica_set(self, namespace, replica_set_name, cache_enabled=True):
         object_filter = []
         object_filter.append(
-            'namespace:%s' % (namespace)
-        )
-        object_filter.append(
             'owner:ReplicaSet/%s' % (replica_set_name)
         )        
-        pods = self.get_pods(object_filter=object_filter, cache_enabled=cache_enabled)
+        pods = self.get_pods(namespace=namespace, object_filter=object_filter, cache_enabled=cache_enabled)
         if pods is None:
             return None
 

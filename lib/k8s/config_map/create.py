@@ -68,7 +68,7 @@ class K8sConfigMapCreate():
             my_output=None, 
             wait=True
         ):
-        if self.is_config_map(namespace, name, cache_enabled=False, optimize=True):
+        if self.is_config_map(namespace, name, cache_enabled=False):
             return self.update_config_map(
                 namespace, 
                 name,

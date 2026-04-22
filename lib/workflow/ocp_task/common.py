@@ -15,6 +15,7 @@ def get_task_map():
     fmap['grafana'] = 'ocp_grafana_operator'
     fmap['identity'] = 'ocp_identity'
     fmap['imm'] = 'ocp_imm'
+    fmap['intersight'] = 'ocp_intersight_operator'
     fmap['iotel'] = 'ocp_iotel'
     fmap['k8s'] = 'k8s'
     fmap['lso'] = 'ocp_local_storage_operator'

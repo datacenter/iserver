@@ -11,6 +11,9 @@ def validate(params, log_id):
     if 'cluster' not in params or params['cluster'] is None:
         return None, 'Cluster name required'
 
+    if 'silent' not in params:
+        params['silent'] = False
+
     if 'verbose' not in params:
         params['verbose'] = False
 
@@ -551,7 +554,8 @@ def run(params, log_id=None):
             my_output.default('- cluster: %s' % (my_output.add_color(params['cluster'], 'Blue')))
 
     if not params['verbose']:
-        my_output.default('OpenShift Cluster: %s' % (params['cluster']))
+        if not params['silent']:
+            my_output.default('OpenShift Cluster: %s' % (params['cluster']))
         my_output.debug('OpenShift Cluster', before_newline=True, underline=True)
         if cluster_settings['domain'] is not None:
             my_output.debug('- cluster: %s [domain:%s]' % (my_output.add_color(params['cluster'], 'Blue'), cluster_settings['domain']))

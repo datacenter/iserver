@@ -1,29 +1,17 @@
 from lib import output_helper
 from lib.workflow.ocp_cilium_cni import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
@@ -35,22 +23,12 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
+    if params['initialize']:
+        params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+        if params is None:
+            return False
 
-    subscription = params['k8s_handler'].get_subscription_by_package(
-        params['package'],
-        csv_info=True,
-        plan_info=True,
-        return_mo=False,
-        cache_enabled=False
-    )
-    if subscription is None:
-        my_output.default('Operator not found: %s' % (params['name']))
-        return False
-
-    local_common.print_subscription(my_output, subscription)
+    subscription = local_common.get_subscription(params, my_output, True)
 
     if subscription['installplan'] is None:
         my_output.default('No install plan found')
@@ -71,16 +49,5 @@ def run(params, log_id=None):
         my_output.error('REST API failed')
         return False
     
-    subscription = params['k8s_handler'].get_subscription_by_package(
-        params['package'],
-        csv_info=True,
-        plan_info=True,
-        return_mo=False,
-        cache_enabled=False
-    )
-    if subscription is None:
-        my_output.default('Operator not found: %s' % (params['name']))
-        return False
-    
-    local_common.print_subscription(my_output, subscription)
+    local_common.get_subscription(params, my_output, True, cache_enabled=False)
     return True

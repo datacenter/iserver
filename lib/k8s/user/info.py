@@ -58,16 +58,17 @@ class K8sUserInfo():
         )
         return infos
     
-    def get_user(self, name, identity_info=True, return_mo=False, cache_enabled=True):
+    def get_user(self, name, identity_info=True, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'user', 
             name,
             return_mo=return_mo, 
             cache_enabled=cache_enabled,
-            identity_info=identity_info
+            identity_info=identity_info,
+            optimized=optimized
         )
 
-    def is_user(self, name, return_mo=False, cache_enabled=True):
-        if self.get_user(name, return_mo=return_mo, cache_enabled=cache_enabled) is None:
+    def is_user(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        if self.get_user(name, return_mo=return_mo, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True

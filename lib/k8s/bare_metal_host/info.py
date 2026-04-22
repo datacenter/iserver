@@ -76,16 +76,17 @@ class K8sBareMetalHostInfo():
         )
         return infos
 
-    def is_bare_metal_host(self, namespace, name, cache_enabled=True):
-        if self.get_bare_metal_host(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_bare_metal_host(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_bare_metal_host(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_bare_metal_host(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_bare_metal_host(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'bare_metal_host', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

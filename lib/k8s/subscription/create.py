@@ -229,7 +229,7 @@ class K8sSubscriptionCreate():
                 my_output.default('Install plan: %s' % (install_plan_name))
                 my_output.default('Wait for subscription install plan ready [timeout:600]...')
 
-            if not self.wait_installplan_install_plan_ready(namespace, install_plan_name, max_time=600):
+            if not self.wait_installplan_ready(namespace, install_plan_name, max_time=600):
                 if my_output is not None:
                     my_output.error('Timed out')
                 

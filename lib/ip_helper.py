@@ -513,6 +513,30 @@ def download_url(url, filename, timeout=5, verify=True):
     return filename
 
 
+def get_url_response(url, bearer=None, timeout=5, verify=True, cast_json=False):
+    headers = None
+    if bearer is not None:
+        headers = {}
+        headers['Authorization'] = 'Bearer %s' % (bearer)
+
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=timeout,
+            verify=verify
+        )
+        if response.status_code >= 300:
+            return None, 'Status code: %s' % (response.status_code)
+        
+        if cast_json:
+            return response.json(), None
+        
+        return response.text(), None
+    
+    except BaseException:
+        return None, str(traceback.format_ext())
+
 def get_url_size(url):
     try:
         d = urllib.request.urlopen(url)
@@ -563,6 +587,10 @@ def get_url_parse(url):
     info = {}
     info['protocol'] = parsed.scheme
     info['hostname'] = parsed.hostname
+    if info['protocol'] == 'http':
+        info['port'] = 80
+    else:
+        info['port'] = 443
     info['netloc'] = parsed.netloc
     info['path'] = parsed.path.lstrip('/')
     info['query'] = parsed.query

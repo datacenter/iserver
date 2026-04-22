@@ -2,32 +2,11 @@ class K8sSplunkMonitoringConsoleOutput():
     def __init__(self):
         pass
 
-    def print_splunk_monitoring_consoles(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Splunk Monitoring Console [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name'
-        ]
-
-        headers = [
-            'Splunk Monitoring Console'
-        ]
-
-        self.my_output.my_table(
+    def print_splunk_monitoring_consoles_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Splunk Monitoring Console', 'namespace_nameT'],
+                ['Age', 'age']
+            ]
         )

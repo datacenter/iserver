@@ -11,7 +11,7 @@ def validate(params):
         ['address', False, None, 'ip', None, None, None, None],
         ['username', False, None, 'str', None, None, None, None],
         ['password', False, None, 'str', None, None, None, None],
-        ['cert', False, None, 'bool', None, None, None, None],
+        ['cert', False, None, 'bool', None, None, None, None]
     ]
 
     rules = [

@@ -572,12 +572,16 @@ class K8sApi():
                 self.log.error('k8s.get_namespaced_resources', traceback.format_exc())
                 self.log.k8s(
                     'get',
-                    '%s [%s] [ns:%s]' % (kind, api_version, namespace),
+                    '%s [%s] [ns:%s] [name:%s]' % (kind, api_version, namespace, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )
                 return None, managed_objects, namespaced_objects
-            
+
+            self.log.k8s_mo(
+                kind,
+                response
+            )            
             return response, managed_objects, namespaced_objects
 
         return self.untangle_namespaced_mo(response, kind, namespace, managed_objects, namespaced_objects)
@@ -585,6 +589,10 @@ class K8sApi():
     def untangle_namespaced_mo(self, response, kind, namespace, managed_objects, namespaced_objects):
         if namespace is not None:
             namespaced_objects[namespace] = response
+            self.log.k8s_mo(
+                kind,
+                response
+            )
             return namespaced_objects[namespace], managed_objects, namespaced_objects
         
         managed_objects = []

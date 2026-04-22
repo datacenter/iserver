@@ -1,6 +1,5 @@
 import copy
 from lib import filter_helper
-from lib import ip_helper
 
 
 class K8sServiceInfo():
@@ -11,13 +10,7 @@ class K8sServiceInfo():
         if service_mo is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            service_mo
-        )
-        info.update(metadata_info)
+        info = self.get_base_info(service_mo)
 
         # ExternalName, ClusterIP, NodePort, and LoadBalancer
         info['type'] = self.get(service_mo, 'spec:type')
@@ -130,157 +123,7 @@ class K8sServiceInfo():
 
         return info
 
-    def get_services_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.service is not None:
-                return self.service
-
-        managed_objects = self.get_service_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
-
-        self.service = []
-        for managed_object in managed_objects:
-            service_info = {}
-            service_info['info'] = self.get_service_info(
-                managed_object
-            )
-            service_info['mo'] = managed_object
-            self.service.append(
-                service_info
-            )
-
-        return self.service
-
-    def match_service(self, service_info, object_filter):
-        if object_filter is None or len(object_filter) == 0:
-            return True
-
-        for rule in object_filter:
-            key = rule.split(':')[0]
-            value = ':'.join(rule.split(':')[1:])
-
-            key_found = False
-
-            if key == 'namespace':
-                key_found = True
-                if not filter_helper.match_string(value, service_info['namespace']):
-                    return False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_namespace_name(value, '%s/%s' % (service_info['namespace'], service_info['name'])):
-                    return False
-
-            if key == 'owner':
-                key_found = True
-                if not filter_helper.match_namespace_name(value, service_info['owner']):
-                    return False
-
-            if key == 'type':
-                key_found = True
-                if not filter_helper.match_string(value, service_info['type']):
-                    return False
-
-            if key == 'cluster-ip':
-                key_found = True
-                value_match = False
-                for cluster_ip in service_info['cluster_ips']:
-                    if cluster_ip == value:
-                        value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'cluster-subnet':
-                key_found = True
-                value_match = False
-                for cluster_ip in service_info['cluster_ips']:
-                    if ip_helper.is_ipv4_in_cidr(cluster_ip, value):
-                        value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'cluster-string':
-                key_found = True
-                value_match = False
-                for cluster_ip in service_info['cluster_ips']:
-                    if filter_helper.match_string(cluster_ip, value):
-                        value_match = True
-
-            if key == 'external-ip':
-                key_found = True
-                value_match = False
-                for external_ip in service_info['external_ips']:
-                    if external_ip == value:
-                        value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'external-subnet':
-                key_found = True
-                value_match = False
-                for external_ip in service_info['external_ips']:
-                    if ip_helper.is_ipv4_in_cidr(external_ip, value):
-                        value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'external-string':
-                key_found = True
-                value_match = False
-                for external_ip in service_info['external_ips']:
-                    if filter_helper.match_string(external_ip, value):
-                        value_match = True
-
-                if filter_helper.match_string(value, service_info['external_name']):
-                    value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'port':
-                key_found = True
-                value_match = False
-                for port in service_info['port']:
-                    if filter_helper.match_integer(value, port['port']):
-                        value_match = True
-
-                if not value_match:
-                    return False
-
-            if key == 'special':
-                key_found = True
-                if not filter_helper.match_string(value, service_info['special']):
-                    return False
-
-            if key == 'selector':
-                key_found = True
-                (selector_key, selector_value) = value.split(':')
-                if selector_key not in service_info['selector']:
-                    return False
-
-                if not filter_helper.match_string(selector_value, service_info['selector'][selector_key]):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_service',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
-    def get_services(self, object_filter=None, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True):
-        all_services = self.get_services_info(cache_enabled=cache_enabled)
-        if all_services is None:
-            return None
-
-        services = []
-
+    def add_services_info(self, infos, endpoint_info=False, pod_info=False, cache_enabled=True):
         endpoints = None
         if endpoint_info:
             endpoints = self.get_endpoints(cache_enabled=cache_enabled)
@@ -289,45 +132,53 @@ class K8sServiceInfo():
         if not endpoint_info and pod_info:
             pods = self.get_pods(cache_enabled=cache_enabled)
 
-        for service_info in all_services:
-            if not self.match_service(service_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                services.append(
-                    service_info['mo']
-                )
-                continue
-
+        for service_info in infos:
             if endpoints is not None:
-                service_info['info']['podT'] = []
-                service_info['info']['addressT'] = []
+                service_info['podT'] = []
+                service_info['addressT'] = []
             
                 for endpoint in endpoints:
-                    if filter_helper.is_dict_in_dict(service_info['info']['label'], endpoint['label']):
-                        service_info['info']['podT'] = copy.deepcopy(endpoint['podT'])
-                        service_info['info']['addressT'] = copy.deepcopy(endpoint['addressT'])
+                    if filter_helper.is_dict_in_dict(service_info['label'], endpoint['label']):
+                        service_info['podT'] = copy.deepcopy(endpoint['podT'])
+                        service_info['addressT'] = copy.deepcopy(endpoint['addressT'])
 
             if pods is not None:
-                service_info['info']['podT'] = []
-                service_info['info']['pod'] = []
-                if len(service_info['info']['selector']) > 0:
+                service_info['podT'] = []
+                service_info['pod'] = []
+                if len(service_info['selector']) > 0:
                     if pods is not None:
                         for pod in pods:
-                            if self.check_pod_with_label(pod, service_info['info']['selector']):
-                                service_info['info']['pod'].append(pod)
-                                service_info['info']['podT'].append(
+                            if self.check_pod_with_label(pod, service_info['selector']):
+                                service_info['pod'].append(pod)
+                                service_info['podT'].append(
                                     pod['name']
                                 )
 
-            services.append(
-                service_info['info']
+        return infos
+
+    def get_services(self, object_filter=None, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'service', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+
+        if return_mo:
+            return infos
+
+        if infos is not None:
+            infos = self.add_services_info(
+                infos,
+                endpoint_info=endpoint_info,
+                pod_info=pod_info,
+                cache_enabled=cache_enabled
             )
 
-        return services
+        return infos    
 
-    def is_service(self, namespace, name, cache_enabled=True):
-        if self.get_service(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_service(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_service(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
     
@@ -354,30 +205,16 @@ class K8sServiceInfo():
             
         return True
 
-    def get_service(self, namespace, name, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'namespace:%s' % (namespace)
+    def get_service(self, namespace, name, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'service', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-        object_filter.append(
-            'name:%s' % (name)
-        )
-        services = self.get_services(
-            object_filter=object_filter,
-            endpoint_info=endpoint_info,
-            pod_info=pod_info,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
-        )
-
-        if services is None:
-            return None
-
-        if len(services) == 1:
-            return services[0]
-
-        return None
-
+    
     def get_service_node_ip_port(self, namespace, name, cache_enabled=True, port_name=None):
         service_info = self.get_service(
             namespace,
@@ -439,18 +276,3 @@ class K8sServiceInfo():
             cache_enabled=cache_enabled
         )
         return services_mo
-
-    def get_service_base_body(self, namespace, name, labels=None):
-        body = {}
-        body['apiVersion'] = 'v1'
-        body['kind'] = 'Service'
-        body['metadata'] = {}
-        body['metadata']['namespace'] = namespace
-        body['metadata']['name'] = name
-        if labels is not None:
-            body['metadata']['labels'] = {}
-            for key in labels:
-                body['metadata']['labels'][key] = labels[key]
-
-        body['spec'] = {}
-        return body

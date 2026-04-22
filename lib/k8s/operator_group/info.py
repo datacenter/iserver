@@ -38,16 +38,17 @@ class K8sOperatorGroupInfo():
         )
         return infos
     
-    def is_operator_group(self, namespace, name, cache_enabled=True):
-        if self.get_operator_group(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_operator_group(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_operator_group(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_operator_group(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_operator_group(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'operator_group', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

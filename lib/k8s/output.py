@@ -93,6 +93,7 @@ from lib.k8s.identity.output import K8sIdentityOutput
 from lib.k8s.image_stream.output import K8sImageStreamOutput
 from lib.k8s.ingress.output import K8sIngressOutput
 from lib.k8s.installplan.output import K8sInstallplanOutput
+from lib.k8s.intersight.output import K8sIntersightOutput
 from lib.k8s.ip_address_pool.output import K8sIpAddressPoolOutput
 from lib.k8s.isovalent_bgp_advertisement.output import K8sIsovalentBGPAdvertisementOutput
 from lib.k8s.isovalent_bgp_cluster_config.output import K8sIsovalentBGPClusterConfigOutput
@@ -145,6 +146,7 @@ from lib.k8s.object_store.output import K8sObjectStoreOutput
 from lib.k8s.object_transfer.output import K8sObjectTransferOutput
 from lib.k8s.ocs_initialization.output import K8sOcsInitializationOutput
 from lib.k8s.openstack_volume_populator.output import K8sOpenstackVolumePopulatorOutput
+from lib.k8s.operator_console.output import K8sOperatorConsoleOutput
 from lib.k8s.operator_group.output import K8sOperatorGroupOutput
 from lib.k8s.ovirt_volume_populator.output import K8sOvirtVolumePopulatorOutput
 from lib.k8s.package.output import K8sPackageOutput
@@ -340,6 +342,7 @@ class K8sOutput(
     K8sImageStreamOutput,
     K8sIngressOutput,
     K8sInstallplanOutput,
+    K8sIntersightOutput,
     K8sIpAddressPoolOutput,
     K8sIsovalentBGPAdvertisementOutput,
     K8sIsovalentBGPClusterConfigOutput,
@@ -392,6 +395,7 @@ class K8sOutput(
     K8sObjectTransferOutput,
     K8sOcsInitializationOutput,
     K8sOpenstackVolumePopulatorOutput,
+    K8sOperatorConsoleOutput,
     K8sOperatorGroupOutput,
     K8sOvirtVolumePopulatorOutput,
     K8sPackageOutput,
@@ -583,6 +587,7 @@ class K8sOutput(
         K8sImageStreamOutput.__init__(self)
         K8sIngressOutput.__init__(self)
         K8sInstallplanOutput.__init__(self)
+        K8sIntersightOutput.__init__(self)
         K8sIpAddressPoolOutput.__init__(self)
         K8sIsovalentBGPAdvertisementOutput.__init__(self)
         K8sIsovalentBGPClusterConfigOutput.__init__(self)
@@ -635,6 +640,7 @@ class K8sOutput(
         K8sObjectTransferOutput.__init__(self)
         K8sOcsInitializationOutput.__init__(self)
         K8sOpenstackVolumePopulatorOutput.__init__(self)
+        K8sOperatorConsoleOutput.__init__(self)
         K8sOperatorGroupOutput.__init__(self)
         K8sOvirtVolumePopulatorOutput.__init__(self)
         K8sPackageOutput.__init__(self)

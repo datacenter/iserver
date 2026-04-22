@@ -21,15 +21,16 @@ class K8sIdentityInfo():
         )
         return infos
     
-    def get_identity(self, name, return_mo=False, cache_enabled=True):
+    def get_identity(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'identity', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-    def is_identity(self, name, return_mo=False, cache_enabled=True):
-        if self.get_identity(name, return_mo=return_mo, cache_enabled=cache_enabled) is None:
+    def is_identity(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        if self.get_identity(name, return_mo=return_mo, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True

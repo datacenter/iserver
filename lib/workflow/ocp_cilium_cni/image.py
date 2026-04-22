@@ -3,34 +3,19 @@ from lib import output_helper
 from lib.workflow.ocp_cilium_cni import common as local_common
 from lib.workflow.ocp_cilium_cni import restart
 from lib.workflow.ocp_cilium_cni import agent_version
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'url' not in params or params['url'] is None:
-        return None, 'image url required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'url',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['url', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
@@ -42,14 +27,11 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
 
-    if not local_common.is_cilium(params, my_output, install_plan_enforced=False):
-        return False
-
-    my_output.default('Check cilium agent runtime image')
+    my_output.default('Check cilium agent runtime image', before_newline=True)
     success = params['k8s_handler'].is_cilium_agent_pod_image_hash(
         params['url'].split(':')[1],
         cache_enabled=False
@@ -61,7 +43,7 @@ def run(params, log_id=None):
     my_output.default('Image needs to be changed')
 
     subscription = params['k8s_handler'].get_subscription_by_package(
-        params['package'],
+        params['__default__']['package'],
         csv_info=True,
         plan_info=True,
         return_mo=False,
@@ -73,7 +55,7 @@ def run(params, log_id=None):
 
     local_common.print_subscription(my_output, subscription)
 
-    csv = params['k8s_handler'].get_cluster_service_version_optimized(
+    csv = params['k8s_handler'].get_cluster_service_version(
         subscription['csv']['namespace'],
         subscription['csv']['name'],
         cache_enabled=False
@@ -96,7 +78,6 @@ def run(params, log_id=None):
 
         cparams = {}
         cparams['cluster'] = params['cluster']
-        cparams['check-verbose'] = False
         success = agent_version.run(cparams, log_id=log_id)
         if not success:
             return False
@@ -110,7 +91,7 @@ def run(params, log_id=None):
     body['metadata']['namespace'] = subscription['csv']['namespace']
     body['metadata']['name'] = subscription['csv']['name']
 
-    csv_mo = params['k8s_handler'].get_cluster_service_version_optimized(
+    csv_mo = params['k8s_handler'].get_cluster_service_version(
         subscription['csv']['namespace'],
         subscription['csv']['name'],
         cache_enabled=False,
@@ -132,7 +113,7 @@ def run(params, log_id=None):
 
     my_output.default('CSV patched')
 
-    csv = params['k8s_handler'].get_cluster_service_version_optimized(
+    csv = params['k8s_handler'].get_cluster_service_version(
         subscription['csv']['namespace'],
         subscription['csv']['name'],
         cache_enabled=False
@@ -161,7 +142,6 @@ def run(params, log_id=None):
 
     cparams = {}
     cparams['cluster'] = params['cluster']
-    cparams['check-verbose'] = False
     success = agent_version.run(cparams, log_id=log_id)
     if not success:
         return False

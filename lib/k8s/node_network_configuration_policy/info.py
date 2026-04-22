@@ -54,15 +54,16 @@ class K8sNodeNetworkConfigurationPolicyInfo():
         
         return infos
     
-    def is_node_network_configuration_policy(self, name, cache_enabled=True):
-        if self.get_node_network_configuration_policy(name, cache_enabled=cache_enabled) is None:
+    def is_node_network_configuration_policy(self, name, cache_enabled=True, optimized=True):
+        if self.get_node_network_configuration_policy(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_node_network_configuration_policy(self, name, return_mo=False, cache_enabled=True):
+    def get_node_network_configuration_policy(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'node_network_configuration_policy', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

@@ -6,11 +6,13 @@ class K8sRouteCiliumTimescape():
     def __init__(self):
         pass
 
-    def get_cilium_timescape_route(self, cache_enabled=True):
+    def get_cilium_timescape_route(self, return_info=False, cache_enabled=True):
         route_namespace = self.cilium_namespace
         route_name = 'hubble-timescape'
         route = self.get_route(route_namespace, route_name, cache_enabled=cache_enabled)
         if route is not None:
+            if return_info:
+                return route
             return 'http://%s' % (route['route'])
         return None
     
@@ -81,7 +83,7 @@ class K8sRouteCiliumTimescape():
             if not get_confirmation():
                 return False
             
-        success = self.create_route_mo(body)
+        success = self.create_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed')

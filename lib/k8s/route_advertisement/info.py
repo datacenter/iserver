@@ -66,15 +66,16 @@ class K8sRouteAdvertisementInfo():
 
         return summary
     
-    def is_route_advertisement(self, name, cache_enabled=True):
-        if self.get_route_advertisement(name, cache_enabled=cache_enabled) is None:
+    def is_route_advertisement(self, name, cache_enabled=True, optimized=True):
+        if self.get_route_advertisement(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_route_advertisement(self, name, return_mo=False, cache_enabled=True):
+    def get_route_advertisement(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'route_advertisement', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

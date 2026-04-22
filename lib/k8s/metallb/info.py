@@ -14,8 +14,8 @@ class K8sMetalLbInfo():
         )
         return infos
 
-    def is_metallb(self, namespace, name, cache_enabled=True):
-        if self.get_metallb(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_metallb(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_metallb(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
@@ -31,11 +31,12 @@ class K8sMetalLbInfo():
             return None
         return policies[0]
     
-    def get_metallb(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_metallb(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'metallb', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

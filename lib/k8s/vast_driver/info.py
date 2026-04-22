@@ -80,18 +80,19 @@ class K8sVastDriverInfo():
 
         return infos
     
-    def is_vast_driver(self, namespace, name, cache_enabled=True):
-        if self.get_vast_driver(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_vast_driver(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_vast_driver(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_vast_driver(self, namespace, name, storage_info=False, return_mo=False, cache_enabled=True):
+    def get_vast_driver(self, namespace, name, storage_info=False, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'vast_driver', 
             name,
             namespace=namespace,
             storage_info=storage_info,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     

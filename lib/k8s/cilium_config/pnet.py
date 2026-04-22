@@ -52,7 +52,15 @@ class K8sCiliumConfigPrivateNetwork():
         if cilium_config_mo is None:
             return None
         
-        return  filter_helper.get(cilium_config_mo, 'spec:enterprise:privateNetworks')        
+        body = {}
+        body['spec'] = {}
+        body['spec']['enterprise'] = {}
+        body['spec']['enterprise']['privateNetworks'] = filter_helper.get(cilium_config_mo, 'spec:enterprise:privateNetworks')
+
+        if body['spec']['enterprise']['privateNetworks'] is None:
+            return None
+        
+        return body
 
     def is_cilium_private_network_configured(self, cache_enabled=True):
         items = self.get_clusterwide_private_networks(cache_enabled=cache_enabled)

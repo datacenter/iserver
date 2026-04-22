@@ -162,12 +162,12 @@ class K8sUserDefinedNetworkInfo():
 
         return infos
     
-    def is_user_defined_network(self, namespace, name, cache_enabled=True):
-        if self.get_user_defined_network(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_user_defined_network(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_user_defined_network(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_user_defined_network(self, namespace, name, nad_info=False, usage_info=False, return_mo=False, cache_enabled=True):
+    def get_user_defined_network(self, namespace, name, nad_info=False, usage_info=False, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'user_defined_network', 
             name,
@@ -175,6 +175,7 @@ class K8sUserDefinedNetworkInfo():
             nad_info=nad_info,
             usage_info=usage_info,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     

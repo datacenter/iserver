@@ -14,8 +14,8 @@ class K8sNodeFeatureDiscoveryInfo():
         )
         return infos
 
-    def is_node_feature_discovery(self, namespace, name, cache_enabled=True):
-        if self.get_node_feature_discovery(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_node_feature_discovery(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_node_feature_discovery(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
@@ -25,11 +25,12 @@ class K8sNodeFeatureDiscoveryInfo():
             return False
         return True
 
-    def get_node_feature_discovery(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_node_feature_discovery(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'node_feature_discovery', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

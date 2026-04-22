@@ -37,16 +37,17 @@ class K8sClusterRoleBindingInfo():
         )
         return infos
     
-    def get_cluster_role_binding(self, name, return_mo=False, cache_enabled=True):
+    def get_cluster_role_binding(self, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'cluster_role_binding', 
             name,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-    def is_cluster_role_binding(self, name, return_mo=False, cache_enabled=True):
-        if self.get_cluster_role_binding(name, return_mo=return_mo, cache_enabled=cache_enabled) is None:
+    def is_cluster_role_binding(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        if self.get_cluster_role_binding(name, return_mo=return_mo, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 

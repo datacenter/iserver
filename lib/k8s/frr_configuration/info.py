@@ -44,17 +44,18 @@ class K8sFrrConfigurationInfo():
         summary['summary'] = '%s incl. %s ra-generated' % (summary['count'], summary['ra'])
         return summary
     
-    def is_frr_configuration(self, namespace, name, cache_enabled=True):
-        if self.get_frr_configuration(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_frr_configuration(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_frr_configuration(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_frr_configuration(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_frr_configuration(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'frr_configuration', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     

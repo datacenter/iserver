@@ -14,16 +14,17 @@ class K8sBfdProfileInfo():
         )
         return infos
 
-    def is_bfd_profile(self, namespace, name, cache_enabled=True):
-        if self.get_bfd_profile(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_bfd_profile(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_bfd_profile(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_bfd_profile(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_bfd_profile(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'bfd_profile', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

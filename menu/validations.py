@@ -1613,7 +1613,8 @@ def validate_ocp_cluster_name(ctx, param, cluster_name):
 
     cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
     if cluster_obj is None:
-        raise click.BadParameter('Define valid OCP cluster name')
+        cluster_names = ocp_settings_handler.get_ocp_cluster_names()
+        raise click.BadParameter('Define valid ocp cluster name: %s' % (','.join(cluster_names)))
 
     print('OpenShift Cluster: %s\n' % (cluster_obj['name']))
     return cluster_obj['name']
@@ -1628,7 +1629,8 @@ def validate_ocp_cluster_name_no_prompt(ctx, param, cluster_name):
 
     cluster_obj = ocp_settings_handler.get_ocp_cluster(cluster_name, strict_match=False)
     if cluster_obj is None:
-        raise click.BadParameter('Define valid OCP cluster name')
+        cluster_names = ocp_settings_handler.get_ocp_cluster_names()
+        raise click.BadParameter('Define valid ocp cluster name: %s' % (','.join(cluster_names)))
 
     ocp_settings_handler.set_default_cluster(cluster_obj['name'])
     return cluster_obj['name']

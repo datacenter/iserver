@@ -17,6 +17,7 @@ from menu.get.ocp.gpu import get_ocp_gpu_command
 from menu.get.ocp.grafana import get_ocp_grafana_command
 from menu.get.ocp.htpasswd import get_ocp_htpasswd_command
 from menu.get.ocp.imm import get_ocp_imm_command
+from menu.get.ocp.intersight import get_ocp_intersight_command
 from menu.get.ocp.iotel import get_ocp_iotel_command
 from menu.get.ocp.ldap import get_ocp_ldap_command
 from menu.get.ocp.lso import get_ocp_lso_command
@@ -69,6 +70,7 @@ get_ocp_menu.add_command(get_ocp_gpu_command)
 get_ocp_menu.add_command(get_ocp_grafana_command)
 get_ocp_menu.add_command(get_ocp_htpasswd_command)
 get_ocp_menu.add_command(get_ocp_imm_command)
+get_ocp_menu.add_command(get_ocp_intersight_command)
 get_ocp_menu.add_command(get_ocp_iotel_command)
 get_ocp_menu.add_command(get_ocp_ldap_command)
 get_ocp_menu.add_command(get_ocp_lso_command)

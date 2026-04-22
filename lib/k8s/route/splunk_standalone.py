@@ -80,7 +80,7 @@ class K8sRouteSplunkStandalone():
             if not get_confirmation():
                 return False
             
-        success = self.create_route_mo(body)
+        success = self.create_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed')

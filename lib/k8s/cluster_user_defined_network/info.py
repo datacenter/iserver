@@ -153,18 +153,19 @@ class K8sClusterUserDefinedNetworkInfo():
 
         return infos
     
-    def is_cluster_user_defined_network(self, name, cache_enabled=True):
-        if self.get_cluster_user_defined_network(name, cache_enabled=cache_enabled) is None:
+    def is_cluster_user_defined_network(self, name, cache_enabled=True, optimized=True):
+        if self.get_cluster_user_defined_network(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_cluster_user_defined_network(self, name, nad_info=False, usage_info=False, return_mo=False, cache_enabled=True):
+    def get_cluster_user_defined_network(self, name, nad_info=False, usage_info=False, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'cluster_user_defined_network', 
             name,
             nad_info=nad_info,
             usage_info=usage_info,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     

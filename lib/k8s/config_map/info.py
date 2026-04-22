@@ -3,6 +3,9 @@ class K8sConfigMapInfo():
         self.config_map = None
 
     def get_config_map_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )
@@ -48,38 +51,22 @@ class K8sConfigMapInfo():
         )
         return infos
 
-    def get_config_map_optimized(self, namespace, name, return_mo=False, cache_enabled=True):
-        managed_object = self.get_config_map_mo(
-            namespace=namespace, 
-            name=name, 
-            cache_enabled=cache_enabled
-        )
-        if return_mo:
-            return managed_object
-        
-        if managed_object is None:
-            return None
-        
-        return self.get_config_map_info(managed_object)
-    
-    def get_config_map(self, namespace, name, return_mo=False, cache_enabled=True, optimize=False):
-        if optimize:
-            return self.get_config_map_optimized(namespace, name, return_mo=return_mo, cache_enabled=cache_enabled)
-
+    def get_config_map(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'config_map', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-
-    def is_config_map(self, namespace, name, cache_enabled=True, optimize=False):
+    
+    def is_config_map(self, namespace, name, cache_enabled=True, optimized=True):
         config_map = self.get_config_map(
             namespace,
             name,
             cache_enabled=cache_enabled,
-            optimize=optimize
+            optimized=optimized
         )
         if config_map is None:
             return False

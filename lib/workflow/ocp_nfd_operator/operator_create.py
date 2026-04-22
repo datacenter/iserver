@@ -8,7 +8,7 @@ def validate(params):
     rules = [
         ['cluster', False, None, 'str', None, None, None, None],
         ['channel', True, 'stable', 'str', None, None, None, None],
-        ['filename', True, None, 'file-k8s', None, None, None, None],
+        ['filename', True, None, 'file-k8s', None, None, None, None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules)
     if not success:

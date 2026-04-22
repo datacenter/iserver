@@ -225,7 +225,10 @@ class OutputHelper():
             )
 
         if wrap is not None:
-            output = '%s\n%s\n%s' % (wrap, output, wrap)
+            if output.endswith('\n'):
+                output = '%s\n%s%s' % (wrap, output, wrap)
+            else:
+                output = '%s\n%s\n%s' % (wrap, output, wrap)
 
         if before_newline:
             output = '\n%s' % (output)

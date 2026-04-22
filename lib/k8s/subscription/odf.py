@@ -39,7 +39,7 @@ class K8sSubscriptionOdf():
             my_output.default('- package: %s' % (name))
             my_output.default('- csv: %s' % (subscription['installed_csv']))
 
-        csv = self.get_cluster_service_version_optimized(
+        csv = self.get_cluster_service_version(
             subscription['namespace'],
             subscription['installed_csv'],
             return_mo=False,

@@ -13,6 +13,7 @@ from menu.delete.ocp.gpu import delete_ocp_gpu_command
 from menu.delete.ocp.grafana import delete_ocp_grafana_command
 from menu.delete.ocp.htpasswd import delete_ocp_htpasswd_command
 from menu.delete.ocp.imm import delete_ocp_imm_command
+from menu.delete.ocp.intersight import delete_ocp_intersight_command
 from menu.delete.ocp.iotel import delete_ocp_iotel_command
 from menu.delete.ocp.ldap import delete_ocp_ldap_command
 from menu.delete.ocp.lso import delete_ocp_lso_command
@@ -62,6 +63,7 @@ delete_ocp_menu.add_command(delete_ocp_gpu_command)
 delete_ocp_menu.add_command(delete_ocp_grafana_command)
 delete_ocp_menu.add_command(delete_ocp_htpasswd_command)
 delete_ocp_menu.add_command(delete_ocp_imm_command)
+delete_ocp_menu.add_command(delete_ocp_intersight_command)
 delete_ocp_menu.add_command(delete_ocp_iotel_command)
 delete_ocp_menu.add_command(delete_ocp_ldap_command)
 delete_ocp_menu.add_command(delete_ocp_lso_command)

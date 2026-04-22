@@ -477,7 +477,33 @@ class K8sCommon():
 
         return infos
 
-    def get_info(self, object_name, name, namespace=None, return_mo=False, cache_enabled=True, **kwargs):
+    def get_info(self, object_name, name, namespace=None, return_mo=False, cache_enabled=True, optimized=True, **kwargs):
+        optimized_method = 'get_%s_mo' % (object_name)
+        if optimized:
+            if not hasattr(self, optimized_method):
+                optimized = False
+        
+        if optimized:
+            if namespace is None:
+                managed_object = getattr(self, optimized_method)(
+                    name=name,
+                    cache_enabled=cache_enabled
+                )
+            else:
+                managed_object = getattr(self, optimized_method)(
+                    namespace=namespace,
+                    name=name,
+                    cache_enabled=cache_enabled
+                )
+
+            if return_mo:
+                return managed_object
+            
+            info = getattr(self, 'get_%s_info' % (object_name))(
+                managed_object
+            )
+            return info
+        
         object_filter = []
         if namespace is not None:
             object_filter.append(
@@ -711,16 +737,64 @@ class K8sCommon():
 
         return managed_object
     
-    def add_tick(self, info, attribute_name, success_value, property_name, bool_attribute=None):
-        value = self.get(info, attribute_name)
-        if value == success_value:
-            info[property_name] = '\u2713'
-            info['__Output'][property_name] = 'Green'
-            if bool_attribute is not None:
-                info[bool_attribute] = True
+    def add_tick(self, info, attribute_name, success_value, property_name, bool_attribute=None, managed_object=None):
+        if managed_object is None:
+            value = self.get(info, attribute_name)
         else:
-            info[property_name] = '\u2717'
-            info['__Output'][property_name] = 'Red'
-            if bool_attribute is not None:
-                info[bool_attribute] = False
+            value = self.get(managed_object, attribute_name)
+        
+        if isinstance(value, list):
+            if success_value in value:
+                info[property_name] = '\u2713'
+                info['__Output'][property_name] = 'Green'
+                if bool_attribute is not None:
+                    info[bool_attribute] = True
+            else:
+                info[property_name] = '\u2717'
+                info['__Output'][property_name] = 'Red'
+                if bool_attribute is not None:
+                    info[bool_attribute] = False
+        else:
+            if value == success_value:
+                info[property_name] = '\u2713'
+                info['__Output'][property_name] = 'Green'
+                if bool_attribute is not None:
+                    info[bool_attribute] = True
+            else:
+                info[property_name] = '\u2717'
+                info['__Output'][property_name] = 'Red'
+                if bool_attribute is not None:
+                    info[bool_attribute] = False
         return info
+    
+    def get_ready_resources(self, pods=None, deployments=None, daemon_sets=None):
+        if pods is not None:
+            for pod in pods:
+                if not pod['running']:
+                    return False
+                
+        if deployments is not None:
+            for deployment in deployments:
+                if not deployment['ready']:
+                    return False
+
+        if daemon_sets is not None:
+            for daemon_set in daemon_sets:
+                if not daemon_set['ready']:
+                    return False
+
+        return True
+    
+    def copy_managed_object_base(self, managed_object, resource_version=True):
+        body = {}
+        body['apiVersion'] = managed_object['apiVersion']
+        body['kind'] = managed_object['kind']
+        body['metadata'] = {}
+        if 'namespace' in managed_object['metadata']:
+            body['metadata']['namespace'] = managed_object['metadata']['namespace']
+        body['metadata']['name'] = managed_object['metadata']['name']
+        if resource_version:
+            if 'resource_version' in managed_object['metadata']:
+                body['metadata']['resourceVersion'] = managed_object['metadata']['resource_version']
+        body['spec'] = {}
+        return body

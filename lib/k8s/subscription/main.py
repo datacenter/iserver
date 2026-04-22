@@ -1,11 +1,13 @@
 from lib.k8s.subscription.api import K8sSubscriptionApi
 from lib.k8s.subscription.info import K8sSubscriptionInfo
+from lib.k8s.subscription.match import K8sSubscriptionMatch
 from lib.k8s.subscription.create import K8sSubscriptionCreate
 from lib.k8s.subscription.delete import K8sSubscriptionDelete
 from lib.k8s.subscription.wait import K8sSubscriptionWait
 from lib.k8s.subscription.cnv import K8sSubscriptionCnv
 from lib.k8s.subscription.gpu import K8sSubscriptionGpu
 from lib.k8s.subscription.grafana import K8sSubscriptionGrafana
+from lib.k8s.subscription.intersight import K8sSubscriptionIntersight
 from lib.k8s.subscription.lso import K8sSubscriptionLocalStorage
 from lib.k8s.subscription.lvm import K8sSubscriptionLvm
 from lib.k8s.subscription.metallb import K8sSubscriptionMetallb
@@ -31,12 +33,14 @@ from lib.k8s.subscription.web_terminal import K8sSubscriptionWebTerminal
 class K8sSubscription(
         K8sSubscriptionApi,
         K8sSubscriptionInfo,
+        K8sSubscriptionMatch,
         K8sSubscriptionCreate,
         K8sSubscriptionDelete,
         K8sSubscriptionWait,
         K8sSubscriptionCnv,
         K8sSubscriptionGpu,
         K8sSubscriptionGrafana,
+        K8sSubscriptionIntersight,
         K8sSubscriptionLocalStorage,
         K8sSubscriptionLvm,
         K8sSubscriptionMetallb,
@@ -61,12 +65,14 @@ class K8sSubscription(
     def __init__(self):
         K8sSubscriptionApi.__init__(self)
         K8sSubscriptionInfo.__init__(self)
+        K8sSubscriptionMatch.__init__(self)
         K8sSubscriptionCreate.__init__(self)
         K8sSubscriptionDelete.__init__(self)
         K8sSubscriptionWait.__init__(self)
         K8sSubscriptionCnv.__init__(self)
         K8sSubscriptionGpu.__init__(self)
         K8sSubscriptionGrafana.__init__(self)
+        K8sSubscriptionIntersight.__init__(self)
         K8sSubscriptionLocalStorage.__init__(self)
         K8sSubscriptionLvm.__init__(self)
         K8sSubscriptionMetallb.__init__(self)

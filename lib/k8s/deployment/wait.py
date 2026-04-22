@@ -24,7 +24,7 @@ class K8sDeploymentWait():
 
         start_time = int(time.time())
         while True:
-            deployment = self.get_deployment_optimized(
+            deployment = self.get_deployment(
                 namespace,
                 name,
                 cache_enabled=False

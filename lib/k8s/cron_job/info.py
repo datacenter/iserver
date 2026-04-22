@@ -19,16 +19,17 @@ class K8sCronJobInfo():
         )
         return infos
 
-    def is_cron_job(self, namespace, name, cache_enabled=True):
-        if self.get_cron_job(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_cron_job(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_cron_job(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
     
-    def get_cron_job(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_cron_job(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'cron_job', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )

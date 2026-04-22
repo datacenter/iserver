@@ -20,17 +20,18 @@ class K8sSecretInfo():
         )
         return infos
 
-    def get_secret(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_secret(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'secret', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-    def is_secret(self, namespace, name, cache_enabled=True):
-        if self.get_secret(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_secret(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_secret(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 

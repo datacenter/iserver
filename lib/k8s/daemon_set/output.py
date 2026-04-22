@@ -2,18 +2,7 @@ class K8sDaemonSetOutput():
     def __init__(self):
         pass
 
-    def print_daemon_sets(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Daemon Set [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
+    def print_daemon_sets_state(self, info):
         for item in info:
             item['node_selectorT'] = []
             for key in item['node_selector']:
@@ -24,41 +13,16 @@ class K8sDaemonSetOutput():
                     )
                 )
 
-            if item['owner'] is None:
-                item['ownerT'] = ['--']
-            else:
-                item['ownerT'] = item['owner'].split('/')
-
-        order = [
-            'namespace_nameT',
-            'ownerT',
-            'scheduled_summary',
-            'available_summary',
-            'node_selectorT',
-            'age'
-        ]
-
-        headers = [
-            'Daemon Set',
-            'Owner',
-            'Scheduled',
-            'Available',
-            'Node Selector',
-            'Age'
-        ]
-
-        self.my_output.my_table(
-            self.my_output.expand_lists(
-                info,
-                order,
-                ['namespace_nameT', 'ownerT', 'node_selectorT']
-            ),
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Daemon Set', 'namespace_nameT'],
+                ['Owner', 'ownerT'],
+                ['Scheduled', 'scheduled_summary'],
+                ['Available', 'available_summary'],
+                ['Node Selector', 'node_selectorT'],
+                ['Age', 'age']
+            ]
         )
 
     def print_daemon_sets_metadata(self, info, title=False):

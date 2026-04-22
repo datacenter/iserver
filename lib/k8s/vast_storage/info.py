@@ -16,17 +16,18 @@ class K8sVastStorageInfo():
             cache_enabled=cache_enabled
         )
 
-    def is_vast_storage(self, namespace, name, cache_enabled=True):
-        if self.get_vast_storage(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_vast_storage(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_vast_storage(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_vast_storage(self, namespace, name, return_mo=False, cache_enabled=True):
+    def get_vast_storage(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'vast_storage', 
             name,
             namespace=namespace,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     

@@ -48,18 +48,19 @@ class K8sBgpSessionStateInfo():
 
         return summary
     
-    def is_bgp_session_state(self, namespace, name, cache_enabled=True):
-        if self.get_bgp_session_state(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_bgp_session_state(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_bgp_session_state(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_bgp_session_state(self, namespace, name, storage_info=False, return_mo=False, cache_enabled=True):
+    def get_bgp_session_state(self, namespace, name, storage_info=False, return_mo=False, cache_enabled=True, optimized=True):
         return self.get_info(
             'bgp_session_state', 
             name,
             namespace=namespace,
             storage_info=storage_info,
             return_mo=return_mo, 
-            cache_enabled=cache_enabled
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
     
