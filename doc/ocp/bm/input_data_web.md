@@ -1,6 +1,8 @@
 # web.json
 
-![Workflow](../images/workflow.png)
+[[Back]](../BareMetalCluster.md) [[Next]](./input_data_proxy.md) [[Prev]](./input_data_ssh.md)
+
+![ISO](../images/iso.png)
 
 Web server is crucially important in the installation workflow as shown in the diagram above
 - RedHat's cloud generates an iso image from which the servers need to boot from
@@ -13,6 +15,9 @@ Web server is crucially important in the installation workflow as shown in the d
 The web server can run:
 - locally i.e. on the same machine where iserver runs on, then the downloaded iso is copied to proper filesystem location
 - remotely i.e. on any server reachable via the network, then the downloaded iso is copied over the network (scp) to proper filesystem location
+
+> [!CAUTION]
+> Do **NOT** run web server with 'python3 -m http.server'
 
 Web server definition is used to instruct the workflow
 - where is the web server (localhost vs remote)
@@ -91,4 +96,4 @@ web server access check with the default timeout of 5 seconds can be controlled 
 
 web server image_base_url check can be skipped with "base_check" property set to false value
 
-[Back](../BareMetalCluster.md)
+[[Back]](../BareMetalCluster.md) [[Next]](./input_data_proxy.md) [[Prev]](./input_data_ssh.md)

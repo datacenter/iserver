@@ -1,5 +1,7 @@
 # Server Role
 
+[[Back]](../BareMetalCluster.md)
+
 In case of single node OpenShift cluster or 3 node clusters, every node in the cluster has dual-role: master and worker, that is auto-assigned.
 
 In case of 3+ clusters, you may want to explictly define the master and worker role. You can do that as per example below in server section.
@@ -41,4 +43,4 @@ Note: server section can be either part of cluster.json file in case of [all-in-
 ]
 ```
 
-[Back](../BareMetalCluster.md)
+[[Back]](../BareMetalCluster.md)

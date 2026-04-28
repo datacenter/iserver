@@ -1,3 +1,0 @@
-https://docs.redhat.com/en/documentation/assisted_installer_for_openshift_container_platform/2025/pdf/installing_openshift_container_platform_with_the_assisted_installer/Assisted_Installer_for_OpenShift_Container_Platform-2025-Installing_OpenShift_Container_Platform_with_the_Assisted_Installer-en-US.pdf
-
-https://github.com/latouchek/assisted-installer-deepdive

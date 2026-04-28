@@ -1,49 +1,31 @@
 # iserver
 
-iserver is command line tool using REST API with various Cisco products.
+iserver is command line tool for compute and networking data center infrastructure management
 
-Important note: documentation is partial and it will be uploaded again once sensitive information is removed
+![Overview](./doc/images/iserver-overview.png)
 
-## Features
+## Compute
 
-Compute
 - [Intersight](./doc/intersight/README.md)
-- IMC
 - [Redfish](./doc/redfish/README.md)
+- IMC
 - UCSM
 
-Networking
+## Data Center Networking
 - ACI
 - Nexus
 
-Virtualization
+## Virtualization
+- [OpenShift](./doc/ocp/Operations.md)
+- Kubernetes
 - OpenStack
 - vCenter
 
-Containers
-- Helm
-- Kubernetes
-- [OpenShift](./doc/ocp/Operations.md)
+## HowTo Run
 
-Orchestration
-- Network Services Orchestrator
+- download Windows or Linux [binary](https://github.com/datacenter/iserver/releases/latest) somewhere in your path e.g. /usr/local/bin
+- or clone the repository and run from sources using Python3 with [requirements](./requirements-freeze.txt)
 
-Security
-- PSIRT
-
-Other
-- Webex Bot
-
-## Installation
-
-- iserver binary is compiled for Windows, Linux and MAC
-- download the latest release from the [Releases](https://github.com/datacenter/iserver/releases/latest) page.
-- move binary somewhere that is on your path (e.g. /usr/local/bin)
-
-If binary is not available or you prefer using source code, clone the repository and run iserver using Python3 with [required](requirements) pip3 packages.
-
-## Requirements
-
-Features using Intersight API require [isctl](https://github.com/cgascoig/isctl) and OS installation requires isctl version >= 0.1.18.
-
-No requiremets for non-Intersight related features.
+Dependencies
+- [Intersight](./doc/intersight/README.md) features require [isctl](https://github.com/cgascoig/isctl)
+- no requiremets or dependencies for non-Intersight related features

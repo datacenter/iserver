@@ -1,12 +1,12 @@
 # cluster.json (aio)
 
-cluster.json is mandatory and contains
-- (all-in-one) all details for cluster installation 
-- ([base](./input_data_cluster_base.md)) base information augmented with extra definition files
+[[Back]](../BareMetalCluster.md) [[base]](./input_data_cluster_base.md)
 
-This is an example of single node openshift (sno) cluster definition that does not require any other files or directories in the context of installation only workflow.
+**mandatory** file
 
-```
+## Example
+
+```json
 {
     "name": "bm1",
     "openshift_version": "4.18.9",
@@ -61,4 +61,4 @@ This is an example of single node openshift (sno) cluster definition that does n
 }
 ```
 
-[Back](../BareMetalCluster.md)
+[[Back]](../BareMetalCluster.md) [[base]](./input_data_cluster_base.md)

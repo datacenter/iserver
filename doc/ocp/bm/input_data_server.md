@@ -1,12 +1,19 @@
 # server.json
 
-List of servers with 1, 3 or more items. 
+[[Back]](../BareMetalCluster.md) [[Next]](./input_data_redfish.md) [[Prev]](./input_data_cluster_base.md)
 
-Note: 2 servers installation is not supported by OpenShift.
+- List of servers with 1, 3 or more items
+- redfish authentication local or from [redfish.json](./input_data_redfish.md)
+- templated [nmstate.yaml](./input_data_nmstate.md) for network configuration
+- mix of endpoint types supported i.e., FI and directly attached
+- redfish endpoint types: ucsc (def), bmc, fi
+- server role assignment for 3+ clusters
+- single server selected as [management](../ManagementServer.md) with `kube:true`
+
+> [!CAUTION]
+> 2 servers installation is not supported by OpenShift
 
 ## Example
-
-- server with direct RedFish access to IMC
 
 ```
 [
@@ -14,15 +21,12 @@ Note: 2 servers installation is not supported by OpenShift.
       "hostname": "bm1-1",
       "kube": true,
       "redfish": {
-          "endpoint_type": "ucsc",
           "endpoint_ip": "10.1.1.1",
-          "endpoint_port": "443",
           "username": "admin",
           "password": "pass"
       },
       "ssh": {
-          "ip": "10.2.2.2",
-          "username": "core"
+          "ip": "10.2.2.2"
       },
       "vlan": 666,
       "interface": [
@@ -39,37 +43,6 @@ Note: 2 servers installation is not supported by OpenShift.
       "variables": {
         ...
       }
-  }
-]
-```
-
-## Minimum
-
-- redfish credentials in [redfish.json](./input_data_redfish.md)
-- nmstate yaml contains generated variables only
-
-```
-[
-  {
-      "hostname": "bm1-1",
-      "redfish": {
-          "endpoint_ip": "10.1.1.1"
-      },
-      "ssh": {
-          "ip": "10.2.2.2"
-      },
-      "vlan": 666,
-      "interface": [
-          {
-              "name": "eno5",
-              "mac": "aa:aa:aa:aa:aa:aa"
-          },
-          {
-              "name": "eno6",
-              "mac": "bb:bb:bb:bb:bb:bb"
-          }
-      ],
-      "nmstate": "nmstate.yaml"
   }
 ]
 ```
@@ -134,63 +107,6 @@ $ iserver get redfish fi --ip 10.1.1.1 --username admin --password pass
 
 - max of 2 interfaces can be defined in the liast
 - [nmstate-yaml](./input_data_nmstate.md) file must exist in the same directory 
-- all variables must [resolve](https://github.com/akaliwod/ocp-bm-cluster/blob/master/variables.md)
+- all variables must [resolve](https://wwwin-github.cisco.com/emear-telcocloud/ocp-bm-cluster/blob/master/variables.md)
 
-## Server connectivity check
-
-You can add fabric connectivity check per-interface as in the following example, currently supported for aci only
-
-```
-[
-  {
-      "hostname": "bm1-1",
-      "interface": [
-          {
-              "name": "eno5",
-              "mac": "aa:aa:aa:aa:aa:aa",
-              "aci": {
-                "apic": "my-apic",
-                "node": 100,
-                "port": "1/1/1"
-              }
-          },
-          {
-              "name": "eno6",
-              "mac": "bb:bb:bb:bb:bb:bb",
-              "aci": {
-                "apic": "myapic",
-                "node": 200,
-                "port": "1/1/1"
-              }
-          }
-      ]
-  }
-]
-```
-
-In the verfication phase of the workflow, before the actual installation starts, connectivity will be checked for example
-
-```
-ACI Workflow - Check interface
-==============================
-
-
-+------+------+--------+------+-------+-------+-------------+----------------+-------------------+------+------+-------+------------------------+
-| Ctx  | Sync | Apic   | Node | Port  | State | IP          | Gateway        | MAC               | Bond | Vlan | Trunk | Info                   |
-+------+------+--------+------+-------+-------+-------------+----------------+-------------------+------+------+-------+------------------------+
-| node | ✓    | myapic | 100  | 1/1/1 | up    | 10.10.10.10 | 10.10.10.1/24  | aa:aa:aa:aa:aa:aa | True | 666  | True  | IP EP 100:1/1/1        |
-|      |      |        |      |       |       |             |                |                   |      |      |       | IP EP 200:1/1/1        |
-|      |      |        |      |       |       |             |                |                   |      |      |       | L3Out name             |
-|      |      |        |      |       |       |             |                |                   |      |      |       | MAC EP 100:1/1/4       |
-|      |      |        |      |       |       |             |                |                   |      |      |       | MAC EP 200:1/1/4       |
-|      |      |        |      |       |       |             |                |                   |      |      |       | PV/VPC PG name         |
-+------+------+--------+------+-------+-------+-------------+----------------+-------------------+------+------+-------+------------------------+
-| node | ✓    | myapic | 200  | 1/1/1 | up    | 10.10.10.10 | 10.10.10.1/24  | bb:bb:bb:bb:bb:bb | True | 666  | True  | IP EP 2208:1/1/4       |
-|      |      |        |      |       |       |             |                |                   |      |      |       | IP EP 200:1/1/1        |
-|      |      |        |      |       |       |             |                |                   |      |      |       | L3Out name             |
-|      |      |        |      |       |       |             |                |                   |      |      |       | MAC EP not found       |
-|      |      |        |      |       |       |             |                |                   |      |      |       | PV/VPC PG name         |
-+------+------+--------+------+-------+-------+-------------+----------------+-------------------+------+------+-------+------------------------+
-```
-
-[Back](../BareMetalCluster.md)
+[[Back]](../BareMetalCluster.md) [[Next]](./input_data_redfish.md) [[Prev]](./input_data_cluster_base.md)
