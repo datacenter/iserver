@@ -1,28 +1,50 @@
-# Node Feature Discover Operator - Delete Operator
+# Node Feature Discover Operator - Delete All
 
-[[Back]](./README.md) [[Next]](./delete_instance.md) [[Prev]](./create_task.md)
+[[Back]](./README.md) [[Next]](./delete_task.md) [[Prev]](./delete_instance.md)
 
 ## HowTo
 
 ```
-# iserver delete ocp nfd --cluster bm1 --mode operator
+# iserver delete ocp nfd --cluster bm1 --mode all
 ```
 
 ## Workflow
 
+- delete node feature discover instance
+- wait for resources gone
 - delete operator subscription
 - delete operator group
 - delete namespace
 
-## Requirements
-
-NFD instance must be [deleted](./delete_instance.md)
-
 ## Example
 
 ```
-# iserver delete ocp nfd --cluster bm1 --mode operator
+# iserver delete ocp nfd --cluster bm1 --mode all
 
+OpenShift Workflow - Node Feature Discovery Operator - Delete Instance
+======================================================================
+
+OpenShift Cluster: bm1
+
+Operator
+- subscription          : openshift-nfd/nfd
+- package               : openshift-marketplace/redhat-operators/nfd
+- channel               : stable
+- install plan          : openshift-nfd/install-tfwcl
+- install plan approved : ✓
+- installed csv         : nfd.4.21.0-202604140347
+- latest_csv            : ✓
+
+
+Delete NodeFeatureDiscovery
+---------------------------
+- namespace: openshift-nfd
+- name: nfd-instance
+- deleted
+- wait for no NodeFeatureDiscovery openshift-nfd/nfd-instance [timeout:60s]
+
+Completed tasks
+- Node feature discovery instances deleted
 
 OpenShift Workflow - Node Feature Discovery Operator - Delete Operator
 ======================================================================
@@ -33,7 +55,7 @@ Operator
 - subscription          : openshift-nfd/nfd
 - package               : openshift-marketplace/redhat-operators/nfd
 - channel               : stable
-- install plan          : openshift-nfd/install-2pqw9
+- install plan          : openshift-nfd/install-tfwcl
 - install plan approved : ✓
 - installed csv         : nfd.4.21.0-202604140347
 - latest_csv            : ✓
@@ -49,7 +71,7 @@ Delete Subscription
 - wait for no csv
 - wait for no Deployment openshift-nfd/nfd-controller-manager [timeout:180s]
 - wait for no ReplicaSet openshift-nfd/nfd-controller-manager-6bb88d9dbf [timeout:180s]
-- wait for no Pod openshift-nfd/nfd-controller-manager-6bb88d9dbf-nf89n [timeout:180s]
+- wait for no Pod openshift-nfd/nfd-controller-manager-6bb88d9dbf-2htbs [timeout:180s]
 - wait for no Deployment openshift-nfd/nfd-master [timeout:180s]
 - wait for DaemonSet openshift-nfd/nfd-worker [timeout:180s]
 Subscription nfd resources gone
@@ -84,8 +106,9 @@ Completed tasks
 +----+---------+-------+-----------------+---------+---------+--------------+
 | ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
 +----+---------+-------+-----------------+---------+---------+--------------+
-| 1  | ocp:bm1 | nfd   | delete operator | 4       | ✓       | 24           | 
+| 1  | ocp:bm1 | nfd   | delete instance | 1       | ✓       | 2            | 
+| 2  | ocp:bm1 | nfd   | delete operator | 4       | ✓       | 24           | 
 +----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
-[[Back]](./README.md) [[Next]](./delete_instance.md) [[Prev]](./create_task.md)
+[[Back]](./README.md) [[Next]](./delete_task.md) [[Prev]](./delete_instance.md)

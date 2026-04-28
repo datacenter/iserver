@@ -1,50 +1,39 @@
 # Node Feature Discovery Operator - Get
 
+[[Back]](./README.md) [[Next]](./create_operator.md) [[Prev]](./delete_task.md)
+
+## HowTo
+
+```
+# iserver get ocp nfd --cluster bm1
+```
+
 ## Workflow
 
 - get nfd operator state
-- get node annotations with --verbose option
+- get node annotations with `annotation` view
+- get resources details with `details` view
 
 ## Example
 
 ```
-# iserver get ocp nfd --cluster bm1 --verbose
+# iserver get ocp nfd --cluster bm1
 
-
-OpenShift Workflow - Node Feature Discover Operator - Get Information
-=====================================================================
+OpenShift Workflow - Node Feature Discovery Operator - Get Information
+======================================================================
 
 OpenShift Cluster: bm1
 
+Collecting state...
 
-Operator
---------
-- subscription          : openshift-nfd/nfd
-- package               : openshift-marketplace/redhat-operators/nfd
-- channel               : stable
-- install plan          : openshift-nfd/install-9xtp4
-- install plan approved : ✓
-- installed csv         : nfd.4.21.0-202603230446
-- latest_csv            : ✓
-
-Instance
---------
-- name: nfd-instance
-
-Operator resources
-------------------
-- deployment openshift-nfd/nfd-master: ready
-- deployment openshift-nfd/nfd-controller-manager: ready
-- daemonset openshift-nfd/nfd-worker: ready
-Subscription nfd ready
-
-NFD node annotations
---------------------
-- node [bm1-1]
-	cpu-cpuid.ADX
-	cpu-cpuid.AESNI
-	cpu-cpuid.AMXFP8
-...
+State
+-----
+- package          : openshift-marketplace/redhat-operators/nfd
+- csv              : nfd.4.21.0-202604140347
+- resources        : ✓
+- instance         : ✓
+- node annotations : 3/3
+- no annotation    : ---
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Next]](./create_operator.md) [[Prev]](./delete_task.md)
