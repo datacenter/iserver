@@ -1,5 +1,9 @@
 # OpenShift Installation on Bare Metal UCS Infrastructure
 
+[[Back]](./Operations.md) [[Next]](./VcenterCluster.md)
+
+![Workflow](./images/workflow.png)
+
 ## Key Features
 
 - [improves](./bm/assisted_installer.md) assisted installer
@@ -10,21 +14,20 @@
 ## Requirements
 
 - RedHat console REST API one-time [configuration](./Console.md)
-- servers with Redfish enabled
-- internet access via imc interface for communication with RedHat Console
-- web server for servers' boot from iso over http 
-- no http proxy on the way between servers' imc and web server
-- access to machine host network for Kubernetes API
-
-## Workflow
-
-![Workflow](./images/workflow.png)
+- Redfish-enabled servers with internet access
+- web server for virtual-media-boot-from-iso
 
 ## Input files
 
-Check input files templates [repository](https://github.com/akaliwod/ocp-bm-cluster/blob/main/README.md) for examples of cluster installation definition.
+> [!NOTE]
+> Refer to [repository](https://wwwin-github.cisco.com/emear-telcocloud/ocp-bm-cluster/blob/master/README.md) for examples of cluster installation definition.
 
-Cluster installation definition files
+### All-in-one
+
+- [cluster.json](./bm/input_data_cluster_aio.md)
+
+### File-per-section
+
 - [cluster.json](./bm/input_data_cluster_base.md)
 - [server.json](./bm/input_data_server.md)
 - [redfish.json](./bm/input_data_redfish.md)
@@ -35,17 +38,42 @@ Cluster installation definition files
 
 Post-installation [tasks](./Tasks.md) can be defined in tasks.json file.
 
-## HowTo Create
+### Cilium manifests
+
+In case of Cilium CNI, unpack all manifests into `manifests` directory
+
+```
+$ find my-cluster-input-data
+manifests/subscription.yaml
+manifests/...
+cluster.json
+...
+```
+
+> [!NOTE]
+> No need to modify default manifests, [auto-fixups](./bm/cilium_fixup.md) will handle cidr and operator replica count
+
+## RunIt
 
 ```
 # iserver create ocp cluster bm --dir <directory> --mode install
 ```
 
-[Example output](./bm/example.md)
+Checks (fail-fast approach)
+- [input file syntax](./bm/example_input_data_check.md)
+- [OpenShift API](./bm/example_openshift_api_check.md)
+- [web server](./bm/example_web_check.md)
+- [redfish](./bm/example_redfish_check.md)
+- [dns](./bm/example_fqdn_check.md)
+- [nmstate and variables](./bm/example_variables_check.md)
+- [OpenShift Console REST API body generation](./bm/example_console_body_generation.md)
 
-## Other Resources
+Execution (run until completion)
+- [create cluster, infra and manifests](./bm/example_create_cluster.md)
+- [iso download, manipulation and upload to web server](./bm/example_iso.md)
+- [vmedia boot and wait for call-back-home](./bm/example_boot.md)
+- [extra configuration](./bm/example_extra_configuration.md)
+- [wait for completion](./bm/example_wait.md)
+- [post installation](./bm/example_post.md)
 
-YouTube [playlist](https://www.youtube.com/playlist?list=PLcdvTuD4ZpKZEFXzRUYvZ24Dv2_X2Atsi)
-
-
-[[Back]](./Operations.md)
+[[Back]](./Operations.md) [[Next]](./VcenterCluster.md)
