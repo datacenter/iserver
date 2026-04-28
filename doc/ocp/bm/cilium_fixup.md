@@ -8,7 +8,7 @@ OpenShift cluster installation with Cilium CNI requires Cilium EE manifests to b
 
 CiliumConfig CRD example showing the automatically added settings only
 
-```
+```yaml
 kind: CiliumConfig
 metadata:
   name: ciliumconfig
@@ -24,7 +24,7 @@ spec:
 
 The way to disable automated fixups in cluster.json file:
 
-```
+```json
 {
     "cilium": {
         "managed": false
