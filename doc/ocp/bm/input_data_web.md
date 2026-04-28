@@ -31,7 +31,7 @@ Web server can be defined in cluster.json web_server section or in dedicated web
 
 ## Local web server
 
-```
+```json
 {
     "ip": "localhost",
     "image_base_url": "http://your-machine-ip:8080",
@@ -52,7 +52,7 @@ sudo docker run -it --rm -d -p 8080:80 --name image -v /var/image:/usr/share/ngi
 
 ## Remote web server with public key-based ssh authentication
 
-```
+```json
 {
     "ip": "ip-or-name-of-the-web-server",
     "username": "user",
@@ -70,7 +70,7 @@ Notes:
 
 ## Remote web server with password-based authentication
 
-```
+```json
 {
     "ip": "ip-or-name-of-the-web-server",
     "username": "user",

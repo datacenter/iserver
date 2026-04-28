@@ -4,7 +4,7 @@
 
 Redfish credentials defined in redfish.json are used for redfish authentication for every server defined in [server.json](./input_data_server.md).
 
-```
+```json
 {
     "username": "user",
     "password": "pass"

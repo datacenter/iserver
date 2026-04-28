@@ -8,7 +8,7 @@ In case of 3+ clusters, you may want to explictly define the master and worker r
 
 Note: server section can be either part of cluster.json file in case of [all-in-one definition](./input_data_cluster_aio.md) or be in dedicated [server.json](./input_data_server.md) file as per example below.
 
-```
+```json
 [
   {
     "hostname": "cp1",

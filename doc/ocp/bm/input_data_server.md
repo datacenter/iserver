@@ -15,7 +15,7 @@
 
 ## Example
 
-```
+```json
 [
   {
       "hostname": "bm1-1",
