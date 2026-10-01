@@ -8,20 +8,25 @@ class K8sPrivateNetworkEndpointSliceInfo():
     def __init__(self):
         self.private_network_endpoint_slice = None
 
-    def get_private_network_endpoint_slice_info(self, private_network_endpoint_slice_mo):
-        if private_network_endpoint_slice_mo is None:
+    def get_private_network_endpoint_slice_info(self, managed_object):
+        if managed_object is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
+        info = self.get_base_info(managed_object)
 
-        metadata_info = self.get_metadata_info(
-            private_network_endpoint_slice_mo
-        )
-        info.update(metadata_info)
+        info['endpointT'] = []
 
-        info['spec'] = self.get(private_network_endpoint_slice_mo, 'spec')
-        info['status'] = self.get(private_network_endpoint_slice_mo, 'status')
+        endpoints_mo = self.get(managed_object, 'endpoints', on_error=[], on_none=[])
+        for endpoint_mo in endpoints_mo:
+            endpoint = {}
+            endpoint['when'] = self.get(endpoint_mo, 'activatedAt')
+            endpoint['pod_ip'] = self.get(endpoint_mo, 'endpoint:addressing:ipv4')
+            endpoint['name'] = self.get(endpoint_mo, 'endpoint:name')
+            endpoint['ip'] = self.get(endpoint_mo, 'interface:addressing:ipv4')
+            endpoint['mac'] = self.get(endpoint_mo, 'interface:mac')
+            endpoint['network'] = self.get(endpoint_mo, 'interface:network')
+            info['endpointT'].append(endpoint)
+
         return info
 
     def get_private_network_endpoint_slices_info(self, cache_enabled=True):

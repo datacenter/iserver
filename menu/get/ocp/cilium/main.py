@@ -9,8 +9,9 @@ from menu.get.ocp.cilium.operator import get_ocp_cilium_operator_command
 from menu.get.ocp.cilium.package import get_ocp_cilium_package_command
 from menu.get.ocp.cilium.pnet import get_ocp_cilium_pnet_command
 from menu.get.ocp.cilium.pod import get_ocp_cilium_pod_command
+from menu.get.ocp.cilium.registry import get_ocp_cilium_registry_command
 from menu.get.ocp.cilium.state import get_ocp_cilium_state_command
-from menu.get.ocp.cilium.timescape import get_ocp_cilium_timescape_command
+from menu.get.ocp.cilium.hubble import get_ocp_cilium_hubble_command
 
 
 class Failure(Exception):
@@ -32,5 +33,6 @@ get_ocp_cilium_menu.add_command(get_ocp_cilium_operator_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_package_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_pnet_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_pod_command)
+get_ocp_cilium_menu.add_command(get_ocp_cilium_registry_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_state_command)
-get_ocp_cilium_menu.add_command(get_ocp_cilium_timescape_command)
+get_ocp_cilium_menu.add_command(get_ocp_cilium_hubble_command)

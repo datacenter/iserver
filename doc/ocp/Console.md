@@ -1,12 +1,12 @@
 # OpenShift Console API
 
-[[Back]](./Operations.md) [[Next]](./BareMetalCluster.md)
+[[Back]](./Operations.md) [[Next]](./IEP.md)
 
 OpenShift cluster installation use OpenShift Console API access. One-time configuration is **required** to properly authenticate.
 
 ## Requirement
 
-Valid accout at [RedHat Openshift console](https://console.redhat.com)
+Valid account at [RedHat Openshift console](https://console.redhat.com)
 
 ## Step 1: Pull secret
 
@@ -41,4 +41,4 @@ OpenShift console connection successful
 Authentication successful
 ```
 
-[[Back]](./Operations.md) [[Next]](./BareMetalCluster.md)
+[[Back]](./Operations.md) [[Next]](./IEP.md)

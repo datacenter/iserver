@@ -9,7 +9,7 @@
 
 ![Overview](../images/cnv-data-import/template-catalog.png)
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

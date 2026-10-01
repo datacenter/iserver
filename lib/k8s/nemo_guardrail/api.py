@@ -1,100 +1,30 @@
-import time
-import traceback
-
-
 class K8sNemoGuardrailApi():
     def __init__(self):
         self.nemo_guardrail_mo = None
+        self.nemo_guardrail_namespace_mo = {}
 
-    def get_nemo_guardrail_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.nemo_guardrail_mo is not None:
-                return self.nemo_guardrail_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='apps.nvidia.com/v1alpha1',
-                kind='NemoGuardrail'
-            )
-            self.nemo_guardrail_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'nemo_guardrail',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_nemo_guardrail_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'nemo_guardrail',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'nemo_guardrail',
-            self.nemo_guardrail_mo
+    def get_nemo_guardrail_mo(self, namespace=None, name=None, cache_enabled=True):
+        cache_hit, response = self.get_namespaced_cache(
+            cache_enabled, 
+            namespace, 
+            name,
+            self.nemo_guardrail_mo,
+            self.nemo_guardrail_namespace_mo
+        )
+        if cache_hit:
+            return response
+                
+        response, self.nemo_guardrail_mo, self.nemo_guardrail_namespace_mo = self.get_namespaced_resources(
+            'NemoGuardrail', 
+            'apps.nvidia.com/v1alpha1', 
+            self.nemo_guardrail_mo,
+            self.nemo_guardrail_namespace_mo,
+            namespace=namespace,
+            name=name
         )
 
-        return self.nemo_guardrail_mo
-
-    def create_nemo_guardrail_mo(self, nemo_guardrail):
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return False
-
-        try:
-            start_time = int(time.time() * 1000)
-            obj_list = api_handler.resources.get(api_version='apps.nvidia.com/v1alpha1', kind='NemoGuardrail')
-            success = True
-            response = obj_list.create(
-                body=nemo_guardrail,
-                namespace=nemo_guardrail['metadata']['namespace']
-            )
-        except BaseException:
-            success = False
-            self.log.error('ocp.create_nemo_guardrail_mo', traceback.format_exc())
-
-        self.log.ocp(
-            'create',
-            'nemo_guardrail',
-            success,
-            int(time.time() * 1000) - start_time
-        )
-
-        return success
+        return response
 
     def delete_nemo_guardrail_mo(self, namespace, name):
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return False
-
-        try:
-            start_time = int(time.time() * 1000)
-            obj_list = api_handler.resources.get(api_version='apps.nvidia.com/v1alpha1', kind='NemoGuardrail')
-            success = True
-            response = obj_list.delete(
-                namespace=namespace,
-                name=name
-            )
-        except BaseException:
-            success = False
-            self.log.error('ocp.delete_nemo_guardrail_mo', traceback.format_exc())
-
-        self.log.ocp(
-            'delete',
-            'delete_nemo_guardrail',
-            success,
-            int(time.time() * 1000) - start_time
-        )
-
+        success, _ = self.delete_resource('NemoGuardrail', 'apps.nvidia.com/v1alpha1', name, namespace=namespace)
         return success

@@ -130,8 +130,7 @@ def get_redfish_bios_command(
 
         output_handler.print_ucsc_properties(
             'bios-diff',
-            bios_settings,
-            title=True
+            bios_settings
         )
 
     except ErrorExit:

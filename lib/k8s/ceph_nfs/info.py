@@ -5,22 +5,13 @@ class K8sCephNfsInfo():
     def __init__(self):
         self.ceph_nfs = None
 
-    def get_ceph_nfs_info(self, ceph_nfs_mo):
-        if ceph_nfs_mo is None:
+    def get_ceph_nfs_info(self, managed_object):
+        if managed_object is None:
             return None
+        
+        info = self.get_base_info(managed_object)
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            ceph_nfs_mo
-        )
-        info.update(metadata_info)
-
-        info['spec'] = self.get(ceph_nfs_mo, 'spec')
-        info['status'] = self.get(ceph_nfs_mo, 'status')
-
-        info['phase'] = self.get(ceph_nfs_mo, 'status:phase')
+        info['phase'] = self.get(managed_object, 'status:phase')
         if info['phase'] is not None and info['phase'].lower() == 'ready':
             info['ready'] = True
             info['readyTick'] = '\u2713'
@@ -34,100 +25,32 @@ class K8sCephNfsInfo():
 
         return info
 
-    def get_ceph_nfses_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.ceph_nfs is not None:
-                return self.ceph_nfs
+    def get_ceph_nfss(self, object_filter=None, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'ceph_nfs', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+        return infos
 
-        managed_objects = self.get_ceph_nfs_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
+    def get_ceph_nfs(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'ceph_nfs', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
+        )
 
-        self.ceph_nfs = []
-        for managed_object in managed_objects:
-            info = {}
-            info['info'] = self.get_ceph_nfs_info(
-                managed_object
-            )
-            info['mo'] = managed_object
-            self.ceph_nfs.append(
-                info
-            )
-
-        return self.ceph_nfs
-
-    def match_ceph_nfs(self, object_info, object_filter):
-        if object_filter is None or len(object_filter) == 0:
-            return True
-
-        for rule in object_filter:
-            (key, value) = rule.split(':')
-
-            key_found = False
-
-            if key == 'namespace':
-                key_found = True
-                if not filter_helper.match_string(value, object_info['namespace']):
-                    return False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_namespace_name(value, '%s/%s' % (object_info['namespace'], object_info['name'])):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_ceph_nfs',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
-    def get_ceph_nfses(self, object_filter=None, return_mo=False, cache_enabled=True):
-        all_objects_infos = self.get_ceph_nfses_info(cache_enabled=cache_enabled)
-        if all_objects_infos is None:
-            return None
-
-        object_infos = []
-
-        for object_info in all_objects_infos:
-            if not self.match_ceph_nfs(object_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                object_infos.append(
-                    object_info['mo']
-                )
-                continue
-
-            object_infos.append(
-                object_info['info']
-            )
-
-        return object_infos
-
-    def is_ceph_nfs(self, namespace, name, cache_enabled=True):
-        if self.get_ceph_nfs(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_ceph_nfs(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_ceph_nfs(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_ceph_nfs(self, namespace, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'namespace:%s' % (namespace)
-        )
-        object_filter.append(
-            'name:%s' % (name)
-        )
-        objects_info = self.get_ceph_nfses(
-            object_filter=object_filter,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
-        )
-        if objects_info is None:
-            return None
-
-        if len(objects_info) == 1:
-            return objects_info[0]
-
-        return None
+    def is_any_ceph_nfs(self, cache_enabled=True):
+        infos = self.get_ceph_nfss(cache_enabled=cache_enabled)
+        if infos is None or len(infos) == 0:
+            return False
+        return True

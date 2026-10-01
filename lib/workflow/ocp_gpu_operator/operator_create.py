@@ -1,53 +1,34 @@
 from lib import output_helper
 from lib.workflow.ocp_gpu_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'channel' not in params:
-        params['channel'] = '__default__'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = False
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    allowed_keys = [
-        'cluster',
-        'channel',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['channel', True, '__default__', 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - GPU Operator - Create Operator', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
-    
-    params = local_common.initialize(params, my_output, log_id)
+
+    ocp_common.print_title(params, my_output, 'Create Operator')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if params['k8s_handler'].is_gpu_subscription(params['namespace'], params['name']):
+    if params['k8s_handler'].is_gpu_subscription(params['__default__']['namespace'], params['__default__']['name']):
         my_output.default('GPU Operator already created')
         return True
     
@@ -55,7 +36,7 @@ def run(params, log_id=None):
     labels['openshift.io/cluster-monitoring'] = 'true'
 
     success = params['k8s_handler'].create_namespace(
-        params['namespace'],
+        params['__default__']['namespace'],
         confirmation=params['confirmation'],
         labels=labels,
         my_output=my_output,
@@ -65,8 +46,8 @@ def run(params, log_id=None):
         return False
 
     success = params['k8s_handler'].create_operator_group(
-        params['namespace'], 
-        name=params['operator-group-name'],
+        params['__default__']['namespace'], 
+        name=params['__default__']['operator-group-name'],
         confirmation=params['confirmation'], 
         my_output=my_output, 
         wait=True
@@ -75,8 +56,8 @@ def run(params, log_id=None):
         return False
 
     success = params['k8s_handler'].create_gpu_subscription(
-        params['namespace'], 
-        params['name'], 
+        params['__default__']['namespace'], 
+        params['__default__']['name'], 
         channel=params['channel'],
         confirmation=params['confirmation'], 
         my_output=my_output, 

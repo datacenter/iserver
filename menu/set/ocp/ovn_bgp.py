@@ -1,87 +1,42 @@
 import sys
-import traceback
 import click
-from lib.workflow.ocp_ovn_bgp import feature_enable
-from lib.workflow.ocp_ovn_bgp import ra_enable
-from lib.workflow.ocp_ovn_bgp import configuration_create
-from lib.workflow.ocp_ovn_bgp import ra_create
 from menu import validations
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("ovn-bgp")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['feature', 'ra', 'all', 'config', 'ra-config'], case_sensitive=False), default='feature', show_default=True, help="Mode of operation")
 @click.option("--config", default='', callback=validations.empty_string_to_none, show_default=True, help="FRR configuration filename")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_ovn_bgp(
         ctx,
-        cluster_name,
+        cluster_names,
         mode,
-        config
+        config,
+        no_confirm
         ):
     """Set ocp cluster ovn bgp"""
 
-    ctx.developer = False
+    task = {}
 
-    try:
-        if mode in ['feature', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['mode'] = mode
+    if mode in ['feature', 'all']:
+        task['feature'] = {}
+        task['feature']['mode'] = mode
 
-            success = feature_enable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['ra', 'all']:
+        task['ra'] = {}
+        task['ra']['mode'] = mode
 
-        if mode in ['ra', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['mode'] = mode
+    if mode in ['config']:
+        task['config'] = {}
+        task['config']['config'] = config
 
-            success = ra_enable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-        
-        if mode == 'config':
-            params = {}
-            params['cluster'] = cluster_name
-            params['config'] = config
-            
-            success = configuration_create.run(
-                params,
-                log_id=ctx.run_id
-            )
+    if mode in ['ra-config']:
+        task['ra-config'] = {}
+        task['ra-config']['config'] = config
 
-        
-        if mode == 'ra-config':
-            params = {}
-            params['cluster'] = cluster_name
-            params['config'] = config
-            
-            success = ra_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-
-    except ErrorExit:
-        ctx.busy = False
-        sys.exit(1)
-
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'ovn-bgp', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

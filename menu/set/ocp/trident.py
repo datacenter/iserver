@@ -1,44 +1,29 @@
 import sys
-import traceback
 import click
-
+from lib.workflow import ocp_common
 from menu import validations
-from lib.workflow.ocp_trident_operator import operator_create
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("trident")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['operator'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['operator', 'instance'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--channel", default='__default__', show_default=True, help="Operator channel")
+@click.option("--filename", default='', callback=validations.validate_k8s_yaml_file_optional, show_default=True, help="TridentOrchestrator CRD")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
-def set_ocp_trident_command(ctx, cluster_name, mode, channel, no_confirm):
+def set_ocp_trident_command(ctx, cluster_names, mode, channel, filename, no_confirm):
     """Set trident operator in openshift cluster"""
 
-    try:
-        if mode == 'operator':
-            params = {}
-            params['cluster'] = cluster_name
-            params['channel'] = channel
-            params['confirmation'] = not no_confirm
-                
-            success = operator_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-    except ErrorExit:
-        sys.exit(1)
+    task = {}
 
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    if mode in ['operator', 'all']:
+        task['operator'] = {}
+        task['operator']['channel'] = channel
+
+    if mode in ['instance', 'all']:
+        task['instance'] = {}
+        task['instance']['filename'] = filename
+
+    success = ocp_common.set_workflow(cluster_names, 'trident', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

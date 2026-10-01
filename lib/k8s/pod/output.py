@@ -13,7 +13,7 @@ class K8sPodOutput():
                 ['Pod', 'namespace_nameT'],
                 ['Leader', 'leaderTick'],
                 ['Ready', 'container_state_summary'],
-                ['Label', 'phaseT'],
+                ['Status', 'phaseT'],
                 ['Annotation', 'condition.typeT'],
                 ['Node', 'host_name'],
                 ['IP', 'pod_ip'],

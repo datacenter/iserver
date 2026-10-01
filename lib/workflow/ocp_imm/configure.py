@@ -5,6 +5,7 @@ from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.intersight import helper as intersight_helper
 from lib.workflow.ocp_imm import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -40,7 +41,7 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def get_server_with_mac(servers, mac):
@@ -55,14 +56,14 @@ def get_server_with_mac(servers, mac):
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Hardware - Discovery', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Discover')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 

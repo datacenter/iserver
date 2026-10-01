@@ -14,13 +14,14 @@
 ## Requirements
 
 - RedHat console REST API one-time [configuration](./Console.md)
+- Isovalent Registry Access one-time [configuration](./IEP.md) in case of Cilium CNI
 - Redfish-enabled servers with internet access
 - web server for virtual-media-boot-from-iso
 
 ## Input files
 
 > [!NOTE]
-> Refer to [repository](https://wwwin-github.cisco.com/emear-telcocloud/ocp-bm-cluster/blob/master/README.md) for examples of cluster installation definition.
+> Refer to [repository](https://github.com/akaliwod/ocp-bm-cluster/blob/main/README.md) for examples of cluster installation definition.
 
 ### All-in-one
 
@@ -38,9 +39,12 @@
 
 Post-installation [tasks](./Tasks.md) can be defined in tasks.json file.
 
-### Cilium manifests
+### Cilium CNI
 
-In case of Cilium CNI, unpack all manifests into `manifests` directory
+>[!CAUTION]
+>Remember to [configure](./IEP.md) Isovalent Registry Access. Even if manifests are prepared manually. OpenShift installer will generate registry access token and modify `pullSecret` automatically.
+
+Cilium requires custom manifests to be downloaded-and-unpacked into `manifests` directory e.g.
 
 ```
 $ find my-cluster-input-data
@@ -50,8 +54,21 @@ cluster.json
 ...
 ```
 
-> [!NOTE]
-> No need to modify default manifests, [auto-fixups](./bm/cilium_fixup.md) will handle cidr and operator replica count
+Alternatively, specify Cilium version in cluster.json. In such case manifests are downloaded and unpacked automatically e.g.,
+
+```json
+    "cilium": {
+        "version": "1.19.7"
+    }
+```
+
+There is no need to modify the Cilium manifests. By default [auto-fixups](./bm/cilium_fixup.md) will handle cidr and operator replica count. However, if you prefer to make changes manually and block automatic fixups then do 
+
+```json
+    "cilium": {
+        "manage": false
+    }
+```
 
 ## RunIt
 

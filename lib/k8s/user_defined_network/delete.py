@@ -9,7 +9,7 @@ class K8sUserDefinedNetworkDelete():
             cache_enabled=False
         )
 
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'UserDefinedNetwork', 
             'k8s.ovn.org/v1',
             name, 
@@ -19,6 +19,9 @@ class K8sUserDefinedNetworkDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

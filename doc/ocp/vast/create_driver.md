@@ -1,47 +1,29 @@
-# VAST Operator - Create driver via Task
+# VAST CSI - Create Driver
 
-## Input
+[[Back]](./README.md) [[kb]](./kb/driver.md)
+
+## HowTo
 
 ```
-[
-    {
-        "vast": {
-            "driver": [
-                {
-                    "filename": "/tmp/vast_csi_driver.yaml"
-                },
-                {
-                    "name": "from-params",
-                    "type": "nfs",
-                    "repository": "docker.io/vastdataorg/csi:v2.6.4",
-                    "any": "value"
-                }
-            ]
-        }
-    }
-]
+# iserver set ocp vast --cluster bm1 --mode driver --filename C:\tmp\driver.yaml --no-confirm
+
+# iserver set ocp vast --mode driver
+  --cluster TEXT            Cluster Name
+  --filename TEXT           VAST CSI CRD
+  --no-confirm              Confirmation mode
 ```
 
-`VastCSIDriver` can be created from yaml input file or generated based on parameters
-- namespace defaults to vast-csi
-- name must be defined
-- type must be nfs or block
-- repository defaults to docker.io/vastdataorg/csi:v2.6.4
-- any other value will end up in spec of an object as-is
+## Workflow
+
+- check vast csi [operator](./create_operator.md)
+- create `VastCSIDriver` resource
+- wait for initiatlization and deployed status
+- wait for associated deployment and daemon set ready
 
 ## Example
 
 ```
-# iserver set ocp task --cluster bm1 --file C:\tmp\task.json --no-confirm
-Cluster: bm1 (type: ocp)
-
-
-OpenShift Workflow - Create Tasks
-=================================
-
-Validate Input
---------------
-Completed
+# iserver set ocp vast --cluster bm1 --mode driver --filename C:\tmp\driver.yaml --no-confirm
 
 OpenShift Workflow - VAST CSI Operator - Create Driver
 ======================================================
@@ -49,13 +31,11 @@ OpenShift Workflow - VAST CSI Operator - Create Driver
 OpenShift Cluster: bm1
 
 VAST CSI Operator Subscription
-------------------------------
 - subscription: vast-csi/vast-csi-operator
 - package: vast-csi-operator
 - csv: vast-csi-operator.v2.6.4
 
 VAST CSI Operator Resources
----------------------------
 - deployment vast-csi/vast-csi-operator-controller-manager ready
 
 Create VastCSIDriver
@@ -74,7 +54,6 @@ spec:
   image:
     csiVastPlugin:
       repository: docker.io/vastdataorg/csi:v2.6.4
-
 ~~~
 VastCSIDriver [vast-csi/nfs] created
 - wait for VastCSIDriver vast-csi/nfs [timeout:60s]
@@ -83,105 +62,41 @@ VastCSIDriver [vast-csi/nfs] created
 - wait for DaemonSet vast-csi/csi-vast-node ready [timeout:180s]
 - wait for Deployment vast-csi/csi-vast-controller ready [timeout:180s]
 
-+----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+--------------+
-| ID | Vast Driver | Init | Dep | Spec                                                   | Resource                                                  | Vast Storage |
-+----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+--------------+
-| 1  | vast-csi    | V    | V   | {                                                      | [CSIDriver] nfs                                           | ---          | 
-|    | nfs         |      |     |   "applySecurityContextConstraints": true,             | [ClusterRole] nfs-vast-attacher-role                      |              | 
-|    |             |      |     |   "attachRequired": true,                              | [ClusterRole] nfs-vast-provisioner-role                   |              | 
-|    |             |      |     |   "blockHostsAutoPrune": false,                        | [ClusterRole] nfs-vast-resizer-role                       |              | 
-|    |             |      |     |   "dontUseTrashApi": false,                            | [ClusterRoleBinding] nfs-vast-attacher-binding            |              | 
-|    |             |      |     |   "driverType": "nfs",                                 | [ClusterRoleBinding] nfs-vast-provisioner-binding         |              | 
-|    |             |      |     |   "image": {                                           | [ClusterRoleBinding] nfs-vast-resizer-binding             |              | 
-|    |             |      |     |     "csiVastPlugin": {                                 | [DaemonSet] vast-csi/csi-vast-node                        |              | 
-|    |             |      |     |       "imagePullPolicy": "IfNotPresent",               | [Deployment] vast-csi/csi-vast-controller                 |              | 
-|    |             |      |     |       "repository": "docker.io/vastdataorg/csi:v2.6.4" | [RoleBinding] vast-csi/nfs-vast-controller-scc-sa-binding |              | 
-|    |             |      |     |     }                                                  | [RoleBinding] vast-csi/nfs-vast-node-scc-sa-binding       |              | 
-|    |             |      |     |   },                                                   | [ServiceAccount] vast-csi/nfs-vast-controller-sa          |              | 
-|    |             |      |     |   "kubeletPath": "/var/lib/kubelet",                   | [ServiceAccount] vast-csi/nfs-vast-node-sa                |              | 
-|    |             |      |     |   "logLevel": 5,                                       |                                                           |              | 
-|    |             |      |     |   "numWorkers": 10,                                    |                                                           |              | 
-|    |             |      |     |   "operationRetryIntervalMax": 60,                     |                                                           |              | 
-|    |             |      |     |   "operationRetryIntervalStart": 10,                   |                                                           |              | 
-|    |             |      |     |   "operationTimeout": 15,                              |                                                           |              | 
-|    |             |      |     |   "truncateVolumeName": 64,                            |                                                           |              | 
-|    |             |      |     |   "useLocalIpForMount": "",                            |                                                           |              | 
-|    |             |      |     |   "verifySsl": false                                   |                                                           |              | 
-|    |             |      |     | }                                                      |                                                           |              | 
-+----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+--------------+
++----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+
+| ID | Vast Driver | Init | Dep | Spec                                                   | Resource                                                  |
++----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+
+| 1  | vast-csi    | V    | V   | {                                                      | [CSIDriver] nfs                                           | 
+|    | nfs         |      |     |   "applySecurityContextConstraints": true,             | [ClusterRole] nfs-vast-attacher-role                      | 
+|    |             |      |     |   "attachRequired": true,                              | [ClusterRole] nfs-vast-provisioner-role                   | 
+|    |             |      |     |   "blockHostsAutoPrune": false,                        | [ClusterRole] nfs-vast-resizer-role                       | 
+|    |             |      |     |   "dontUseTrashApi": false,                            | [ClusterRoleBinding] nfs-vast-attacher-binding            | 
+|    |             |      |     |   "driverType": "nfs",                                 | [ClusterRoleBinding] nfs-vast-provisioner-binding         | 
+|    |             |      |     |   "image": {                                           | [ClusterRoleBinding] nfs-vast-resizer-binding             | 
+|    |             |      |     |     "csiVastPlugin": {                                 | [DaemonSet] vast-csi/csi-vast-node                        | 
+|    |             |      |     |       "imagePullPolicy": "IfNotPresent",               | [Deployment] vast-csi/csi-vast-controller                 | 
+|    |             |      |     |       "repository": "docker.io/vastdataorg/csi:v2.6.4" | [RoleBinding] vast-csi/nfs-vast-controller-scc-sa-binding | 
+|    |             |      |     |     }                                                  | [RoleBinding] vast-csi/nfs-vast-node-scc-sa-binding       | 
+|    |             |      |     |   },                                                   | [ServiceAccount] vast-csi/nfs-vast-controller-sa          | 
+|    |             |      |     |   "kubeletPath": "/var/lib/kubelet",                   | [ServiceAccount] vast-csi/nfs-vast-node-sa                | 
+|    |             |      |     |   "logLevel": 5,                                       |                                                           | 
+|    |             |      |     |   "numWorkers": 10,                                    |                                                           | 
+|    |             |      |     |   "operationRetryIntervalMax": 60,                     |                                                           | 
+|    |             |      |     |   "operationRetryIntervalStart": 10,                   |                                                           | 
+|    |             |      |     |   "operationTimeout": 15,                              |                                                           | 
+|    |             |      |     |   "truncateVolumeName": 64,                            |                                                           | 
+|    |             |      |     |   "useLocalIpForMount": "",                            |                                                           | 
+|    |             |      |     |   "verifySsl": false                                   |                                                           | 
+|    |             |      |     | }                                                      |                                                           | 
++----+-------------+------+-----+--------------------------------------------------------+-----------------------------------------------------------+
 
 Completed tasks
 - VAST CSI driver created
 
-OpenShift Workflow - VAST CSI Operator - Create Driver
-======================================================
-
-OpenShift Cluster: bm1
-
-VAST CSI Operator Subscription
-------------------------------
-- subscription: vast-csi/vast-csi-operator
-- package: vast-csi-operator
-- csv: vast-csi-operator.v2.6.4
-
-VAST CSI Operator Resources
----------------------------
-- deployment vast-csi/vast-csi-operator-controller-manager ready
-
-Create VastCSIDriver
---------------------
-- namespace: vast-csi
-- name: block
-
-~~~
-apiVersion: storage.vastdata.com/v1
-kind: VastCSIDriver
-metadata:
-  name: block
-  namespace: vast-csi
-spec:
-  driverType: block
-  image:
-    csiVastPlugin:
-      repository: docker.io/vastdataorg/csi:v2.6.4
-
-~~~
-VastCSIDriver [vast-csi/block] created
-- wait for VastCSIDriver vast-csi/block [timeout:60s]
-- wait for VastCSIDriver vast-csi/block [timeout:360s] with {"initialized_status": "True"}
-- wait for VastCSIDriver vast-csi/block [timeout:360s] with {"deployed_status": "True"}
-- wait for DaemonSet vast-csi/block-vast-node ready [timeout:180s]
-- wait for Deployment vast-csi/block-vast-controller ready [timeout:180s]
-
-+----+-------------+------+-----+--------------------------------------------------------+-------------------------------------------------------------+--------------+
-| ID | Vast Driver | Init | Dep | Spec                                                   | Resource                                                    | Vast Storage |
-+----+-------------+------+-----+--------------------------------------------------------+-------------------------------------------------------------+--------------+
-| 1  | vast-csi    | V    | V   | {                                                      | [CSIDriver] block                                           | ---          | 
-|    | block       |      |     |   "applySecurityContextConstraints": true,             | [ClusterRole] block-vast-attacher-role                      |              | 
-|    |             |      |     |   "attachRequired": true,                              | [ClusterRole] block-vast-provisioner-role                   |              | 
-|    |             |      |     |   "blockHostsAutoPrune": false,                        | [ClusterRole] block-vast-resizer-role                       |              | 
-|    |             |      |     |   "dontUseTrashApi": false,                            | [ClusterRoleBinding] block-vast-attacher-binding            |              | 
-|    |             |      |     |   "driverType": "block",                               | [ClusterRoleBinding] block-vast-provisioner-binding         |              | 
-|    |             |      |     |   "image": {                                           | [ClusterRoleBinding] block-vast-resizer-binding             |              | 
-|    |             |      |     |     "csiVastPlugin": {                                 | [DaemonSet] vast-csi/block-vast-node                        |              | 
-|    |             |      |     |       "imagePullPolicy": "IfNotPresent",               | [Deployment] vast-csi/block-vast-controller                 |              | 
-|    |             |      |     |       "repository": "docker.io/vastdataorg/csi:v2.6.4" | [RoleBinding] vast-csi/block-vast-controller-scc-sa-binding |              | 
-|    |             |      |     |     }                                                  | [RoleBinding] vast-csi/block-vast-node-scc-sa-binding       |              | 
-|    |             |      |     |   },                                                   | [ServiceAccount] vast-csi/block-vast-controller-sa          |              | 
-|    |             |      |     |   "kubeletPath": "/var/lib/kubelet",                   | [ServiceAccount] vast-csi/block-vast-node-sa                |              | 
-|    |             |      |     |   "logLevel": 5,                                       |                                                             |              | 
-|    |             |      |     |   "numWorkers": 10,                                    |                                                             |              | 
-|    |             |      |     |   "operationRetryIntervalMax": 60,                     |                                                             |              | 
-|    |             |      |     |   "operationRetryIntervalStart": 10,                   |                                                             |              | 
-|    |             |      |     |   "operationTimeout": 15,                              |                                                             |              | 
-|    |             |      |     |   "truncateVolumeName": 64,                            |                                                             |              | 
-|    |             |      |     |   "useLocalIpForMount": "",                            |                                                             |              | 
-|    |             |      |     |   "verifySsl": false                                   |                                                             |              | 
-|    |             |      |     | }                                                      |                                                             |              | 
-+----+-------------+------+-----+--------------------------------------------------------+-------------------------------------------------------------+--------------+
-
-Completed tasks
-- VAST CSI driver created
++----+------------+-------+---------------+---------+---------+--------------+
+| ID | Target     | Scope | Workflow      | Changes | Success | Duration [s] |
++----+------------+-------+---------------+---------+---------+--------------+
+| 1  | ocp:bm1    | vast  | create driver | 1       | V       | 26           | 
++----+------------+-------+---------------+---------+---------+--------------+
 ```
 
-[Back](./create_task.md)
+[[Back]](./README.md) [[kb]](./kb/driver.md)

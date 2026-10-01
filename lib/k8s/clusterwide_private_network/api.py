@@ -21,4 +21,5 @@ class K8sClusterwidePrivateNetworkApi():
         return response
 
     def delete_clusterwide_private_network_mo(self, name):
-        return self.delete_resource('ClusterwidePrivateNetwork', 'isovalent.com/v1alpha1', name)
+        success, _ = self.delete_resource('ClusterwidePrivateNetwork', 'isovalent.com/v1alpha1', name)
+        return success

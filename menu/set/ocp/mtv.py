@@ -1,27 +1,12 @@
 import sys
-import traceback
 import click
-
+from lib.workflow import ocp_common
 from menu import validations
-from lib.workflow.ocp_mtv_operator import operator_create
-from lib.workflow.ocp_mtv_operator import instance_create
-from lib.workflow.ocp_mtv_operator import provider_create
-from lib.workflow.ocp_mtv_operator import network_map_create
-from lib.workflow.ocp_mtv_operator import storage_map_create
-from lib.workflow.ocp_mtv_operator import plan_create
-from lib.workflow.ocp_mtv_operator import migration_run
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("mtv")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['operator', 'instance', 'provider', 'nmap', 'smap', 'plan', 'run'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--channel", default='__default__', show_default=True, help="Operator channel")
 @click.option("--filename", default='', callback=validations.validate_k8s_yaml_file_optional, show_default=True, help="Forklift Controller CRD")
@@ -41,162 +26,93 @@ class ErrorExit(Exception):
 @click.option("--target", default='default', callback=validations.empty_string_to_none, show_default=True, help="Target namespace")
 @click.option("--no-wait", is_flag=True, show_default=True, default=False, help="Wait mode")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
-def set_ocp_mtv_command(ctx, cluster_name, mode, channel, filename, provider, vc_url, vc_user, vc_pass, vc_ssl, vddk, plan, nmap, smap, source, destination, vms, migration_type, target, no_wait, no_confirm):
+def set_ocp_mtv_command(ctx, cluster_names, mode, channel, filename, provider, vc_url, vc_user, vc_pass, vc_ssl, vddk, plan, nmap, smap, source, destination, vms, migration_type, target, no_wait, no_confirm):
     """Set mtv operator in openshift cluster"""
 
-    try:
-        if mode in ['operator']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['channel'] = channel
-            params['confirmation'] = not no_confirm
+    task = {}
 
-            success = operator_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['operator']:
+        task['operator'] = {}
+        task['operator']['channel'] = channel
 
-        if mode in ['instance']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['instance'] = filename
-            params['confirmation'] = not no_confirm
+    if mode in ['instance']:
+        task['instance'] = {}
+        task['instance']['filename'] = filename
 
-            success = instance_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['provider']:
+        task['provider'] = {}
+        task['provider']['provider'] = provider
+        task['provider']['vc-url'] = vc_url
+        task['provider']['vc-user'] = vc_user
+        task['provider']['vc-pass'] = vc_pass
+        task['provider']['vc-ssl'] = vc_ssl
+        task['provider']['vddk'] = vddk
 
-        if mode in ['provider']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['provider'] = provider
-            params['vc-url'] = vc_url
-            params['vc-user'] = vc_user
-            params['vc-pass'] = vc_pass
-            params['vc-ssl'] = vc_ssl
-            params['vddk'] = vddk
-            params['confirmation'] = not no_confirm
+    if mode in ['nmap']:
+        if len(source) == 0:
+            ctx.my_output.error('Source network required')
+            sys.exit(1)
+        
+        if len(destination) == 0:
+            ctx.my_output.error('Destination network required')
+            sys.exit(1)
 
-            success = provider_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+        if len(source) != len(destination):
+            ctx.my_output.error('Source and destination network count must be the same')
+            sys.exit(1)
 
-        if mode in ['nmap']:
-            if len(source) == 0:
-                ctx.my_output.error('Source network required')
-                raise ErrorExit
-            
-            if len(destination) == 0:
-                ctx.my_output.error('Destination network required')
-                raise ErrorExit
+        task['nmap'] = {}
+        task['nmap']['map'] = nmap
+        task['nmap']['source'] = provider
+        task['nmap']['destination'] = 'host'
+        task['nmap']['network'] = []
+        for index in range(0, len(source)):
+            network = {}
+            network['source'] = source[index]
+            network['destination'] = destination[index]
+            task['nmap']['network'].append(network)
 
-            if len(source) != len(destination):
-                ctx.my_output.error('Source and destination network count must be the same')
-                raise ErrorExit
+    if mode in ['smap']:
+        if len(source) == 0:
+            ctx.my_output.error('Source storage required')
+            sys.exit(1)
+        
+        if len(destination) == 0:
+            ctx.my_output.error('Destination storage required')
+            sys.exit(1)
 
-            params = {}
-            params['cluster'] = cluster_name
-            params['map'] = nmap
-            params['source'] = provider
-            params['destination'] = 'host'
-            params['network'] = []
-            for index in range(0, len(source)):
-                network = {}
-                network['source'] = source[index]
-                network['destination'] = destination[index]
-                params['network'].append(network)
+        if len(source) != len(destination):
+            ctx.my_output.error('Source and destination storage count must be the same')
+            sys.exit(1)
 
-            params['confirmation'] = not no_confirm
+        task['smap'] = {}
+        task['smap']['map'] = smap
+        task['smap']['source'] = provider
+        task['smap']['destination'] = 'host'
+        task['smap']['storage'] = []
+        for index in range(0, len(source)):
+            storage = {}
+            storage['source'] = source[index]
+            storage['destination'] = destination[index]
+            task['smap']['storage'].append(storage)
 
-            success = network_map_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-                                    
-        if mode in ['smap']:
-            if len(source) == 0:
-                ctx.my_output.error('Source storage required')
-                raise ErrorExit
-            
-            if len(destination) == 0:
-                ctx.my_output.error('Destination storage required')
-                raise ErrorExit
+    if mode in ['plan']:
+        task['plan'] = {}
+        task['plan']['plan'] = plan
+        task['plan']['source'] = provider
+        task['plan']['destination'] = 'host'
+        task['plan']['network'] = nmap
+        task['plan']['storage'] = smap
+        task['plan']['vm'] = vms
+        task['plan']['type'] = migration_type
+        task['plan']['target'] = target
 
-            if len(source) != len(destination):
-                ctx.my_output.error('Source and destination storage count must be the same')
-                raise ErrorExit
+    if mode in ['run']:
+        task['run'] = {}
+        task['run']['action'] = 'run'
+        task['run']['plan'] = plan
+        task['run']['wait'] = not no_wait
 
-            params = {}
-            params['cluster'] = cluster_name
-            params['map'] = smap
-            params['source'] = provider
-            params['destination'] = 'host'
-            params['storage'] = []
-            for index in range(0, len(source)):
-                storage = {}
-                storage['source'] = source[index]
-                storage['destination'] = destination[index]
-                params['storage'].append(storage)
-
-            params['confirmation'] = not no_confirm
-
-            success = storage_map_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-
-        if mode in ['plan']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['plan'] = plan
-            params['source'] = provider
-            params['destination'] = 'host'
-            params['network'] = nmap
-            params['storage'] = smap
-            params['vm'] = []
-            for item in vms:
-                params['vm'].append(item)
-            params['type'] = migration_type
-            params['target'] = target
-            params['confirmation'] = not no_confirm
-
-            success = plan_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-
-        if mode in ['run']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['action'] = 'run'
-            params['plan'] = plan
-            params['wait'] = not no_wait
-            params['confirmation'] = not no_confirm
-
-            success = migration_run.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'mtv', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

@@ -1,17 +1,7 @@
 import sys
-import traceback
 import click
-
 from menu import validations
 from lib.workflow.ocp_console import set
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("console")
@@ -25,20 +15,13 @@ def set_ocp_console_command(
     ):
     """Set openshift console api credentials"""
 
-    try:
-        params = {}
-        params['token'] = token
-        params['secret'] = secret
+    params = {}
+    params['token'] = token
+    params['secret'] = secret
 
-        success = set.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit    
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = set.run(
+        params,
+        log_id=ctx.run_id
+    )
+    if not success:
         sys.exit(1)

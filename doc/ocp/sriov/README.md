@@ -2,7 +2,7 @@
 
 The SR-IOV Network Operator  is generally responsible for configuring the sriov components in a openshift cluster as explained in  [RedHat OpenShift documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking_operators/sr-iov-operator) and [overview](./overview.md)
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

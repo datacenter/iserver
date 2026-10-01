@@ -2,7 +2,7 @@
 
 The OpenShift Service Mesh Operator enables you to install, configure, and manage an instance of Red Hat OpenShift Service Mesh as explained in official [documentation](https://www.redhat.com/en/blog/introducing-red-hat-openshift-service-mesh-3).
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

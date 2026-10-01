@@ -41,8 +41,8 @@ metadata:
 spec:
   namespaceSelector:
     matchLabels:
-    - "tenant": "a",
-    - "tenant": "b"
+      "tenant": "a",
+      "tenant": "b"
   network:
     layer2:
       role: Primary

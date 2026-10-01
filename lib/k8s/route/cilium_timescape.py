@@ -66,7 +66,7 @@ class K8sRouteCiliumTimescape():
         body['spec']['host'] = '%s-%s.%s' % (
             service_name, 
             service_namespace, 
-            config_info['info']['domain']
+            config_info['domain']
         )
         body['spec']['port'] = {}
         body['spec']['port']['targetPort'] = 'ui'

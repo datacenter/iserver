@@ -15,6 +15,17 @@ class K8sNamespaceOutput():
             ]
         )
 
+    def print_namespaces_res(self, info):
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Namespace', 'name'],
+                ['Status', 'phase'],
+                ['Pod', 'pod'],
+                ['Age', 'age']
+            ]
+        )
+
     def print_namespaces_udn(self, info):
         items = []
         for item in info:

@@ -210,8 +210,11 @@ class OutputHelper():
         self.append(self.verbose_filename, output)
         self.append(self.debug_filename, output)
 
-    def default(self, output, underline=False, double_underline=False, color=None, before_newline=False, after_newline=False, wrap=None):
+    def default(self, output, underline=False, double_underline=False, color=None, before_newline=False, after_newline=False, wrap=None, up_and_down=None):
         ''' Unless silent is set '''
+        if up_and_down is not None:
+            output = '%s\n%s\n%s' % ("".join((up_and_down,) * len(output)), output, "".join((up_and_down,) * len(output)))
+
         if underline:
             output = '%s\n%s' % (output, "".join(('-',) * len(output)))
 
@@ -225,7 +228,7 @@ class OutputHelper():
             )
 
         if wrap is not None:
-            if output.endswith('\n'):
+            if isinstance(output, str) and output.endswith('\n'):
                 output = '%s\n%s%s' % (wrap, output, wrap)
             else:
                 output = '%s\n%s\n%s' % (wrap, output, wrap)
@@ -1120,6 +1123,13 @@ class OutputHelper():
         if cast_zero:
             for item in items:
                 for key in order:
+                    if '.' in key:
+                        if isinstance(item[key.split('.')[0]], list):
+                            for subitem in item[key.split('.')[0]]:
+                                value = filter_helper.get(subitem, key.split('.')[1])
+                                if value is None:
+                                    subitem[key.split('.')[1]] = '--'
+
                     if key in item and isinstance(item[key], int) and item[key] == 0:
                         item[key] = '--'
 
@@ -1837,3 +1847,16 @@ class OutputHelper():
             return True
         
         return False
+
+    def print_property(self, key, value, prefix='', color=True, cast_none='---'):
+        if color and isinstance(value, bool):
+            if value:
+                self.default('%s%s: %s' % (prefix, key, self.add_color(value, 'Green')))
+            else:
+                self.default('%s%s: %s' % (prefix, key, self.add_color(value, 'Red')))
+            return
+        
+        if value is None and cast_none is not None:
+            self.default('%s%s: %s' % (prefix, key, cast_none))
+        else:
+            self.default('%s%s: %s' % (prefix, key, value))

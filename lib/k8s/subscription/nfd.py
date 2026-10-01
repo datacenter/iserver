@@ -25,14 +25,21 @@ class K8sSubscriptionNfd():
         if not success:
             return False
         
-        if wait:
-            success = self.wait_subscription_nfd_ready(my_output=my_output, with_instance=False)
-            if not success:
-                return False
+        if not wait:
+            return True
+        
+        success = self.wait_subscription_nfd_ready(my_output=my_output, with_instance=False)
+        if not success:
+            return False
         
         return True
 
     def delete_nfd_subscription(self, namespace, name, my_output=None, wait=True):
+        resources = self.get_subscription_resources(
+            self.subscription_nfd_resources + self.instance_nfd_resources,
+            cache_enabled=False
+        )
+
         success = self.delete_subscription(
             namespace, 
             name, 
@@ -42,11 +49,13 @@ class K8sSubscriptionNfd():
         if not success:
             return False
         
-        if wait:
-            success = self.wait_no_subscription_nfd(my_output=my_output)
-            if not success:
-                return False
-        
+        if not wait:
+            return True
+
+        success = self.wait_no_subscription_resources('nfd', resources, my_output=my_output)
+        if not success:
+            return False
+
         return True
 
     def is_subscription_nfd_ready(self, with_instance=False, my_output=None, details=False, break_on_error=False, cache_enabled=False):
@@ -61,7 +70,7 @@ class K8sSubscriptionNfd():
         if with_instance:
             resources.extend(self.instance_nfd_resources)
 
-        return self.wait_subscription_resources_ready('nfd', resources, my_output=my_output)
+        return self.wait_subscription_resources('nfd', resources, my_output=my_output)
 
     def wait_no_subscription_nfd(self, my_output=None):
         resources = self.subscription_nfd_resources

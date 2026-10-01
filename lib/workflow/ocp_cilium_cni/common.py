@@ -10,6 +10,7 @@ def get_default_params():
     params['operator-lease'] = 'cilium-operator-resource-lock'
     params['agent-name'] = 'cilium'
     params['package'] = 'clife'
+    params['title'] = 'OpenShift Workflow - Cilium'
     return params
 
 

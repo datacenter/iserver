@@ -26,4 +26,5 @@ class K8sNodeFeatureDiscoveryApi():
         return response
 
     def delete_node_feature_discovery_mo(self, namespace, name):
-        return self.delete_resource('NodeFeatureDiscovery', 'nfd.openshift.io/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('NodeFeatureDiscovery', 'nfd.openshift.io/v1', name, namespace=namespace)
+        return success

@@ -1,38 +1,25 @@
 import sys
-import traceback
 import click
-
 from menu import validations
 from lib.workflow.ocp_cni import get
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("cni")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-def get_ocp_cni_command(ctx, cluster_name):
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+def get_ocp_cni_command(ctx, cluster_names, view):
     """Get cni in openshift cluster"""
 
-    try:
-        params = {}
-        params['cluster'] = cluster_name
+    params = {}
+    params['cluster'] = cluster_names
+    params['view'] = view
 
-        success = get.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-    except ErrorExit:
+    success = get.run(
+        params,
+        log_id=ctx.run_id
+    )
+    if not success:
         sys.exit(1)
 
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
-        sys.exit(1)
+    ctx.my_output.default('View: state (def)', before_newline=True)

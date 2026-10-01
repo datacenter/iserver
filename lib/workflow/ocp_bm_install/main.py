@@ -14,7 +14,8 @@ from lib.workflow.ocp_bm_install import common as ocp_bm_common
 from lib.workflow.ocp_bm_install import input as install_input
 from lib.workflow.ocp_bm_install import install
 from lib.workflow.ocp_bm_install import post as install_post
-from lib.workflow.ocp_task import create as task
+from lib.workflow.task import create as task_handler
+from lib.workflow.ocp_bm_install import cilium
 from menu import common
 
 
@@ -76,7 +77,19 @@ def run(location, log_id, install_mode, offline=False):
     if install_mode == 'check':
         my_output.default('All checks passed', before_newline=True, after_newline=True)
         return True
-    
+
+    if user_settings['network_type'] == 'Cilium':
+        my_output.default('Updating pull secret with Isovalent registry access token', before_newline=True, underline=True)
+        user_settings, data, infra = cilium.update_access_token(
+            user_settings, 
+            data, 
+            infra,
+            my_output,
+            log_id
+        )
+        if user_settings is None:
+            return False
+        
     cluster_id = install.run(
         user_settings,
         data,
@@ -104,11 +117,18 @@ def run(location, log_id, install_mode, offline=False):
         my_output.error('Failed to save management ip information')
         return False
 
-    success = task.run(
-        user_settings['tasks'], 
-        user_settings['name'], 
-        confirmation=False, 
-        cluster_settings=user_settings
+    tasks = ocp_common.untangle_tasks(
+        [user_settings['name']], 
+        user_settings['tasks'],
+        directory=user_settings['directory'],
+        confirmation=False,
+        break_on_error=False
+    )
+
+    success = task_handler.run(
+        tasks,
+        validate_only=False,
+        log_id=log_id
     )
     if not success:
         return False

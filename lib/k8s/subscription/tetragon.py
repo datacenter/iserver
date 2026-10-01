@@ -1,9 +1,9 @@
-import time
-
-
 class K8sSubscriptionTetragon():
     def __init__(self):
-        pass
+        self.subscription_tetragon_resources = [
+            {'type': 'deployment', 'namespace': 'tetragon', 'name': 'tetragon-operator'},
+            {'type': 'daemonset', 'namespace': 'tetragon', 'name': 'tetragon'}
+        ]
 
     def is_tetragon_subscription(self, namespace, name, cache_enabled=True):
         return self.is_subscription(namespace, name, cache_enabled=cache_enabled)
@@ -42,9 +42,8 @@ class K8sSubscriptionTetragon():
         return True
 
     def delete_tetragon_subscription(self, namespace, name, my_output=None, wait=True):
-        info = self.get_subscription(
-            namespace,
-            name,
+        resources = self.get_subscription_resources(
+            self.subscription_tetragon_resources,
             cache_enabled=False
         )
 
@@ -57,32 +56,24 @@ class K8sSubscriptionTetragon():
         if not success:
             return False
         
-        if wait and info is not None:
-            success = self.wait_no_subscription_tetragon(my_output=my_output)
-            if not success:
-                return False
+        if not wait:
+            return True
 
-            # or check if pods are not yet there... but normally it takes few seconds for them to disappear
-            time.sleep(5)
-
+        success = self.delete_config_map(
+            'tetragon',
+            'tetragon-operator-config',
+            my_output=my_output,
+            wait=True
+        )
+        
+        success = self.wait_no_subscription_resources('tetragon', resources, my_output=my_output)
+        if not success:
+            return False
+        
         return True
 
     def wait_subscription_tetragon_ready(self, my_output=None):
-        deployments = [
-            {'namespace': 'tetragon', 'name': 'tetragon-operator'}
-        ]
-        success = self.wait_deployments_ready_state(deployments, my_output=my_output, optional=True)
-        if not success:
-            return False
-
-        return True
+        return self.wait_subscription_resources('tetragon', self.subscription_tetragon_resources, my_output=my_output)
 
     def wait_no_subscription_tetragon(self, my_output=None):
-        deployments = [
-            {'namespace': 'tetragon', 'name': 'tetragon-operator'}
-        ]
-        success = self.wait_no_deployments(deployments, my_output=my_output, optional=True)
-        if not success:
-            return False
-
-        return True
+        return self.wait_no_subscription_resources('tetragon', self.subscription_tetragon_resources, my_output=my_output)

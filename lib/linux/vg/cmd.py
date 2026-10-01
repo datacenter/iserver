@@ -33,31 +33,46 @@ class LinuxVgCmd():
 
         return self.vg_cmd
 
-    def deactivate_vg_cmd(self, vg_name):
+    def deactivate_vg_cmd(self, vg_name, my_output=None):
+        command = 'sudo vgchange -a n %s' % (vg_name)
         success, output, error = self.ssh_handler.run_cmd(
-            'sudo vgchange -a n %s' % (vg_name)
+            command
         )
-        
+
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+
         if not success:
             return False, str(error)
         
         return True, str(output)
     
-    def delete_vg_cmd(self, vg_name):
+    def delete_vg_cmd(self, vg_name, my_output=None):
+        command = 'sudo vgremove %s' % (vg_name)
         success, output, error = self.ssh_handler.run_cmd(
-            'sudo vgremove %s' % (vg_name)
+            command
         )
         
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+
         if not success:
             return False, str(error)
         
         return True, str(output)
     
-    def reduce_vg_cmd(self, vg_name):
+    def reduce_vg_cmd(self, vg_name, my_output=None):
+        command = 'sudo vgreduce --removemissing %s' % (vg_name)
         success, output, error = self.ssh_handler.run_cmd(
-            'sudo vgreduce --removemissing %s' % (vg_name)
+            command
         )
-        
+
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            
         if not success:
             return False, str(error)
         

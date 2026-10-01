@@ -21,5 +21,5 @@ class CiliumLoadBalancerIpPoolApi():
         return response
 
     def delete_cilium_load_balancer_ip_pool_mo(self, name):
-        return self.delete_resource('CiliumLoadBalancerIPPool', 'cilium.io/v2', name)
-    
+        success, _ = self.delete_resource('CiliumLoadBalancerIPPool', 'cilium.io/v2', name)
+        return success

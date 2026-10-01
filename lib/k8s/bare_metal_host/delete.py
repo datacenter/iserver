@@ -3,7 +3,7 @@ class K8sBareMetalHostDelete():
         pass
 
     def delete_bare_metal_host(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'BareMetalHost', 
             'metal3.io/v1alpha1',
             name, 
@@ -13,6 +13,9 @@ class K8sBareMetalHostDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

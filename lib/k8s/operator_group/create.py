@@ -52,9 +52,6 @@ class K8sOperatorGroupCreate():
             my_output=None, 
             wait=True
         ):
-        if my_output is None:
-            confirmation = False
-
         body = self.get_operator_group_body(
             namespace,
             name=name,
@@ -62,19 +59,12 @@ class K8sOperatorGroupCreate():
             target_namespaces=target_namespaces,
             upgrade_strategy=upgrade_strategy
         )
-        if not self.create_resource(body, object_name='operator_group', my_output=my_output, confirmation=confirmation):
-            return False
-        
-        if not wait:
-            return True
 
-        success = self.wait_operator_group(
-            namespace,
-            name,
-            max_time=60,
-            my_output=my_output
+        success = self.create_resource_and_wait(
+            body, 
+            'operator_group', 
+            wait=wait,
+            my_output=my_output, 
+            confirmation=confirmation
         )
-        if not success:
-            return False
-
-        return True
+        return success

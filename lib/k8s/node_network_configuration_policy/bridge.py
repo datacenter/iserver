@@ -22,7 +22,8 @@ class K8sNodeNetworkConfigurationPolicyBridge():
         interface_mo['type'] = 'linux-bridge'
         body['spec']['desiredState']['interfaces'].append(interface_mo)
 
-        if not self.create_resource(body, object_name='node_network_configuration_policy', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='node_network_configuration_policy', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
         
         success = self.wait_node_network_configuration_policy(body['metadata']['name'], my_output=my_output)

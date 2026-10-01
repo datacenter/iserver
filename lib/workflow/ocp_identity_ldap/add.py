@@ -3,6 +3,7 @@ from lib import filter_helper
 from lib import output_helper
 from lib.workflow.ocp_identity_ldap import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -114,20 +115,22 @@ def validate(params):
         'insecure',
         'verbose',
         'check-verbose',
-        'confirmation'
+        'confirmation',
+        '__break_on_error__'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
+
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - LDAP Identity Provider - Add', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, ssh=True, optional=True)
+    ocp_common.print_title(params, my_output, 'Add')
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
 

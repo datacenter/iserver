@@ -38,7 +38,11 @@ class K8sVirtualMachineInfo():
         info['cores'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:cores')
         info['sockets'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:sockets')
         info['threads'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:cpu:threads')
-        info['cpu'] = info['cores'] * info['sockets'] * info['threads']
+
+        try:
+            info['cpu'] = info['cores'] * info['sockets'] * info['threads']
+        except BaseException:
+            info['cpu'] = 'N/A'
         
         info['memory'] = self.get(virtual_machine_mo, 'spec:template:spec:domain:resources:requests:memory')
         if info['memory'] is None:

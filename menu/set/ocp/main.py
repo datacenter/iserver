@@ -3,16 +3,15 @@ import click
 from menu.set.ocp.cilium.main import set_ocp_cilium_menu
 
 from menu.set.ocp.ai import set_ocp_ai_command
-from menu.set.ocp.bashrc import set_ocp_bashrc_command
 from menu.set.ocp.bmh import set_ocp_bmh_command
 from menu.set.ocp.cert_manager import set_ocp_cert_manager_command
+from menu.set.ocp.cli_bashrc import set_ocp_cli_bashrc_command
 from menu.set.ocp.cli_butane import set_ocp_cli_butane
 from menu.set.ocp.cli_cilium import set_ocp_cli_cilium
 from menu.set.ocp.cli_helm import set_ocp_cli_helm
 from menu.set.ocp.cli_hubble import set_ocp_cli_hubble
 from menu.set.ocp.cli_tridentctl import set_ocp_cli_tridentctl
 from menu.set.ocp.cli_virtctl import set_ocp_cli_virtctl
-from menu.set.ocp.cli_web import set_ocp_cli_web
 from menu.set.ocp.cni import set_ocp_cni_command
 from menu.set.ocp.cnv import set_ocp_cnv_command
 from menu.set.ocp.connector import set_ocp_connector
@@ -46,6 +45,7 @@ from menu.set.ocp.splunk import set_ocp_splunk_command
 from menu.set.ocp.sriov import set_ocp_sriov_command
 from menu.set.ocp.ssh import set_ocp_ssh_command
 from menu.set.ocp.task import set_ocp_task_command
+from menu.set.ocp.terminal import set_ocp_terminal
 from menu.set.ocp.tetragon import set_ocp_tetragon_command
 from menu.set.ocp.trident import set_ocp_trident_command
 from menu.set.ocp.vast import set_ocp_vast_command
@@ -64,16 +64,15 @@ def set_ocp_menu(ctx):
 set_ocp_menu.add_command(set_ocp_cilium_menu)
 
 set_ocp_menu.add_command(set_ocp_ai_command)
-set_ocp_menu.add_command(set_ocp_bashrc_command)
 set_ocp_menu.add_command(set_ocp_bmh_command)
 set_ocp_menu.add_command(set_ocp_cert_manager_command)
+set_ocp_menu.add_command(set_ocp_cli_bashrc_command)
 set_ocp_menu.add_command(set_ocp_cli_butane)
 set_ocp_menu.add_command(set_ocp_cli_cilium)
 set_ocp_menu.add_command(set_ocp_cli_helm)
 set_ocp_menu.add_command(set_ocp_cli_hubble)
 set_ocp_menu.add_command(set_ocp_cli_tridentctl)
 set_ocp_menu.add_command(set_ocp_cli_virtctl)
-set_ocp_menu.add_command(set_ocp_cli_web)
 set_ocp_menu.add_command(set_ocp_cni_command)
 set_ocp_menu.add_command(set_ocp_cnv_command)
 set_ocp_menu.add_command(set_ocp_connector)
@@ -107,6 +106,7 @@ set_ocp_menu.add_command(set_ocp_splunk_command)
 set_ocp_menu.add_command(set_ocp_sriov_command)
 set_ocp_menu.add_command(set_ocp_ssh_command)
 set_ocp_menu.add_command(set_ocp_task_command)
+set_ocp_menu.add_command(set_ocp_terminal)
 set_ocp_menu.add_command(set_ocp_tetragon_command)
 set_ocp_menu.add_command(set_ocp_trident_command)
 set_ocp_menu.add_command(set_ocp_vast_command)

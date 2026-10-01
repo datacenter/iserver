@@ -1,77 +1,22 @@
 from lib import output_helper
 from lib.workflow.ocp_grafana_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'instance' not in params:
-        return None, 'instance name required'
-
-    if not isinstance(params['instance'], str):
-        return None, 'instance param must be string'
-
-    if 'username' not in params:
-        return None, 'username value required'
-
-    if params['username'] is None:
-        return None, 'username non-null value required'
-    
-    if not isinstance(params['username'], str):
-        return None, 'username param must be string'
-
-    if 'password' not in params:
-        return None, 'password required'
-
-    if params['password'] is None:
-        return None, 'password non-null value required'
-
-    if not isinstance(params['password'], str):
-        return None, 'password param must be string'
-
-    if 'prometheus' not in params:
-        params['prometheus'] = False
-
-    if not isinstance(params['prometheus'], bool):
-        return None, 'prometheus param must be true or false'
-        
-    if 'datasource' not in params:
-        params['datasource'] = 'my-prometheus'
-
-    if not isinstance(params['datasource'], str):
-        return None, 'datasource param must be string'
-    
-    if 'confirmation' not in params:
-        params['confirmation'] = False
-
-    if not isinstance(params['confirmation'], bool):
-        return None, 'confirmation param must be true or false'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'instance',
-        'username',
-        'password',
-        'prometheus',
-        'datasource',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['instance', False, None, 'str', None, None, None, None],
+        ['username', False, None, 'str', None, None, None, None],
+        ['password', False, None, 'str', None, None, None, None],
+        ['prometheus', True, False, 'bool', None, None, None, None],
+        ['datasource', True, 'my-prometheus', 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def add_cluster_role_binding(params, my_output):
@@ -91,7 +36,7 @@ def add_cluster_role_binding(params, my_output):
             if crb_subject['kind'] != 'ServiceAccount':
                 continue
 
-            if crb_subject['namespace'] != params['namespace']:
+            if crb_subject['namespace'] != params['__default__']['namespace']:
                 continue
 
             if crb_subject['name'] != sa_name:
@@ -116,7 +61,7 @@ def add_cluster_role_binding(params, my_output):
             crb_name,
             'cluster-monitoring-view',
             sa_name,
-            params['namespace']
+            params['__default__']['namespace']
         )
         if crb_name is None:
             my_output.error('Failed to create cluster role binding')
@@ -129,28 +74,28 @@ def add_cluster_role_binding(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Grafana Operator - Create Instance', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Instance')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_grafana_subscription(params['namespace'], params['name']):
+    if not params['k8s_handler'].is_grafana_subscription(params['__default__']['namespace'], params['__default__']['name']):
         my_output.error('Grafana Operator is not installed')
         return False
     
-    instance_namespace = params['namespace']
+    instance_namespace = params['__default__']['namespace']
     instance_name = params['instance']
     if params['k8s_handler'].is_grafana(instance_namespace, instance_name, cache_enabled=False):
         my_output.default('Grafana instance [%s/%s] already defined' % (instance_namespace, instance_name))
     else:
         success = params['k8s_handler'].create_grafana(
-            params['namespace'], 
+            params['__default__']['namespace'], 
             params['instance'], 
             username=params['username'],
             password=params['password'],
@@ -172,7 +117,7 @@ def run(params, log_id=None):
             return False
 
         success = params['k8s_handler'].create_grafana_datasource_thanos(
-            params['namespace'], 
+            params['__default__']['namespace'], 
             params['instance'], 
             params['datasource'], 
             confirmation=params['confirmation'], 

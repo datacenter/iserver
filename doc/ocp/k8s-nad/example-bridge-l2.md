@@ -188,7 +188,7 @@ $ oc exec pod1 -- ip a l net1
 ## L2
 
 > [!NOTE]
-> Ping not working since there is nobody to respond, what we care is checking L2 forwarding out
+> Ping not working since there is nobody to respond, just checking L2 forwarding out
 
 ```
 $ oc exec pod1 -- ping -c 1 10.1.1.14

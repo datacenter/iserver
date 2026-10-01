@@ -112,7 +112,7 @@ def get_k8s_nmap_command(
         ctx.my_output.json_output(nmaps)
 
         if 'state' in view:
-            k8s_output_handler.print_network_maps(
+            k8s_output_handler.print_network_maps_state(
                 nmaps
             )
 

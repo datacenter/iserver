@@ -16,7 +16,8 @@ class K8sIntersightCreate():
         return body
 
     def create_intersight(self, body, my_output=None, confirmation=False, wait=True):
-        if not self.create_resource(body, object_name='intersight', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='intersight', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
         
         if not wait:

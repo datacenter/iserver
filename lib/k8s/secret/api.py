@@ -26,4 +26,5 @@ class K8sSecretApi():
         return response
 
     def delete_secret_mo(self, namespace, name):
-        return self.delete_resource('Secret', 'v1', name, namespace=namespace)
+        success, _ = self.delete_resource('Secret', 'v1', name, namespace=namespace)
+        return success

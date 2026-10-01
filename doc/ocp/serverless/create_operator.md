@@ -1,4 +1,4 @@
-# Serverless Operator - Create Operator
+# Serverless - Create Operator
 
 ## Workflow
 
@@ -29,11 +29,11 @@ None
 ```
 # iserver set ocp serverless --mode operator --cluster bm1 --no-confirm
 
-
 OpenShift Workflow - Serverless Operator - Create Operator
 ==========================================================
 
 OpenShift Cluster: bm1
+Subscription not found serverless-operator
 
 Create Namespace
 ----------------
@@ -44,16 +44,14 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: openshift-serverless
-
 ~~~
-
-Namespace created
-
+Namespace [openshift-serverless] created
 Wait for namespace [timeout:60]...
 
-Create Operator Group
----------------------
-Operator group: openshift-serverless/serverless-operator-group
+Create OperatorGroup
+--------------------
+- namespace: openshift-serverless
+- name: serverless-operator-group
 
 ~~~
 apiVersion: operators.coreos.com/v1
@@ -63,12 +61,9 @@ metadata:
   namespace: openshift-serverless
 spec:
   upgradeStrategy: Default
-
 ~~~
-
-Operator group created
-
-Wait for operator group [timeout:60]...
+OperatorGroup [openshift-serverless/serverless-operator-group] created
+- wait for OperatorGroup openshift-serverless/serverless-operator-group [timeout:60s]
 
 Create Subscription
 -------------------
@@ -78,9 +73,9 @@ Install plan approval: Automatic
 Getting subscription and packege manifest information...
 Resolving channel name...
 Channel: stable
-- CSV [serverless-operator.v1.36.1]
+- CSV [serverless-operator.v1.37.1]
 - CSV Display name [Red Hat OpenShift Serverless]
-- CVS Version [1.36.1]
+- CVS Version [1.37.1]
 - CSV Provider [{'name': 'Red Hat'}]
 - CSV Maturity [stable]
 
@@ -96,20 +91,39 @@ spec:
   name: serverless-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-
 ~~~
 
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-c67f4
+Install plan: install-jskgp
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
+Wait for deployment openshift-serverless/knative-openshift ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-serverless/knative-openshift-ingress ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-serverless/knative-operator-webhook ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Subscription serverless ready
+
+Operator
+- subscription          : openshift-serverless/serverless-operator
+- package               : openshift-marketplace/redhat-operators/serverless-operator
+- channel               : stable
+- install plan          : openshift-serverless/install-jskgp
+- install plan approved : V
+- installed csv         : serverless-operator.v1.37.1
+- latest_csv            : V
+
 
 Completed tasks
 - Namespace created
 - Operator Group created
-- Serverless operator installed
+- Subscription created
+
++----+---------+------------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope      | Workflow        | Changes | Success | Duration [s] |
++----+---------+------------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | serverless | create operator | 3       | V       | 47           | 
++----+---------+------------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

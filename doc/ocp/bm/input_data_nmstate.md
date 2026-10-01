@@ -5,7 +5,7 @@
 Server's networking configuration may be customized using file with nmstate syntax. The filename is referred per server in [server](./input_data_server.md) section. The file may have variables. 
 
 > [!NOTE]
-> Check [here](https://wwwin-github.cisco.com/emear-telcocloud/ocp-bm-cluster) for more examples
+> Check [here](https://github.com/akaliwod/ocp-bm-cluster/blob/main/README.md) for more examples
 
 ## Bonding Example 
 

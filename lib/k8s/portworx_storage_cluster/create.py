@@ -88,7 +88,8 @@ class K8sPortworxStorageClusterCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_portworx_storage_cluster_mo(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -96,22 +97,4 @@ class K8sPortworxStorageClusterCreate():
         if not wait:
             return True
         
-        # if my_output is not None:
-        #     my_output.default('Wait until ready or degraded [timeout:180s]...')
-
-        # success = self.wait_portworx_storage_cluster_states(['Ready', 'Degraded'], max_time=180)
-        # if not success:
-        #     if my_output is not None:
-        #         my_output.error('Timed out')
-                
-        #     return False
-
-        # if my_output is not None:
-        #     my_output.default('Wait for portworx_storage storage class [timeout:180s]...')
-
-        # if not self.wait_storage_class_portworx_storage(max_time=180):
-        #     if my_output is not None:
-        #         my_output.error('Timed out')
-        #     return False
-
         return True

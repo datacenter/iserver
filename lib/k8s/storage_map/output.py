@@ -2,7 +2,7 @@ class K8sStorageMapOutput():
     def __init__(self):
         pass
 
-    def print_storage_maps(self, info):
+    def print_storage_maps_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

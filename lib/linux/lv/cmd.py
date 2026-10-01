@@ -33,13 +33,32 @@ class LinuxLvCmd():
 
         return self.lv_cmd
 
-    def delete_lv_cmd(self, lv_path):
+    def get_lv_display_cmd(self, lv_path, my_output=None):
+        command = 'sudo lvdisplay %s' % (lv_path)
         success, output, error = self.ssh_handler.run_cmd(
-            'sudo lvremove -f %s' % (lv_path)
+            command
         )
-        
+
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            
         if not success:
             return False, str(error)
         
         return True, str(output)
     
+    def delete_lv_cmd(self, lv_path, my_output=None):
+        command = 'sudo lvremove -f %s' % (lv_path)
+        success, output, error = self.ssh_handler.run_cmd(
+            command
+        )
+
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            
+        if not success:
+            return False, str(error)
+        
+        return True, str(output)

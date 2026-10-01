@@ -5,7 +5,8 @@ class K8sRouteAdvertisementCreate():
     def create_route_advertisement(self, body, confirmation=False, my_output=None, wait=True):
         name = self.get(body, 'metadata:name')
 
-        if not self.create_resource(body, object_name='route_advertisement', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='route_advertisement', my_output=my_output, confirmation=confirmation)
+        if not success:
             return None
 
         if not wait:

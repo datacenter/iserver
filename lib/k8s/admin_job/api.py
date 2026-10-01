@@ -26,4 +26,5 @@ class K8sAdminJobApi():
         return response
 
     def delete_admin_job_mo(self, namespace, name):
-        return self.delete_resource('AdminJob', 'aistor.min.io/v1alpha1', name, namespace=namespace)
+        success, _ = self.delete_resource('AdminJob', 'aistor.min.io/v1alpha1', name, namespace=namespace)
+        return success

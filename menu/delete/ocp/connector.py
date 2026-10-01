@@ -6,7 +6,6 @@ from lib.ocp import settings
 
 from menu import validations
 
-
 class Failure(Exception):
     pass
 

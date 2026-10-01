@@ -3,6 +3,7 @@ import json
 import uuid
 import base64
 import yaml
+import shutil
 from lib.openshift import console
 from lib import file_helper
 from lib import log_helper
@@ -13,6 +14,7 @@ from lib.workflow.ocp_bm_install import validations
 from lib.workflow.ocp_bm_install import common as install_common
 from lib.workflow.ocp_bm_install import install
 from lib.workflow.aci_interface import check as aci_check
+from lib.workflow.ocp_cilium_registry import common as cilium_common
 
 
 def get_input(directory, my_output):
@@ -197,12 +199,16 @@ def get_infra(user_settings, data):
     return infra
 
 
-def get_manifests(user_settings, directory, my_output, log_id, silent=False):
+def read_manifests(user_settings, directory, my_output, log_id):
     manifests = {}
     manifests_directory = os.path.join(directory, 'manifests')
     if os.path.isdir(manifests_directory):
+        my_output.default('- manifests directory found')
+
         template_handler = template.Template(log_id=log_id)
         for file_basename in os.listdir(manifests_directory):
+            my_output.default('- reading %s' % (file_basename))
+
             filename = os.path.join(
                 manifests_directory,
                 file_basename
@@ -241,10 +247,40 @@ def get_manifests(user_settings, directory, my_output, log_id, silent=False):
 
             manifests[file_basename] = content
 
+    return manifests
+
+
+def get_manifests(user_settings, directory, my_output, log_id, silent=False):
+    manifests = read_manifests(user_settings, directory, my_output, log_id)
+    if manifests is None:
+        return None
+    
     if user_settings['network_type'] == 'Cilium':
         if len(manifests) == 0:
-            my_output.error('Cilium manifests required')
-            return None
+            if user_settings['cilium']['version'] is None:
+                my_output.error('Cilium manifests or cilium version required')
+                return None
+
+            success = cilium_common.check_registry_access()
+            if not success:
+                my_output.error('Cilium registry access failed')
+                return None
+            my_output.default('- cilium registry access successful')
+
+            my_output.default('- downloading manifests version %s' % (user_settings['cilium']['version']))
+
+            url, filename = cilium_common.download_manifests(user_settings['cilium']['version'], my_output=None, log_id=log_id)
+            if filename is None:
+                my_output.error('Manifest download failed: %s' % (url))
+                return None
+
+            my_output.default('- manifests downloaded from: %s' % (url))
+            my_output.default('- unpacking manifests from %s to %s manifests subfolder' % (filename, directory))
+            shutil.unpack_archive(filename, os.path.join(directory, 'manifests'))
+
+            manifests = read_manifests(user_settings, directory, my_output, log_id)
+            if manifests is None:
+                return None
 
         manifests = cilium.get_cilium_manifests(user_settings, manifests, my_output, silent=silent)
         if manifests is None:
@@ -356,6 +392,7 @@ def run(directory, install_mode, log_id=None, offline=False):
         )
     )
 
+    my_output.default('Checking cni manifests', before_newline=True, underline=True)
     manifests = get_manifests(user_settings, directory, my_output, log_id)
     if manifests is None:
         return None, None, None, None

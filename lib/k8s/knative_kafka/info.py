@@ -235,7 +235,8 @@ class K8sKnativeKafkaInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_knative_kafka_mo(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('Knative kafka create failed')
             return False

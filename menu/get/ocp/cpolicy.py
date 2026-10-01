@@ -1,48 +1,25 @@
 import sys
-import traceback
 import click
-
-from lib.workflow.ocp_container_runtime_policy import get as ocp_workflow
-
+from lib.workflow.ocp_container_runtime_policy import get
 from menu import validations
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("cpolicy")
 @click.pass_obj
 @click.option("--cluster", "cluster_name", default='', callback=validations.validate_ocp_cluster_name_no_prompt, help="Cluster name")
-def get_ocp_cpolicy_command(
-        ctx,
-        cluster_name
-        ):
+@click.option("--view", "-v", default=['state'], help="[state]", show_default=True, multiple=True)
+def get_ocp_cpolicy_command(ctx, cluster_names, view):
     """Get ocp container policy"""
 
-    ctx.developer = False
-    ctx.output = 'default'
+    params = {}
+    params['cluster'] = cluster_names
+    params['view'] = view
 
-    try:
-        params = {}
-        params['cluster'] = cluster_name
-
-        success = ocp_workflow.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-        
-    except ErrorExit:
-        ctx.busy = False
+    success = get.run(
+        params,
+        log_id=ctx.run_id
+    )
+    if not success:
         sys.exit(1)
 
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
-        sys.exit(1)
+    ctx.my_output.default('View: state (def)', before_newline=True)

@@ -1,57 +1,29 @@
 import sys
-import traceback
 import click
-
-from lib.workflow.ocp_node import shutdown
-
 from menu import validations
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("shutdown")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", callback=validations.empty_string_to_none, help="OCP cluster name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--node", multiple=True, help="Node name")
 @click.option("--no-checks", is_flag=True, show_default=True, default=False, help="Skip checks")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode in case of eviction problems")
 def set_ocp_node_shutdown_command(
         ctx,
-        cluster_name,
+        cluster_names,
         node,
         no_checks,
         no_confirm
         ):
     """Set k8s node graceful shutdown"""
 
-    ctx.developer = False
+    task = {}
+    task['shutdown'] = {}
+    task['shutdown']['node'] = node
+    task['shutdown']['checks'] = not no_checks
 
-    try:
-        params = {}
-        params['cluster'] = cluster_name
-        params['node'] = []
-        for item in node:
-            params['node'].append(item)
-        params['checks'] = not no_checks
-        params['confirmation'] = not no_confirm
-        success = shutdown.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-    except ErrorExit:
-        ctx.busy = False
-        sys.exit(1)
-
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'ocp-node', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

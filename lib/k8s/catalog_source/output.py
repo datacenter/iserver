@@ -2,36 +2,12 @@ class K8sCatalogSourceOutput():
     def __init__(self):
         pass
 
-    def print_catalog_sources(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Catalog Source [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name',
-            'info.display_name',
-            'age'
-        ]
-
-        headers = [
-            'Catalog Source',
-            'Display Name',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_catalog_sources_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Catalog Source', 'namespace_nameT'],
+                ['Display Name', 'display_name'],
+                ['Age', 'age']
+            ]
         )

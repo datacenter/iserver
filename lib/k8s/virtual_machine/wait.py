@@ -17,7 +17,7 @@ class K8sVirtualMachineWait():
             namespace=namespace,
             match_properties=dict(status='Running'),
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             log_error_on_timeout=log_error_on_timeout
         )
@@ -37,7 +37,7 @@ class K8sVirtualMachineWait():
             namespace=namespace,
             match_properties=dict(status='Stopped'),
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             log_error_on_timeout=log_error_on_timeout
         )
@@ -57,7 +57,7 @@ class K8sVirtualMachineWait():
             namespace=namespace,
             match_properties=dict(status='Paused'),
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             log_error_on_timeout=log_error_on_timeout
         )
@@ -79,7 +79,7 @@ class K8sVirtualMachineWait():
             match_properties=match_properties,
             break_properties=break_properties,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
 
@@ -96,6 +96,6 @@ class K8sVirtualMachineWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )

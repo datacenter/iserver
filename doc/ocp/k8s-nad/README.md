@@ -17,14 +17,16 @@ A `NetworkAttachmentDefinition` is a Kubernetes CustomResourceDefinition (CRD) u
 
 ## Types
 
-Type | Overview | CRD Schema | Example | Plugin
+Type | Overview | CRD Schema | Example (POD) | Plugin
 --- | --- | --- | --- | --- 
 Bridge | [Link](./overview-bridge.md) | [Link](./crd-schema-bridge.md) | [Link](./example-bridge.md) | [Link](https://www.cni.dev/plugins/current/main/bridge/)
 IPVLAN | [Link](./overview-ipvlan.md) | [Link](./crd-schema-ipvlan.md) | [Link](./example-ipvlan.md) | [Link](https://www.cni.dev/plugins/current/main/ipvlan/)
 MacVLAN | [Link](./overview-macvlan.md) | [Link](./crd-schema-macvlan.md) | [Link](./example-macvlan.md) | [Link](https://www.cni.dev/plugins/current/main/macvlan/)
 VLAN | [Link](./overview-vlan.md) | [Link](./crd-schema-vlan.md) | [Link](./example-vlan.md) | [Link](https://www.cni.dev/plugins/current/main/vlan/)
 
-## Life Cycle Management Commands
+[Virtual machine examples](../k8s-vm/README.md)
+
+## Commands
 
 Command | Intent | Details 
 --- | --- | --- 

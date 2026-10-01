@@ -25,10 +25,9 @@ def run(params, log_id=None):
     if not params['silent']:
         my_output.default('OpenShift Workflow - Cilium - Agent exec', before_newline=True, after_newline=True, double_underline=True)
 
-    if params['initialize']:
-        params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
-        if params is None:
-            return False
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+    if params is None:
+        return False
 
     pods = params['k8s_handler'].get_pods_daemon_set(
         params['__default__']['namespace'],

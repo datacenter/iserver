@@ -177,7 +177,7 @@ class K8sNetworkInfo():
             if not get_confirmation():
                 return False     
 
-        success = self.patch_network_mo(body)
+        success = self.patch_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('patch failed')

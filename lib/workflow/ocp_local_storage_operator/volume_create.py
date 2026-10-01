@@ -114,7 +114,7 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]  
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def validate_values(params, my_output, log_id):
@@ -352,7 +352,7 @@ def label_explicit_nodes(params, my_output):
 
 def create_local_volume_discovery(params, my_output, k8s_output_handler, name='auto-discover-devices'):
     success = params['k8s_handler'].create_local_volume_discovery(
-        params['namespace'],
+        params['__default__']['namespace'],
         name,
         params['discovery-nodes'],
         confirmation=params['confirmation'],
@@ -452,7 +452,7 @@ def create_local_volume_set(params, my_output, k8s_output_handler):
         return None
 
     success = params['k8s_handler'].create_local_volume_set(
-        params['namespace'],
+        params['__default__']['namespace'],
         'my-local-disks',
         params['discovery-nodes'],
         params['volume'],
@@ -490,7 +490,7 @@ def create_local_volume(params, my_output, k8s_output_handler):
 
             if device.startswith('wwn-'):
                 success = params['k8s_handler'].create_local_volume(
-                    params['namespace'],
+                    params['__default__']['namespace'],
                     lv_name,
                     [node_name],
                     params['volume'],
@@ -502,7 +502,7 @@ def create_local_volume(params, my_output, k8s_output_handler):
                 )
             else:
                 success = params['k8s_handler'].create_local_volume(
-                    params['namespace'],
+                    params['__default__']['namespace'],
                     lv_name,
                     [node_name],
                     params['volume'],
@@ -533,16 +533,16 @@ def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
 
-    my_output.default('OpenShift Workflow - Local Storage Operator - Create Local Volume', before_newline=True, after_newline=True, double_underline=True)
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, ssh_required=params['ssh-required'])
+    ocp_common.print_title(params, my_output, 'Create Local Volume')
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
-
+    
     state = local_common.check_state(
         params, 
         my_output,

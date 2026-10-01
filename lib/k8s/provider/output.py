@@ -2,7 +2,7 @@ class K8sProviderOutput():
     def __init__(self):
         pass
 
-    def print_providers(self, info):
+    def print_providers_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

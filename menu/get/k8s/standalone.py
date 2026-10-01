@@ -120,7 +120,7 @@ def get_k8s_standalone_command(
         ctx.my_output.json_output(standalones)
 
         if 'state' in view:
-            k8s_output_handler.print_standalones(standalones)
+            k8s_output_handler.print_splunk_standalones_state(standalones)
 
         ctx.my_output.default('Filter: namespace, name', before_newline=True)
         ctx.my_output.default('View:   state (def)')

@@ -3,6 +3,9 @@ class K8sClusterRoleInfo():
         self.cluster_role = None
 
     def get_cluster_role_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )

@@ -112,7 +112,7 @@ def get_k8s_ms_command(
         ctx.my_output.json_output(migrations)
 
         if 'state' in view:
-            k8s_output_handler.print_migrations(
+            k8s_output_handler.print_migrations_state(
                 migrations
             )
 

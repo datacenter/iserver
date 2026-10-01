@@ -82,9 +82,14 @@ class K8sSubscriptionNmstate():
             return False
 
         if with_instance:
-            success = self.wait_nodes_network_state(my_output=my_output)
-            if not success:
+            nodes = self.get_nodes()
+            if nodes is None:
                 return False
+
+            for node in nodes:
+                success = self.wait_node_network_state(node['name'], my_output=my_output)
+                if not success:
+                    return False
 
         return True
 

@@ -56,7 +56,8 @@ class K8sBareMetalHostSecret():
 
         secret_mo = self.get_secret(namespace, name, return_mo=True, cache_enabled=False)
         if secret_mo is None:
-            if not self.create_resource(body, object_name='secret', my_output=my_output, confirmation=confirmation):
+            success, _ = self.create_resource(body, object_name='secret', my_output=my_output, confirmation=confirmation)
+            if not success:
                 return False
         else:
             body['metadata']['resource_version'] = secret_mo['metadata']['resourceVersion']

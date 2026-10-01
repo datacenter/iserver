@@ -2,47 +2,20 @@ from lib import output_helper
 from lib.linux import settings as linux_settings
 from lib.k8s import settings as k8s_settings
 from lib.workflow.ocp_cilium_inb import common as local_common
-from lib.workflow.ocp_cilium_cni import common as cilium_common
 from lib.workflow.ocp_cilium_mesh import cluster_delete
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'mesh-name' not in params:
-        params['mesh-name'] = None
-
-    if params['mesh-name'] is not None:
-        if not isinstance(params['mesh-name'], str):
-            return None, 'mesh-name param must be str'
-        
-        if len(params['mesh-name']) == 0:
-            return None, 'mesh-name required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-        
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'mesh-name',
-        'verbose',
-        'confirmation',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['mesh-name', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def get_mesh_peers(params, my_output):
@@ -155,20 +128,16 @@ def delete_cluster_mesh(params, name, log_id):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium - Unconfigure Isovalent Network Bridge', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Unconfigure')
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
-
-    if not cilium_common.is_cilium(params, my_output):
-        return False
-
+    
     if not params['k8s_handler'].is_cilium_mesh_enabled():
         my_output.default('Cluster mesh disabled')
 

@@ -19,6 +19,7 @@ class K8sVastDriverInfo():
             condition_map=condition_map
         )
 
+        info['ready'] = info['initialized'] and info['deployed']
         info['manifest'] = self.get(managed_object, 'status:deployedRelease:manifest')
         info['resource'] = []
         if info['manifest'] is not None:
@@ -56,6 +57,15 @@ class K8sVastDriverInfo():
     def get_vast_driver_info(self, managed_object):
         return self.get_vast_managed_object_info(managed_object)
 
+    def get_vast_drivers_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'VastCSIDriver',
+            my_output=my_output,
+            prefix=prefix
+        )
+    
     def get_vast_drivers(self, object_filter=None, storage_info=False, return_mo=False, cache_enabled=True):
         infos = self.get_infos(
             'vast_driver', 
@@ -66,6 +76,9 @@ class K8sVastDriverInfo():
 
         if return_mo:
             return infos
+        
+        if infos is None:
+            return None
         
         if storage_info:
             for item in infos:

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-networkdata
+  namespace: openshift-machine-api
+type: Opaque
+stringData:
+  networkData: |
+    {
+      "links": [
+        {
+          "id": "eno5",
+          "type": "phy",
+          "ethernet_mac_address": "aa:aa:aa:aa:aa:aa"
+        },
+        {
+          "id": "eno6",
+          "type": "phy",
+          "ethernet_mac_address": "bb:bb:bb:bb:bb:bb"
+        },
+        {
+          "id": "bond0",
+          "type": "bond",
+          "bond_links": ["eno5", "eno6"],
+          "bond_mode": "802.3ad"
+        },
+        {
+          "id": "bond0.666",
+          "type": "vlan",
+          "vlan_link": "bond0",
+          "vlan_id": 666,
+          "vlan_mac_address": "aa:aa:aa:aa:aa:aa"
+        }
+      ],
+      "networks": [
+        {
+          "id": "net-bond0.666",
+          "link": "bond0.666",
+          "type": "ipv4",
+          "ip_address": "10.10.10.65",
+          "netmask": "255.255.255.240",
+          "routes": [
+            {
+              "network": "0.0.0.0",
+              "netmask": "0.0.0.0",
+              "gateway": "10.10.10.78"
+            }
+          ]
+        }
+      ],
+      "services": [
+        {
+          "type": "dns",
+          "address": "30.30.30.30"
+        }
+      ]
+    }

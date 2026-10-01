@@ -8,17 +8,7 @@ class K8sIdentityDelete():
             my_output=None,
             wait=True
         ):
-        if my_output is not None:
-            my_output.default('Delete Identity', before_newline=True, underline=True)
-            my_output.default('- name: %s' % (name))
-
-        info = self.get_identity(name, cache_enabled=False)
-        if info is None:
-            if my_output is not None:
-                my_output.default('- already deleted')
-            return True
-
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'Identity', 
             'user.openshift.io/v1',
             name, 
@@ -27,6 +17,9 @@ class K8sIdentityDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

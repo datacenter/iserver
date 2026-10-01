@@ -1,5 +1,7 @@
 # Cilium Operator
 
+[[Back]](../Operations.md)
+
 ## Overview
 
 [Cilium Operator](https://docs.cilium.io/en/stable/internals/cilium_operator/) performs cluster-wide operations such as
@@ -26,7 +28,7 @@ NAME                            HOLDER             AGE
 cilium-operator-resource-lock   bm1-1-wfkzn2jk9c   104d
 ```
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

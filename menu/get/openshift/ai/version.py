@@ -1,21 +1,9 @@
 import sys
-import traceback
 import json
-import threading
 import click
-
+from lib.openshift import helper
 from lib.openshift import console
 from lib.openshift import output as openshift_output
-
-from menu import progress
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("version")
@@ -32,47 +20,43 @@ def get_openshift_ai_version_command(
     ctx.developer = False
     ctx.output = output
 
-    try:
-        openshift_output_handler = openshift_output.OpenshiftOutput(log_id=ctx.run_id)
-        console_handler = console.Console(log_id=ctx.run_id)
+    success = helper.check_openshift_authentication(
+        my_output=ctx.my_output,
+        log_id=ctx.run_id
+    )
+    if not success:
+        sys.exit(1)
 
-        if output not in ['json']:
-            ctx.busy = True
-            threading.Thread(target=progress.spinner_task, args=(ctx, False,)).start()
+    console_handler = console.Console(log_id=ctx.run_id)
 
-        if support_type == 'latest':
-            versions = console_handler.get_assisted_install_openshift_versions_info(
-                support='production'
-            )[:1]
-        else:
-            versions = console_handler.get_assisted_install_openshift_versions_info(
-                support=support_type
+    support = support_type
+    if support_type == 'latest':
+        support='production'
+
+    versions = console_handler.get_assisted_install_openshift_versions_info(
+        support=support
+    )
+    if versions is None:
+        ctx.my_output.error('Failed to get openshift versions')
+        sys.exit(1)
+
+    if support_type == 'latest':
+        versions = versions[:1]
+
+    if output == 'json':
+        ctx.my_output.default(
+            json.dumps(
+                versions,
+                indent=4
             )
-
-        ctx.busy = False
-
-        if output == 'json':
-            ctx.my_output.default(
-                json.dumps(
-                    versions,
-                    indent=4
-                )
-            )
-            return
-
-        ctx.my_output.json_output(versions)
-
-        openshift_output_handler.print_assisted_install_openshift_versions(
-            versions
         )
+        return
 
-        ctx.my_output.default('Support level filter (--type): latest (def), production, beta, maintenance, end-of-life', before_newline=True)
+    ctx.my_output.json_output(versions)
 
-    except ErrorExit:
-        ctx.busy = False
-        sys.exit(1)
+    openshift_output_handler = openshift_output.OpenshiftOutput(log_id=ctx.run_id)
+    openshift_output_handler.print_assisted_install_openshift_versions(
+        versions
+    )
 
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
-        sys.exit(1)
+    ctx.my_output.default('Support level filter (--type): latest (def), production, beta, maintenance, end-of-life', before_newline=True)

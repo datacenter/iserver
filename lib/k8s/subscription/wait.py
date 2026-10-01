@@ -48,7 +48,7 @@ class K8sSubscriptionWait():
 
             time.sleep(5)
 
-    def wait_subscription_resources_ready(self, subscription_name, resources, my_output=None, break_on_error=True):
+    def wait_subscription_resources(self, subscription_name, resources, my_output=None, break_on_error=True):
         for resource in resources:
             if resource['type'] not in ['deployment', 'daemonset']:
                 if my_output is not None:
@@ -201,13 +201,14 @@ class K8sSubscriptionWait():
                     )
                 )
         
-        if my_output is not None:
-            my_output.default(
-                'Subscription %s resources %s' % (
-                    subscription_name,
-                    my_output.add_color('gone', 'Green')
-                )
+        if gone:
+            if my_output is not None:
+                my_output.default(
+                    'Subscription %s resources %s' % (
+                        subscription_name,
+                        my_output.add_color('gone', 'Green')
+                    )
 
-            )
+                )
 
         return gone

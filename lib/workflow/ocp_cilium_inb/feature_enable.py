@@ -10,9 +10,9 @@ from lib.linux import settings as linux_settings
 from lib.k8s import settings as k8s_settings
 from lib.k8s import main as k8s
 from lib.workflow.ocp_cilium_inb import common as local_common
-from lib.workflow.ocp_cilium_cni import common as cilium_common
 from lib.workflow.ocp_cilium_mesh import cluster_create
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -134,8 +134,7 @@ def validate(params):
         'confirmation',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
-
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 def validate_vm(params, my_output, log_id):
     params['ssh_handler'] = ssh.Ssh(
@@ -335,7 +334,7 @@ def generate_configuration(params, cilium_config, my_output):
     if params['k8s_handler'].is_cilium_timescape_mesh_enabled(cache_enabled=False):
         body['hubble'] = {}
         body['hubble']['timescape'] = {}
-        body['hubble']['timescape']['namespace'] = params['namespace']
+        body['hubble']['timescape']['namespace'] = params['__default__']['namespace']
         
     my_output.default(yaml.dump(body).replace('QUOTE', '"'), wrap='~~~')
     if params['confirmation']:
@@ -353,8 +352,8 @@ def generate_configuration(params, cilium_config, my_output):
 
 def upload_ca_certificate(params, my_output):
     my_output.default('Upload CA certificate', before_newline=True, underline=True)
-    my_output.default('Get cilium ca secret: %s/%s' % (params['namespace'], params['secret']))
-    secret_mo = params['k8s_handler'].get_secret(params['namespace'], params['secret'], return_mo=True, cache_enabled=False)
+    my_output.default('Get cilium ca secret: %s/%s' % (params['__default__']['namespace'], params['__default__']['secret']))
+    secret_mo = params['k8s_handler'].get_secret(params['__default__']['namespace'], params['__default__']['secret'], return_mo=True, cache_enabled=False)
     if secret_mo is None:
         my_output.error('Not found')
         return False
@@ -483,20 +482,16 @@ def create_inb_k8s_connector(params, my_output, log_id):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium - Initialize Isovalent Network Bridge', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Initialize')
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
-
-    if not cilium_common.is_cilium(params, my_output):
-        return False
-
+    
     if not params['k8s_handler'].is_cilium_mesh_enabled():
         my_output.error('Cluster mesh disabled')
         return False

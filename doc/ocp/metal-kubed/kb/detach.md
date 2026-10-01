@@ -1,6 +1,6 @@
-# Metal Kubed - Detaching hosts from provisioner
+# Detaching hosts from provisioner
 
-[[Back]](../README.md) [[iserver-way]](../detach.md)
+[[Back]](../README.md)
 
 The detached annotation provides a way to prevent management of a `BareMetalHost`. It works by deleting the host information from Ironic without triggering deprovisioning. The BareMetal Operator will recreate the host in Ironic again once the annotation is removed. This annotation can be used with BareMetalHosts in Provisioned, ExternallyProvisioned or Available states. 
 
@@ -15,7 +15,7 @@ If you want to attach a previously detached host, remove the annotation and wait
 > [!NOTE]
 > The annotation key is `baremetalhost.metal3.io/detached` and the value can be anything (it is ignored). 
 
-```
+```yaml
 apiVersion: metal3.io/v1alpha1
 kind: BareMetalHost
 metadata:
@@ -31,4 +31,4 @@ spec:
     credentialsName: example-bmc-secret
 ```
 
-[[Back]](../README.md) [[iserver-way]](../detach.md)
+[[Back]](../README.md)

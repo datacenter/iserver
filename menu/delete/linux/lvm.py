@@ -22,19 +22,14 @@ class NoResultExit(Exception):
 @click.pass_obj
 @click.option("--server", multiple=True, help="Linux server name")
 @click.option("--no-cache", "no_cache", is_flag=True, show_default=True, default=False, help="Disable cache")
-@click.option("--output", "-o", type=click.Choice(['default', 'json'], case_sensitive=False), default='default', show_default=True)
-@click.option("--devel", is_flag=True, show_default=True, default=False, help="Developer output")
+@click.option("--no-break", is_flag=True, show_default=True, default=False, help="No break on error")
 def delete_linux_lvm_command(
         ctx,
         server,
         no_cache,
-        output,
-        devel
+        no_break
         ):
-    """Get lvm"""
-
-    ctx.developer = devel
-    ctx.output = output
+    """Delete lvm"""
 
     try:
         linux_handlers = validations.get_linux_handlers(
@@ -49,7 +44,8 @@ def delete_linux_lvm_command(
             wipe.run(
                 linux_handlers[name],
                 ctx.my_output,
-                server_name=name
+                server_name=name,
+                break_on_error=not no_break
             )
 
     except NoResultExit:

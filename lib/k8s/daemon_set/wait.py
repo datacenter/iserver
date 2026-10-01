@@ -11,7 +11,7 @@ class K8sDaemonSetWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
     
@@ -26,23 +26,23 @@ class K8sDaemonSetWait():
                 name,
                 cache_enabled=False
             )
+            if optional and daemon_set is None:
+                if my_output is not None:
+                    my_output.default('Success with optional condition')
+
+                if log_on_error:
+                    self.log.debug(
+                        'k8s.wait_daemon_set_ready_state',
+                        'Daemon set optional and not found: %s/%s' % (namespace, name)
+                    )
+                return True
+
             if daemon_set is not None:
                 if daemon_set['ready']:
                     return True
 
             duration = int(time.time()) - start_time
             if duration > max_time:
-                if optional and daemon_set is None:
-                    if my_output is not None:
-                        my_output.default('Success with optional condition')
-
-                    if log_on_error:
-                        self.log.debug(
-                            'k8s.wait_daemon_set_ready_state',
-                            'Max time reached but ds optional: %s/%s' % (namespace, name)
-                        )
-                    return True
-
                 if my_output is not None:
                     my_output.default(my_output.add_color('timed out', 'Red'))
 
@@ -79,7 +79,7 @@ class K8sDaemonSetWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             optional=optional,
             log_error_on_timeout=log_error_on_timeout

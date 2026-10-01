@@ -1,4 +1,6 @@
-# Tetragon Enterprise Operator - Delete tetragon resources
+# Tetragon - Delete tetragon resources
+
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -6,14 +8,12 @@ Delete tetragon-related resources
 - AlertRule
 - SandboxPolicy
 - SandboxPolicyNamespaced
-- TetragonNetworkPolicy
-- TetragonNetworkPolicyNamespaced
 - TracingPolicy
 - TracingPolicyNamespaced
 
 ## Requirements
 
-Tetragon Enterprise operator installed
+Tetragon Enterprise operator [installed](./create_operator.md)
 
 ## Configurable options
 
@@ -27,60 +27,25 @@ Tetragon Enterprise operator installed
 ```
 # iserver delete ocp tetragon --cluster bm1 --mode wipe
 
-OpenShift Workflow - Tetragon Operator - Wipe Resources
-=======================================================
+OpenShift Workflow - Tetragon - Wipe
+====================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Alert Rule
-----------
-- no resources found
-
-Sandbox Policy
---------------
-- no resources found
-
-Sandbox Policy Namespaced
--------------------------
-- no resources found
-
-Tetragon Network Policy
------------------------
-- no resources found
-
-Tetragon Network Policy Namespaced
-----------------------------------
-- no resources found
-
-Tracing Policy
---------------
-- no resources found
-
-Tracing Policy Namespaced
--------------------------
-- no resources found
+Delete TracingPolicy
+--------------------
+- name: upper-layers
+- deleted
+- wait for no TracingPolicy upper-layers [timeout:60s]
 
 Completed tasks
 - Tetragon resources deleted
+
++----+---------+----------+-------------+---------+---------+--------------+
+| ID | Target  | Scope    | Workflow    | Changes | Success | Duration [s] |
++----+---------+----------+-------------+---------+---------+--------------+
+| 1  | ocp:bm1 | tetragon | delete wipe | 1       | V       | 1            | 
++----+---------+----------+-------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

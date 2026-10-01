@@ -24,7 +24,8 @@ class K8sApi():
         self.api_retries = 1
         self.kind_get_all = {
             'Node': 'list_node',
-            'Pod': 'list_pod_for_all_namespaces'
+            'Pod': 'list_pod_for_all_namespaces',
+            'MutatingWebhookConfiguration': 'list_mutating_webhook_configuration'
         }
         self.kind_get_namespace = {
             'Pod': 'list_namespaced_pod'
@@ -45,11 +46,20 @@ class K8sApi():
         }
         self.kind_patch_namespace_name = { 
         }
-        self.kind_patch_name = {           
+        self.kind_patch_name = {    
+            'Node': 'patch_node'       
         }
         self.kind_delete_namespace_name = { 
+            'Pod': 'delete_namespaced_pod'
         }
-        self.kind_delete_name = {           
+        self.kind_delete_name = {      
+            'Namespace': 'delete_namespace'  
+        }
+        self.kind_map = {
+            'MutatingWebhookConfiguration': {
+                'cluster': 'standard',
+                'api': 'admission'
+            }
         }
 
     def check_api(self):
@@ -57,9 +67,15 @@ class K8sApi():
             return False
         return True
 
-    def get_api_kind(self, kind, api_type='v1'):
+    def get_api_kind(self, kind, cluster_type=None, api_type='v1'):
+        if cluster_type is not None:
+            return self.get_api(cluster_type, api_type=api_type)
+        
         if kind in self.kind_get_all or kind in self.kind_get_namespace or kind in self.kind_get_namespace_name:
             return self.get_api(api_type=api_type)
+        
+        if kind in self.kind_map:            
+            return self.get_api(self.kind_map[kind]['cluster'], api_type=self.kind_map[kind]['api'])
         
         return self.get_api(self.cluster_type, api_type=api_type)
     
@@ -258,7 +274,7 @@ class K8sApi():
 
             config.load_kube_config(self.kubeconfig_filename)
             self.api['admission'] = client.AdmissionregistrationV1Api()
-
+            
             self.log.k8s(
                 'connect.admission',
                 '-',
@@ -468,8 +484,8 @@ class K8sApi():
         
         return reason
     
-    def get_namespaced_resources(self, kind, api_version, managed_objects, namespaced_objects, namespace=None, name=None):
-        api_handler = self.get_api_kind(kind)
+    def get_namespaced_resources(self, kind, api_version, managed_objects, namespaced_objects, namespace=None, name=None, cluster_type=None, api_type='v1'):
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             return None, managed_objects, namespaced_objects
 
@@ -634,8 +650,8 @@ class K8sApi():
             
         return True, None
     
-    def get_resources(self, kind, api_version, managed_objects, name=None, fast=False):
-        api_handler = self.get_api_kind(kind)
+    def get_resources(self, kind, api_version, managed_objects, name=None, fast=False, cluster_type=None, api_type='v1'):
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             return None, managed_objects
 
@@ -734,14 +750,57 @@ class K8sApi():
             if managed_objects is None:
                 return False, None
             return True, managed_objects
-            
+        
+        if managed_objects is None:
+            return False, None
+        
         for item in managed_objects:
             if item['metadata']['name'] == name:
                 return True, item
             
         return True, None
 
-    def create_resource(self, body, object_name=None, my_output=None, confirmation=False):
+    def create_resource_and_wait(self, body, object_name, max_time=60, wait=True, my_output=None, confirmation=False, cluster_type=None, api_type='v1'):
+        success, created = self.create_resource(
+            body, 
+            object_name=object_name, 
+            my_output=my_output, 
+            confirmation=confirmation, 
+            cluster_type=cluster_type, 
+            api_type=api_type
+        )
+        if not success:
+            return False
+        
+        if not created:
+            return True
+        
+        if not wait:
+            return True
+                
+        namespace = filter_helper.get(body, 'metadata:namespace')
+        name = filter_helper.get(body, 'metadata:name')
+
+        if namespace is None:
+            success = getattr(self, 'wait_%s' % (object_name))(
+                name,
+                my_output=my_output,
+                max_time=max_time
+            )
+        else:
+            success = getattr(self, 'wait_%s' % (object_name))(
+                namespace,
+                name,
+                my_output=my_output,
+                max_time=max_time
+            )
+
+        return success
+
+    def create_resource(self, body, object_name=None, my_output=None, confirmation=False, cluster_type=None, api_type='v1'):
+        if my_output is None:
+            confirmation = False
+
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
@@ -751,13 +810,13 @@ class K8sApi():
             if my_output is not None:
                 my_output.error('Body parse failed')
                 my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
-            return False
+            return False, False
 
-        api_handler = self.get_api_kind(kind)
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             if my_output is not None:
                 my_output.error('Kubernetes api not ready')
-            return False
+            return False, False
 
         if my_output is not None:
             my_output.default('Create %s' % (kind), before_newline=True, underline=True)
@@ -780,7 +839,7 @@ class K8sApi():
                 if my_output is not None:
                     my_output.default('- %s' % (my_output.add_color('already created', 'Green')))
                     
-                return True
+                return True, False
         
         if my_output is None:
             confirmation = False
@@ -789,7 +848,7 @@ class K8sApi():
             my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             if confirmation:
                 if not get_confirmation():
-                    return False
+                    return False, False
 
         start_time = int(time.time() * 1000)
 
@@ -816,6 +875,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s] %s' % (
@@ -836,7 +897,7 @@ class K8sApi():
                     False,
                     int(time.time() * 1000) - start_time
                 )
-                return False
+                return False, False
 
         if namespace is not None:
             try:
@@ -863,6 +924,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s/%s] %s' % (
@@ -884,11 +947,14 @@ class K8sApi():
                     False,
                     int(time.time() * 1000) - start_time
                 )
-                return False
+                return False, False
 
-        return True
+        return True, True
 
-    def patch_resource(self, body, object_name=None, my_output=None, confirmation=False):
+    def patch_resource(self, body, object_name=None, my_output=None, confirmation=False, cluster_type=None, api_type='v1'):
+        if my_output is None:
+            confirmation = False
+
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
@@ -900,7 +966,7 @@ class K8sApi():
                 my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             return False
 
-        api_handler = self.get_api_kind(kind)
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             if my_output is not None:
                 my_output.error('Kubernetes api not ready')
@@ -966,6 +1032,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s] %s' % (
@@ -1016,6 +1084,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s/%s] %s' % (
@@ -1041,7 +1111,10 @@ class K8sApi():
 
         return True
 
-    def replace_resource(self, body, object_name=None, my_output=None, confirmation=False):
+    def replace_resource(self, body, object_name=None, my_output=None, confirmation=False, cluster_type=None, api_type='v1'):
+        if my_output is None:
+            confirmation = False
+
         kind = filter_helper.get(body, 'kind')
         api_version = filter_helper.get(body, 'apiVersion')
         namespace = filter_helper.get(body, 'metadata:namespace')
@@ -1053,7 +1126,7 @@ class K8sApi():
                 my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
             return False
 
-        api_handler = self.get_api_kind(kind)
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             if my_output is not None:
                 my_output.error('Kubernetes api not ready')
@@ -1118,6 +1191,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s] %s' % (
@@ -1167,6 +1242,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '%s [%s/%s] %s' % (
@@ -1192,12 +1269,60 @@ class K8sApi():
 
         return True
 
-    def delete_resource(self, kind, api_version, name, namespace=None, object_name=None, my_output=None):
-        api_handler = self.get_api_kind(kind)
+    def delete_resource_and_wait(
+            self, 
+            kind, 
+            api_version, 
+            name, 
+            object_name,
+            namespace=None, 
+            wait=True, 
+            max_time=60, 
+            my_output=None, 
+            cluster_type=None, 
+            api_type='v1'
+        ):
+        success, deleted = self.delete_resource(
+            kind, 
+            api_version, 
+            name, 
+            namespace=namespace, 
+            object_name=object_name, 
+            my_output=my_output, 
+            cluster_type=cluster_type, 
+            api_type=api_type
+        )
+        if not success:
+            return False
+        
+        if not deleted:
+            return True
+        
+        if not wait:
+            return True
+                
+        if namespace is None:
+            success = getattr(self, 'wait_no_%s' % (object_name))(
+                name,
+                my_output=my_output,
+                max_time=max_time
+            )
+        else:
+            success = getattr(self, 'wait_no_%s' % (object_name))(
+                namespace,
+                name,
+                my_output=my_output,
+                max_time=max_time
+            )
+
+        return success
+
+    def delete_resource(self, kind, api_version, name, namespace=None, object_name=None, my_output=None, cluster_type=None, api_type='v1'):
+        api_handler = self.get_api_kind(kind, cluster_type=cluster_type, api_type=api_type)
         if api_handler is None:
             if my_output is not None:
                 my_output.error('Kubernetes api not ready')
-            return False
+            return False, False
 
         if object_name is not None:
             if namespace is None:
@@ -1216,7 +1341,7 @@ class K8sApi():
                     else:
                         my_output.default('%s %s/%s %s' % (kind, namespace, name, my_output.add_color('already deleted', 'Green')), before_newline=True)
 
-                return True
+                return True, False
 
         if my_output is not None:
             my_output.default('Delete %s' % (kind), before_newline=True, underline=True)
@@ -1250,6 +1375,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '- %s' % (my_output.add_color('deleted', 'Green'))
@@ -1264,11 +1391,11 @@ class K8sApi():
                 self.log.error('k8s.delete_resource', traceback.format_exc())
                 self.log.k8s(
                     'delete',
-                    '%s [%s] [name:%s] [response:%s]' % (kind, api_version, name, str(response)),
+                    '%s [%s] [name:%s]' % (kind, api_version, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )
-                return False
+                return False, False
 
         if namespace is not None:
             try:
@@ -1295,6 +1422,8 @@ class K8sApi():
                     int(time.time() * 1000) - start_time
                 )
 
+                self.increase_change_counter()
+
                 if my_output is not None:
                     my_output.default(
                         '- %s' % (my_output.add_color('deleted', 'Green'))
@@ -1309,10 +1438,10 @@ class K8sApi():
                 self.log.error('k8s.delete_resource', traceback.format_exc())
                 self.log.k8s(
                     'delete',
-                    '%s [%s] [ns:%s] [name:%s] [response:%s]' % (kind, api_version, namespace, name, str(response)),
+                    '%s [%s] [ns:%s] [name:%s]' % (kind, api_version, namespace, name),
                     False,
                     int(time.time() * 1000) - start_time
                 )
-                return False
+                return False, False
 
-        return True
+        return True, True

@@ -80,21 +80,15 @@ class K8sBareMetalHostCreate():
             serial=serial
         )
 
-        if not self.create_resource(body, object_name='bare_metal_host', my_output=my_output, confirmation=confirmation):
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_bare_metal_host(
-            namespace,
-            name,
-            max_time=60,
-            my_output=my_output
+        success = self.create_resource_and_wait(
+            body, 
+            object_name='bare_metal_host', 
+            my_output=my_output, 
+            confirmation=confirmation
         )
         if not success:
             return False
-
+        
         success = self.wait_bare_metal_host(
             namespace,
             name,

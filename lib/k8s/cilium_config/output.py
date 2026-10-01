@@ -1,4 +1,6 @@
+import json
 import yaml
+from lib import filter_helper
 
 
 class K8sCiliumConfigOutput():
@@ -102,3 +104,142 @@ class K8sCiliumConfigOutput():
                 self.my_output.default('- mutating webhook %s %s' % (info['webhook']['name'], self.my_output.add_color('found', 'Red')))
             if info['webhook']['service_found']:
                 self.my_output.default('- service %s %s' % (info['webhook']['service_name'], self.my_output.add_color('found', 'Red')))
+
+    def print_cilium_agent_private_networks_state(self, info):
+        for item in info:
+            item['subnetT'] = json.dumps(item['Subnets'], indent=2).split('\n')
+
+        self.my_output.default('Cilium Agent DB: private-networks', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Private Network', 'Name'],
+                ['ID', 'ID'],
+                ['VNI', 'VNI'],
+                ['Subnet', 'subnetT']
+            ]
+        )
+
+    def print_cilium_agent_privnet_endpoints_state(self, info):
+        self.my_output.default('Cilium Agent DB: privnet-endpoints', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Private Network', 'network.name'],
+                ['Subnet', 'Subnet'],
+                ['Namespace', 'source.namespace'],
+                ['Name', 'name'],
+                ['IP', 'network.ip'],
+                ['MAC', 'network.mac'],
+                ['POD IP', 'ip'],
+                ['Node', 'nodeName'],
+                ['External', 'flags.external']
+            ]
+        )
+
+    def print_cilium_agent_privnet_routes_state(self, info):
+        for item in info:
+            item['peerT'] = json.dumps(item['Peer'], indent=2).split('\n')
+
+        self.my_output.default('Cilium Agent DB: privnet-routes', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Private Network', 'Network'],
+                ['Subnet', 'Subnet'],
+                ['Destination', 'Destination'],
+                ['Gateway', 'Gateway'],
+                ['EVPN', 'EVPNGateway'],
+                ['Peer', 'peerT']
+            ]
+        )
+
+    def print_cilium_agent_privnet_node_attachments_state(self, info):
+        for item in info:
+            item['interfaceT'] = '%s [%s]' % (
+                filter_helper.get(item, 'Interface:Name'),
+                filter_helper.get(item, 'Interface:Index')
+            )
+            error = filter_helper.get(item, 'Interface:Error', on_error='', on_none='')
+            if len(error) > 0:
+                item['interfaceT'] = [item['interfaceT'], error]
+
+            item['conflictT'] = filter_helper.get(item, 'Conflict', on_error='', on_none='')
+            if item['conflictT'] == 'none':
+                item['conflictT'] = None
+
+        self.my_output.default('Cilium Agent DB: privnet-node-attachments', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Name', 'Resource.Name'],
+                ['Network', 'Network'],
+                ['Type', 'Type'],
+                ['Interface', 'interfaceT'],
+                ['Conflict', 'conflictT'],
+                ['Status', 'OpsStatus.kind']
+            ]
+        )
+
+    def print_cilium_agent_privnet_inbs_state(self, info):
+        self.my_output.default('Cilium Agent DB: privnet-inbs', up_and_down='~', before_newline=True)
+        self.my_output.default(json.dumps(info, indent=4))
+
+    def print_cilium_agent_privnet_mapentries_state(self, info):
+        for item in info:
+            item['networkT'] = '%s [%s]' % (
+                filter_helper.get(item, 'Target:NetworkName'),
+                filter_helper.get(item, 'Target:ID:Network')
+            )
+            item['subnetT'] = '%s [%s]' % (
+                filter_helper.get(item, 'Target:SubnetName'),
+                filter_helper.get(item, 'Target:ID:Subnet')
+            )
+                
+        self.my_output.default('Cilium Agent DB: privnet-mapentries', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Type', 'Type'],
+                ['Network', 'networkT'],
+                ['Subnet', 'subnetT'],
+                ['CIDR', 'Target.CIDR'],
+                ['MAC', 'Target.MAC'],
+                ['NH', 'Routing.NextHop'],
+                ['IfIndex', 'Routing.EgressIfIndex'],
+                ['VNI', 'Routing.VNI'],
+                ['L2 Announce', 'Routing.L2Announce'],
+                ['Status', 'Status.kind'],
+                ['Gneigh', 'GneighStatus.kind']
+            ]
+        )
+
+    def print_cilium_agent_privnet_subnets_state(self, info):
+        for item in info:
+            item['networkT'] = '%s [%s]' % (
+                filter_helper.get(item, 'Network'),
+                filter_helper.get(item, 'NetworkID')
+            )
+            item['subnetT'] = '%s [%s]' % (
+                filter_helper.get(item, 'Name'),
+                filter_helper.get(item, 'ID')
+            )
+            item['egressT'] = '%s [%s]' % (
+                filter_helper.get(item, 'EgressIfName'),
+                filter_helper.get(item, 'EgressIfIndex')
+            )
+            item['routeT'] = json.dumps(item['Routes'], indent=2).split('\n')
+
+        self.my_output.default('Cilium Agent DB: privnet-subnets', up_and_down='~', before_newline=True)
+        self.my_output.my_table_ng(
+            info,
+            [
+                ['Private Network', 'networkT'],
+                ['Subnet', 'subnetT'],
+                ['DHCP', 'DHCP.mode'],
+                ['CIDRv4', 'CIDRv4'],
+                ['CIDRv6', 'CIDRv6'],
+                ['VNI', 'VNI'],
+                ['Route', 'routeT']
+            ]
+        )

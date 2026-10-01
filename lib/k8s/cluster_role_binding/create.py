@@ -51,9 +51,13 @@ class K8sClusterRoleBindingCreate():
             sa_namespace,
             sa_name
         )
-        if not self.create_resource(body, object_name='cluster_role_binding', my_output=my_output, confirmation=confirmation):
+        success, created = self.create_resource(body, object_name='cluster_role_binding', my_output=my_output, confirmation=confirmation)
+        if not success:
             return None
 
+        if not created:
+            return None
+        
         if not wait:
             return name
 

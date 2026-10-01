@@ -1,4 +1,4 @@
-# OpenShift Data Foundation (ODF) Operator - Create Cluster
+# OpenShift Data Foundation (ODF) - Create Cluster
 
 ## Workflow
 

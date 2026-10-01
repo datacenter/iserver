@@ -26,4 +26,5 @@ class K8sUserDefinedNetworkApi():
         return response
 
     def delete_user_defined_network_mo(self, namespace, name):
-        return self.delete_resource('UserDefinedNetwork', 'k8s.ovn.org/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('UserDefinedNetwork', 'k8s.ovn.org/v1', name, namespace=namespace)
+        return success

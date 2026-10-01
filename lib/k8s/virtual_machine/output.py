@@ -2,7 +2,7 @@ class K8sVirtualMachineOutput():
     def __init__(self):
         pass
 
-    def print_virtual_machines(self, info):
+    def print_virtual_machines_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

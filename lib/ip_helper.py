@@ -1,3 +1,4 @@
+import datetime
 import random
 import shutil
 import traceback
@@ -13,6 +14,7 @@ import validators
 import sshpubkeys
 import urllib
 import base64
+from cryptography import x509
 
 
 def get_short_uuid():
@@ -86,6 +88,12 @@ def is_valid_mac_address(address, mac_address_format='colon'):
 
 
 def reformat_mac(address):
+    if address is None:
+        return None
+    
+    if not isinstance(address, str):
+        return None
+    
     address = normalize_mac_address(address)
     if len(address) != 12:
         return None
@@ -116,6 +124,10 @@ def is_valid_ipv6_address(address):
     except socket.error:  # not a valid address
         return False
     return True
+
+
+def is_valid_ip_address(address):
+    return is_valid_ipv4_address(address) or is_valid_ipv6_address(address)
 
 
 def is_valid_ipv6_cidr(cidr):
@@ -299,6 +311,16 @@ def get_network_ipv4_in_cidr(cidr):
     ip_network_cidr = ip_network & (4294967295 << (32 - int(bits)))
 
     return socket.inet_ntoa(struct.pack('>L', ip_network_cidr))
+
+
+def is_cidr4_network(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return False
+    
+    if cidr == '%s/%s' % (get_network_ipv4_in_cidr(cidr), cidr.split('/')[1]):
+        return True
+    
+    return False
 
 
 def get_network_cidr_from_cidr(cidr):
@@ -498,18 +520,32 @@ def is_url_accessible(url, timeout=1):
     return False
 
 
-def download_url(url, filename, timeout=5, verify=True):
-    try:
-        response = requests.get(
-            url,
-            timeout=timeout,
-            verify=verify
-        )
-        with open(filename, "wb") as file_handler:
-            file_handler.write(response.content)
-    except BaseException:
-        print(traceback.format_exc())
-        return None
+def download_url(url, filename, timeout=5, verify=True, username=None, password=None):
+    if username is not None and password is not None:
+        try:
+            response = requests.get(
+                url,
+                auth=(username, password),
+                timeout=timeout,
+                verify=verify
+            )
+            with open(filename, "wb") as file_handler:
+                file_handler.write(response.content)
+        except BaseException:
+            print(traceback.format_exc())
+            return None
+    else:                
+        try:
+            response = requests.get(
+                url,
+                timeout=timeout,
+                verify=verify
+            )
+            with open(filename, "wb") as file_handler:
+                file_handler.write(response.content)
+        except BaseException:
+            print(traceback.format_exc())
+            return None
     return filename
 
 
@@ -698,3 +734,57 @@ def get_obscured_mac(address):
         return '****.****.****'
 
     return None
+
+
+def get_cert_info(data):
+    try:
+        cert = x509.load_pem_x509_certificate(data)
+    except BaseException:
+        print(traceback.format_exc())
+        return None
+
+    info = {}
+    info['version'] = 'v1'
+    if cert.version == x509.Version.v3:
+        info['version'] = 'v3'
+
+    try:
+        info['serial'] = cert.serial_number
+    except BaseException:
+        info['serial'] = '---'
+
+    try:
+        info['issuer'] = x509.RelativeDistinguishedName(cert.issuer).rfc4514_string()
+    except BaseException:
+        info['issuer'] = '---'
+    
+    try:
+        info['subject'] = x509.RelativeDistinguishedName(cert.subject).rfc4514_string()
+    except BaseException:
+        info['subject'] = '---'
+
+    try:
+        info['sign_algo'] = cert.signature_algorithm_oid._name
+    except BaseException:
+        info['sign_algo'] = '---'
+
+    try:
+        info['hash_algo'] = cert.signature_hash_algorithm.name
+    except BaseException:
+        info['hash_algo'] = '---'
+
+    try:
+        info['valid_from'] = cert.not_valid_before.strftime(
+            '%Y-%m-%dT%H:%M:%S.%f%z'
+        )
+    except BaseException:
+        info['valid_from'] = '---'
+
+    try:
+        info['valid_to'] = cert.not_valid_after.strftime(
+            '%Y-%m-%dT%H:%M:%S.%f%z'
+        )
+    except BaseException:
+        info['valid_to'] = '---'
+
+    return info

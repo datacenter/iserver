@@ -9,13 +9,7 @@ class K8sDataVolumeInfo():
         if data_volume_mo is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            data_volume_mo
-        )
-        info.update(metadata_info)
+        info = self.get_base_info(data_volume_mo)
 
         info['claim_name'] = self.get(data_volume_mo, 'status:claimName')
         info['size'] = self.get(data_volume_mo, 'spec:storage:resources:requests:storage')
@@ -26,9 +20,9 @@ class K8sDataVolumeInfo():
         info['progress'] = self.get(data_volume_mo, 'status:progress')
 
         info['cron'] = None
-        for label_key in metadata_info['label']:
+        for label_key in info['label']:
             if label_key == 'cdi.kubevirt.io/dataImportCron':
-                info['cron'] = metadata_info['label'][label_key]
+                info['cron'] = info['label'][label_key]
 
         info['used'] = False
         info['usage'] = []

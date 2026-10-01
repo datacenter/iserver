@@ -147,9 +147,9 @@ class K8sStorageSystemInfo():
         
         del storage_system_mo['metadata']['finalizers']
 
-        return self.set_storage_system_mo(storage_system_mo)
+        return self.replace_resource(storage_system_mo)
 
-    def delete_namespaced_storage_systems(self, namespace, my_output=None, wait=True, finalizers=False):
+    def delete_namespaced_storage_systems(self, namespace, my_output=None, wait=True, finalizers=False, optional=False):
         if my_output is not None:
             my_output.default('Delete odf storage systems', before_newline=True, underline=True)
             my_output.default('- namespace: %s' % (namespace))
@@ -158,6 +158,9 @@ class K8sStorageSystemInfo():
             object_filter=['namespace:%s' % (namespace)]
         )
         if items is None:
+            if optional:
+                return True
+            
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

@@ -66,6 +66,18 @@ def get_nncp_input_data_eth(params, my_output):
     return params
 
 
+def get_nncp_input_data_lo(params, my_output):
+    params['ipv4'] = my_output.get_input('\nIPv4: ')
+    if len(params['ipv4']) == 0:
+        return None
+
+    if not ip_helper.is_valid_ipv4_cidr(params['ipv4']):
+        my_output.error('Invalid IPv4 CIDR')
+        return None
+        
+    return params
+
+
 def get_nncp_input_data_bond(params, my_output):
     params['name'] = my_output.get_input('\nInterface name: ')
     if len(params['name']) == 0:
@@ -159,7 +171,7 @@ def run(k8s_handler, my_output):
     if len(params['policy']) == 0:
         params['policy'] = 'policy'
 
-    supported_types = ['bond', 'eth', 'lb', 'vlan']
+    supported_types = ['bond', 'eth', 'lb', 'vlan', 'lo']
     params['type'] = my_output.select_from_list(
         'Select interface type',
         supported_types
@@ -172,24 +184,40 @@ def run(k8s_handler, my_output):
             params, 
             my_output
         )
+        if params is None:
+            return None
 
+    if params['type'] == 'lo':
+        params = get_nncp_input_data_lo(
+            params, 
+            my_output
+        )
+        if params is None:
+            return None
+        
     if params['type'] == 'eth':
         params = get_nncp_input_data_eth(
             params, 
             my_output
         )
+        if params is None:
+            return None
 
     if params['type'] == 'vlan':
         params = get_nncp_input_data_vlan(
             params, 
             my_output
         )
+        if params is None:
+            return None
 
     if params['type'] == 'bond':
         params = get_nncp_input_data_bond(
             params, 
             my_output
         )
+        if params is None:
+            return None
 
     params = get_nncp_input_data_node(
         k8s_handler,

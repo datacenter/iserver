@@ -1,5 +1,4 @@
 import time
-from lib import filter_helper
 
 
 class K8sClusterOperatorInfo():
@@ -7,6 +6,9 @@ class K8sClusterOperatorInfo():
         self.cluster_operator = None
 
     def get_cluster_operator_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(managed_object)
 
         info['manager'] = None
@@ -94,51 +96,6 @@ class K8sClusterOperatorInfo():
 
         return info
 
-    def get_cluster_operators_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.cluster_operator is not None:
-                return self.cluster_operator
-
-        managed_objects = self.get_cluster_operator_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
-
-        self.cluster_operator = []
-        for managed_object in managed_objects:
-            cluster_operator_info = {}
-            cluster_operator_info['info'] = self.get_cluster_operator_info(
-                managed_object
-            )
-            cluster_operator_info['mo'] = managed_object
-            self.cluster_operator.append(
-                cluster_operator_info
-            )
-
-        return self.cluster_operator
-
-    def match_cluster_operator(self, cluster_operator_info, cluster_operator_filter):
-        if cluster_operator_filter is None or len(cluster_operator_filter) == 0:
-            return True
-
-        for ap_rule in cluster_operator_filter:
-            key = ap_rule.split(':')[0]
-            value = ':'.join(ap_rule.split(':')[1:])
-
-            key_found = False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_string(value, cluster_operator_info['name']):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_cluster_operator',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
     def get_cluster_operator_deployment(self, cluster_operator_info, deployments):
         if cluster_operator_info['related'] is None:
             return None
@@ -200,74 +157,67 @@ class K8sClusterOperatorInfo():
         return related
 
     def get_cluster_operators(self, object_filter=None, return_mo=False, deployment_info=False, cache_enabled=True):
-        all_cluster_operators = self.get_cluster_operators_info(cache_enabled=cache_enabled)
+        all_cluster_operators = self.get_infos(
+            'cluster_operator', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
         if all_cluster_operators is None:
             return None
 
+        if return_mo:
+            return all_cluster_operators
+        
         cluster_operators = []
 
         if deployment_info:
             deployments = self.get_deployments()
 
         for cluster_operator_info in all_cluster_operators:
-            if not self.match_cluster_operator(cluster_operator_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                cluster_operators.append(
-                    cluster_operator_info['mo']
-                )
+            if not self.match_info(cluster_operator_info, object_filter):
                 continue
 
             if deployment_info:
-                cluster_operator_info['info']['co_deployment'] = None
-                cluster_operator_info['info']['related_deployment'] = None
+                cluster_operator_info['co_deployment'] = None
+                cluster_operator_info['related_deployment'] = None
 
                 cluster_operator_deployment = self.get_cluster_operator_deployment(
-                    cluster_operator_info['info'],
+                    cluster_operator_info,
                     deployments
                 )
                 if cluster_operator_deployment is not None:
-                    cluster_operator_info['info']['co_deployment'] = {}
-                    cluster_operator_info['info']['co_deployment']['namespace'] = cluster_operator_deployment['namespace']
-                    cluster_operator_info['info']['co_deployment']['name'] = cluster_operator_deployment['name']
+                    cluster_operator_info['co_deployment'] = {}
+                    cluster_operator_info['co_deployment']['namespace'] = cluster_operator_deployment['namespace']
+                    cluster_operator_info['co_deployment']['name'] = cluster_operator_deployment['name']
                     cluster_operator_related_deployments = self.get_cluster_operator_related_deployments(
-                        cluster_operator_info['info'],
+                        cluster_operator_info,
                         deployments
                     )
                     if cluster_operator_related_deployments is not None:
-                        cluster_operator_info['info']['related_deployment'] = []
+                        cluster_operator_info['related_deployment'] = []
                         for related_deployment in cluster_operator_related_deployments:
                             item = {}
                             item['namespace'] = related_deployment['namespace']
                             item['name'] = related_deployment['name']
-                            cluster_operator_info['info']['related_deployment'].append(
+                            cluster_operator_info['related_deployment'].append(
                                 item
                             )
 
             cluster_operators.append(
-                cluster_operator_info['info']
+                cluster_operator_info
             )
 
         return cluster_operators
 
-    def get_cluster_operator(self, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'name:%s' % (name)
+    def get_cluster_operator(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'cluster_operator', 
+            name,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-        cluster_operators = self.get_cluster_operators(
-            object_filter=object_filter,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
-        )
-        if cluster_operators is None:
-            return None
-
-        if len(cluster_operators) == 1:
-            return cluster_operators[0]
-
-        return None
     
     def are_cluster_operators_available(self, operators=None, cache_enabled=True):
         if operators is None:

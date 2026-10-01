@@ -6,8 +6,9 @@ class K8sFrrConfigurationCreate():
         namespace = self.get(body, 'metadata:namespace')
         name = self.get(body, 'metadata:name')
 
-        if not self.create_resource(body, object_name='frr_configuration', my_output=my_output, confirmation=confirmation):
-            return None
+        success, _ = self.create_resource(body, object_name='frr_configuration', my_output=my_output, confirmation=confirmation)
+        if not success:
+            return False
 
         if not wait:
             return True

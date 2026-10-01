@@ -1,4 +1,4 @@
-# OpenShift Data Foundation (ODF) Operator - Create Operator
+# OpenShift Data Foundation (ODF) - Create Operator
 
 ## Workflow
 

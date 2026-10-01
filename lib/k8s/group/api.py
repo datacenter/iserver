@@ -21,4 +21,5 @@ class K8sGroupApi():
         return response
     
     def delete_group_mo(self, name):
-        return self.delete_resource('User', 'user.openshift.io/v1', name)
+        success, _ = self.delete_resource('User', 'user.openshift.io/v1', name)
+        return success

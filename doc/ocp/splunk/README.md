@@ -1,8 +1,19 @@
-# Splunk Operator
+# Splunk
 
-The Splunk Operator for Kubernetes enables you to quickly and easily deploy Splunk Enterprise as explained in [Splunk documentation](https://splunk.github.io/splunk-operator/).
+[[Back]](../Operations.md)
 
-## Life Cycle Management Commands
+![Logo](../images/splunk/logo.png) 
+
+The Splunk Operator for Kubernetes enables you to quickly and easily deploy Splunk Enterprise.
+
+## Knowledge Base
+
+- [install operator](./kb/operator.md)
+- [add standalone instance](./kb/standalone.md)
+- [Splunk documentation](https://splunk.github.io/splunk-operator/)
+- [Splunk operator github](https://github.com/splunk/splunk-operator/blob/main/docs/OpenShift.md)
+
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

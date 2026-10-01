@@ -26,4 +26,5 @@ class K8sDeploymentApi():
         return response
 
     def delete_deployment_mo(self, namespace, name):
-        return self.delete_resource('Deployment', 'apps/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('Deployment', 'apps/v1', name, namespace=namespace)
+        return success

@@ -51,7 +51,7 @@ class K8sCiliumConfigUpdate():
             return False
         
         if my_output is not None:
-            my_output.default('CiliumConfig CRD patched')
+            my_output.default('CiliumConfig CRD replaced')
 
         if not wait:
             return True
@@ -108,7 +108,7 @@ class K8sCiliumConfigUpdate():
             rolled_back = True
 
             if my_output is not None:
-                my_output.default('CiliumConfig CRD patched')
+                my_output.default('CiliumConfig CRD replaced')
                 my_output.default('Extra nap...')
 
             time.sleep(60)

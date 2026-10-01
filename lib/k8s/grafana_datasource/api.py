@@ -1,100 +1,30 @@
-import time
-import traceback
-
-
 class K8sGrafanaDatasourceApi():
     def __init__(self):
         self.grafana_datasource_mo = None
+        self.grafana_datasource_namespace_mo = {}
 
-    def get_grafana_datasource_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.grafana_datasource_mo is not None:
-                return self.grafana_datasource_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='grafana.integreatly.org/v1beta1',
-                kind='GrafanaDatasource'
-            )
-            self.grafana_datasource_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'grafana_datasource',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_grafana_datasource_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'grafana_datasource',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'grafana_datasource',
-            self.grafana_datasource_mo
+    def get_grafana_datasource_mo(self, namespace=None, name=None, cache_enabled=True):
+        cache_hit, response = self.get_namespaced_cache(
+            cache_enabled, 
+            namespace, 
+            name,
+            self.grafana_datasource_mo,
+            self.grafana_datasource_namespace_mo
+        )
+        if cache_hit:
+            return response
+                
+        response, self.grafana_datasource_mo, self.grafana_datasource_namespace_mo = self.get_namespaced_resources(
+            'GrafanaDatasource', 
+            'grafana.integreatly.org/v1beta1', 
+            self.grafana_datasource_mo,
+            self.grafana_datasource_namespace_mo,
+            namespace=namespace,
+            name=name
         )
 
-        return self.grafana_datasource_mo
-
-    def create_grafana_datasource_mo(self, body):
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return False
-
-        try:
-            start_time = int(time.time() * 1000)
-            obj_list = api_handler.resources.get(api_version='grafana.integreatly.org/v1beta1', kind='GrafanaDatasource')
-            success = True
-            response = obj_list.create(
-                body=body,
-                namespace=body['metadata']['namespace'],
-            )
-        except BaseException:
-            success = False
-            self.log.error('ocp.create_grafana_datasource', traceback.format_exc())
-
-        self.log.ocp(
-            'create',
-            'create_grafana_datasource',
-            success,
-            int(time.time() * 1000) - start_time
-        )
-
-        return success
+        return response
 
     def delete_grafana_datasource_mo(self, namespace, name):
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return False
-
-        try:
-            start_time = int(time.time() * 1000)
-            obj_list = api_handler.resources.get(api_version='grafana.integreatly.org/v1beta1', kind='GrafanaDatasource')
-            success = True
-            response = obj_list.delete(
-                namespace=namespace,
-                name=name
-            )
-        except BaseException:
-            success = False
-            self.log.error('ocp.delete_grafana_datasource', traceback.format_exc())
-
-        self.log.ocp(
-            'delete',
-            'grafana_datasource',
-            success,
-            int(time.time() * 1000) - start_time
-        )
-
+        success, _ = self.delete_resource('GrafanaDatasource', 'grafana.integreatly.org/v1beta1', name, namespace=namespace)
         return success

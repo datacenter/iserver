@@ -1,4 +1,4 @@
-# OpenShift Data Foundation (ODF) Operator - Delete Cluster and Operator
+# OpenShift Data Foundation (ODF) - Delete Cluster and Operator
 
 ## Workflow
 

@@ -1,34 +1,5 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
 from menu.common import get_confirmation
 
-
-def initialize(params, my_output, log_id):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    return params
 
 def get_default_params():
     params = {}
@@ -36,28 +7,69 @@ def get_default_params():
     params['name'] = 'mtv-operator'
     params['operator-group-name'] = 'mtv-operator-group'
     params['delete-namespace'] = True
+    params['create_subscription'] = 'create_mtv_subscription'
+    params['delete_subscription'] = 'delete_mtv_subscription'
+    params['resource_keys'] = [
+        'provider',
+        'network_map',
+        'storage_map',
+        'plan',
+        'migration'
+    ]
+    params['resource_output'] = [
+        ['provider', 'provider'],
+        ['network map', 'network_map'],
+        ['storage map', 'storage_map'],
+        ['plan', 'plan'],
+        ['migration', 'migration']
+    ]
+    params['title'] = 'OpenShift Workflow - Migration Toolkit for Virtualization Operator'
     return params
 
 
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
+def collect_state_info(params, my_output):
+    params['summary']['ready'] = params['k8s_handler'].is_subscription_mtv_ready()
+    params['summary'] = params['k8s_handler'].add_tick(
+        params['summary'],
+        'ready',
+        True,
+        'readyTick'
+    )
+
+    params['instance'] = {}
+    params['instance']['__Output'] = {}
+    params['instance']['readyTick'] = '\u2717'
+    params['instance']['__Output']['readyTick'] = 'Red'
+    
+    instances = params['k8s_handler'].get_forklift_controllers(cache_enabled=False)
+    if instances is not None and len(instances) == 1:
+        params['instance'] = instances[0]
+        params['instance'] = params['k8s_handler'].add_tick(
+            params['instance'],
+            'ready',
+            True,
+            'readyTick'
+        )
+    
+    params['summary']['resources'] = False
+
+    for key in params['__default__']['resource_keys']:
+        my_output.debug('- %s' % (key.replace('_', ' ')))
+        params[key] = getattr(params['k8s_handler'], 'get_%ss' % (key))(all_info=True, cache_enabled=False)
+
+    for key in params['__default__']['resource_keys']:
+        params['summary'][key] = '---'
+        if params[key] is not None:
+            params['summary'][key] = len(params[key])
+            if len(params[key]) > 0:
+                params['summary']['resources'] = True
+
     return params
-
-
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params
 
 
 def is_subscription_ready(params, my_output, details=False):
     subscription = params['k8s_handler'].get_subscription_by_package(
-        params['name'],
+        params['__default__']['name'],
         return_mo=False,
         cache_enabled=False
     )
@@ -116,10 +128,10 @@ def is_instance_ready(params, my_output):
 def select_migration_plans(params, my_output, k8s_output_handler):
     object_filter = []
     if not params['wipe']:
-        if params['plan_namespace'] is not None:
-            object_filter.append('namespace:%s' % (params['plan_namespace']))
-        if params['plan_name'] is not None:
-            object_filter.append('name:%s' % (params['plan_name']))
+        if params['namespace'] is not None:
+            object_filter.append('namespace:%s' % (params['namespace']))
+        if params['name'] is not None:
+            object_filter.append('name:%s' % (params['name']))
 
     migration_plans = params['k8s_handler'].get_plans(
         object_filter=object_filter,
@@ -134,7 +146,7 @@ def select_migration_plans(params, my_output, k8s_output_handler):
         my_output.default('No migration plan found', before_newline=True)
         return True, None
     
-    k8s_output_handler.print_plans(migration_plans)
+    k8s_output_handler.print_plans_state(migration_plans)
 
     if params['confirmation']:
         if not get_confirmation():
@@ -156,7 +168,7 @@ def is_mtv_unconfigured(params, my_output, k8s_output_handler):
         return False
 
     if len(providers) > 0:
-        k8s_output_handler.print_providers(providers)
+        k8s_output_handler.print_providers_state(providers)
         my_output.error('Delete providers first')
         return False
     
@@ -171,7 +183,7 @@ def is_mtv_unconfigured(params, my_output, k8s_output_handler):
         return False
     
     if len(maps) > 0:
-        k8s_output_handler.print_network_maps(maps)
+        k8s_output_handler.print_network_maps_state(maps)
         my_output.error('Delete network maps first')
         return False
 
@@ -186,7 +198,7 @@ def is_mtv_unconfigured(params, my_output, k8s_output_handler):
         return False
 
     if len(maps) > 0:
-        k8s_output_handler.print_storage_maps(maps)
+        k8s_output_handler.print_storage_maps_state(maps)
         my_output.error('Delete storage maps first')
         return False
 
@@ -202,7 +214,7 @@ def is_mtv_unconfigured(params, my_output, k8s_output_handler):
         return False
 
     if len(plans) > 0:
-        k8s_output_handler.print_plans(plans)
+        k8s_output_handler.print_plans_state(plans)
         my_output.error('Delete migration plans first')
         return False
 
@@ -216,7 +228,7 @@ def is_mtv_unconfigured(params, my_output, k8s_output_handler):
         return False
     
     if len(plans) > 0:
-        k8s_output_handler.print_migrations(migrations)
+        k8s_output_handler.print_migrations_state(migrations)
         my_output.error('Delete migrations first')
         return False
 

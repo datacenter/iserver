@@ -3,11 +3,10 @@ class K8sAuthenticationInfo():
         self.authentication = None
 
     def get_authentication_info(self, managed_object):
-        info = self.get_base_info(
-            managed_object
-        )
-        info['spec'] = self.get(managed_object, 'spec')
-        info['status'] = self.get(managed_object, 'status')
+        if managed_object is None:
+            return None
+        
+        info = self.get_base_info(managed_object)
         info['logLevel'] = self.get(managed_object, 'spec:logLevel', on_error='Normal', on_none='Normal')
         
         condition_map = {}
@@ -109,5 +108,11 @@ class K8sAuthenticationInfo():
 
     def is_authentication(self, name, cache_enabled=True, optimized=True):
         if self.get_authentication(name, cache_enabled=cache_enabled, optimized=optimized) is None:
+            return False
+        return True
+
+    def is_any_authentication(self, cache_enabled=True):
+        infos = self.get_authentications(cache_enabled=cache_enabled)
+        if infos is None or len(infos) == 0:
             return False
         return True

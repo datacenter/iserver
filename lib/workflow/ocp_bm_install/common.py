@@ -177,7 +177,7 @@ def check_iso_server_local(user_settings, my_output, log_id=None):
 
     my_output.default('Pull coreos installer container image: %s' % (user_settings['iso']['image']))
     try:
-        cmd = 'sudo %s pull %s' % (exec_command, user_settings['iso']['image'])
+        cmd = 'sudo -E %s pull %s' % (exec_command, user_settings['iso']['image'])
         my_output.default('Run: %s' % (cmd))
         output = subprocess.run(cmd.split(' '), capture_output=True, text=True, check=True)
         success = True
@@ -252,7 +252,7 @@ def check_iso_server_remote(user_settings, my_output, log_id=None):
         user_settings['iso']['exec'] = exec_command
 
     my_output.default('Pull coreos installer container image')
-    success, output, error = ssh_handler.run_cmd('sudo %s pull %s' % (exec_command, user_settings['iso']['image']))
+    success, output, error = ssh_handler.run_cmd('sudo -E %s pull %s' % (exec_command, user_settings['iso']['image']))
     if not success:
         my_output.error('Image pull failed')
         return False

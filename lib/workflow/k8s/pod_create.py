@@ -21,31 +21,28 @@ def validate(params):
     if not success:
         return None, params
 
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys, add_defaults=False, copy_handler=False), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Pod - Create', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Pod - Create')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     body = params['k8s_handler'].get_pod_template_body(params)
     if body is None:
         my_output.error('Exception in processing input data')
         return False
     
     success = params['k8s_handler'].create_pod(
-        params['namespace'], 
-        params['name'], 
         body,
         confirmation=params['confirmation'], 
         my_output=my_output, 

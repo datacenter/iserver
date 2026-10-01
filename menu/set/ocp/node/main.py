@@ -12,7 +12,7 @@ class Failure(Exception):
 @click.group("node")
 @click.pass_obj
 def set_ocp_node_menu(ctx):
-    """OCP Node Actions and Settings"""
+    """OpenShift Node Actions and Settings"""
 
 
 set_ocp_node_menu.add_command(set_ocp_node_reboot_command)

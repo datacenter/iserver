@@ -1,4 +1,6 @@
-# Splunk Operator - Delete Operator
+# Splunk - Delete Operator
+
+[[Back]](./README.md)
 
 ## Workflow
 

@@ -1,22 +1,12 @@
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_local_storage_operator import operator_create
-from lib.workflow.ocp_local_storage_operator import volume_create
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("lso")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['operator', 'volume'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--nso", is_flag=True, show_default=True, default=False, help="Enable node selector override namespace annotation")
 @click.option("--channel", default='__default__', show_default=True, help="Operator channel")
@@ -29,7 +19,7 @@ class ErrorExit(Exception):
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_lso_command(
         ctx, 
-        cluster_name, 
+        cluster_names, 
         nso, 
         channel, 
         mode,
@@ -43,50 +33,30 @@ def set_ocp_lso_command(
     ):
     """Set local storage operator in openshift cluster"""
 
-    try:
-        if mode in ['operator']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['node-selector-override'] = nso
-            params['channel'] = channel
-            params['confirmation'] = not no_confirm
+    task = {}
 
-            success = operator_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['operator']:
+        task['operator'] = {}
+        task['operator']['channel'] = channel
+        task['operator']['node-selector-override'] = nso
 
-        if mode in ['volume']:
-            new_device = []
-            for item in device:
-                new_device.append(item)
+    if mode in ['volume']:
+        new_device = []
+        for item in device:
+            new_device.append(item)
 
-            new_limit = []
-            for item in device_limit:
-                new_limit.append(item)
+        new_limit = []
+        for item in device_limit:
+            new_limit.append(item)
 
-            params = {}
-            params['cluster'] = cluster_name
-            params['sc'] = storage_class
-            params['device'] = new_device
-            params['limit'] = new_limit
-            params['volume'] = volume
-            params['fstype'] = fstype
-            params['max'] = max_count
-            params['confirmation'] = not no_confirm
+        task['volume'] = {}
+        task['volume']['sc'] = storage_class
+        task['volume']['device'] = new_device
+        task['volume']['limit'] = new_limit
+        task['volume']['volume'] = volume
+        task['volume']['fstype'] = fstype
+        task['volume']['max'] = max_count
 
-            success = volume_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'lso', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

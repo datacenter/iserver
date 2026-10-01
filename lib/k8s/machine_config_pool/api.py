@@ -1,67 +1,20 @@
-import time
-import traceback
-
-
 class K8sMachineConfigPoolApi():
     def __init__(self):
         self.machine_config_pool_mo = None
-
-    def get_machine_config_pool_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.machine_config_pool_mo is not None:
-                return self.machine_config_pool_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='machineconfiguration.openshift.io/v1',
-                kind='MachineConfigPool'
-            )
-            self.machine_config_pool_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'machine_config_pool',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_machine_config_pool_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'machine_config_pool',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'machine_config_pool',
+    def get_machine_config_pool_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.machine_config_pool_mo
         )
+        if cache_hit:
+            return response
 
-        return self.machine_config_pool_mo
+        response, self.machine_config_pool_mo = self.get_resources(
+            'MachineConfigPool', 
+            'machineconfiguration.openshift.io/v1', 
+            self.machine_config_pool_mo,
+            name=name
+        )
 
-    def patch_machine_config_pool_mo(self, body):
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            obj_list = api_handler.resources.get(api_version='machineconfiguration.openshift.io/v1', kind='MachineConfigPool')
-            obj_list.patch(
-                body=body,
-                content_type='application/merge-patch+json'
-            )
-
-        except BaseException:
-            self.log.error('k8s.patch_cluster_version_mo', traceback.format_exc())
-            print(traceback.format_exc())
-            return False
-
-        return True
+        return response

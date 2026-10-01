@@ -30,17 +30,17 @@ OpenShift Cluster: bm3
 +----+--------------+-------+---------+--------------------+-------+-------------+-------+
 | ID | Pod          | Ready | Label   | Annotation         | Node  | IP          | Age   |
 +----+--------------+-------+---------+--------------------+-------+-------------+-------+
-| 1  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-3 | 10.58.24.99 | 10h8m |
+| 1  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-3 | 10.10.10.99 | 10h8m |
 |    | cilium-4ccpl |       |         | PodScheduled: ✓    |       |             |       |
 |    |              |       |         | ContainersReady: ✓ |       |             |       |
 |    |              |       |         | Ready: ✓           |       |             |       | 
 +----+--------------+-------+---------+--------------------+-------+-------------+-------+
-| 2  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-2 | 10.58.24.98 | 10h7m |
+| 2  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-2 | 10.10.10.98 | 10h7m |
 |    | cilium-fk4t6 |       |         | PodScheduled: ✓    |       |             |       |
 |    |              |       |         | ContainersReady: ✓ |       |             |       |
 |    |              |       |         | Ready: ✓           |       |             |       |
 +----+--------------+-------+---------+--------------------+-------+-------------+-------+
-| 3  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-1 | 10.58.24.97 | 10h8m |
+| 3  | cilium       | 1/1   | Running | Initialized: ✓     | bm3-1 | 10.10.10.97 | 10h8m |
 |    | cilium-n444l |       |         | PodScheduled: ✓    |       |             |       |
 |    |              |       |         | ContainersReady: ✓ |       |             |       |
 |    |              |       |         | Ready: ✓           |       |             |       |

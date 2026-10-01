@@ -66,6 +66,15 @@ class K8sDaemonSetInfo():
 
         return info
 
+    def get_daemon_sets_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'DaemonSet',
+            my_output=my_output,
+            prefix=prefix
+        )        
+
     def get_daemon_sets_info(self, cache_enabled=True):
         if cache_enabled:
             if self.daemon_set is not None:
@@ -185,19 +194,25 @@ class K8sDaemonSetInfo():
 
         now = datetime.datetime.utcnow()
         now = str(now.isoformat("T") + "Z")
-        body = {
-            'spec': {
-                'template':{
-                    'metadata': {
-                        'annotations': {
-                            'kubectl.kubernetes.io/restartedAt': now
-                        }
+
+
+        body = {}
+        body['apiVersion'] = 'apps/v1'
+        body['kind'] = 'DaemonSet'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        body['spec'] = {
+            'template':{
+                'metadata': {
+                    'annotations': {
+                        'kubectl.kubernetes.io/restartedAt': now
                     }
                 }
             }
         }
 
-        if not self.patch_daemon_set_mo(namespace, name, body):
+        if not self.patch_resource(body):
             if my_output is not None:
                 my_output.error('Daemon set [%s/%s] patch failed' % (namespace, name))
             return False

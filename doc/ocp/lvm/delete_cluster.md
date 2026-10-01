@@ -1,11 +1,14 @@
-# LVM Storage Operator - Delete cluster instance
+# LVM Storage - Delete cluster
+
+[[Back]](./README.md)
 
 ## Workflow
 
 - delete lvm cluster instance
 - if timeout waiting for no lvm cluster instance, delete metadata.finalizers and wait again
 - delete lvm storage class
-- wipe lvm from disks if requested
+- [wipe](../disk/delete_lvm.md) lvm from disks 
+- [zap](../disk/zap.md) disks with lvm filesystem
 
 ## Requirements
 
@@ -16,7 +19,8 @@
 ```
 # iserver delete ocp lvm --mode cluster
   --cluster TEXT                  Cluster Name
-  --channel TEXT                  Operator channel  [default: __default__]
+  --no-wipe                       Wipe lvm from disks
+  --no-zap                        Wipe filesystem from lvm disks
   --no-confirm                    Confirmation mode
 ```
 
@@ -25,37 +29,26 @@
 ```
 # iserver delete ocp lvm --cluster bm1 --mode cluster --wipe
 
-OpenShift Workflow - LVM Operator - Delete Cluster
-==================================================
+OpenShift Workflow - LVM - Delete Cluster
+=========================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "wipe": true,
-    "confirmation": true,
-    "ssh-required": true,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "lvms-operator",
-    "operator-group-name": "lvm-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-
+OpenShift Cluster: bm1
 
 LVM Operator
 ------------
-LVM Operator [openshift-storage/lvms] with csv [lvms-operator.v4.18.3]
+
+Operator
+- subscription          : openshift-storage/lvms
+- package               : openshift-marketplace/redhat-operators/lvms-operator
+- channel               : stable-4.18
+- install plan          : openshift-storage/install-2658c
+- install plan approved : ✓
+- installed csv         : lvms-operator.v4.18.4
+- latest_csv            : ✓
+
+LVM Operator [openshift-storage/lvms] with csv [lvms-operator.v4.18.4]
 LVM Subscription resources deployed
-LVM Cluster instance: openshift-storage/my-lvmcluster
+LVM Cluster instance: openshift-storage/lvmcluster
 LVM Cluster instance: ready
 Storage class: lvms-vg1
 Checking lvm cluster resources...
@@ -64,7 +57,11 @@ Current Resources
 -----------------
 
 Perstistent Volume Claims
-None
+
++----+-----+--------+------+------+--------+---------------+-------+----+-----+
+| ID | PVC | Status | Mode | Size | Access | Storage Class | Usage | PV | Age |
++----+-----+--------+------+------+--------+---------------+-------+----+-----+
++----+-----+--------+------+------+--------+---------------+-------+----+-----+
 
 Volume Snapshots
 None
@@ -72,113 +69,39 @@ None
 Delete LVM Cluster
 ------------------
 - namespace: openshift-storage
-- name: my-lvmcluster
+- name: lvmcluster
 - wait for no lvm cluster
+LVM Cluster instance still there... checking finalizers...
+
+Replace LVMCluster
+------------------
+- namespace: openshift-storage
+- name: lvmcluster
+
+~~~
+apiVersion: lvm.topolvm.io/v1alpha1
+kind: LVMCluster
+metadata:
+...
+~~~
+LVMCluster [openshift-storage/lvmcluster] replaced
+Finalizers removed
+Wait for no lvm cluster [timeout:60s]...
 
 Delete LVM Storage Class
 ------------------------
-- already deleted
-
-Devices to be wiped
--------------------
-- node [ocp-bm1]: /dev/sda, /dev/sdb, /dev/sdd
-
-
-Do you want to see linux lvm info first?. Continue [Y/N]? y
-
-Collect linux level lvm state...
-- ocp-bm1: collected [blks, lvs, vgs, pvs]
-
-Block Devices [ocp-bm1]
------------------------
-
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sda | sda   |      | 8:0     | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdb | sdb   |      | 8:16    | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdc | sdc   | ✓    | 8:32    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | ---     | 
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdd | sdd   |      | 8:48    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-
-Physical Volume (LVM) [ocp-bm1]
--------------------------------
-
-+----+----+-----+------+-------+-------+
-| PV | VG | Fmt | Attr | PSize | PFree |
-+----+----+-----+------+-------+-------+
-+----+----+-----+------+-------+-------+
-
-Volume Groups (LVM) [ocp-bm1]
------------------------------
-
-+----+-----+-----+------+-------+-------+
-| VG | #PV | #LV | Attr | VSize | VFree |
-+----+-----+-----+------+-------+-------+
-+----+-----+-----+------+-------+-------+
-
-Logical Volumes (LVM) [ocp-bm1]
--------------------------------
-
-+---------+----+---------+-----+---------+-------+--------+------+------+
-| LV Name | VG | LV Pool | Dev | LV Size | MSize | Layout | Role | Snap |
-+---------+----+---------+-----+---------+-------+--------+------+------+
-Continue [Y/N]? y
-
-Collect linux level lvm state...
-
-Node [ocp-bm1]
---------------
-
-LVM wiped from servers
-
-Collect linux level lvm state...
-- ocp-bm1: collected [blks, lvs, vgs, pvs]
-
-Block Devices [ocp-bm1]
------------------------
-
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sda | sda   |      | 8:0     | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdb | sdb   |      | 8:16    | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdc | sdc   | ✓    | 8:32    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdd | sdd   |      | 8:48    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-
-Physical Volume (LVM) [ocp-bm1]
--------------------------------
-
-+----+----+-----+------+-------+-------+
-| PV | VG | Fmt | Attr | PSize | PFree |
-+----+----+-----+------+-------+-------+
-+----+----+-----+------+-------+-------+
-
-Volume Groups (LVM) [ocp-bm1]
------------------------------
-
-+----+-----+-----+------+-------+-------+
-| VG | #PV | #LV | Attr | VSize | VFree |
-+----+-----+-----+------+-------+-------+
-+----+-----+-----+------+-------+-------+
-
-Logical Volumes (LVM) [ocp-bm1]
--------------------------------
-
-+---------+----+---------+-----+---------+-------+--------+------+------+
-| LV Name | VG | LV Pool | Dev | LV Size | MSize | Layout | Role | Snap |
-+---------+----+---------+-----+---------+-------+--------+------+------+
+- name: lvms-vg1
+- wait for no storage class
 
 Completed tasks
 - LVM Cluster instance deleted
 - LVM storage class deleted
+
++----+---------+-------+----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow       | Changes | Success | Duration [s] |
++----+---------+-------+----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | lvm   | delete cluster | 3       | ✓       | 68           | 
++----+---------+-------+----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

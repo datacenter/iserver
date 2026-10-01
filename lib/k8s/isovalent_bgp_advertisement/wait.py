@@ -1,38 +1,23 @@
-import time
-
-
 class K8sIsovalentBGPAdvertisementWait():
     def __init__(self):
         pass
 
-    def wait_isovalent_bgp_advertisement(self, name, max_time=360):
-        start_time = int(time.time())
-        while True:
-            info = self.get_isovalent_bgp_advertisement(
-                name,
-                cache_enabled=False
-            )
-            if info is not None:
-                return True
+    def wait_isovalent_bgp_advertisement(self, name, match_properties={}, break_properties={}, my_output=None, prompt='IsovalentBGPAdvertisement', max_time=360):
+        return self.wait_managed_object(
+            'isovalent_bgp_advertisement',
+            name,
+            match_properties=match_properties,
+            break_properties=break_properties,
+            my_output=my_output,
+            prompt='Wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )
 
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                return False
-
-            time.sleep(5)
-
-    def wait_no_isovalent_bgp_advertisement(self, name, max_time=360):
-        start_time = int(time.time())
-        while True:
-            info = self.get_isovalent_bgp_advertisement(
-                name,
-                cache_enabled=False
-            )
-            if info is None:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                return False
-
-            time.sleep(5)
+    def wait_no_isovalent_bgp_advertisement(self, name, my_output=None, prompt='IsovalentBGPAdvertisement', max_time=360):
+        return self.wait_no_managed_object(
+            'isovalent_bgp_advertisement',
+            name,
+            my_output=my_output,
+            prompt='Wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )

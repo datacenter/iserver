@@ -12,7 +12,7 @@ class K8sNodeNetworkConfigurationPolicyWait():
             match_properties=match_properties,
             break_properties=break_properties,
             my_output=my_output,
-            prompt='- wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
+            prompt='Wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
             max_time=max_time
         )
 
@@ -21,14 +21,14 @@ class K8sNodeNetworkConfigurationPolicyWait():
             'node_network_configuration_policy',
             name,
             my_output=my_output,
-            prompt='- wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
+            prompt='Wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
             max_time=max_time
         )
 
     def wait_node_network_configuration_policies_status(self, policy_names=None, max_time=1800, log_error_on_timeout=True, my_output=None):
         start_time = int(time.time())
         while True:
-            policies = self.get_node_network_configuration_policies(cache_enabled=False)
+            policies = self.get_node_network_configuration_policys(cache_enabled=False)
             if policies is not None:
                 pending = []
                 for policy in policies:

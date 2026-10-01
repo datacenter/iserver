@@ -1,48 +1,26 @@
-import time
-import traceback
-
-
 class K8sTunedApi():
     def __init__(self):
         self.tuned_mo = None
+        self.tuned_namespace_mo = {}
 
-    def get_tuned_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.tuned_mo is not None:
-                return self.tuned_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='tuned.openshift.io/v1',
-                kind='Tuned'
-            )
-            self.tuned_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'tuned',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_tuned_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'tuned',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'tuned',
-            self.tuned_mo
+    def get_tuned_mo(self, namespace=None, name=None, cache_enabled=True):
+        cache_hit, response = self.get_namespaced_cache(
+            cache_enabled, 
+            namespace, 
+            name,
+            self.tuned_mo,
+            self.tuned_namespace_mo
+        )
+        if cache_hit:
+            return response
+                
+        response, self.tuned_mo, self.tuned_namespace_mo = self.get_namespaced_resources(
+            'Tuned', 
+            'tuned.openshift.io/v1', 
+            self.tuned_mo,
+            self.tuned_namespace_mo,
+            namespace=namespace,
+            name=name
         )
 
-        return self.tuned_mo
+        return response

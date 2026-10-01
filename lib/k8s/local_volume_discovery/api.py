@@ -26,4 +26,5 @@ class K8sLocalVolumeDiscoveryApi():
         return response
 
     def delete_local_volume_discovery_mo(self, namespace, name):
-        return self.delete_resource('LocalVolumeDiscovery', 'local.storage.openshift.io/v1alpha1', name, namespace=namespace)
+        success, _ = self.delete_resource('LocalVolumeDiscovery', 'local.storage.openshift.io/v1alpha1', name, namespace=namespace)
+        return success

@@ -9,7 +9,7 @@ class K8sSubscriptionVast():
 
     def check_vast_subscription(self, name, my_output=None, check_ready=True, before_newline=True):
         if my_output is not None:
-            my_output.default('VAST CSI Operator Subscription', underline=True, before_newline=before_newline)
+            my_output.default('VAST CSI Operator Subscription', before_newline=before_newline)
 
         subscription = self.get_subscription_by_package(
             name,
@@ -89,7 +89,7 @@ class K8sSubscriptionVast():
     def is_subscription_vast_ready(self, my_output=None):
         ready = True
         if my_output is not None:
-            my_output.default('VAST CSI Operator Resources', before_newline=True, underline=True)
+            my_output.default('VAST CSI Operator Resources', before_newline=True)
 
         for deployment in self.subscription_vast_deployments:
             if self.is_deployment_ready(deployment['namespace'], deployment['name']):

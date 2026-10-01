@@ -2,42 +2,17 @@ class K8sReplicaSetOutput():
     def __init__(self):
         pass
 
-    def print_replica_sets(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Replica Set [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name',
-            'replicas',
-            'availableReplicas',
-            'readyReplicas',
-            'age'
-        ]
-
-        headers = [
-            'Replica Set',
-            'Desired',
-            'Current',
-            'Ready',
-            'Age'
-        ]
-
-        self.my_output.my_table(
+    def print_replica_sets_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=False,
-            table=True
+            [
+                ['Replica Set', 'namespace_nameT'],
+                ['Owner', 'ownerT'],
+                ['Desired', 'replicas'],
+                ['Current', 'availableReplicas'],
+                ['Ready', 'readyReplicas'],
+                ['Age', 'age']
+            ]
         )
 
     def print_replica_sets_metadata(self, info, title=False):

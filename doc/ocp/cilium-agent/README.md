@@ -6,7 +6,7 @@ The [Cilium agent](https://docs.cilium.io/en/stable/overview/component-overview/
 
 The Cilium agent listens for events from orchestration systems such as Kubernetes to learn when containers or workloads are started and stopped. It manages the eBPF programs which the Linux kernel uses to control all network access in / out of those containers.
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

@@ -10,6 +10,7 @@ from lib.ocp import settings
 from lib.intersight import helper as intersight_helper
 from lib.workflow.ocp_iotel import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params, log_id):
@@ -113,7 +114,7 @@ def validate(params, log_id):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def create_temporary_iaccount(instance, my_output):
@@ -244,12 +245,12 @@ def resolve_moids(params, servers, my_output, log_id):
                 cluster_ids[cluster_name][node['name']] = {}
                 cluster_ids[cluster_name][node['name']]['id'] = None
                 cluster_ids[cluster_name][node['name']]['device_id'] = None
-                for annotation in node['annotations']:
+                for annotation in node['annotation']:
                     if len(annotation.split('intersight-')) > 1:
                         if len(annotation.split('intersight-dev-')) > 1:
-                            cluster_ids[cluster_name][node['name']]['device_id'] = node['annotations'][annotation]
+                            cluster_ids[cluster_name][node['name']]['device_id'] = node['annotation'][annotation]
                         else:
-                            cluster_ids[cluster_name][node['name']]['id'] = node['annotations'][annotation]
+                            cluster_ids[cluster_name][node['name']]['id'] = node['annotation'][annotation]
 
                 if cluster_ids[cluster_name][node['name']]['id'] is None:
                     my_output.error('node %s has no intersight id annotation' % (node['name']))
@@ -433,17 +434,18 @@ def modify_poller(params, instance, my_output, log_id):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Open Telemetry (iotel) - Set Poller', before_newline=True, after_newline=True, double_underline=True)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
 
-    params, error = validate(params, log_id)
+    params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
-    
-    params = local_common.initialize(params, my_output, log_id)
+
+    ocp_common.print_title(params, my_output, 'Set Poller')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     params = local_common.get_instances(params, my_output)
     if params is None: 
         return False

@@ -68,7 +68,7 @@ class K8sSubscriptionIntersight():
         if ucs_tool:
             resources.extend(self.ucs_tool_intersight_resources)
 
-        return self.wait_subscription_resources_ready('intersight', resources, my_output=my_output)
+        return self.wait_subscription_resources('intersight', resources, my_output=my_output)
 
     def wait_no_subscription_intersight(self, my_output=None):
         resources = self.subscription_intersight_resources

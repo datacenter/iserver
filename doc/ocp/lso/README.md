@@ -1,12 +1,19 @@
-# Local Storage Operator (LSO)
+# Local Storage (LSO)
+
+[[Back]](../Operations.md) [[Disk Tools]](../disk/README.md)
 
 The Local Storage Operator (LSO) allows provisioning of persistent storage by using local volumes. Local persistent volumes allows access to local storage devices, such as a disk or partition, by using the standard persistent volume claim interface.
 
-LSO is required in case [OpenShift Data Foundation (ODF)](../odf/README.md) is deployed on the same bare metal servers as OpenShift cluster.
+>[!NOTE]
+> LSO is **required** in case [OpenShift Data Foundation (ODF)](../odf/README.md) is deployed on the same bare metal servers as OpenShift cluster
 
-Refer to [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/storage/configuring-persistent-storage#persistent-storage-using-local-storage) and [GitHub](https://github.com/openshift/local-storage-operator) for details.
+## Knowledge Base
 
-## Life Cycle Management Commands
+- [Example](./kb/example.md): local storage on 3-node OpenShift Cluster with explicitly defined block devices
+- [Local Storage Operator in GitHub](https://github.com/openshift/local-storage-operator)
+- [OpenShift documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/storage/configuring-persistent-storage#persistent-storage-using-local-storage)
+
+## Commands
 
 Command | Intent | Details
 --- | --- | ---
@@ -33,8 +40,4 @@ iserver delete k8s locv | delete local volume | [Link](./locv.md)
 iserver delete k8s locvd | delete local volume discovery | [Link](./locvd.md)
 iserver delete k8s locvs | delete local volume set | [Link](./locvs.md)
 
-## Extras
-
-- local storage on 3-node OpenShift Cluster with explicitly defined block devices ([example](./example.md))
-
-[[Back]](../Operations.md)
+[[Back]](../Operations.md) [[Disk Tools]](../disk/README.md)

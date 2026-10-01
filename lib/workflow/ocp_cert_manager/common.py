@@ -1,114 +1,92 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
-from lib.workflow import ocp_common
-
-
-def initialize(params, my_output, log_id):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['mgmt-required'] = True
-    ocp_check_params['cli-helm-check'] = True
-    ocp_check_params['cli-helm-required'] = True
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    params['ssh_handler'] = ocp_common.get_management_node_ssh_handler(params['cluster'], log_id=log_id)
-    return params
-
-
 def get_default_params():
     params = {}
     params['namespace'] = 'cert-manager'
     params['helm'] = 'cert-manager'
     params['repo_name'] = 'jetstack'
     params['repo_url'] = 'https://charts.jetstack.io'
+    params['repo'] = '%s %s' % (params['repo_name'], params['repo_url'])
+    params['title'] = 'OpenShift Workflow - Certificate Manager'
+    params['resource_keys'] = [
+        'cluster issuer',
+        'issuer',
+        'certificate request',
+        'certificate'
+    ]
+    params['resource_output'] = [
+        ['cluster issuer', 'cluster issuer'],
+        ['issuer', 'issuer'],
+        ['certificate request', 'certificate request'],
+        ['certificate', 'certificate']
+    ]
     return params
 
 
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
+def collect_state_info(params, resource=True):
+    params['state'] = {}
+    params['state']['repo'] = params['mgmt_linux_handler'].get_helm_repo(object_filter=['name:%s' % (params['__default__']['repo_name'])], cache_enabled=False)
+    params['state']['chart'] = params['mgmt_linux_handler'].get_helm_chart(object_filter=['name:%s' % (params['__default__']['helm'])], cache_enabled=False)
+    if resource:
+        params = collect_resource_info(params)
     return params
 
 
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
+def collect_resource_info(params):
+    params['state']['resources'] = False
+    params['resource'] = {}  
+    params['state']['crd'] = True
+    for key in params['__default__']['resource_keys']:
+        if key in ['certificate request']:
+            params['resource'][key] = getattr(params['k8s_handler'], 'get_%ss' % (key.replace(' ', '_')))(cache_enabled=False)
+        else:
+            params['resource'][key] = getattr(params['k8s_handler'], 'get_%ss' % (key.replace(' ', '_')))(secret_info=True, cache_enabled=False)
+        if params['resource'][key] is None:
+            print(key)
+            params['state']['crd'] = False
 
-    return new_params
+    params['resource_summary'] = {}
+    for key in params['__default__']['resource_keys']:
+        params['resource_summary'][key] = '---'
+        if params['resource'][key] is not None:
+            params['resource_summary'][key] = len(params['resource'][key])
+            if len(params['resource'][key]) > 0:
+                params['state']['resources'] = True
+
+    return params
 
 
-def is_repo(params, my_output):
-    my_output.default('Check repo %s %s' % (params['repo_name'], params['repo_url']))    
-    success, output, error = params['ssh_handler'].run_cmd(
-        'helm repo ls'
-    )
-    if not success:
-        if 'no repositories to show' in output or 'no repositories to show' in error:
-            my_output.default('Not found')
-            return False
-                    
-        my_output.error('Failed')
-        my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
-        return False
+def print_state(params, my_output, linux_output_handler):
+    if params['state']['repo'] is None:
+        my_output.default('Repository %s %s' % (
+            params['__default__']['repo_name'],
+            my_output.add_color('not found', 'Red')
+        ))
+        return
+
+    if params['state']['chart'] is None:
+        my_output.default('Package %s %s' % (
+            params['__default__']['helm'],
+            my_output.add_color('not found', 'Red')
+        ))
+        return
     
-    if params['repo_name'] in output:
-        my_output.default('Found')
-        return True
-    
-    my_output.default('Not found')
-    return False
+    linux_output_handler.print_helm_charts_state([params['state']['chart']])
+    print_resource_summary(params, my_output)
 
 
-def is_helm(params, my_output):
-    my_output.default('Check helm chart %s' % (params['helm']))    
-    success, output, error = params['ssh_handler'].run_cmd(
-        'helm ls -A'
-    )
-    if not success:
-        my_output.error('Failed')
-        my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
-        return False
+def print_resource_summary(params, my_output):
+    my_output.dictionary_ng(
+        'Certificate Manager Resources',
+        params['resource_summary'],
+        params['__default__']['resource_output']
+    )   
 
-    if params['helm'] in output:
-        my_output.default('Found')
-        return True
 
-    my_output.default('Not found')
-    return False
+def print_resources(params, k8s_output_handler):
+    for key in params['__default__']['resource_keys']:
+        if params['resource'][key] is None:
+            continue
 
-def get_crds(params):
-    crd = {}
-    crd['ready'] = params['k8s_handler'].is_custom_resource_definition('clusterissuers.cert-manager.io')
-    crd['used'] = False
-    if crd['ready']:
-        crd['issuer'] = params['k8s_handler'].get_issuers(cache_enabled=False)
-        if len(crd['issuer']) > 0:
-            crd['used'] = True
-        crd['certificate'] = params['k8s_handler'].get_certificates(cache_enabled=False)
-        if len(crd['certificate']) > 0:
-            crd['used'] = True
+        if len(params['resource'][key]) == 0:
+            continue
 
-    return crd
+        getattr(k8s_output_handler, 'print_%ss_state' % (key.replace(' ', '_')))(params['resource'][key])

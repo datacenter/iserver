@@ -1,35 +1,24 @@
 from lib import output_helper
+from lib.linux import output as linux_output
 from lib.workflow.ocp_cert_manager import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def add_repo(params, my_output):
-    my_output.default('Add repo %s %s' % (params['repo_name'], params['repo_url']))
+    my_output.default('Add repo %s %s' % (params['__default__']['repo_name'], params['__default__']['repo_url']))
     success, output, error = params['ssh_handler'].run_cmd(
-        'helm repo add %s %s' % (params['repo_name'], params['repo_url'])
+        'helm repo add %s %s' % (params['__default__']['repo_name'], params['__default__']['repo_url'])
     )
     my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
     if not success:
@@ -41,13 +30,13 @@ def add_repo(params, my_output):
 
 
 def add_helm(params, my_output):
-    my_output.default('Install %s/%s' % (params['repo_name'], params['helm']))
+    my_output.default('Install %s/%s' % (params['__default__']['repo_name'], params['__default__']['helm']))
     success, output, error = params['ssh_handler'].run_cmd(
         'helm install %s %s/%s --namespace %s --create-namespace --set crds.enabled=true' % (
-            params['helm'],
-            params['repo_name'],
-            params['helm'],
-            params['namespace']
+            params['__default__']['helm'],
+            params['__default__']['repo_name'],
+            params['__default__']['helm'],
+            params['__default__']['namespace']
         )
     )
     my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
@@ -61,36 +50,33 @@ def add_helm(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Certificate Manager - Install', before_newline=True, after_newline=True, double_underline=True)
-
+    linux_output_handler = linux_output.LinuxOutput(log_id=log_id)
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Install')
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True, linux_required=True)
     if params is None:
         return False
 
-    if not local_common.is_repo(params, my_output):
+    params = local_common.collect_state_info(params, resource=False)
+
+    if params['state']['repo'] is None:
         success = add_repo(params, my_output)
         if not success:
             return False
         
-    if not local_common.is_helm(params, my_output):
+    if params['state']['chart'] is None:
         success = add_helm(params, my_output)
         if not success:
             return False
 
-    crds = local_common.get_crds(params)
-    if not crds['ready']:
-        my_output.error('Failed to get crds')
-        return False
-    
-    my_output.default('CRDs found')
+    params = local_common.collect_state_info(params)
+    local_common.print_state(params, my_output, linux_output_handler)
 
     my_output.default('')
     my_output.default('Completed tasks')
     my_output.default('- certificate manager installed')
-
     return True

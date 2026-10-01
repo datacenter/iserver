@@ -1,89 +1,40 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_mtv_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'plan' not in params:
-        return None, 'Map name required'
-    
-    if 'source' not in params:
-        return None, 'Source name required'
-
-    if 'destination' not in params:
-        return None, 'Destination name required'
-
-    if 'network' not in params:
-        return None, 'Network map name required'
-
-    if 'storage' not in params:
-        return None, 'Storage map name required'
-
-    if 'vm' not in params:
-        return None, 'VM list required'
-
-    if not isinstance(params['vm'], list):
-        return None, 'VM list required'
-
-    if 'type' not in params:
-        return None, 'Migration type required'
-
-    if params['type'] not in ['cold', 'warm']:
-        return None, 'Unsupported migration type'
-    
-    if 'target' not in params:
-        return None, 'Target namespace required'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'wait' not in params:
-        params['wait'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'plan',
-        'source',
-        'destination',
-        'network',
-        'storage',
-        'vm',
-        'type',
-        'target',
-        'wait',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['namespace', True, 'openshift-mtv', 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None],
+        ['source', False, None, 'str', None, None, None, None],
+        ['destination', False, None, 'str', None, None, None, None],
+        ['network', False, None, 'str', None, None, None, None],
+        ['storage', False, False, 'str', None, None, None, None],
+        ['vm', False, None, 'list-of-str', 1, None, None, None],
+        ['type', False, None, 'str', None, None, ['cold', 'warm'], None],
+        ['target', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Migration Toolkit for Virtualization Operator - Create Migration Plan', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Migration Plan')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
@@ -92,8 +43,8 @@ def run(params, log_id=None):
 
     my_output.default('Validation checks', before_newline=True)
 
-    if params['k8s_handler'].is_plan(params['namespace'], params['plan']):
-        my_output.default('- migration plan %s already defined' %  (params['plan']), before_newline=True)
+    if params['k8s_handler'].is_plan(params['namespace'], params['name']):
+        my_output.default('- migration plan %s already defined' %  (params['name']), before_newline=True)
         return True
 
     info = params['k8s_handler'].get_provider(params['namespace'], params['source'])
@@ -127,7 +78,7 @@ def run(params, log_id=None):
 
     success = params['k8s_handler'].create_plan(
         params['namespace'],
-        params['plan'],
+        params['name'],
         params['source'],
         params['destination'],
         params['network'],
@@ -143,11 +94,11 @@ def run(params, log_id=None):
     plans = params['k8s_handler'].get_plans(
         object_filter=[
             'namespace:%s' % (params['namespace']),
-            'name:%s' % (params['plan'])
+            'name:%s' % (params['name'])
         ],
         cache_enabled=False
     )
-    k8s_output_handler.print_plans(plans)
+    k8s_output_handler.print_plans_state(plans)
 
     if not success:
         return False        

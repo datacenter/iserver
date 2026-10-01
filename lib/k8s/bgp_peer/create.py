@@ -3,22 +3,14 @@ class K8sBgpPeerCreate():
         pass
 
     def create_bgp_peer(self, body, my_output=None, confirmation=False, wait=True):
-        if not self.create_resource(body, object_name='bgp_peer', my_output=my_output, confirmation=confirmation):
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_bgp_peer(
-            body['metadata']['namespace'],
-            body['metadata']['name'],
-            max_time=60,
-            my_output=my_output
+        success = self.create_resource_and_wait(
+            body, 
+            'bgp_peer', 
+            wait=wait,
+            my_output=my_output, 
+            confirmation=confirmation
         )
-        if not success:
-            return False
-
-        return True
+        return success
     
     def create_or_update_bgp_peer(
             self, 

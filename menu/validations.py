@@ -6,6 +6,8 @@ import click
 
 from lib import context
 from lib import file_helper
+from lib import filter_helper
+from lib import output_helper
 from lib import iaccount_helper
 from lib import ip_helper
 from lib import ssh
@@ -1620,6 +1622,45 @@ def validate_ocp_cluster_name(ctx, param, cluster_name):
     return cluster_obj['name']
 
 
+def validate_option(ctx, param, value):
+    my_output = output_helper.OutputHelper()
+    if value not in param.type.choices:
+        value = my_output.get_selection(
+            'Select %s value' % (param.name),
+            param.type.choices
+        )
+    
+    return value
+
+
+def validate_ocp_cluster_names(ctx, param, cluster_names):
+    ocp_settings_handler = ocp_settings.OcpSettings(log_id=None)
+    available_cluster_names = ocp_settings_handler.get_ocp_cluster_names()
+
+    if len(cluster_names) == 0:
+        cluster_name = ocp_settings_handler.get_default_cluster()
+        if cluster_name is None:
+            raise click.BadParameter('Define at least one ocp cluster name: %s' % (','.join(available_cluster_names)))
+        
+        cluster_names = [cluster_name]
+
+    target_clusters = []
+    for cluster_name in cluster_names:
+        if ocp_settings_handler.get_ocp_cluster(cluster_name) is None:
+            raise click.BadParameter('Invalid ocp cluster name [%s] must be one of: %s' % (cluster_name, ','.join(available_cluster_names)))
+        
+        if cluster_name not in target_clusters:
+            target_clusters.append(cluster_name)
+
+    if len(target_clusters) == 0:
+        raise click.BadParameter('Define at least one ocp cluster name: %s' % (','.join(available_cluster_names)))
+    
+    if len(target_clusters) == 1:
+        ocp_settings_handler.set_default_cluster(target_clusters[0])
+
+    return target_clusters
+
+
 def validate_ocp_cluster_name_no_prompt(ctx, param, cluster_name):
     ocp_settings_handler = ocp_settings.OcpSettings(log_id=None)
     if cluster_name == '':
@@ -2108,6 +2149,7 @@ def get_ocp_node_access_detail(ctx, cluster_name, node_name):
     item['username'] = 'core'
     item['password'] = None
     item['key_filename'] = ocp_settings_handler.get_management_ssh_pub_filename(cluster_name)
+    item['cluster'] = cluster_name
     return item
 
 
@@ -2262,6 +2304,7 @@ def get_linux_handlers(ctx, server_names, no_cache=False, verbose=False):
             password=server['password'],
             key_filename=server['key_filename'],
             server_name=server['name'],
+            ocp_cluster_name=filter_helper.get(server, 'cluster', on_error=None, on_none=None),
             no_cache=no_cache,
             log_id=ctx.run_id
         )

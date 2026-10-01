@@ -63,7 +63,7 @@ class K8sRouteSplunkStandalone():
         body['spec']['host'] = '%s-%s.%s' % (
             service_name, 
             service_namespace, 
-            config_info['info']['domain']
+            config_info['domain']
         )
         body['spec']['port'] = {}
         body['spec']['port']['targetPort'] = 'http-splunkweb'
@@ -92,12 +92,7 @@ class K8sRouteSplunkStandalone():
         if not wait:
             return True
         
-        if my_output is not None:
-            my_output.default('Wait for route ready...', before_newline=True)
-
-        if not self.wait_route_ready(route_namespace, route_name):
-            if my_output is not None:
-                my_output.error('Timed out')
+        if not self.wait_route_ready(route_namespace, route_name, my_output=my_output, max_time=120):
             return False
         
         return True

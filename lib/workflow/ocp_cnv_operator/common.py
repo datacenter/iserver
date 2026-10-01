@@ -1,58 +1,73 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
+from lib import filter_helper
 
-
-def initialize(params, my_output, log_id):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    return params
 
 def get_default_params():
     params = {}
     params['namespace'] = 'openshift-cnv'
     params['name'] = 'kubevirt-hyperconverged'
+    params['catalog'] = 'redhat-operators'
     params['operator-group-name'] = 'cnv-operator-group'
     params['delete-namespace'] = True
+    params['create_subscription'] = 'create_cnv_subscription'
+    params['delete_subscription'] = 'delete_cnv_subscription'
+    params['title'] = 'OpenShift Workflow - Container Virtualization Operator'
     return params
 
 
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
+def collect_state_info(params):
+    params['summary']['ready'] = params['k8s_handler'].is_subscription_cnv_ready()
+    params['summary'] = params['k8s_handler'].add_tick(
+        params['summary'],
+        'ready',
+        True,
+        'readyT'
+    )
+
+    params['hc'] = params['k8s_handler'].get_hyperconverged(cache_enabled=False)
+    params['summary']['instance'] = filter_helper.get(params['hc'], 'namespace_name', on_error='---', on_none='---')
+    params['summary']['instance_healthy'] = filter_helper.get(params['hc'], 'healthy', on_error=False, on_none=False)
+    params['summary'] = params['k8s_handler'].add_tick(
+        params['summary'],
+        'instance_healthy',
+        True,
+        'instanceT'
+    )
+
+    import_enabled_fg = filter_helper.get(params['hc'], 'spec:featureGates:enableCommonBootImageImport')
+    import_enabled = filter_helper.get(params['hc'], 'spec:enableCommonBootImageImport')
+    params['summary']['import_enabled'] = False
+    params['summary']['import_enabled_fg'] = False
+    if import_enabled_fg is not None:
+        params['summary']['import_enabled'] = import_enabled_fg
+        params['summary']['import_enabled_fg'] = True
+        
+    if import_enabled is not None:
+        params['summary']['import_enabled'] = import_enabled
+    
+    params['summary'] = params['k8s_handler'].add_tick(
+        params['summary'],
+        'import_enabled',
+        True,
+        'importT'
+    )
     return params
 
 
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
+def print_state_summary(params, my_output):
+    my_output.dictionary_ng(
+        'State',
+        params['summary'],
+        [
+            ['package', 'package'],
+            ['csv', 'csv'],
+            ['operator ready', 'readyT'],
+            ['instance', 'instance'],
+            ['instance healthy', 'instanceT'],
+            ['import enabled', 'importT']
+        ]
+    )
 
-    return new_params
-
+    
 def is_cnv_used(k8s_handler, k8s_output_handler, my_output, cache_enabled=False):
     data_volumes = k8s_handler.get_data_volumes(
         cache_enabled=cache_enabled
@@ -76,6 +91,7 @@ def is_cnv_used(k8s_handler, k8s_output_handler, my_output, cache_enabled=False)
     
     my_output.default('No ready data volumes found <=> virtualization subsystem is not using storage')
     return False
+
 
 def get_cnv_crd(k8s_handler, my_output=None, cache_enabled=False, message_on_error=True, crd=['__all__']):
     if my_output is not None:
@@ -363,6 +379,7 @@ def get_cnv_crd(k8s_handler, my_output=None, cache_enabled=False, message_on_err
 
     return response
 
+
 def print_cnv_crd(crds, k8s_output_handler, only_non_zero=True, crd=['__all__']):
     if 'AAQ' in crd or '__all__' in crd:
         if crds['aaq'] is not None:
@@ -531,4 +548,3 @@ def print_cnv_crd(crds, k8s_output_handler, only_non_zero=True, crd=['__all__'])
                 k8s_output_handler.print_virtual_machine_snapshots(
                     crds['virtual_machine_snapshot']
                 )
-    

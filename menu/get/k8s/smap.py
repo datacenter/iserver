@@ -112,7 +112,7 @@ def get_k8s_smap_command(
         ctx.my_output.json_output(smaps)
 
         if 'state' in view:
-            k8s_output_handler.print_storage_maps(
+            k8s_output_handler.print_storage_maps_state(
                 smaps
             )
 

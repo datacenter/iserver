@@ -9,9 +9,9 @@
 BGP advertise [cluster user defined networks](../../../ovn-cudn/README.md) using **VRF-Lite in FRR**.
 
 > [!NOTE]
-> FRR on every cluster node expected to advertise hostSubnet allocated from CUDN CIDR
+> FRR on every cluster node expected to advertise hostSubnet allocated from CUDN CIDR (aka vrf) over **dedicated** physical or vlan interface and using **dedicated** bgp peering session
 
-## Networking setup
+## Step 1: Networking setup
 
 Requirements
 - [OVN-K routing via host](./host-routing.md)
@@ -26,7 +26,7 @@ Details
 - [cluster node ip stack](./nns-nncp.md)
 - [leaf state](./nxos-nncp.md)
 
-## BGP Peering
+## Step 2: BGP Peering
 
 Requirements
 - local asn 64667, remote asn 64600
@@ -40,7 +40,7 @@ Details
 - [frr state](./frr-bgp.md)
 - [leaf state](./nxos-bgp.md)
 
-## CUDN
+## Step 3: CUDN
 
 Requirements
 - primary cudn
@@ -55,7 +55,7 @@ Details
 - [cudn crds](./cudn-crd.md), [task-way](./cudn-crd-task.md)
 - [cluster node ip stack](./nns-cudn.md)
 
-## Route Advertisement
+## Step 4: Route Advertisement
 
 Requirements
 - frr advertises cudn pod networks within vrf

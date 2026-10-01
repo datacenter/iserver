@@ -1,3 +1,4 @@
+import copy
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow import ocp_common
@@ -9,7 +10,7 @@ def validate(params):
         ['node', True, [], 'list-of-str', None, None, None, None],
         ['peer', True, [], 'list-of-ip', None, None, None, None],
         ['cmd', True, None, 'str', None, None, None, None],
-        ['view', False, None, 'list-of-str', None, None, None, None]
+        ['view', True, ['state'], 'view', None, None, ['state', 'cli', 'config', 'exec', 'frr', 'ra', 'ra-config', 'session'], None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules)
     if not success:

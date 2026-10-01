@@ -5,6 +5,7 @@ from lib.linux.boot.output import LinuxBootOutput
 from lib.linux.chrony.output import LinuxChronyOutput
 from lib.linux.container_policy.output import LinuxContainerPolicyOutput
 from lib.linux.crictl.output import LinuxCrictlOutput
+from lib.linux.helm.output import LinuxHelmOutput
 from lib.linux.huge_pages.output import LinuxHugePagesOutput
 from lib.linux.lsblk.output import LinuxLsblkOutput
 from lib.linux.lv.output import LinuxLvOutput
@@ -19,6 +20,7 @@ class LinuxOutput(
         LinuxChronyOutput,
         LinuxContainerPolicyOutput,
         LinuxCrictlOutput,
+        LinuxHelmOutput,
         LinuxHugePagesOutput,
         LinuxLsblkOutput,
         LinuxLvOutput,
@@ -38,6 +40,7 @@ class LinuxOutput(
         LinuxChronyOutput.__init__(self)
         LinuxContainerPolicyOutput.__init__(self)
         LinuxCrictlOutput.__init__(self)
+        LinuxHelmOutput.__init__(self)
         LinuxHugePagesOutput.__init__(self)
         LinuxLsblkOutput.__init__(self)
         LinuxLvOutput.__init__(self)
@@ -45,7 +48,7 @@ class LinuxOutput(
         LinuxSysctlOutput.__init__(self)
         LinuxVgOutput.__init__(self)
 
-    def print_linux_servers(self, servers, show_password=True):
+    def print_linux_servers(self, servers, show_password=True, show_cache=False):
         if self.my_output is None:
             self.my_output = output_helper.OutputHelper(
                 log_id=self.log_id,
@@ -74,35 +77,32 @@ class LinuxOutput(
             if server['key'] is None:
                 server['key'] = '--'
 
-        order = [
-            'name',
-            'address',
-            'username',
-            'password',
-            'key',
-            'cache.enabledTick',
-            'cache.ttlT',
-            'cache.directory'
-        ]
+        if show_cache:
+            self.my_output.my_table_ng(
+                servers,
+                [
+                    ['Name', 'name'],
+                    ['Address', 'address'],
+                    ['Username', 'username'],
+                    ['Password', 'password'],
+                    ['Key', 'key'],
+                    ['Cache', 'cache.enabledTick'],
+                    ['TTL', 'cache.ttlT'],
+                    ['Directory', 'cache.directory'],
+                ]
+            )
 
-        headers = [
-            'Name',
-            'IP',
-            'Username',
-            'Password',
-            'Key',
-            'Cache',
-            'TTL',
-            'Directory'
-        ]
-
-        self.my_output.my_table(
-            servers,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            table=True
-        )
+        if not show_cache:
+            self.my_output.my_table_ng(
+                servers,
+                [
+                    ['Name', 'name'],
+                    ['Address', 'address'],
+                    ['Username', 'username'],
+                    ['Password', 'password'],
+                    ['Key', 'key']
+                ]
+            )
 
     def add_id(self, items):
         index = 1

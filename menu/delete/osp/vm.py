@@ -108,7 +108,7 @@ def delete_osp_vm_command(
             ctx.my_output.default('No virtual machines found')
             return
 
-        osp_output_handler.print_virtual_machines(
+        osp_output_handler.print_virtual_machines_state(
             vms
         )
 

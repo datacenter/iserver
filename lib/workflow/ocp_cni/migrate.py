@@ -10,7 +10,7 @@ from lib import ip_helper
 from lib import output_helper
 from lib.workflow.ocp_cni import common as local_common
 from lib.workflow import ocp_common as global_common
-from lib.workflow.ocp_cilium_cli import install as cli_install
+from lib.workflow.ocp_cli import cilium_delete as cli_install
 from lib.workflow.ocp_node import reload
 from menu.common import get_confirmation
 
@@ -123,7 +123,7 @@ def validate(params):
         'confirmation',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def get_cilium_config_filename(manifests):
@@ -343,7 +343,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'CustomResourceDefinition':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_custom_resource_definition(body['metadata']['name'], cache_enabled=False):
-                success = params['k8s_handler'].create_custom_resource_definition_mo(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -353,7 +353,7 @@ def apply_manifests(params, manifests, my_output):
         if body['kind'] == 'Namespace':
             my_output.default('- %s:%s' % (body['kind'], body['metadata']['name']))
             if not params['k8s_handler'].is_namespace(body['metadata']['name'], cache_enabled=False):
-                success = params['k8s_handler'].create_namespace_mo_from_body(body)
+                success = params['k8s_handler'].create_resource(body)
                 if not success:
                     my_output.error('rest api failed')
                     return False
@@ -962,8 +962,6 @@ def install_cilium_cli(params, my_output, log_id):
     install_params = {}
     install_params['cluster'] = params['cluster']
     install_params['confirmation'] = params['confirmation']
-    install_params['check_verbose'] = False
-
     success = cli_install.run(install_params, log_id)
     if not success:
         return False
@@ -1005,16 +1003,17 @@ def approve_installplan(params, my_output):
     return True
 
 
-def remove_ovn(params, my_output):
+def remove_ovn(params, my_output, k8s_output_handler):
     my_output.default('Remove ovn-kubernetes namespace', before_newline=True)
 
     if not params['k8s_handler'].is_namespace('openshift-ovn-kubernetes'):
         my_output.default('- already removed')
         return True
     
-    used = params['k8s_handler'].check_namespace_usage_and_state(
+    used = params['k8s_handler'].check_namespace_usage(
         'openshift-ovn-kubernetes', 
         my_output=my_output, 
+        k8s_output_handler=k8s_output_handler,
         show_details=True, 
         underline=False, 
         before_newline=True
@@ -1086,14 +1085,13 @@ def reload_cluster_nodes(params, my_output, k8s_output_handler, log_id):
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium CNI - Migration', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, mgmt_required=True)
+    ocp_common.print_title(params, my_output, 'Migration')
+    params = ocp_common.workflow_init(params, my_output, log_id, mgmt_required=True)
     if params is None:
         return False
     
@@ -1230,7 +1228,7 @@ def run(params, log_id=None):
         if not approve_installplan(params, my_output):
             return False
             
-        if not remove_ovn(params, my_output):
+        if not remove_ovn(params, my_output, k8s_output_handler):
             return False
 
         if not prepare_kubeconfig(params, my_output):

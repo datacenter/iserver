@@ -80,6 +80,27 @@ def generate_nncp_eth(data):
 
     return interface_mo
 
+def generate_nncp_lo(data):
+    interface_mo = {}
+    interface_mo['name'] = data['name']
+    interface_mo['type'] = 'lo'
+    interface_mo['state'] = data['state']
+    if data['ipv4'] is not None:
+        if ip_helper.is_valid_ipv4_cidr(data['ipv4']):
+            interface_mo['ipv4'] = {}
+            interface_mo['ipv4']['dhcp'] = False
+            interface_mo['ipv4']['enabled'] = True
+            interface_mo['ipv4']['address'] = []
+
+            address_mo = {}
+            address_mo['ip'] = data['ipv4'].split('/')[0]
+            address_mo['prefix-length'] = int(data['ipv4'].split('/')[1])
+            interface_mo['ipv4']['address'].append(
+                address_mo
+            )
+
+    return interface_mo
+
 def generate_nncp_bond(data):
     interface_mo = {}
     interface_mo['name'] = data['name']
@@ -292,6 +313,11 @@ def run(params, my_output):
             if interface['type'] == 'eth':
                 nncp_mo['spec']['desiredState']['interfaces'].append(
                     generate_nncp_eth(interface)
+                )
+
+            if interface['type'] == 'lo':
+                nncp_mo['spec']['desiredState']['interfaces'].append(
+                    generate_nncp_lo(interface)
                 )
 
             if interface['type'] == 'bond':

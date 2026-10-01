@@ -1,3 +1,4 @@
+
 # OpenShift Container Platform (OCP)
 
 ## Delete OCP Cluster from vCenter

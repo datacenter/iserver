@@ -3,7 +3,19 @@ class K8sNodeFeatureDiscoveryInfo():
         self.node_feature_discovery = None
 
     def get_node_feature_discovery_info(self, managed_object):
-        return self.get_base_info(managed_object)
+        if managed_object is None:
+            return None
+        
+        info = self.get_base_info(managed_object)
+        info['conditions'] = self.get_conditions(self.get(managed_object, 'status:conditions', on_error=[], on_none=[]))
+        info = self.add_tick(
+            info, 
+            'conditions', 
+            'Available', 
+            'readyTick', 
+            bool_attribute='ready'
+        )
+        return info
 
     def get_node_feature_discoverys(self, object_filter=None, return_mo=False, cache_enabled=True):
         infos = self.get_infos(

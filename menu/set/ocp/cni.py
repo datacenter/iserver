@@ -1,22 +1,12 @@
 import sys
-import traceback
 import click
-
+from lib.workflow import ocp_common
 from menu import validations
-from lib.workflow.ocp_cni import migrate
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("cni")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['cilium'], case_sensitive=False), default='', show_default=True, help="Target cni")
 @click.option("--cidr", default='', callback=validations.validate_ip_subnet, help="Target cidr")
 @click.option("--host-prefix", default=24, type=click.INT, show_default=True, help="Target host prefix")
@@ -27,7 +17,7 @@ class ErrorExit(Exception):
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_cni_command(
         ctx, 
-        cluster_name, 
+        cluster_names, 
         mode,
         cidr,
         host_prefix,
@@ -39,28 +29,17 @@ def set_ocp_cni_command(
     ):
     """Set openshift data foundation operator in openshift cluster"""
 
-    try:
-        if mode in ['cilium']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['cidr'] = cidr
-            params['host_prefix'] = host_prefix
-            params['manifest'] = manifest
-            params['start'] = start
-            params['stop'] = stop
-            params['reload'] = not no_reload
-            params['confirmation'] = not no_confirm
+    task = {}
 
-            success = migrate.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    if mode in ['cilium']:
+        task['migrate'] = {}
+        task['migrate']['cidr'] = cidr
+        task['migrate']['host_prefix'] = host_prefix
+        task['migrate']['manifest'] = manifest
+        task['migrate']['start'] = start
+        task['migrate']['stop'] = stop
+        task['migrate']['reload'] = not no_reload
+        
+    success = ocp_common.set_workflow(cluster_names, 'cni', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

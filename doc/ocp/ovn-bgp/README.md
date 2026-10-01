@@ -36,7 +36,7 @@ OpenShift Container Platform supports BGP routing through FRRouting (FRR). FRR-K
     - topology [l3 w/VRF-Lite](./example/cudn-l3-vrflite/README.md)
 - egress ip
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

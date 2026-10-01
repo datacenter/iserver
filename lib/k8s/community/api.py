@@ -26,4 +26,5 @@ class K8sCommunityApi():
         return response
 
     def delete_community_mo(self, namespace, name):
-        return self.delete_resource('Community', 'metallb.io/v1beta1', name, namespace=namespace)
+        success, _ = self.delete_resource('Community', 'metallb.io/v1beta1', name, namespace=namespace)
+        return success

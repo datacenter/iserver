@@ -3,6 +3,9 @@ class K8sClusterUserDefinedNetworkInfo():
         self.cluster_user_defined_network = None
 
     def get_cluster_user_defined_network_info(self, managed_object):
+        if managed_object is None:
+            return None
+            
         condition_map = {}
         condition_map['created'] = 'NetworkCreated'
 

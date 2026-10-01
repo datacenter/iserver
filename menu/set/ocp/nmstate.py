@@ -1,23 +1,13 @@
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_nmstate_operator import operator_create
-from lib.workflow.ocp_nmstate_operator import enable_lldp
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("nmstate")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['operator', 'lldp', 'all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['operator', 'instance', 'lldp', 'all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--channel", default='__default__', show_default=True, help="Operator channel")
 @click.option("--filename", default='', callback=validations.validate_k8s_yaml_file_optional, show_default=True, help="NMState CRD")
 @click.option("--node", default='', callback=validations.empty_string_to_none, show_default=True, help="Node name")
@@ -27,7 +17,7 @@ class ErrorExit(Exception):
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_nmstate_command(
         ctx,
-        cluster_name,
+        cluster_names,
         mode,
         channel,
         filename,
@@ -39,41 +29,24 @@ def set_ocp_nmstate_command(
     ):
     """Set nmstate operator in openshift cluster"""
 
-    try:
-        if mode in ['operator', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['channel'] = channel
-            params['instance'] = filename
-            params['confirmation'] = not no_confirm
+    task = {}
 
-            success = operator_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['operator', 'all']:
+        task['operator'] = {}
+        task['operator']['channel'] = channel
 
-        if mode in ['lldp', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['settings'] = {}
-            params['settings']['enable'] = True
-            params['settings']['node'] = node
-            params['settings']['nic-fw-disable'] = fw
-            params['settings']['delete-nncp'] = not keep_nncp
-            params['settings']['include-down'] = not skip_down
+    if mode in ['instance', 'all']:
+        task['instance'] = {}
+        task['instance']['filename'] = filename
 
-            success = enable_lldp.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['lldp', 'all']:
+        task['lldp'] = {}
+        task['lldp']['enable'] = True
+        task['lldp']['node'] = node
+        task['lldp']['fw'] = fw
+        task['lldp']['delete-nncp'] = not keep_nncp
+        task['lldp']['include-down'] = not skip_down
 
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'nmstate', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

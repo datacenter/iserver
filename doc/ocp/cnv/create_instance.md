@@ -9,7 +9,7 @@
 
 - cnv operator must be [created](./create_operator.md)
 
-## Expected Outcome
+## Expected outcome
 
 ![InstanceCreate](../images/cnv/instance_create.png)
 
@@ -27,36 +27,20 @@
 ```
 # iserver set ocp cnv --mode instance --cluster bm1 --no-confirm
 
-
 OpenShift Workflow - Container Virtualization Operator - Create HyperConverged Instance
 =======================================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "instance": null,
-    "confirmation": false,
-    "channel": "stable",
-    "check-verbose": true,
-    "namespace": "openshift-cnv",
-    "name": "kubevirt-hyperconverged",
-    "operator-group-name": "cnv-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: bm1
 
 Operator
---------
-- subscription: openshift-cnv/kubevirt-hyperconverged
-- channel: stable
-- csv: kubevirt-hyperconverged-operator.v4.18.17
+- subscription          : openshift-cnv/kubevirt-hyperconverged
+- package               : openshift-marketplace/redhat-operators/kubevirt-hyperconverged
+- channel               : stable
+- install plan          : openshift-cnv/install-gvkg8
+- install plan approved : V
+- installed csv         : kubevirt-hyperconverged-operator.v4.21.3
+- latest_csv            : V
+
 
 Cnv operator ready
 
@@ -72,33 +56,38 @@ metadata:
   name: kubevirt-hyperconverged
   namespace: openshift-cnv
 spec: {}
-
 ~~~
 
 HyperConverged instance created
 
 Wait for hyperconverged instance and resources...
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- openshift-cnv/cdi-apiserver
-- openshift-cnv/cdi-deployment
-- openshift-cnv/cdi-uploadproxy
-- openshift-cnv/kubemacpool-cert-manager
-- openshift-cnv/kubemacpool-mac-controller-manager
-- openshift-cnv/kubevirt-apiserver-proxy
-- openshift-cnv/kubevirt-console-plugin
-- openshift-cnv/kubevirt-ipam-controller-manager
-- openshift-cnv/virt-api
-- openshift-cnv/virt-controller
-- openshift-cnv/virt-exportproxy
-- openshift-cnv/virt-template-validator
-Wait for deamon sets ready...
-- openshift-cnv/bridge-marker
-- openshift-cnv/kube-cni-linux-bridge-plugin
-- openshift-cnv/passt-binding-cni
-- openshift-cnv/virt-handler
+Wait for deployment openshift-cnv/cdi-apiserver ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/cdi-deployment ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/cdi-uploadproxy ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/kubemacpool-cert-manager ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/kubemacpool-mac-controller-manager ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/kubevirt-apiserver-proxy ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/kubevirt-console-plugin ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/kubevirt-ipam-controller-manager ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/virt-api ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/virt-controller ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/virt-exportproxy ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/virt-template-validator ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for daemonset openshift-cnv/bridge-marker ready (optional: False, timeout: 600s)...
+Wait for daemonset openshift-cnv/kube-cni-linux-bridge-plugin ready (optional: False, timeout: 600s)...
+Wait for daemonset openshift-cnv/passt-binding-cni ready (optional: True, timeout: 600s)...
+Success with optional condition
+Wait for daemonset openshift-cnv/virt-handler ready (optional: False, timeout: 600s)...
+Subscription cnv ready
 
 Completed tasks
 - HyperConverged instance created and ready
+
++----+---------+-------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
++----+---------+-------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | cnv   | create instance | 1       | V       | 100          | 
++----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

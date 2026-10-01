@@ -43,7 +43,8 @@ class K8sSecretCreate():
             labels=labels,
             secret_type=secret_type
         )
-        if not self.create_resource(body, object_name='secret', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='secret', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
 
         if not wait:

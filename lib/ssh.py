@@ -17,6 +17,7 @@ from paramiko import SSHClient
 
 from lib import template
 from lib import file_helper
+from lib import ip_helper
 from lib import log_helper
 
 
@@ -740,12 +741,26 @@ class Ssh():
 
         return output
 
-    def delete_file(self, filename, path_fixup=True):
+    def delete_file(self, filename, path_fixup=True, sudo=False, my_output=None):
         if path_fixup:
             filename = self.path_fixup(filename)
 
+        if not self.is_file(filename, path_fixup=path_fixup):
+            return True
+        
         cmd = 'rm -f %s' % (filename)
+        if sudo:
+            cmd = 'sudo %s' % (cmd)
+            
+        if my_output is not None:
+            my_output.default('Ssh cmd: %s' % (cmd))
+
         success, output, error = self.run_cmd(cmd)
+        if not success:
+            if my_output is not None:
+                my_output.error('Command failed')
+                my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+                
         return success
 
     def set_file_chmod(self, filename, chmod, path_fixup=True):
@@ -937,3 +952,146 @@ class Ssh():
             return False
 
         return True
+
+    def upload_binary_from_source(self, binary_name, url, format='binary', package_binary=None, target_path=None, chmod=False, test=None, overwrite=False, my_output=None, verify=True):
+        if not overwrite:
+            if target_path is not None:
+                success = self.is_file('%s/%s' % (target_path, binary_name))
+                if success:
+                    if my_output is not None:
+                        my_output.default('%s/%s found and overwrite not enforced' % (target_path, binary_name))
+                    return True
+
+        if my_output is not None:
+            my_output.default('Download: %s' % (url))
+
+        filename = ip_helper.download_url(
+            url,
+            file_helper.get_tmp_filename(),
+            verify=verify
+        )
+        if filename is None:
+            if my_output is not None:
+                my_output.error('Download failed')
+            return False
+
+        if my_output is not None:
+            my_output.default('Uploading file to cluster management node: %s' % (filename))
+
+        success = self.scp_file(
+            filename,
+            filename
+        )
+        if not success:
+            if my_output is not None:
+                my_output.error('Upload failed')
+            return False
+
+        if target_path is None:
+            return True
+        
+        if format == 'tar.gz':
+            command = 'sudo tar xzvfC %s /tmp/' % (filename)
+            if my_output is not None:
+                my_output.default('Unpack: %s' % (command))
+
+            success, output, error = self.run_cmd(
+                command
+            )
+            if not success:
+                if my_output is not None:
+                    my_output.error('Unpack failed')
+                    my_output.default(str(output))
+                    my_output.default(str(error))
+                return False
+
+            if package_binary is None:
+                package_binary = binary_name
+
+            command = 'sudo sudo mv /tmp/%s %s/%s' % (package_binary, target_path, binary_name)
+            if my_output is not None:        
+                my_output.default('Copy file: %s' % (command))
+
+            success, output, error = self.run_cmd(
+                command
+            )
+            if not success:
+                if my_output is not None:
+                    my_output.error('File copy failed')
+                    my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+                return False
+
+        if format == 'binary':
+            command = 'sudo sudo mv %s %s/%s' % (filename, target_path, binary_name)
+            if my_output is not None:        
+                my_output.default('Copy file: %s' % (command))
+
+            success, output, error = self.run_cmd(
+                command
+            )
+            if not success:
+                if my_output is not None:
+                    my_output.error('File copy failed')
+                    my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+                return False
+
+        if not chmod:
+            return True
+
+        command = 'sudo chmod a+x %s/%s' % (target_path, binary_name)
+        if my_output is not None:        
+            my_output.default('Change file flags: %s' % (command))
+
+        success, output, error = self.run_cmd(
+            command
+        )
+        if not success:
+            if my_output is not None:
+                my_output.error('Command failed')
+                my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            return False
+                
+        if test is None:
+            return True
+
+        if my_output is not None:        
+            my_output.default('Test: %s' % (test))
+
+        success, output, error = self.run_cmd(
+            test
+        )
+        if not success:
+            if my_output is not None:
+                my_output.error('Command failed')
+                my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            return False
+
+        if my_output is not None:
+            my_output.default(output, wrap='~~~', before_newline=True)
+
+        return True
+    
+    def is_helm_cli(self):
+        success, _, _ = self.run_cmd(
+            'helm ls -A'
+        )
+        return success
+
+
+    def is_helm_chart(self, chart):
+        success, output, _ = self.run_cmd(
+            'helm ls -A'
+        )
+        if not success:
+            return False
+
+        return chart in output
+    
+    def is_helm_repo(self, repo):
+        success, output, _ = self.run_cmd(
+            'helm repo ls'
+        )
+        if not success:
+            return False
+        
+        return repo in output

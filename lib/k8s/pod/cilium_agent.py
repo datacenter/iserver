@@ -123,8 +123,9 @@ class K8sPodCiliumAgent():
                 name,
                 ['cilium', 'shell', 'db/show', '%s -f json' % (db_name)]
             )
+
             try:
-                output = json.loads(filter_helper.json_fixup(content))
+                output = json.loads(filter_helper.json_fixup(content, double_quote=False))
             except BaseException:
                 self.log.error('get_cilium_agent_db', str(db_name))
                 self.log.error('get_cilium_agent_db', str(content))

@@ -2,7 +2,7 @@
 
 The NVIDIA NIM Operator enables Kubernetes cluster administrators to operate the software components and services necessary to deploy NVIDIA NIMs and NVIDIA NeMo microservices in Kubernetes as explained in [documentation](https://docs.nvidia.com/nim-operator/latest/).
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

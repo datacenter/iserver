@@ -1,4 +1,4 @@
-# VAST Operator - Delete operator
+# VAST CSI - Delete operator
 
 ## Workflow
 
@@ -27,26 +27,19 @@ OpenShift Workflow - VAST CSI Operator - Wipe
 OpenShift Cluster: bm1
 
 VAST CSI Operator Subscription
-------------------------------
 - subscription: vast-csi/vast-csi-operator
 - package: vast-csi-operator
 - csv: vast-csi-operator.v2.6.4
 
 VAST CSI Operator Resources
----------------------------
 - deployment vast-csi/vast-csi-operator-controller-manager ready
-- 2 driver
-- 1 cluster
-- 2 storage
-- 2 storage class
-- 2 pvc
 
-Delete VastStorage
-------------------
-- namespace: vast-csi
-- name: vast-block
-- deleted
-- wait for no VastStorage vast-csi/vast-block [timeout:60s]
+VAST CSI Custom Resources
+- 1/1 VastCSIDriver
+- 1/1 VastCluster
+- 1/1 VastStorage
+- 1/1 default StorageClass
+- 0/0 PersistentVolumeClaim
 
 Delete VastStorage
 ------------------
@@ -65,15 +58,6 @@ Delete VastCluster
 Delete VastCSIDriver
 --------------------
 - namespace: vast-csi
-- name: block
-- deleted
-- wait for no VastCSIDriver vast-csi/block [timeout:60s]
-- wait for no DaemonSet vast-csi/block-vast-node [timeout:60s]
-- wait for no Deployment vast-csi/block-vast-controller [timeout:60s]
-
-Delete VastCSIDriver
---------------------
-- namespace: vast-csi
 - name: nfs
 - deleted
 - wait for no VastCSIDriver vast-csi/nfs [timeout:60s]
@@ -82,6 +66,12 @@ Delete VastCSIDriver
 
 Completed tasks
 - VAST CRDs deleted
+
++----+---------+-------+-------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow    | Changes | Success | Duration [s] |
++----+---------+-------+-------------+---------+---------+--------------+
+| 1  | ocp:bm1 | vast  | delete wipe | 3       | V       | 28           | 
++----+---------+-------+-------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

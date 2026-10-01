@@ -25,7 +25,7 @@ def sanitize_params(params, allowed_keys):
 
 def get_ssh_handlers(items, log_id, my_output=None, check=False, add_linux=False):
     if my_output is not None:
-        my_output.default('Check ssh access', underline=True)
+        my_output.default('Check ssh access')
 
     success = True
 

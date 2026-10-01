@@ -1,19 +1,31 @@
+import json
+
+
 class K8sClusterwidePrivateNetworkOutput():
     def __init__(self):
         pass
 
-    def print_clusterwide_private_networks(self, info):
+    def print_clusterwide_private_networks_state(self, info):
+        for item in info:
+            item['subnetT'] = json.dumps(
+                item['subnet'],
+                indent=2
+            ).split('\n')
+
         self.my_output.my_table_ng(
             info,
             [
                 ['Clusterwide Private Network', 'name'],
-                ['CIDRv4', 'cidrv4'],
-                ['CIDRv6', 'cidrv6'],
-                ['Route', 'destT'],
-                ['Via', 'gatewayT'],
+                ['Subnet', 'subnet.name'],
+                ['DHCP', 'subnet.dhcp.mode'],
+                ['CIDRv4', 'subnet.cidrv4'],
+                ['CIDRv6', 'subnet.cidrv6'],
                 ['POD', 'podT'],
-                ['Bridge', 'inb']
-            ]
+                ['Bridge', 'inb'],
+                ['Multus Namespace', 'ns'],
+                ['NAD', 'nad']
+            ],
+            cast_zero=True
         )
     
     def print_clusterwide_private_network_endpoints_db(self, info):

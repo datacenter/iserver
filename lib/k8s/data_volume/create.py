@@ -96,7 +96,8 @@ class K8sDataVolumeCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_data_volume_mo(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -129,9 +130,6 @@ class K8sDataVolumeCreate():
         if my_k8s_output is not None:
             info = self.get_data_volume(namespace, name, cache_enabled=False)
             my_k8s_output.print_data_volumes([info])
-
-        if my_output is not None:
-            my_output.default('Wait for data uploaded...')
 
         if not self.wait_data_volume_uploaded(namespace, name, my_output=my_output):
             if my_output is not None:

@@ -1,6 +1,3 @@
-from lib import filter_helper
-
-
 class K8sNamespaceInfo():
     def __init__(self):
         self.namespace = None
@@ -12,8 +9,6 @@ class K8sNamespaceInfo():
         info = self.get_base_info(
             managed_object
         )
-        if info is None:
-            return None
 
         info['udn'] = self.is_namespace_udn_enabled(managed_object=managed_object)
         if info['udn']:
@@ -26,118 +21,70 @@ class K8sNamespaceInfo():
         else:
             info['__Output']['phase'] = 'Red'
 
+        info['conditions'] = self.get(managed_object, 'status:conditions', on_error=[], on_none=[])
+        info['faults'] = []
+        for condition_mo in info['conditions']:
+            type_mo = self.get(condition_mo, 'type')
+            if type_mo is None:
+                continue
+
+            if type_mo.endswith('Failure'):
+                if self.get(condition_mo, 'status') == 'True':
+                    info['faults'].append(condition_mo)
+
+                continue
+
+            if type_mo.endswith('Remaining'):
+                if self.get(condition_mo, 'status') == 'True':
+                    info['faults'].append(condition_mo)
+
+                continue
+
+            info['faults'].append(condition_mo)
+
         return info
 
-    def get_namespaces_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.namespace is not None:
-                return self.namespace
+    def add_namespaces_resource_info(self, infos, res_info, threshold=3, cache_enabled=True):
+        if not res_info:
+            return infos
+        
+        if not cache_enabled and len(infos) <= threshold:
+            pass
+        else:
+            self.get_pods(cache_enabled=False)
 
-        managed_objects = self.get_namespace_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
+        for info in infos:
+            info['pod'] = len(self.get_pods(namespace=info['name'], cache_enabled=True))
+
+        return infos
+            
+    def get_namespaces(self, res_info=False, object_filter=None, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'namespace', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+
+        if infos is None:
             return None
+        
+        infos = self.add_namespaces_resource_info(infos, res_info)
+        return infos
 
-        self.namespace = []
-        for managed_object in managed_objects:
-            namespace_info = {}
-            namespace_info['info'] = self.get_namespace_info(
-                managed_object
-            )
-            namespace_info['mo'] = managed_object
-            self.namespace.append(
-                namespace_info
-            )
-
-        return self.namespace
-
-    def match_namespace(self, namespace_info, object_filter):
-        if object_filter is None or len(object_filter) == 0:
-            return True
-
-        for rule in object_filter:
-            key = rule.split(':')[0]
-            value = ':'.join(rule.split(':')[1:])
-
-            key_found = False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_string(value, namespace_info['name']):
-                    return False
-
-            if key == 'label':
-                key_found = True
-                found = False
-                labels = self.get(namespace_info, 'label')
-                if labels is None:
-                    return False
-
-                for label in labels:
-                    if label == value.split(':')[0]:
-                        if len(value.split(':')) == 1:
-                            found = True
-                            break
-
-                        if labels[label] == value.split(':')[1]:
-                            found = True
-                            break
-
-                if not found:
-                    return False
-                
-            if not key_found:
-                self.log.error(
-                    'match_namespace',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
-    def get_namespaces(self, object_filter=None, return_mo=False, cache_enabled=True):
-        all_namespaces = self.get_namespaces_info(cache_enabled=cache_enabled)
-        if all_namespaces is None:
-            return None
-
-        namespaces = []
-
-        for namespace_info in all_namespaces:
-            if not self.match_namespace(namespace_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                namespaces.append(
-                    namespace_info['mo']
-                )
-                continue
-
-            namespaces.append(
-                namespace_info['info']
-            )
-
-        return namespaces
-
-    def is_namespace(self, name, cache_enabled=True):
-        if self.get_namespace(name, cache_enabled=cache_enabled) is None:
+    def is_namespace(self, name, cache_enabled=True, optimized=True):
+        if self.get_namespace(name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_namespace(self, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'name:%s' % (name)
+    def get_namespace(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'namespace', 
+            name,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-        namespaces = self.get_namespaces(
-            object_filter=object_filter,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
-        )
-        if namespaces is None:
-            return None
-
-        if len(namespaces) == 1:
-            return namespaces[0]
-
-        return None
 
     def is_namespace_label(self, namespace, label_key, label_value=None, cache_enabled=True):
         namespace_mo = self.get_namespace(namespace, cache_enabled=cache_enabled, return_mo=True)

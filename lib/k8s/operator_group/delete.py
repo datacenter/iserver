@@ -3,30 +3,16 @@ class K8sOperatorGroupDelete():
         pass
 
     def delete_operator_group(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success = self.delete_resource_and_wait(
             'OperatorGroup', 
             'operators.coreos.com/v1',
             name, 
+            'operator_group',
             namespace=namespace, 
-            object_name='operator_group',
+            wait=wait,
             my_output=my_output
         )
-        if not success:
-            return False
-        
-        if not wait:
-            return True
-
-        success = self.wait_no_operator_group(
-            namespace,
-            name,
-            max_time=60,
-            my_output=my_output
-        )
-        if not success:
-            return False
-        
-        return True
+        return success
     
     def delete_operator_group_in_namespace(self, namespace, my_output=None, wait=True):
         groups = self.get_operator_groups(
@@ -34,7 +20,12 @@ class K8sOperatorGroupDelete():
             cache_enabled=False
         )
         for group in groups:
-            success = self.delete_operator_group(namespace, group['name'], my_output=my_output, wait=wait)
+            success = self.delete_operator_group(
+                namespace, 
+                group['name'], 
+                my_output=my_output, 
+                wait=wait
+            )
             if not success:
                 return False
 

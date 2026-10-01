@@ -1,4 +1,4 @@
-# Metal Kubed - Unmanaged host
+# Unmanaged host
 
 [[Back]](../README.md)
 
@@ -7,11 +7,9 @@ An unmanaged host is missing both the BMC address and credentials secret name, a
 > [!NOTE]
 > OpenShift cluster installed using Assisted Installer method, all nodes have corresponding `BareMetalHost` object instance in unmanaged state.
 
-![Example](../../images/metal-kubed/bmh.png)
+![Example](../../images/metal-kubed/assisted-installer.png)
 
-## CRD
-
-```
+```yaml
 apiVersion: metal3.io/v1alpha1
 kind: BareMetalHost
 metadata:

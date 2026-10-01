@@ -3,7 +3,8 @@ class K8sNodeFeatureDiscoveryCreate():
         pass
 
     def create_node_feature_discovery(self, body, my_output=None, confirmation=False, wait=True):
-        if not self.create_resource(body, object_name='node_feature_discovery', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='node_feature_discovery', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
         
         if not wait:

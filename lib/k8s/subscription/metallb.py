@@ -67,7 +67,7 @@ class K8sSubscriptionMetallb():
         if with_instance:
             resources.extend(self.instance_metallb_resources)
 
-        return self.wait_subscription_resources_ready('metallb', resources, my_output=my_output)
+        return self.wait_subscription_resources('metallb', resources, my_output=my_output)
 
     def wait_subscription_metallb_instance_ready(self, my_output=None):
-        return self.wait_subscription_resources_ready('metallb', self.instance_metallb_resources, my_output=my_output)
+        return self.wait_subscription_resources('metallb', self.instance_metallb_resources, my_output=my_output)

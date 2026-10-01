@@ -18,7 +18,6 @@ from lib.k8s.bgp_peer.main import K8sBgpPeer
 from lib.k8s.bgp_session_state.main import K8sBgpSessionState
 from lib.k8s.build_config.main import K8sBuildConfig
 from lib.k8s.catalog_source.main import K8sCatalogSource
-from lib.k8s.certificate.main import K8sCertificate
 from lib.k8s.cdi.main import K8sCdi
 from lib.k8s.cdi_config.main import K8sCdiConfig
 from lib.k8s.ceph_block_pool.main import K8sCephBlockPool
@@ -43,8 +42,11 @@ from lib.k8s.ceph_object_zone.main import K8sCephObjectZone
 from lib.k8s.ceph_object_zone_group.main import K8sCephObjectZoneGroup
 from lib.k8s.ceph_operator_config.main import K8sCephOperatorConfig
 from lib.k8s.ceph_rdb_mirror.main import K8sCephRdbMirror
+from lib.k8s.certificate.main import K8sCertificate
+from lib.k8s.certificate_request.main import K8sCertificateRequest
 from lib.k8s.cron_job.main import K8sCronJob
 from lib.k8s.cilium_config.main import K8sCiliumConfig
+from lib.k8s.cluster_issuer.main import K8sClusterIssuer
 from lib.k8s.cilium_load_balancer_ip_pool.main import CiliumLoadBalancerIpPool
 from lib.k8s.cluster_operator.main import K8sClusterOperator
 from lib.k8s.cluster_policy.main import K8sClusterPolicy
@@ -119,6 +121,8 @@ from lib.k8s.local_volume_set.main import K8sLocalVolumeSet
 from lib.k8s.local_volume.main import K8sLocalVolume
 from lib.k8s.logical_volume.main import K8sLogicalVolume
 from lib.k8s.lvm_cluster.main import K8sLvmCluster
+from lib.k8s.lvm_volume_group.main import K8sLvmVolumeGroup
+from lib.k8s.lvm_volume_group_node_status.main import K8sLvmVolumeGroupNodeStatus
 from lib.k8s.machine_config.main import K8sMachineConfig
 from lib.k8s.machine_config_pool.main import K8sMachineConfigPool
 from lib.k8s.metallb.main import K8sMetalLb
@@ -167,6 +171,7 @@ from lib.k8s.portworx_storage_node.main import K8sPortworxStorageNode
 from lib.k8s.priority_class.main import K8sPriorityClass
 from lib.k8s.private_network_endpoint_slice.main import K8sPrivateNetworkEndpointSlice
 from lib.k8s.private_network_external_endpoint.main import K8sPrivateNetworkExternalEndpoint
+from lib.k8s.private_network_node_attachment.main import K8sPrivateNetworkNodeAttachment
 from lib.k8s.probe.main import K8sProbe
 from lib.k8s.profile.main import K8sProfile
 from lib.k8s.prometheus.main import K8sPrometheus
@@ -224,6 +229,7 @@ from lib.k8s.thanos_ruler.main import K8sThanosRuler
 from lib.k8s.token.main import K8sToken
 from lib.k8s.tracing_policy.main import K8sTracingPolicy
 from lib.k8s.tracing_policy_namespaced.main import K8sTracingPolicyNamespaced
+from lib.k8s.trident_orchestrator.main import K8sTridentOrchestrator
 from lib.k8s.tuned.main import K8sTuned
 from lib.k8s.upload_token_request.main import K8sUploadTokenRequest
 from lib.k8s.user.main import K8sUser
@@ -297,8 +303,10 @@ class K8s(
         K8sCephOperatorConfig,
         K8sCephRdbMirror,
         K8sCertificate,
+        K8sCertificateRequest,
         K8sCiliumConfig,
         CiliumLoadBalancerIpPool,
+        K8sClusterIssuer,
         K8sClusterOperator,
         K8sClusterPolicy,
         K8sClusterQuota,
@@ -373,6 +381,8 @@ class K8s(
         K8sLocalVolume,
         K8sLogicalVolume,
         K8sLvmCluster,
+        K8sLvmVolumeGroup,
+        K8sLvmVolumeGroupNodeStatus,
         K8sMachineConfig,
         K8sMachineConfigPool,
         K8sMetalLb,
@@ -421,6 +431,7 @@ class K8s(
         K8sPriorityClass,
         K8sPrivateNetworkEndpointSlice,
         K8sPrivateNetworkExternalEndpoint,
+        K8sPrivateNetworkNodeAttachment,
         K8sProbe,
         K8sProfile,
         K8sPrometheus,
@@ -478,6 +489,7 @@ class K8s(
         K8sToken,
         K8sTracingPolicy,
         K8sTracingPolicyNamespaced,
+        K8sTridentOrchestrator,
         K8sTuned,
         K8sUploadTokenRequest,
         K8sUser,
@@ -551,8 +563,10 @@ class K8s(
         K8sCephOperatorConfig.__init__(self)
         K8sCephRdbMirror.__init__(self)
         K8sCertificate.__init__(self)
+        K8sCertificateRequest.__init__(self)
         K8sCiliumConfig.__init__(self)
         CiliumLoadBalancerIpPool.__init__(self)
+        K8sClusterIssuer.__init__(self)
         K8sClusterOperator.__init__(self)
         K8sClusterPolicy.__init__(self)
         K8sClusterQuota.__init__(self)
@@ -627,6 +641,8 @@ class K8s(
         K8sLocalVolume.__init__(self)
         K8sLogicalVolume.__init__(self)
         K8sLvmCluster.__init__(self)
+        K8sLvmVolumeGroup.__init__(self)
+        K8sLvmVolumeGroupNodeStatus.__init__(self)
         K8sMachineConfig.__init__(self)
         K8sMachineConfigPool.__init__(self)
         K8sMetalLb.__init__(self)
@@ -675,6 +691,7 @@ class K8s(
         K8sPriorityClass.__init__(self)
         K8sPrivateNetworkEndpointSlice.__init__(self)
         K8sPrivateNetworkExternalEndpoint.__init__(self)
+        K8sPrivateNetworkNodeAttachment.__init__(self)
         K8sProbe.__init__(self)
         K8sProfile.__init__(self)
         K8sPrometheus.__init__(self)
@@ -732,6 +749,7 @@ class K8s(
         K8sToken.__init__(self)
         K8sTracingPolicy.__init__(self)
         K8sTracingPolicyNamespaced.__init__(self)
+        K8sTridentOrchestrator.__init__(self)
         K8sTuned.__init__(self)
         K8sUploadTokenRequest.__init__(self)
         K8sUser.__init__(self)
@@ -769,4 +787,15 @@ class K8s(
         self.cluster_name = cluster_name
 
         self.info_handler = info_helper.InfoHelper()
-        
+        self.change_counter = 0
+        self.workflow_id = None
+
+    def set_workflow_id(self, id):
+        self.workflow_id = id
+        if self.workflow_id is not None:
+            self.log.set_log('workflow_%s' % (self.workflow_id), str(self.change_counter))
+            
+    def increase_change_counter(self):
+        self.change_counter += 1
+        if self.workflow_id is not None:
+            self.log.set_log('workflow_%s' % (self.workflow_id), str(self.change_counter))

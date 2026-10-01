@@ -26,4 +26,5 @@ class K8sBgpPeerApi():
         return response
 
     def delete_bgp_peer_mo(self, namespace, name):
-        return self.delete_resource('BGPPeer', 'metallb.io/v1beta2', name, namespace=namespace)
+        success, _ = self.delete_resource('BGPPeer', 'metallb.io/v1beta2', name, namespace=namespace)
+        return success

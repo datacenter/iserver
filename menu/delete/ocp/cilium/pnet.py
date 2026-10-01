@@ -1,86 +1,34 @@
 import sys
-import traceback
 import click
-
+from lib.workflow import ocp_common
 from menu import validations
-from lib.workflow.ocp_cilium_pnet import feature_disable
-from lib.workflow.ocp_cilium_pnet import webhook_disable
-from lib.workflow.ocp_cilium_pnet import network_delete
-from lib.workflow.ocp_cilium_pnet import wipe
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("pnet")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['feature', 'webhook', 'network', 'wipe'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--network", default='', callback=validations.empty_string_to_none, help="Private network name")
 @click.option("--wipe", "wipe_option", is_flag=True, default=False, help="Wipe crds")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
-def delete_ocp_cilium_pnet_command(ctx, cluster_name, mode, network, wipe_option, no_confirm):
+def delete_ocp_cilium_pnet_command(ctx, cluster_names, mode, network, wipe_option, no_confirm):
     """Delete cilium cluster private network"""
 
-    try:
-        if mode in ['feature']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['wipe'] = wipe_option
-            params['confirmation'] = not no_confirm
+    task = {}
+    if mode in ['feature']:
+        task['feature'] = {}
+        task['feature']['wipe'] = wipe_option
 
-            success = feature_disable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit                  
+    if mode in ['webhook']:
+        task['webhook'] = {}
 
-        if mode in ['webhook']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['confirmation'] = not no_confirm
+    if mode in ['network']:
+        task['network'] = {}
+        task['network']['name'] = network
 
-            success = webhook_disable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-        if mode in ['network']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['network'] = network
-            params['confirmation'] = not no_confirm
+    if mode in ['wipe']:
+        task['wipe'] = {}
 
-            success = network_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-        if mode in ['wipe']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['confirmation'] = not no_confirm
-
-            success = wipe.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit    
-                        
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.delete_workflow(cluster_names, 'cilium-pnet', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

@@ -9,20 +9,23 @@
             "operator": {
                 "image": "image-name-as-provided-by-isovalent"
             },
-            "prometheus": {},
-            "wipe": {},
             "crd": {
-                "crd": [
-                  "filename-or-directory"
+                "filename": [
+                    "policy/policy.yaml"
                 ]
-            }
+            },
+            "wipe": {}
         }
     }
 ]
 ```
 
+```
+# iserver set ocp task --cluster bm1 --filename C:\tmp\task.json --no-confirm
+```
+
 Notes:
-- [crd](./delete_crd.md), [prometheus](./disable_prometheus.md), [wipe](./delete_wipe.md) and [operator](./delete_operator.md) trigger workflow execution with optional input parameters
+- [crd](./delete_crd.md), [wipe](./delete_wipe.md) and [operator](./delete_operator.md) trigger workflow execution with optional input parameters
 - you can reuse exactly the same input file that was used for [create task](./create_task.md), some tasks or task parameters may be silently ignored
 - not all workflows have to be defined however be aware of workflow execution requirements and dependencies
 - if you want to clean up setup, use "wipe" option in case some crds are not deleted in task way
@@ -46,190 +49,109 @@ None
 ## Example
 
 ```
-python.exe .\iserver.py delete ocp task --filename C:\tmp\task.json --cluster bm1 --no-confirm
+# iserver delete ocp task --cluster bm1 --filename C:\tmp\task.json --no-confirm
+
+OpenShift Workflow - Tetragon - Wipe
+====================================
+
 OpenShift Cluster: bm1
 
-Cluster: bm1 (type: ocp)
-
-OpenShift Workflow - Delete Tasks
-=================================
-
-Validate Input
---------------
-Completed
-
-
-OpenShift Workflow - Tetragon Operator - Wipe Resources
-=======================================================
-
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Alert Rule
-----------
-- no resources found
-
-Sandbox Policy
---------------
-- no resources found
-
-Sandbox Policy Namespaced
--------------------------
-- no resources found
-
-Tetragon Network Policy
------------------------
-- no resources found
-
-Tetragon Network Policy Namespaced
-----------------------------------
-- no resources found
-
-Tracing Policy
---------------
-- upper-layers
-
-Tracing Policy Namespaced
--------------------------
-- no resources found
+Delete TracingPolicy
+--------------------
+- name: upper-layers
+- deleted
+- wait for no TracingPolicy upper-layers [timeout:60s]
 
 Completed tasks
 - Tetragon resources deleted
 
-OpenShift Workflow - Tetragon Operator - Delete Operator
-========================================================
+OpenShift Workflow - Tetragon - Delete Policy
+=============================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
+File: policy/policy.yaml
 
+TracingPolicy upper-layers already deleted
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+Completed tasks
+- CRDs deleted
 
+OpenShift Workflow - Tetragon - Delete Operator
+===============================================
 
-Alert Rule
-----------
-- no resources found
+OpenShift Cluster: bm1
 
-Sandbox Policy
---------------
-- no resources found
+Operator
+- subscription          : tetragon/tetragon-operator
+- package               : tetragon/tetragon-catalog/tetragon-operator
+- channel               : v1.18
+- install plan          : tetragon/install-jk5j4
+- install plan approved : V
+- installed csv         : tetragon-operator.v1.18.2
+- latest_csv            : V
 
-Sandbox Policy Namespaced
--------------------------
-- no resources found
-
-Tetragon Network Policy
------------------------
-- no resources found
-
-Tetragon Network Policy Namespaced
-----------------------------------
-- no resources found
-
-Tracing Policy
---------------
-- no resources found
-
-Tracing Policy Namespaced
--------------------------
-- no resources found
-- no resources found
 
 Delete Subscription
 -------------------
 - subscription: tetragon/tetragon-operator
 - checking cluster service version...
-- csv found and will be deleted: tetragon/tetragon-operator.v1.17.0
+- csv found and will be deleted: tetragon/tetragon-operator.v1.18.2
 - wait for no subscription
-- check cluster service version: tetragon/tetragon-operator.v1.17.0
+- check cluster service version: tetragon/tetragon-operator.v1.18.2
 - wait for no csv
-Wait for deployments deleted (optional: True)...
-- tetragon/tetragon-operator
-
-Delete Catalog Source
----------------------
-- namespace: tetragon
-- name: tetragon-catalog
-- wait for no catalog source
-- wait for no catalog source pod
-
-Delete Config Map
------------------
-- namespace: tetragon
-- name: tetragon-config
-- wait for no config map
 
 Delete Config Map
 -----------------
 - namespace: tetragon
 - name: tetragon-operator-config
 - wait for no config map
+- wait for no Deployment tetragon/tetragon-operator [timeout:180s]
+- wait for no ReplicaSet tetragon/tetragon-operator-646c4b6845 [timeout:180s]
+- wait for no Pod tetragon/tetragon-operator-646c4b6845-99fd7 [timeout:180s]
+- wait for no DaemonSet tetragon/tetragon [timeout:180s]
+- wait for no Pod tetragon/tetragon-5ggkq [timeout:180s]
+- wait for no Pod tetragon/tetragon-ltgzf [timeout:180s]
+- wait for no Pod tetragon/tetragon-p4nrr [timeout:180s]
+Subscription tetragon resources gone
+
+Delete CatalogSource
+--------------------
+- namespace: tetragon
+- name: tetragon-catalog
+- deleted
+- wait for no CatalogSource tetragon/tetragon-catalog [timeout:60s]
+- wait for no Pod tetragon/tetragon-catalog-f9nd7 [timeout:60s]
+
+Delete Config Map
+-----------------
+- namespace: tetragon
+- name: tetragon-config
+- already deleted
+
+Delete Config Map
+-----------------
+- namespace: tetragon
+- name: tetragon-operator-config
+- already deleted
 
 Delete Service Monitor
 ----------------------
 - namespace: tetragon
 - name: tetragon
-- wait for no service monitor
+- already deleted
 
 Delete Service
 --------------
 - namespace: tetragon
 - name: tetragon
-- wait for no service
-
-Delete Operator Group
----------------------
-- namespace: tetragon
-- name: tetragon-operator
 - already deleted
 
-Delete Namespace
-----------------
+Delete OperatorGroup
+--------------------
+- namespace: tetragon
 - name: tetragon
+- deleted
+- wait for no OperatorGroup tetragon/tetragon [timeout:60s]
 
 Namespace [tetragon] resources
 - no pods
@@ -238,7 +160,26 @@ Namespace [tetragon] resources
 - no replica sets
 - no services
 - no pvcs
+- no user defined networks
+- no cluster user defined networks
+
+Delete Namespace
+----------------
+- name: tetragon
 - wait for no namespace
+
+Completed tasks
+- Subscription deleted
+- Operator Group deleted
+- Namespace deleted
+
++----+---------+----------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope    | Workflow        | Changes | Success | Duration [s] |
++----+---------+----------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | tetragon | delete wipe     | 1       | V       | 2            | 
+| 2  | ocp:bm1 | tetragon | delete crd      | 0       | V       | 1            | 
+| 3  | ocp:bm1 | tetragon | delete operator | 6       | V       | 31           | 
++----+---------+----------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

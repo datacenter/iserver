@@ -1,59 +1,10 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
 from menu.common import get_confirmation
-from lib.workflow import ocp_common
 
-
-def initialize(params, my_output, log_id, virtctl=False):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['mgmt-required'] = virtctl
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    if virtctl:
-        params['ssh_handler'] = ocp_common.get_management_node_ssh_handler(params['cluster'], log_id=log_id)
-        
-    return params
 
 def get_default_params():
     params = {}
+    params['title'] = 'OpenShift Workflow - Virtual Machine'
     return params
-
-
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
-    return params
-
-
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params
 
 
 def select_virtual_machines(params, my_output, k8s_output_handler):
@@ -76,10 +27,41 @@ def select_virtual_machines(params, my_output, k8s_output_handler):
         my_output.default('No virtual machine found')
         return True, None
     
-    k8s_output_handler.print_virtual_machines(virtual_machines)
+    k8s_output_handler.print_virtual_machines_state(virtual_machines)
 
     if params['confirmation']:
         if not get_confirmation():
             return False, None
 
     return True, virtual_machines
+
+
+def get_virtual_machine(params, namespace, name, my_output, k8s_output_handler=None, instance=False):
+    info = params['k8s_handler'].get_virtual_machine(
+        namespace,
+        name,
+        cache_enabled=False
+    )
+    if info is None:
+        my_output.error('VirtualMachine %s not found' % (params['name']))
+        return None
+    
+    if k8s_output_handler is not None:
+        k8s_output_handler.print_virtual_machines_state([info])
+
+    if not instance:
+        return info
+    
+    instance_info = params['k8s_handler'].get_virtual_machine_instance(
+        namespace,
+        name,
+        cache_enabled=False
+    )
+    if instance_info is None:
+        my_output.default('VirtualMachine not running')
+        return info
+    
+    if k8s_output_handler is not None:
+        k8s_output_handler.print_virtual_machine_instances_state([instance_info])
+
+    return info

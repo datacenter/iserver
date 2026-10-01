@@ -262,6 +262,24 @@ def check_nncp_input_eth(k8s_handler, item, check, node, my_output):
     return data
 
 
+def check_nncp_input_lo(k8s_handler, item, check, node, my_output):
+    data = {}
+    data['type'] = 'lo'
+    data['name'] = 'lo'
+    data['state'] = 'up'
+
+    data['ipv4'] = None
+    if 'ipv4' in item:
+        if not ip_helper.is_valid_ipv4_cidr(item['ipv4']):
+            my_output.error('ipv4 attribute value cidrv4 expected')
+            my_output.default(json.dumps(item))
+            return None
+
+        data['ipv4'] = item['ipv4']
+    
+    return data
+
+
 def check_nncp_input_vlan(k8s_handler, item, check, node, my_output):
     data = {}
     data['type'] = 'vlan'
@@ -918,7 +936,7 @@ def run(params, my_output):
                 my_output.error('interface.type attribute expected')
                 return None
 
-            supported_types = ['bond', 'eth', 'lb', 'vlan', 'ovs', 'vrf']
+            supported_types = ['bond', 'eth', 'lb', 'vlan', 'ovs', 'vrf', 'lo']
             if interface['type'] not in supported_types:
                 my_output.error('unsupported interface.type value')
                 return None
@@ -929,6 +947,9 @@ def run(params, my_output):
 
             if interface['type'] == 'eth':
                 new_interface = check_nncp_input_eth(params['k8s_handler'], interface, params['check'], params['node'], my_output)
+
+            if interface['type'] == 'lo':
+                new_interface = check_nncp_input_lo(params['k8s_handler'], interface, params['check'], params['node'], my_output)
 
             if interface['type'] == 'bond':
                 new_interface = check_nncp_input_bond(params['k8s_handler'], interface, params['check'], params['node'], my_output)

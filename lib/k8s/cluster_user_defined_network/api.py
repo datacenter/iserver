@@ -21,4 +21,5 @@ class K8sClusterUserDefinedNetworkApi():
         return response
 
     def delete_cluster_user_defined_network_mo(self, name):
-        return self.delete_resource('ClusterUserDefinedNetwork', 'k8s.ovn.org/v1', name)
+        success, _ = self.delete_resource('ClusterUserDefinedNetwork', 'k8s.ovn.org/v1', name)
+        return success

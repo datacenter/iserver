@@ -1,6 +1,7 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_virtual_machine import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -77,20 +78,19 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Virtual Machine - CPU Topology Configuration', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'CPU Topology Configuration')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
     
@@ -122,6 +122,6 @@ def run(params, log_id=None):
                 virtual_machine['namespace'],
                 virtual_machine['name']
             )
-            k8s_output_handler.print_virtual_machines([info])
+            k8s_output_handler.print_virtual_machines_state([info])
             
     return success

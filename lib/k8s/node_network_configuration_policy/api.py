@@ -21,5 +21,5 @@ class K8sNodeNetworkConfigurationPolicyApi():
         return response  
 
     def delete_node_network_configuration_policy_mo(self, name):
-        return self.delete_resource('NodeNetworkConfigurationPolicy', 'nmstate.io/v1', name)
-    
+        success, _ = self.delete_resource('NodeNetworkConfigurationPolicy', 'nmstate.io/v1', name)
+        return success    

@@ -21,4 +21,5 @@ class K8sIsovalentBGPPeerConfigApi():
         return response
 
     def delete_isovalent_bgp_peer_config_mo(self, name):
-        return self.delete_resource('IsovalentBGPPeerConfig', 'isovalent.com/v1', name)
+        success, _ = self.delete_resource('IsovalentBGPPeerConfig', 'isovalent.com/v1', name)
+        return success

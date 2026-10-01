@@ -80,40 +80,8 @@ class K8sPodApi():
         return self.pod_log_mo[key]
 
     def delete_pod_mo(self, namespace, name):
-        api_handler = self.get_api()
-        if api_handler is None:
-            return None
-
-        start_time = int(time.time() * 1000)
-        try:
-            api_response = api_handler.delete_namespaced_pod(
-                name,
-                namespace
-            )
-        except BaseException:
-            api_response = None
-            self.log.error(
-                'k8s.delete_namespaced_pod',
-                traceback.format_exc()
-            )
-
-        if api_response is None:
-            self.log.k8s(
-                'delete',
-                'pod',
-                False,
-                int(time.time() * 1000) - start_time
-            )
-            return False
-
-        self.log.k8s(
-            'delete',
-            'pod',
-            True,
-            int(time.time() * 1000) - start_time
-        )
-
-        return True
+        success, _ = self.delete_resource('Pod', 'v1', name, namespace=namespace)
+        return success
 
     def get_pod_exec(self, namespace, name, command, container=None):
         api_handler = self.get_api()

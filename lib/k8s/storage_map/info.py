@@ -1,6 +1,3 @@
-from lib import filter_helper
-
-
 class K8sStorageMapInfo():
     def __init__(self):
         self.storage_map = None
@@ -9,16 +6,7 @@ class K8sStorageMapInfo():
         if managed_object is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            managed_object
-        )
-        info.update(metadata_info)
-
-        info['spec'] = self.get(managed_object, 'spec')
-        info['status'] = self.get(managed_object, 'status')
+        info = self.get_base_info(managed_object)
 
         info['source_provider'] = self.get(managed_object, 'spec:provider:source:name')
         info['destination_provider'] = self.get(managed_object, 'spec:provider:destination:name')
@@ -111,109 +99,43 @@ class K8sStorageMapInfo():
 
         return info
         
-    def get_storage_maps_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.storage_map is not None:
-                return self.storage_map
+    def get_storage_maps(self, object_filter=None, plan_info=False, all_info=False, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'storage_map', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
 
-        managed_objects = self.get_storage_map_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
+        if return_mo:
+            return infos
+        
+        if infos is None:
             return None
-
-        self.storage_map = []
-        for managed_object in managed_objects:
-            storage_map_info = {}
-            storage_map_info['info'] = self.get_storage_map_info(
-                managed_object
-            )
-            storage_map_info['mo'] = managed_object
-            self.storage_map.append(
-                storage_map_info
-            )
-
-        return self.storage_map
-
-    def match_storage_map(self, storage_map_info, object_filter):
-        if object_filter is None or len(object_filter) == 0:
-            return True
-
-        for rule in object_filter:
-            (key, value) = rule.split(':')
-
-            key_found = False
-
-            if key == 'namespace':
-                key_found = True
-                if not filter_helper.match_string(value, storage_map_info['namespace']):
-                    return False
-
-            if key == 'name':
-                key_found = True
-                if not filter_helper.match_namespace_name(value, '%s/%s' % (storage_map_info['namespace'], storage_map_info['name'])):
-                    return False
-
-            if not key_found:
-                self.log.error(
-                    'match_storage_map',
-                    'Unsupported key: %s' % (key)
-                )
-
-        return True
-
-    def get_storage_maps(self, object_filter=None, plan_info=False, return_mo=False, cache_enabled=True):
-        all_storage_maps = self.get_storage_maps_info(cache_enabled=cache_enabled)
-        if all_storage_maps is None:
-            return None
-
-        storage_maps = []
 
         plans = None
-        if plan_info:
+        if plan_info or all_info:
             plans = self.get_plans(cache_enabled=False)
 
-        for storage_map_info in all_storage_maps:
-            storage_map_info['info'] = self.add_storage_map_info(
-                storage_map_info['info'],
+        for info in infos:
+            info = self.add_storage_map_info(
+                info,
                 plans=plans
             )
 
-            if not self.match_storage_map(storage_map_info['info'], object_filter):
-                continue
+        return infos
 
-            if return_mo:
-                storage_maps.append(
-                    storage_map_info['mo']
-                )
-                continue
-
-            storage_maps.append(
-                storage_map_info['info']
-            )
-
-        return storage_maps
-
-    def is_storage_map(self, namespace, name, cache_enabled=True):
-        if self.get_storage_map(namespace, name, cache_enabled=cache_enabled) is None:
+    def is_storage_map(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_storage_map(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
-    def get_storage_map(self, namespace, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'namespace:%s' % (namespace)
+    def get_storage_map(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'storage_map', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
-        object_filter.append(
-            'name:%s' % (name)
-        )
-        storage_maps = self.get_storage_maps(
-            object_filter=object_filter,
-            return_mo=return_mo,
-            cache_enabled=cache_enabled
-        )
-        if storage_maps is None:
-            return None
-
-        if len(storage_maps) == 1:
-            return storage_maps[0]
-
-        return None

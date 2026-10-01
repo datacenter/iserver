@@ -190,7 +190,7 @@ class K8sRoleBindingInfo():
             if not get_confirmation():
                 return False
             
-        success = self.create_role_binding_mo(body)
+        success = self.create_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed')

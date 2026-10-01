@@ -26,4 +26,5 @@ class K8sMetalLbApi():
         return response
 
     def delete_metallb_mo(self, namespace, name):
-        return self.delete_resource('MetalLB', 'metallb.io/v1beta1', name, namespace=namespace)
+        success, _ = self.delete_resource('MetalLB', 'metallb.io/v1beta1', name, namespace=namespace)
+        return success

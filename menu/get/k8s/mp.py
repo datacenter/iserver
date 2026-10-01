@@ -114,7 +114,7 @@ def get_k8s_mp_command(
         ctx.my_output.json_output(plans)
 
         if 'state' in view:
-            k8s_output_handler.print_plans(
+            k8s_output_handler.print_plans_state(
                 plans
             )
 

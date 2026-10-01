@@ -1,4 +1,6 @@
-# Splunk Operator - Create Operator
+# Splunk - Create Operator
+
+[[Back]](./README.md) [[kb]](./kb/operator.md)
 
 ## Workflow
 
@@ -20,48 +22,20 @@ None
   --no-confirm                    Confirmation mode
 ```
 
-## Non-configurable defaults
-
-```
-{
-    "namespace": "splunk-operator",
-    "name": "splunk-operator",
-    "operator-group-name": "splunk-operator-group"
-}
-```
-
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/splunk/operator_create.png)
 
 ## Example
 
 ```
-# iserver set ocp splunk --mode operator --no-confirm
+# iserver set ocp splunk --cluster --bm1 --mode operator --no-confirm
 
 OpenShift Workflow - Splunk Operator - Create Operator
 ======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "channel": "__default__",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "splunk-operator",
-    "name": "splunk-operator",
-    "operator-group-name": "splunk-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
+Subscription not found splunk-operator
 
 Create Namespace
 ----------------
@@ -72,17 +46,14 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: splunk-operator
-
 ~~~
-
-Namespace created
-
+Namespace [splunk-operator] created
 Wait for namespace [timeout:60]...
 
-Create Operator Group
----------------------
-Operator group: splunk-operator/splunk-operator-group
-Target namespaces: splunk-operator
+Create OperatorGroup
+--------------------
+- namespace: splunk-operator
+- name: splunk-operator-group
 
 ~~~
 apiVersion: operators.coreos.com/v1
@@ -93,12 +64,10 @@ metadata:
 spec:
   targetNamespaces:
   - splunk-operator
-
+  upgradeStrategy: Default
 ~~~
-
-Operator group created
-
-Wait for operator group [timeout:60]...
+OperatorGroup [splunk-operator/splunk-operator-group] created
+- wait for OperatorGroup splunk-operator/splunk-operator-group [timeout:60s]
 
 Create Subscription
 -------------------
@@ -108,9 +77,9 @@ Install plan approval: Automatic
 Getting subscription and packege manifest information...
 Resolving channel name...
 Channel: stable
-- CSV [splunk-operator.v3.0.0]
+- CSV [splunk-operator.v3.1.0]
 - CSV Display name [Splunk Operator]
-- CVS Version [3.0.0]
+- CVS Version [3.1.0]
 - CSV Provider [{'name': 'Splunk Inc.', 'url': 'www.splunk.com'}]
 - CSV Maturity [stable]
 
@@ -126,22 +95,89 @@ spec:
   name: splunk-operator
   source: certified-operators
   sourceNamespace: openshift-marketplace
-
 ~~~
 
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-n66z7
+Install plan: install-fbwcl
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- splunk-operator/splunk-operator-controller-manager
+Wait for deployment splunk-operator/splunk-operator-controller-manager ready (optional: True, allow zero replicas: False, timeout: 600s)...
+
+Operator
+- subscription          : splunk-operator/splunk-operator
+- package               : openshift-marketplace/certified-operators/splunk-operator
+- channel               : stable
+- install plan          : splunk-operator/install-fbwcl
+- install plan approved : ✓
+- installed csv         : splunk-operator.v3.1.0
+- latest_csv            : ✓
+
 
 Completed tasks
 - Namespace created
 - Operator Group created
-- Splunk Operator installed
+- Subscription created
+
+Set Splunk operator subscription license
+- subscription package: splunk-operator
+- subscription found
+- csv splunk-operator/splunk-operator
+- csv found
+- set env SPLUNK_GENERAL_TERMS value to --accept-sgt-current-at-splunk-com
+~~~
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  name: splunk-operator.v3.1.0
+  namespace: splunk-operator
+spec:
+  ...
+~~~
+- csv patched
+- delete deployment splunk-operator/splunk-operator-controller-manager
+- wait for deployment ready
+
+Set OpenShift policy for Splunk operator
+- subscription package: splunk-operator
+- subscription found
+- csv splunk-operator/splunk-operator
+- csv found
+
+Create role binding
+-------------------
+- namespace: splunk-operator
+- name: system:openshift:scc:nonroot-v2
+- cluster role: system:openshift:scc:nonroot-v2
+- service account namespace: splunk-operator
+- service account name: default
+
+~~~
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: system:openshift:scc:nonroot-v2
+  namespace: splunk-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:nonroot-v2
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: splunk-operator
+~~~
+
+Role binding created
+- delete deployment splunk-operator/splunk-operator-controller-manager
+- wait for deployment ready
+
++----+---------+--------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope  | Workflow        | Changes | Success | Duration [s] |
++----+---------+--------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | splunk | create operator | 7       | ✓       | 82           | 
++----+---------+--------+-----------------+---------+---------+--------------+
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[kb]](./kb/operator.md)

@@ -1,42 +1,21 @@
+import copy
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_iotel import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'suffix' not in params:
-        params['suffix'] = None
-
-    if 'poller' not in params:
-        params['poller'] = False
-
-    if not isinstance(params['poller'], bool):
-        return None, 'poller param must be true or false'
-            
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'suffix',
-        'poller',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'list-of-str', None, None, None, None],
+        ['suffix', True, None, 'str', None, None, None, None],
+        ['view', True, ['state'], 'view', None, None, ['state', 'poller', 'res'], None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def get_info(params, my_output):
@@ -121,55 +100,60 @@ def get_info(params, my_output):
     return params
 
 
-def run(params, log_id=None):
+def run(mparams, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Open Telemetry (iotel) - Get instance', before_newline=True, after_newline=True, double_underline=True)
 
-    params, error = validate(params)
+    mparams, error = validate(mparams)
     if error is not None:
         my_output.error(error)
         return False
-
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
-
-    if not params['k8s_handler'].is_namespace(params['namespace']):
-        my_output.default('No namespace [%s]' % (params['namespace']))
-        return True
     
-    params = get_info(params, my_output)
-    if params is None:
-        return False
+    for cluster in mparams['cluster']:
+        params = copy.deepcopy(mparams)
+        params['cluster'] = cluster
 
-    k8s_output_handler.my_table(
-        params['instance'],
-        [
-            ['Deployment', 'namespace_nameT'],
-            ['Ready', 'readyT'],
-            ['Suffix', 'suffix'],
-            ['Intersight API', 'intersightTick'],
-            ['Poller', 'pollerTick'],
-            ['Query', 'pollerCount'],
-            ['Metric', 'metric'],
-            ['OTEL Service', 'serviceTick'],
-            ['Service Monitor', 'serviceMonitorTick'],
-        ]
-    )
+        ocp_common.print_title(params, my_output, 'Get Information')
+        params = ocp_common.workflow_init(params, my_output, log_id)
+        if params is None:
+            continue
 
-    if params['poller'] or params['verbose']:
-        for instance in params['instance']:
-            my_output.default('Instance: %s' % (instance['suffix']), before_newline=True, underline=True)
-            my_output.default(instance['poller'])
+        if not params['k8s_handler'].is_namespace(params['__default__']['namespace']):
+            my_output.default('No namespace [%s]' % (params['__default__']['namespace']))
+            continue
+        
+        params = get_info(params, my_output)
+        if params is None:
+            continue
 
-    if params['verbose']:
-        k8s_output_handler.print_secrets(params['secrets'])
-        k8s_output_handler.print_config_maps(params['config_maps'])
-        k8s_output_handler.print_deployments_state(params['deployments'])
-        k8s_output_handler.print_pods_state(params['pods'])
-        k8s_output_handler.print_services(params['services'])
-        k8s_output_handler.print_service_monitors(params['service_monitors'])
+        k8s_output_handler.my_table(
+            params['instance'],
+            [
+                ['Deployment', 'namespace_nameT'],
+                ['Ready', 'readyT'],
+                ['Suffix', 'suffix'],
+                ['Intersight API', 'intersightTick'],
+                ['Poller', 'pollerTick'],
+                ['Query', 'pollerCount'],
+                ['Metric', 'metric'],
+                ['OTEL Service', 'serviceTick'],
+                ['Service Monitor', 'serviceMonitorTick'],
+            ]
+        )
 
-    my_output.default('Output option: --poller, --verbose', before_newline=True)
+        if 'poller' in params['view'] or 'res' in params['view']:
+            for instance in params['instance']:
+                my_output.default('Instance: %s' % (instance['suffix']), before_newline=True, underline=True)
+                my_output.default(instance['poller'])
+
+        if 'res' in params['view']:
+            k8s_output_handler.print_secrets(params['secrets'])
+            k8s_output_handler.print_config_maps(params['config_maps'])
+            k8s_output_handler.print_deployments_state(params['deployments'])
+            k8s_output_handler.print_pods_state(params['pods'])
+            k8s_output_handler.print_services(params['services'])
+            k8s_output_handler.print_service_monitors(params['service_monitors'])
+
+        my_output.default('Output option: --poller, --verbose', before_newline=True)
+
     return True

@@ -1,4 +1,5 @@
-from lib import filter_helper
+import copy
+from lib.k8s import output as k8s_output
 from lib import output_helper
 from lib.workflow.ocp_nfd_operator import common as local_common
 from lib.workflow import ocp_common
@@ -6,8 +7,8 @@ from lib.workflow import ocp_common
 
 def validate(params):
     rules = [
-        ['cluster', False, None, 'str', None, None, None, None],
-        ['annotation', True, False, 'bool', None, None, None, None]
+        ['cluster', False, None, 'list-of-str', None, None, None, None],
+        ['view', True, ['state'], 'view', None, None, ['state', 'res', 'annotation'], None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules)
     if not success:
@@ -16,65 +17,104 @@ def validate(params):
     return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
-def run(params, log_id=None):
-    my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Node Feature Discover Operator - Get Information', before_newline=True, after_newline=True, double_underline=True)
+def collect_state_info(params, my_output):
+    my_output.debug('- instance')
+    params['instance'] = None
+    params['summary']['instanceReady'] = False
+    instances = params['k8s_handler'].get_node_feature_discoverys(cache_enabled=False)
+    if instances is not None and len(instances) == 1:
+        params['instance'] = instances[0]
+        params['summary']['instanceReady'] = params['instance']['ready']
 
-    params, error = validate(params)
+    params['summary'] = params['k8s_handler'].add_tick(
+        params['summary'],
+        'instanceReady',
+        True,
+        'instanceReadyTick'
+    )
+
+    my_output.debug('- nodes')
+
+    params['nodes'] = params['k8s_handler'].get_nodes(cache_enabled=False)
+    if params['nodes'] is None:
+        my_output.error('Failed to get kubernetes nodes')
+        return params
+    
+    node_count = 0
+    node_with_annotation = []
+    node_without_annotation = []
+    for node in params['nodes']:
+        if 'nfd.node.kubernetes.io/feature-labels' in node['annotation']:
+            node_count +=1
+            node_with_annotation.append(node['name'])
+
+    for node in params['nodes']:
+        if node['name'] not in node_with_annotation:
+            node_without_annotation.append(node['name'])
+
+    params['summary']['nodes_summary'] = '%s/%s' % (
+        node_count,
+        len(params['nodes'])
+    )
+    if node_count == len(params['nodes']):
+        params['summary']['__Output']['nodes_summary'] = 'Green'
+        params['summary']['nodes_without_annotation'] = '---'
+    else:
+        params['summary']['__Output']['nodes_summary'] = 'Red'
+        params['summary']['nodes_without_annotation'] = ', '.join(node_without_annotation)
+
+    return params
+
+
+def run(mparams, log_id=None):
+    my_output = output_helper.OutputHelper(log_id=log_id)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
+
+    mparams, error = validate(mparams)
     if error is not None:
         my_output.error(error)
         return False
     
-    params = ocp_common.workflow_init(params, my_output, log_id)
-    if params is None:
-        return False
+    for cluster in mparams['cluster']:
+        params = copy.deepcopy(mparams)
+        params['cluster'] = cluster
 
-    subscription = ocp_common.get_subscription(
-        params['k8s_handler'],
-        params['__default__']['name'],
-        my_output=my_output
-    )
-    if subscription is None:
-        return True
-    
-    my_output.default('Instance', underline=True)
-    nfds = params['k8s_handler'].get_node_feature_discoverys(
-        cache_enabled=False
-    )
-    if nfds is None:
-        my_output.error('failed to get nfd instances')
-        return False
+        ocp_common.print_title(params, my_output, 'Get Information')
+        params = ocp_common.workflow_init(params, my_output, log_id)
+        if params is None:
+            continue
 
-    if len(nfds) == 0:
-        my_output.default('- no instance found')
-        with_instance=False
-    else:
-        with_instance=True
-        names = filter_helper.get(nfds, 'name')
-        if names is None:
-            my_output.error('failed to get nfd instances')
-            return False
+        params = ocp_common.get_operator(params, my_output)
+        if params['subscription'] is None:
+            continue
 
-        my_output.default('- name: %s' % (','.join(names)))
+        params = collect_state_info(params, my_output)
 
-    ready = params['k8s_handler'].is_subscription_nfd_ready(with_instance=with_instance, my_output=my_output, details=True)
-    if ready:
-        nodes = params['k8s_handler'].get_nodes(cache_enabled=False)
-        if nodes is None:
-            my_output.error('Failed to get kubernetes nodes')
-            return False
-        
-        my_output.default('NFD node annotations', underline=True, before_newline=True)
-        for node in nodes:
-            if 'nfd.node.kubernetes.io/feature-labels' not in node['annotations']:
-                my_output.error('No nfd annotations on node [%s]' % (node['name']))
-            else:
-                if not params['annotation']:
-                    my_output.default('- found in node %s' % (node['name']))
+        if 'state' in params['view']:
+            my_output.dictionary_ng(
+                'State',
+                params['summary'],
+                [
+                    ['package', 'package'],
+                    ['csv', 'csv'],
+                    ['resources', 'readyTick'],
+                    ['instance', 'instanceReadyTick'],
+                    ['node annotations', 'nodes_summary'],
+                    ['no annotation', 'nodes_without_annotation']
+                ]
+            )
 
-                if params['annotation']:
-                    my_output.default('- node [%s]' % (node['name']))
-                    for annotation in node['annotations']['nfd.node.kubernetes.io/feature-labels'].split(','):
+        if 'res' in params['view']:
+            ocp_common.print_subscription(params['subscription'], my_output)
+            ocp_common.print_resources(params, k8s_output_handler)
+            if params['instance'] is not None:
+                k8s_output_handler.print_node_feature_discoverys([params['instance']])
+
+        if 'annotation' in params['view']:
+            if params['nodes'] is not None:
+                for node in params['nodes']:
+                    my_output.default('Node [%s]' % (node['name']), before_newline=True)
+                    for annotation in node['annotation']['nfd.node.kubernetes.io/feature-labels'].split(','):
                         my_output.default('\t%s' % (annotation))
 
     return True

@@ -157,13 +157,16 @@ class K8sNetworkMapInfo():
 
         return True
 
-    def get_network_maps(self, object_filter=None, plan_info=False, return_mo=False, cache_enabled=True):
+    def get_network_maps(self, object_filter=None, plan_info=False, all_info=False, return_mo=False, cache_enabled=True):
         all_network_maps = self.get_network_maps_info(cache_enabled=cache_enabled)
         if all_network_maps is None:
             return None
 
         network_maps = []
 
+        if all_info:
+            plan_info = True
+            
         plans = None
         if plan_info:
             plans = self.get_plans(cache_enabled=False)

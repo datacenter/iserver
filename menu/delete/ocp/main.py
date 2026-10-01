@@ -3,7 +3,13 @@ import click
 from menu.delete.ocp.ai import delete_ocp_ai_command
 from menu.delete.ocp.bmh import delete_ocp_bmh_command
 from menu.delete.ocp.cert_manager import delete_ocp_cert_manager_command
-from menu.delete.ocp.cli_web import delete_ocp_cli_web
+from menu.delete.ocp.cli_butane import delete_ocp_cli_butane
+from menu.delete.ocp.cli_cilium import delete_ocp_cli_cilium
+from menu.delete.ocp.cli_helm import delete_ocp_cli_helm
+from menu.delete.ocp.cli_hubble import delete_ocp_cli_hubble
+from menu.delete.ocp.cli_tridentctl import delete_ocp_cli_tridentctl
+from menu.delete.ocp.cli_virtctl import delete_ocp_cli_virtctl
+from menu.delete.ocp.terminal import delete_ocp_terminal
 from menu.delete.ocp.connector import delete_ocp_connector
 from menu.delete.ocp.cilium.main import delete_ocp_cilium_menu
 from menu.delete.ocp.cluster.main import delete_ocp_cluster_menu
@@ -53,7 +59,12 @@ def delete_ocp_menu(ctx):
 delete_ocp_menu.add_command(delete_ocp_ai_command)
 delete_ocp_menu.add_command(delete_ocp_bmh_command)
 delete_ocp_menu.add_command(delete_ocp_cert_manager_command)
-delete_ocp_menu.add_command(delete_ocp_cli_web)
+delete_ocp_menu.add_command(delete_ocp_cli_butane)
+delete_ocp_menu.add_command(delete_ocp_cli_cilium)
+delete_ocp_menu.add_command(delete_ocp_cli_helm)
+delete_ocp_menu.add_command(delete_ocp_cli_hubble)
+delete_ocp_menu.add_command(delete_ocp_cli_tridentctl)
+delete_ocp_menu.add_command(delete_ocp_cli_virtctl)
 delete_ocp_menu.add_command(delete_ocp_connector)
 delete_ocp_menu.add_command(delete_ocp_cilium_menu)
 delete_ocp_menu.add_command(delete_ocp_cluster_menu)
@@ -84,6 +95,7 @@ delete_ocp_menu.add_command(delete_ocp_splunk_command)
 delete_ocp_menu.add_command(delete_ocp_sriov_command)
 delete_ocp_menu.add_command(delete_ocp_ssh_command)
 delete_ocp_menu.add_command(delete_ocp_task_command)
+delete_ocp_menu.add_command(delete_ocp_terminal)
 delete_ocp_menu.add_command(delete_ocp_tetragon_command)
 delete_ocp_menu.add_command(delete_ocp_trident_command)
 delete_ocp_menu.add_command(delete_ocp_vast_command)

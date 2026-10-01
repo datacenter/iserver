@@ -1,81 +1,15 @@
-import copy
-import json
-from lib.workflow.ocp_access import check as ocp_check
-
-
-def initialize(params, my_output, log_id, ssh_required=False):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['ssh-required'] = ssh_required
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-
-    params['ssh-ready'] = False
-    if 'ssh_public_key' in ocp_check_params['data']:
-        params['ssh-ready'] = True
-
-    return params
-
-
 def get_default_params():
     params = {}
     params['namespace'] = 'openshift-storage'
     params['name'] = 'odf-operator'
     params['cluster-name'] = 'odf-cluster'
     params['operator-group-name'] = 'openshift-storage-operator-group'
+    params['operator-target-namespaces'] = ['openshift-storage']
     params['delete-namespace'] = True
+    params['create_subscription'] = 'create_odf_subscription'
+    params['delete_subscription'] = 'delete_odf_subscription'
+    params['title'] = 'OpenShift Workflow - ODF'
     return params
-
-
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
-    return params
-
-
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params
-
-
-def check_state(params, my_output, check_ready=True):
-    state = {}
-
-    state['installed'] = params['k8s_handler'].check_odf_subscription(
-        params['name'], 
-        my_output=my_output,
-        check_ready=False
-    )
-
-    if not check_ready or not state['installed']:
-        return state
-
-    state['ready'] = params['k8s_handler'].is_subscription_odf_ready(my_output=my_output)
-    return state
 
 
 def get_odf_crd(k8s_handler, my_output=None, cache_enabled=False, message_on_error=True, crd=['__all__']):
@@ -241,7 +175,7 @@ def get_odf_crd(k8s_handler, my_output=None, cache_enabled=False, message_on_err
         if my_output is not None:
             my_output.default('- CephNFS')
 
-        response['ceph_nfs'] = k8s_handler.get_ceph_nfses(
+        response['ceph_nfs'] = k8s_handler.get_ceph_nfss(
             cache_enabled=cache_enabled
         )
         if response['ceph_nfs'] is None and message_on_error:
@@ -672,7 +606,7 @@ def print_odf_crd(crds, k8s_output_handler, only_non_zero=True, crd=['__all__'])
     if 'Job' in crd or '__all__' in crd:
         if crds['job'] is not None:
             if not only_non_zero or len(crds['job']) > 0:
-                k8s_output_handler.print_jobs(
+                k8s_output_handler.print_jobs_state(
                     crds['job']
                 )
 

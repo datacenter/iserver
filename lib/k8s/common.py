@@ -1,3 +1,4 @@
+import re
 import json
 import time
 import datetime
@@ -26,24 +27,42 @@ class K8sCommon():
 
         return '__ERROR'
 
-    def get(self, managed_object, key, on_error=None, on_none=None, on_empty=None):
+
+    def cast_get(self, value, cast):      
+        if cast == 'json2txt':
+            if isinstance(value, dict):
+                value_text = json.dumps(value, indent=2).split('\n')
+                new_value = []
+                for line in value_text:
+                    if line in ['{', '}']:
+                        continue
+
+                    new_value.append(re.sub('^  ', '', line))
+
+                value = '\n'.join(new_value)
+
+        return value
+    
+
+    def get(self, managed_object, key, on_error=None, on_none=None, on_empty=None, cast=None):
         if managed_object is None:
-            return on_error
+            return self.cast_get(on_error, cast)
 
         if not isinstance(managed_object, dict):
-            return on_error
+            return self.cast_get(on_error, cast)
 
         value = self._get(managed_object, key)
         if value == '__ERROR':
+            return self.cast_get(on_error, cast)
             return on_error
 
         if value is None:
-            return on_none
+            return self.cast_get(on_none, cast)
 
         if on_empty is not None and isinstance(value, str) and len(value) == 0:
-            return on_empty
+            return self.cast_get(on_empty, cast)
         
-        return value
+        return self.cast_get(value, cast)
 
     def convert_object(self, item):
         if item is None:
@@ -551,6 +570,17 @@ class K8sCommon():
                     if not filter_helper.match_string(value, info['name']):
                         return False
 
+            if key == 'namespace_names':
+                key_found = True
+                value_found = False
+                for name in value.split(','):
+                    if filter_helper.match_string(name, info['namespace_name']):
+                        value_found = True
+                        break
+
+                if not value_found:
+                    return False
+                
             if key == 'names':
                 key_found = True
                 value_found = False
@@ -651,6 +681,41 @@ class K8sCommon():
 
             time.sleep(5)
 
+    def wait_any_managed_object(
+            self, 
+            object_name, 
+            my_output=None,
+            prompt=None, 
+            max_time=60,
+            log_error_on_timeout=True
+        ):
+        if my_output is not None and prompt is not None:
+            my_output.default('any %s' % (prompt))
+
+        start_time = int(time.time())
+        while True:
+            info = getattr(self, 'get_%ss' % (object_name))(
+                cache_enabled=False
+            )
+
+            if info is not None and len(info) > 0:
+                return True
+
+            duration = int(time.time()) - start_time
+            if duration > max_time:
+                if log_error_on_timeout:
+                    self.log.error(
+                        'k8s.wait_any_managed_object',
+                        'Max time reached [%s]' % (object_name)
+                    )
+
+                if my_output is not None:
+                    my_output.error('timed out')
+
+                return False
+
+            time.sleep(5)
+
     def wait_no_managed_object(
             self, 
             object_name, 
@@ -737,35 +802,16 @@ class K8sCommon():
 
         return managed_object
     
-    def add_tick(self, info, attribute_name, success_value, property_name, bool_attribute=None, managed_object=None):
-        if managed_object is None:
-            value = self.get(info, attribute_name)
-        else:
-            value = self.get(managed_object, attribute_name)
-        
-        if isinstance(value, list):
-            if success_value in value:
-                info[property_name] = '\u2713'
-                info['__Output'][property_name] = 'Green'
-                if bool_attribute is not None:
-                    info[bool_attribute] = True
-            else:
-                info[property_name] = '\u2717'
-                info['__Output'][property_name] = 'Red'
-                if bool_attribute is not None:
-                    info[bool_attribute] = False
-        else:
-            if value == success_value:
-                info[property_name] = '\u2713'
-                info['__Output'][property_name] = 'Green'
-                if bool_attribute is not None:
-                    info[bool_attribute] = True
-            else:
-                info[property_name] = '\u2717'
-                info['__Output'][property_name] = 'Red'
-                if bool_attribute is not None:
-                    info[bool_attribute] = False
-        return info
+    def add_tick(self, info, attribute_name, success_value, property_name, bool_attribute=None, managed_object=None, condition=False):
+        return filter_helper.add_tick(
+            info, 
+            attribute_name, 
+            success_value, 
+            property_name, 
+            bool_attribute=bool_attribute, 
+            managed_object=managed_object,
+            condition=condition
+        )
     
     def get_ready_resources(self, pods=None, deployments=None, daemon_sets=None):
         if pods is not None:
@@ -798,3 +844,44 @@ class K8sCommon():
                 body['metadata']['resourceVersion'] = managed_object['metadata']['resource_version']
         body['spec'] = {}
         return body
+    
+    def get_infos_readiness_summary(self, infos, ready, crd, my_output=None, prefix=''):
+        if infos is None:
+            summary = {}
+            summary['__Output'] = {}
+            summary['summary'] = '--/--'
+            summary['__Output']['summary'] = 'Red'
+        else:
+            summary = {}
+            summary['__Output'] = {}
+            summary['count'] = 0
+            summary['ready'] = 0
+
+            for info in infos:
+                summary['count'] += 1
+                if info[ready]:
+                    summary['ready'] += 1
+
+            summary['summary'] = '%s/%s' % (summary['ready'], summary['count'])
+            if summary['count'] > 0 and summary['count'] == summary['ready']:
+                summary['__Output']['summary'] = 'Green'
+                summary['all_ready'] = True
+            else:
+                summary['__Output']['summary'] = 'Red'
+                summary['all_ready'] = False
+    
+        if my_output is not None:
+            my_output.default(
+                '%s%s %s' % (
+                    prefix,
+                    my_output.add_color(
+                        '%s' % (
+                            summary['summary']
+                        ),
+                        summary['__Output']['summary']
+                    ),
+                    crd
+                )
+            )
+
+        return summary

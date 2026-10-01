@@ -4,24 +4,33 @@ from lib.workflow.linux_disk import common as local_common
 from lib.workflow.linux_access import common as linux_common
 from lib.linux import output as linux_output
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'server' not in params or params['server'] is None:
-        return None, 'server list required'
+    rules = [
+        ['server', True, None, 'list-of-dict', 1, None, None, None],
+        ['device', False, [], 'list-of-str', None, None, None, None],
+        ['fstype', False, [], 'list-of-str', None, None, ['LVM2', 'Ceph'], None],
+        ['break', True, True, 'bool', None, None, None, None],
+        ['break-blkdiscard', True, False, 'bool', None, None, None, None]
+    ]
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
-    if not isinstance(params['server'], list):
-        return None, 'server list required'
-    
-    if len(params['server']) == 0:
-        return None, 'define at least one server'
-    
-    if 'device' not in params or params['device'] is None:
-        params['device'] = []
 
-    if not isinstance(params['device'], list):
-        return None, 'device list required'
-    
+def run(params, log_id=None):
+    my_output = output_helper.OutputHelper(log_id=log_id)
+    my_output.default('Linux - Disk - Zap', before_newline=True, after_newline=True, double_underline=True)
+
+    params, error = validate(params)
+    if error is not None:
+        my_output.error(error)
+        return False
+
     new_devices = []
     for item in params['device']:
         if item.startswith('/dev/'):
@@ -33,37 +42,6 @@ def validate(params):
 
     params['device'] = copy.deepcopy(new_devices)
 
-    if 'break' not in params:
-        params['break'] = True
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-        
-    allowed_keys = [
-        'server',
-        'device',
-        'verbose',
-        'break',
-        'confirmation'
-    ]
-    return local_common.sanitize_params(params, allowed_keys), None
-
-
-def run(params, log_id=None):
-    my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('Linux - Disk - Zap', before_newline=True, after_newline=True, double_underline=True)
-
-    params, error = validate(params)
-    if error is not None:
-        my_output.error(error)
-        return False
-    
     success, servers = linux_common.get_ssh_handlers(
         params['server'],
         log_id,
@@ -79,26 +57,32 @@ def run(params, log_id=None):
         my_output.default('Server: %s' % (server['name']), before_newline=True, underline=True)
         lsblks = server['linux_handler'].get_lsblks(
             device_names=params['device'],
+            fstypes=params['fstype'],
             include_disk_paths=True,
             exclude_boot=True,
             cache_enabled=False
         )
         if lsblks is None:
             my_output.error('Failed to get lsblk')
-            return False
+            continue
         
         if len(lsblks) == 0:
-            my_output.error('No matching device found')
-            return False
+            my_output.default('No matching device found')
+            continue
         
         linux_output_handler.print_linux_lsblk(lsblks)
 
         if params['confirmation']:
             if not get_confirmation():
-                return False
-            
+                continue
+        
+        zapped = []
         for device in lsblks:
+            if device['path'] in ['/dev/loop0']:
+                continue
+            
             my_output.default('Zap device: %s' % (device['path']), before_newline=True)
+            zapped.append(device['path'])
 
             command = 'sudo sgdisk --zap-all %s' % (device['path'])
             my_output.default('Command: %s' % (command))
@@ -119,28 +103,31 @@ def run(params, log_id=None):
                     if params['break']:
                         return False
             
-            command = 'sudo blkdiscard -f  %s' % (device['path'])
-            my_output.default('Command: %s' % (command))
-            success, output, error = server['ssh_handler'].run_cmd(command)
-            my_output.default('%s %s' % (str(output), str(error)), wrap='~~~')
-            if not success:
-                my_output.error('Failed')
-                if params['break']:
-                    return False
+            if device['trim']:
+                command = 'sudo blkdiscard -f  %s' % (device['path'])
+                my_output.default('Command: %s' % (command))
+                success, output, error = server['ssh_handler'].run_cmd(command)
+                my_output.default('%s %s' % (str(output), str(error)), wrap='~~~')
+                if not success:
+                    if params['break-blkdiscard']:
+                        my_output.error('Failed')
+                        return False
+                    
+                    my_output.default('Continue')
 
         lsblks = server['linux_handler'].get_lsblks(
-            device_names=params['device'],
+            device_names=zapped,
             include_disk_paths=True,
             exclude_boot=True,
             cache_enabled=False
         )
         if lsblks is None:
             my_output.error('Failed to get lsblk')
-            return False
+            continue
         
         if len(lsblks) == 0:
             my_output.error('No matching device found')
-            return False
+            continue
         
         linux_output_handler.print_linux_lsblk(lsblks)
 

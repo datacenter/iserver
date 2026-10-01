@@ -43,10 +43,9 @@ class K8sStorageClassLvm():
             return True
         
         if my_output is not None:
-            my_output.default('- namespace: %s' % (info['namespace']))
             my_output.default('- name: %s' % (info['name']))
 
-        if not self.delete_storage_class_mo(info['namespace'], info['name']):
+        if not self.delete_storage_class_mo(info['name']):
             if my_output is not None:
                 my_output.error('Failed to delete storage class')
             return False
@@ -55,7 +54,7 @@ class K8sStorageClassLvm():
             if my_output is not None:
                 my_output.default('- wait for no storage class')
 
-            if not self.wait_no_storage_class(info['namespace'], info['name']):
+            if not self.wait_no_storage_class(info['name']):
                 if my_output is not None:
                     my_output.error('Time out')
                 return False

@@ -14,7 +14,7 @@ Any value or processing error in configuration is shown in status of the `cilium
 
 Configuration change may or may not require cilium agent restart, in some cases restart is triggered automatically. However, it is not well documented or consistent as such it is safer to always restart the cilium agent daemons.
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

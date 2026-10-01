@@ -24,7 +24,7 @@ def validate(params):
         'linux-handler',
         'verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):

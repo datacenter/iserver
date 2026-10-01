@@ -2,7 +2,7 @@ class K8sMigrationOutput():
     def __init__(self):
         pass
 
-    def print_migrations(self, info):
+    def print_migrations_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

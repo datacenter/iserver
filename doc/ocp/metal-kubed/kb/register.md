@@ -1,70 +1,127 @@
-# Metal Kubed - Node registration
+# Register host
 
 [[Back]](../README.md)
 
-In case of OpenShift cluster installed with assisted installer, all hosts are discovered as `BareMetalHost` object in [unmanaged](./unmanaged.md) operational state.
+Hosts are created with [BareMetalHost](./crd/baremetalhost.md) object that leads to one of the two desired host provisioning states depending on the object definition
+- [externally provisioned](./externally_provisioned.md) state for power tasks only 
+- [available](./available.md) state that enables [image provisioning](./provisioned.md), [bios settings change](./change_bios_settings.md) and [firmware upgrades](./firmware_upgrade.md)
 
-```
-  operationalStatus: discovered
-  poweredOn: true
-  provisioning:
-    state: unmanaged
-```
+## Externally provisioned
 
-Node registration procedure allows power management and requires providing BMC access details with the **hardware dependent address format** as explained [here](https://book.metal3.io/bmo/supported_hardware.html).
-
-> [!CAUTION]
-> in case of http proxy, make sure bmc address is in noProxy, otherwise the node may hang in registering phase for quite a while and eventually fail.
-
-## Example Console
-
-![Register](../images/metal-kubed/register.png)
-
-## Example CRD
-
-```
-apiVersion: metal3.io/v1alpha1
-kind: BareMetalHost
-metadata:
-  name: bm1-1
-  namespace: openshift-machine-api
-spec:
-  bmc:
-    address: redfish-virtualmedia://10.10.10.10/redfish/v1/Systems/AAAA
-    credentialsName: bm1-1-bmc-secret
-    disableCertificateVerification: true
-```
-
-where the credentialsName refers to `Secret` crd carrying base64-encoded Redfish authentication credentials
-
-```
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: bm1-1-bmc-secret
+  name: test-bmc-secret
   namespace: openshift-machine-api
   labels:
     environment.metal3.io: baremetal
 type: Opaque
 data:
-  password: cGFzc3dvcmQ=
   username: YWRtaW4=
+  password: cGFzc3dvcmQ=
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: test
+  namespace: openshift-machine-api
+spec:
+  online: true
+  externallyProvisioned: true
+  bmc:
+    address: redfish-virtualmedia://10.10.10.10/redfish/v1/Systems/AAA
+    credentialsName: test-bmc-secret
+    disableCertificateVerification: true
 ```
 
-## State transition
+## Available
 
-Once bmc details are defined, the node changes to `registering` state
-
-```
-  provisioning:
-    state: registering
-```
-
-and after a while it should transition to [externally provisioned](./externally_provisioned.md)
-
-```
-  provisioning:
-    state: externally provisioned
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-bmc-secret
+  namespace: openshift-machine-api
+  labels:
+    environment.metal3.io: baremetal
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: cGFzc3dvcmQ=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-network
+  namespace: openshift-machine-api
+type: Opaque
+stringData:
+  nmstate: |
+    interfaces:
+      - name: eno5
+        type: ethernet
+        state: up
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+      - name: eno6
+        type: ethernet
+        state: up
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+      - name: bond0
+        type: bond
+        state: up
+        link-aggregation:
+          mode: 802.3ad
+          options:
+            lacp_rate: slow
+          port:
+          - eno5
+          - eno6
+      - name: bond0.666
+        type: vlan
+        state: up
+        vlan:
+          base-iface: bond0
+          id: 666
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 10.10.10.65
+            prefix-length: 28
+        ipv6:
+          enabled: false
+    dns-resolver:
+      config:
+        server:
+        - 30.30.30.30
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 10.10.10.78
+        next-hop-interface: bond0.666
+        table-id: 254
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: test
+  namespace: openshift-machine-api
+spec:
+  online: true
+  preprovisioningNetworkDataName: test-network
+  bootMACAddress: aa:aa:aa:aa:aa:aa
+  bootMode: UEFI
+  bmc:
+    address: redfish-virtualmedia://10.10.10.10/redfish/v1/Systems/AAA
+    credentialsName: test-bmc-secret
+    disableCertificateVerification: true
 ```
 
 [[Back]](../README.md)

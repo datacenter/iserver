@@ -3,6 +3,9 @@ class K8sServiceAccountInfo():
         self.service_account = None
 
     def get_service_account_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )

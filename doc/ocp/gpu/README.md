@@ -1,8 +1,15 @@
 # NVIDIA GPU Operator
 
-GPU Operator as explained in [NVIDIA documentation](https://docs.nvidia.com/datacenter/cloud-native/openshift/24.3.0/introduction.html)
+The NVIDIA GPU Operator uses the operator framework within Kubernetes to automate the management of all NVIDIA software components needed to provision GPU e.g.,
+- the NVIDIA drivers (to enable CUDA), 
+- Kubernetes device plugin for GPUs, 
+- the NVIDIA Container Toolkit, 
+- automatic node labelling using GFD, 
+- DCGM based monitoring.
 
-## Life Cycle Management Commands
+Refer to [NVIDIA documentation](https://docs.nvidia.com/datacenter/cloud-native/openshift/24.3.0/introduction.html) for details.
+
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

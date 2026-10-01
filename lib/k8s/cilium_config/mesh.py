@@ -280,7 +280,9 @@ class K8sCiliumConfigMesh():
         body['clustermesh']['apiserver']['type'] = 'NodePort'
         body['clustermesh']['apiserver']['nodePort'] = mesh_port
         body['clustermesh']['apiserver']['tls'] = {}
-        body['clustermesh']['apiserver']['tls']['authMode'] = 'cluster'
+
+        # https://docs.cilium.io/en/stable/operations/upgrade/#cluster-mesh
+        body['clustermesh']['apiserver']['tls']['authMode'] = 'legacy'
         body['clustermesh']['apiserver']['tls']['auto'] = {}
         body['clustermesh']['apiserver']['tls']['auto']['certManagerIssuerRef'] = {}
         body['clustermesh']['apiserver']['tls']['auto']['certManagerIssuerRef']['group'] = 'cert-manager.io'

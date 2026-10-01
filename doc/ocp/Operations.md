@@ -1,26 +1,28 @@
 # OpenShift Installation and Day2 Operations
 
+[[Back]](../../README.md)
+
 ![Overview](./images/overview.png)
 
-## Installation
+## Install
 
 - [Configure OpenShift console access](./Console.md)
+- [Configure Isovalent registry access](./IEP.md)
 - [Install on Bare Metal](./BareMetalCluster.md)
 - [Install in VMWare](./VcenterCluster.md)
 
-## Management
+## State
 
 - [Cluster access](./Access.md)
-- [CLI tools](./cli/README.md)
-- [Web terminal](./web-terminal/README.md)
-- [Tasks](./Tasks.md)
 - [Operators](./operator/README.md)
-- [Node power management](./node-power/README.md)
-- [Image registry](./image-registry/manual.md)
+- [Node power control](./node-power/README.md)
 
-## Configuration
+## General Configuration
 
-- [Apply CRDs from yaml](./apply/README.md)
+- [Tasks](./Tasks.md)
+- [CLI tools](./cli/README.md)
+- [Web console](./web-console/README.md)
+- [Web terminal](./web-terminal/README.md)
 - [Container Runtime Policy](./cpolicy/README.md)
 - [NTP](./ntp/README.md)
 
@@ -51,6 +53,7 @@
 - [Agent](./cilium-agent/README.md)
 - [Configuration](./cilium-config/README.md)
 - [State](./cilium-state/README.md)
+- [IEP distribution upgrade](./cilium-cni/upgrate-artifcatory.md)
 - [OVN Migration](./cni-migration/README.md)
 - [BGP](./cilium-bgp/README.md)
 - [Cluster Mesh](./cilium-mesh/README.md)
@@ -59,10 +62,10 @@
 
 ## Storage
 
-- [Disk](./disk/README.md)
+- [Linux: Disk and Logical Volume Manager](./disk/README.md)
 - [Storage Class](./storage-class/README.md)
-- [Volume](./k8s-volume/README.md)
-- [Local Image Registry](./image-registry/README.md)
+- [Kubernetes Volume](./k8s-volume/README.md)
+- [Local Image Registry](./image-registry/manual.md)
 
 ### CSI
 
@@ -105,6 +108,10 @@
 - [Grafana](./grafana/README.md)
 - [Splunk](./splunk/README.md)
 - [Intersight Open Telemetry](./iotel/README.md)
-- [Timescape](./cilium-timescape/README.md)
+- [Hubble and Timescape](./cilium-hubble/README.md)
+
+## Development
+
+- [Console dynamic plugin](./console-plugin/README.md)
 
 [[Back]](../../README.md)

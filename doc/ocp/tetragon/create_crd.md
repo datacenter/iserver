@@ -1,4 +1,4 @@
-# Tetragon Enterprise Operator - Create Policy
+# Tetragon - Create Policy
 
 ## Workflow
 
@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Tetragon Enterprise operator must be installed
+- Tetragon Enterprise operator [installed](./create_operator.md)
 - directory is expected to have files (no subdirectories)
 - files or files in directory must be yaml with Tetragon CRD
 
@@ -15,50 +15,24 @@
 
 ```
 # iserver set ocp tetragon --mode crd
-  --cluster TEXT            Cluster Name
-  --crd TEXT                Tetragon policy directory or file
-  --no-confirm              Confirmation mode
+  --cluster TEXT         Cluster Name
+  --filename TEXT        Tetragon policy directory or file
+  --no-confirm           Confirmation mode
 ```
 
 ## Example
 
 ```
-# iserver set ocp tetragon --mode crd --cluster bm1 --crd my-crd-absolute-location
+# iserver set ocp tetragon --cluster bm1 --mode crd --filename C:\tmp\policy
 
-OpenShift Workflow - Tetragon Operator - Create Policy
-======================================================
+OpenShift Workflow - Tetragon - Create Policy
+=============================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": true,
-    "crd": "user-defined",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
+File: C:\tmp\policy\policy.yaml
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Create Tracing Policy
----------------------
+Create TracingPolicy
+--------------------
 - name: upper-layers
 
 ~~~
@@ -96,16 +70,18 @@ spec:
       cgroup: true
       enable: true
       statsInterval: 20
-
 ~~~
-Continue [Y/N]? y
-
-Tracing policy created
-
-Wait for tracing policy [timeout:60]...
+TracingPolicy [upper-layers] created
+- wait for TracingPolicy upper-layers [timeout:60s]
 
 Completed tasks
 - CRDs applied
+
++----+---------+----------+------------+---------+---------+--------------+
+| ID | Target  | Scope    | Workflow   | Changes | Success | Duration [s] |
++----+---------+----------+------------+---------+---------+--------------+
+| 1  | ocp:bm1 | tetragon | create crd | 1       | V       | 3            | 
++----+---------+----------+------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

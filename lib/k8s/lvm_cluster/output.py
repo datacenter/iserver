@@ -1,16 +1,13 @@
-import json
-
-
 class K8sLvmClusterOutput():
     def __init__(self):
         pass
 
-    def print_lvm_cluster(self, info):
+    def print_lvm_cluster(self, info, show_device_class=True, show_node_status=True):
         order = [
             'namespace',
             'name',
-            'info.state',
-            'info.readyTick'        
+            'state',
+            'readyTick'        
         ]
 
         headers = [
@@ -20,17 +17,16 @@ class K8sLvmClusterOutput():
             'Ready'
         ]
 
-        order.append('info.resourcesAvailableTick')
+        order.append('resourcesAvailableTick')
         headers.append('Resources')
-        if not info['info']['resourcesAvailable']:
-            order.append('info.resourcesAvailableDescription')
+        if not info['resourcesAvailable']:
+            order.append('resourcesAvailableDescription')
             headers.append('Reason')
 
-
-        order.append('info.vgsReadyTick')
+        order.append('vgsReadyTick')
         headers.append('VGs')
-        if not info['info']['vgsReady']:
-            order.append('info.vgsReadyDescription')
+        if not info['vgsReady']:
+            order.append('vgsReadyDescription')
             headers.append('Reason')
 
         self.my_output.dictionary(
@@ -44,7 +40,11 @@ class K8sLvmClusterOutput():
             start='\n\n'
         )
 
-        for device_class in info['info']['deviceClass']:
+        if show_device_class:
+            self.print_lvm_cluster_device_class(info, show_node_status=show_node_status)
+    
+    def print_lvm_cluster_device_class(self, info, show_node_status=True):
+        for device_class in info['deviceClass']:
             order = [
                 'name',
                 'fstype',
@@ -101,12 +101,12 @@ class K8sLvmClusterOutput():
                 table=True
             )
 
-            self.my_output.default('')
-            for node_status in device_class['nodeStatus']:
-                if node_status['status'] != 'Ready' and 'reason' in node_status:
-                    self.my_output.default('[%s] %s' % (
-                        node_status['node'],
-                        node_status['reason']
-                    ))
-                    
-        # self.my_output.default(json.dumps(info, indent=4))
+            if show_node_status:
+                self.my_output.default('')
+
+                for node_status in device_class['nodeStatus']:
+                    if node_status['status'] != 'Ready' and 'reason' in node_status:
+                        self.my_output.default('[%s] %s' % (
+                            node_status['node'],
+                            node_status['reason']
+                        ))

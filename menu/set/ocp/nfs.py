@@ -1,62 +1,36 @@
 import os
 import sys
-import traceback
 import click
-
-from lib.workflow.ocp_nfs_helm import install as nfs
-
 from menu import validations
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("nfs")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--url", default='', callback=validations.empty_string_to_none, help="Helm chart url")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, help="Helm chart namespace")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Helm chart name")
 @click.option("--version", default='', callback=validations.empty_string_to_none, help="Helm chart version")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_nfs_command(
         ctx,
-        cluster_name,
+        cluster_names,
         url,
         namespace,
         name,
-        version
+        version,
+        no_confirm
         ):
     """Set ocp cluster nfs"""
 
-    # iserver set ocp nfs
+    task = {}
+    task['feature'] = {}
+    task['feature']['helm_repo'] = url
+    task['feature']['helm_namespace'] = namespace
+    task['feature']['helm_name'] = name
+    task['feature']['helm_version'] = version
 
-    ctx.developer = False
-
-    try:
-        params = {}
-        params['cluster'] = cluster_name
-        params['helm_repo'] = url
-        params['helm_namespace'] = namespace
-        params['helm_name'] = name
-        params['helm_version'] = version
-
-        success = nfs.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-
-    except ErrorExit:
-        ctx.busy = False
-        sys.exit(1)
-
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'nfs', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

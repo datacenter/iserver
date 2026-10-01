@@ -5,20 +5,11 @@ class K8sServiceMeshControlPlaneInfo():
     def __init__(self):
         self.service_mesh_control_plane = None
 
-    def get_service_mesh_control_plane_info(self, managed_object):
+    def get_AAA_info(self, managed_object):
         if managed_object is None:
             return None
-
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            managed_object
-        )
-        info.update(metadata_info)
-
-        info['spec'] = self.get(managed_object, 'spec')
-        info['status'] = self.get(managed_object, 'status')
+        
+        info = self.get_base_info(managed_object)
 
         info['conditions'] = self.get_conditions(
             self.get(managed_object, 'status:conditions')

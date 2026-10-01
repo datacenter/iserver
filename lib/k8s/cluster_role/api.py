@@ -21,5 +21,5 @@ class K8sClusterRoleApi():
         return response
 
     def delete_cluster_role_mo(self, name):
-        return self.delete_resource('ClusterRole', 'rbac.authorization.k8s.io/v1', name)
-    
+        success, _ = self.delete_resource('ClusterRole', 'rbac.authorization.k8s.io/v1', name)
+        return success

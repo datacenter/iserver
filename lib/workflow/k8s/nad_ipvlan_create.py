@@ -25,23 +25,22 @@ def validate(params):
     if params is None:
         return None, reason
 
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys, add_defaults=False, copy_handler=False), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('Kubernetes Workflow - Network Attachment Definition - Create IPVLAN', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Network Attachment Definition - Create IPVLAN')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     success = params['k8s_handler'].create_nad_ipvlan(
         params['namespace'], 
         params['name'], 
@@ -66,7 +65,7 @@ def run(params, log_id=None):
         my_output.error('Failed to get nad')
         return False
     
-    k8s_output_handler.print_nads([info])
+    k8s_output_handler.print_nads_state([info])
 
     my_output.default('')
     my_output.default('Completed tasks')

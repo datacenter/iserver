@@ -1,4 +1,4 @@
-# VAST Operator - Get
+# VAST CSI - Get
 
 ## Workflow
 
@@ -30,20 +30,22 @@ OpenShift Workflow - VAST CSI Operator - Get Information
 
 OpenShift Cluster: bm1
 
+Collecting state...
+
 VAST CSI Operator Subscription
-------------------------------
 - subscription: vast-csi/vast-csi-operator
 - package: vast-csi-operator
 - csv: vast-csi-operator.v2.6.4
 
 VAST CSI Operator Resources
----------------------------
 - deployment vast-csi/vast-csi-operator-controller-manager ready
-- 2 driver
-- 1 cluster
-- 2 storage
-- 2 storage class
-- 2 pvc
+
+VAST CSI Custom Resources
+- 1/1 VastCSIDriver
+- 1/1 VastCluster
+- 1/1 VastStorage
+- 1/1 default StorageClass
+- 0/0 PersistentVolumeClaim
 
 View: state (def), res, all
 ```

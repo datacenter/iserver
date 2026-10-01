@@ -6,6 +6,7 @@ from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_identity_ldap import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -118,22 +119,23 @@ def validate(params):
         'job',
         'verbose',
         'check-verbose',
-        'confirmation'
+        'confirmation',
+        '__break_on_error__'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - LDAP Group - Sync Prune', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, ssh=True, optional=False)
+    ocp_common.print_title(params, my_output, 'Sync Prune')
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
 

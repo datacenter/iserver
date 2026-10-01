@@ -117,7 +117,7 @@ def get_k8s_vm_command(
         ctx.my_output.json_output(virtual_machines)
 
         if 'state' in view:
-            k8s_output_handler.print_virtual_machines(
+            k8s_output_handler.print_virtual_machines_state(
                 virtual_machines
             )
 

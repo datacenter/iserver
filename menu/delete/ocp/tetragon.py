@@ -1,79 +1,31 @@
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_tetragon_operator import crd_delete
-from lib.workflow.ocp_tetragon_operator import operator_delete
-from lib.workflow.ocp_tetragon_operator import wipe
-from lib.workflow.ocp_tetragon_operator import prometheus_disable
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("tetragon")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['operator', 'wipe', 'crd', 'prometheus', 'all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
-@click.option("--crd", multiple=True, show_default=True, help="Tetragon policy directory or file")
-def delete_ocp_tetragon_command(ctx, cluster_name, mode, crd):
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['operator', 'crd', 'wipe', 'all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
+@click.option("--filename", multiple=True, show_default=True, help="Tetragon policy directory or file")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
+def delete_ocp_tetragon_command(ctx, cluster_names, mode, filename, no_confirm):
     """Delete tetragon operator in openshift cluster"""
 
-    try:
-        if mode == 'crd':
-            params = {}
-            params['cluster'] = cluster_name
-            params['crd'] = crd
-                
-            success = crd_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    task = {}
+    if mode in ['operator', 'all']:
+        task['operator'] = {}
 
-        if mode == 'prometheus':
-            params = {}
-            params['cluster'] = cluster_name
-                
-            success = prometheus_disable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-                            
-        if mode in ['wipe', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
+    if mode in ['crd']:
+        task['crd'] = {}
+        task['crd']['filename'] = []
+        for item in filename:
+            task['crd']['filename'].append(item)
 
-            success = wipe.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-            
-        if mode in ['operator', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
+    if mode in ['wipe', 'all']:
+        task['wipe'] = {}
 
-            success = operator_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.delete_workflow(cluster_names, 'tetragon', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

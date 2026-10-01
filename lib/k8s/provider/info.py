@@ -165,13 +165,18 @@ class K8sProviderInfo():
 
         return True
 
-    def get_providers(self, object_filter=None, storage_info=False, network_info=False, plan_info=False, skip_host=False, return_mo=False, cache_enabled=True):
+    def get_providers(self, object_filter=None, storage_info=False, network_info=False, plan_info=False, all_info=False, skip_host=False, return_mo=False, cache_enabled=True):
         all_providers = self.get_providers_info(cache_enabled=cache_enabled)
         if all_providers is None:
             return None
 
         providers = []
 
+        if all_info:
+            storage_info = True
+            network_info = True
+            plan_info = True
+            
         storage_maps = None
         if storage_info:
             storage_maps = self.get_storage_maps(cache_enabled=cache_enabled)

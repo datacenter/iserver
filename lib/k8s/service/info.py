@@ -206,7 +206,7 @@ class K8sServiceInfo():
         return True
 
     def get_service(self, namespace, name, endpoint_info=False, pod_info=False, return_mo=False, cache_enabled=True, optimized=True):
-        return self.get_info(
+        info = self.get_info(
             'service', 
             name,
             namespace=namespace,
@@ -214,7 +214,19 @@ class K8sServiceInfo():
             cache_enabled=cache_enabled,
             optimized=optimized
         )
-    
+
+        if info is None or return_mo:
+            return info
+
+        info = self.add_services_info(
+            [info],
+            endpoint_info=endpoint_info,
+            pod_info=pod_info,
+            cache_enabled=cache_enabled
+        )[0]
+
+        return info
+
     def get_service_node_ip_port(self, namespace, name, cache_enabled=True, port_name=None):
         service_info = self.get_service(
             namespace,

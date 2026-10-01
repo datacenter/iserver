@@ -26,4 +26,5 @@ class K8sServiceApi():
         return response
 
     def delete_service_mo(self, namespace, name):
-        return self.delete_resource('Service', 'v1', name, namespace=namespace)
+        success, _ = self.delete_resource('Service', 'v1', name, namespace=namespace)
+        return success

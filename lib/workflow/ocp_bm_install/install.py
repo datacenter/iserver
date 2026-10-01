@@ -350,24 +350,111 @@ def boot_from_iso(user_settings, cluster_id, cluster_info, my_output, log, log_i
         return False, None
 
     iso_filename = '/tmp/%s.iso' % (cluster_id)
-    my_output.default('Download ISO', before_newline=True, underline=True)
-    my_output.default('- url: %s' % (cluster_info['iso_url']))
-    my_output.default('- ssl verify: %s' % (user_settings['iso']['check_ssl']))
-    my_output.default('- timeout: %s' % (user_settings['iso']['timeout']))
-    my_output.default('- target filename: %s' % (iso_filename))
-    log.debug(
-        'workflow_ocp_bm_installation',
-        'Downloading %s to %s' % (cluster_info['iso_url'], iso_filename)
-    )
-    success = ip_helper.download_large_url(
-        cluster_info['iso_url'], 
-        iso_filename, 
-        verify=user_settings['iso']['check_ssl'],
-        timeout=user_settings['iso']['timeout']
-    )
-    if not success:
-        my_output.error('ISO download failed')
-        return False, None
+
+    if user_settings['iso']['download'] == 'local':
+        my_output.default('Manual ISO download mode', before_newline=True, underline=True)
+        my_output.default('- iso download url: %s' % (cluster_info['iso_url']))
+        my_output.default('- target filename on localhost: %s' % (iso_filename))
+
+        if not common.get_confirmation('Press Y when iso downloaded and ready in target location'):
+            return False, None
+            
+        if not os.path.isfile(iso_filename):
+            my_output.error('File %s not found' % (iso_filename))
+            return False, None
+
+        my_output.defaukt('File %s found' % (iso_filename))
+
+    if user_settings['iso']['download'] == 'web':
+        my_output.default('Manual ISO download mode', before_newline=True, underline=True)
+        my_output.default('- iso download url: %s' % (cluster_info['iso_url']))
+
+        if user_settings['web_server']['ip'] == 'localhost':
+            target_filename = os.path.join(
+                user_settings['web_server']['image_upload_directory'],
+                os.path.basename(iso_filename)
+            )
+            my_output.default('- target filename on localhost: %s' % (target_filename))
+
+            if not common.get_confirmation('Press Y when iso downloaded and ready in target location'):
+                return False, None
+                
+            if not os.path.isfile(target_filename):
+                my_output.error('File %s not found' % (target_filename))
+                return False, None
+
+            try:
+                shutil.copy(
+                    target_filename,
+                    iso_filename
+                )
+            except BaseException:
+                my_output.error('File copy failed: %s => %s' % (target_filename, iso_filename))
+                return False, None
+
+            if not os.path.isfile(iso_filename):
+                my_output.error('File %s not found' % (iso_filename))
+                return False, None
+            
+            my_output.defaukt('File %s found' % (iso_filename))
+
+        if user_settings['web_server']['ip'] != 'localhost':
+            target_iso_filename = '%s/%s.iso' % (
+                user_settings['web_server']['image_upload_directory'],
+                cluster_id
+            )
+            my_output.default('- target filename on web server: %s' % (target_filename))
+
+            if not common.get_confirmation('Press Y when iso downloaded and ready in target location'):
+                return False, None
+                
+            ssh_handler = install_common.get_server_ssh_handler(user_settings['web_server'], log_id=log_id)
+            success, exception_name, error = ssh_handler.is_ssh()
+            if not success:
+                my_output.error('SSH access to web server failed: %s' % (error))
+                return False, None
+
+            if not ssh_handler.is_file(target_iso_filename):
+                my_output.error('File %s not found in web server' % (target_iso_filename))
+                return False, None
+        
+            my_output.defaukt('File %s found' % (target_iso_filename))
+
+            my_output.default('Download iso from web server...')
+            success = ssh_handler.scp_file(
+                target_iso_filename,
+                iso_filename,
+                put=False
+            )
+            if not success:
+                my_output.error('ISO download failed')
+                return False, None
+            
+            my_output.default('ISO downloaded locally')
+
+    if user_settings['iso']['download'] == 'auto':
+        my_output.default('Automatic ISO download', before_newline=True, underline=True)
+        my_output.default('- url: %s' % (cluster_info['iso_url']))
+        my_output.default('- ssl verify: %s' % (user_settings['iso']['check_ssl']))
+        my_output.default('- timeout: %s' % (user_settings['iso']['timeout']))
+        my_output.default('- target filename: %s' % (iso_filename))
+        log.debug(
+            'workflow_ocp_bm_installation',
+            'Downloading %s to %s' % (cluster_info['iso_url'], iso_filename)
+        )
+
+        if user_settings['iso']['check_ssl'] and os.path.isfile('/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit'):
+            os.environ['REQUESTS_CA_BUNDLE'] = '/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit'
+
+        success = ip_helper.download_large_url(
+            cluster_info['iso_url'], 
+            iso_filename, 
+            verify=user_settings['iso']['check_ssl'],
+            timeout=user_settings['iso']['timeout']
+        )
+        if not success:
+            my_output.error('ISO download failed')
+            return False, None
 
     success = modify_boot_iso(user_settings, iso_filename, my_output, log_id)
     if not success:
@@ -939,10 +1026,10 @@ def run(user_settings, data, infra, manifests, log_id=None):
                     log_id
                 )
 
-                success = redfish_handler.endpoint_handler.eject_media(
+                eject_success = redfish_handler.endpoint_handler.eject_media(
                     virtual_media_id=server['redfish']['virtual_media_id']
                 )
-                if not success:
+                if not eject_success:
                     my_output.error('Redfish vmedia eject failed: %s' % (server['redfish']['endpoint_ip']))
                 else:
                     my_output.default('Redfish vmedia eject successful: %s' % (server['redfish']['endpoint_ip']))

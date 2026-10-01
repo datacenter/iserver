@@ -3,29 +3,31 @@ class K8sSecretDelete():
         pass
 
     def delete_secret(self, namespace, name, my_output=None, wait=True):
-        if my_output is not None:
-            my_output.default('Delete Secret', before_newline=True, underline=True)
-            my_output.default('- namespace: %s' % (namespace))
-            my_output.default('- name: %s' % (name))
-
-        if not self.is_secret(namespace, name, cache_enabled=False):
-            if my_output is not None:
-                my_output.default('- already deleted')
+        success, deleted = self.delete_resource(
+            'Secret', 
+            'v1',
+            name, 
+            namespace=namespace, 
+            object_name='secret',
+            my_output=my_output
+        )
+        if not success:
+            return False
+        
+        if not deleted:
             return True
         
-        if not self.delete_secret_mo(namespace, name):
-            if my_output is not None:
-                my_output.error('Failed to delete secret')
+        if not wait:
+            return True
+
+        success = self.wait_no_secret(
+            namespace,
+            name,
+            max_time=60,
+            my_output=my_output
+        )
+        if not success:
             return False
 
-        if wait:
-            if my_output is not None:
-                my_output.default('- wait for no secret')
-
-            if not self.wait_no_secret(namespace, name):
-                if my_output is not None:
-                    my_output.error('Time out')
-                return False
-            
         return True
     

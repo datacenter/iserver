@@ -2,32 +2,16 @@ class K8sPrivateNetworkEndpointSliceOutput():
     def __init__(self):
         pass
 
-    def print_private_network_endpoint_slices(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'PrivateNetworkEndpointSlice - State [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name'
-        ]
-
-        headers = [
-            'PrivateNetworkEndpointSlice'
-        ]
-
-        self.my_output.my_table(
+    def print_private_network_endpoint_slices_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Private Network Endpoint Slice', 'namespace_nameT'],
+                ['Network', 'endpointT.network'],
+                ['Endpoint', 'endpointT.name'],
+                ['POD IP', 'endpointT.pod_ip'],
+                ['IP', 'endpointT.ip'],
+                ['MAC', 'endpointT.mac'],
+                ['When', 'endpointT.when']
+            ]
         )

@@ -35,10 +35,14 @@ def get_node_ethernet_details(k8s_handler, cluster_name, node_name, node_ip, my_
     if key_filename is None:
         return None, 'Node ssh public key not found'
 
-    nns = k8s_handler.wait_node_network_state(node_name)
-    if nns is None:
-        return None, 'Node network state collection failed'
+    success = k8s_handler.wait_node_network_state(node_name)
+    if not success:
+        return None, 'Node network state collection failed: %s' % (node_name)
 
+    nns = k8s_handler.get_node_network_state(node_name)
+    if nns is None:
+        return None, 'Node network state collection failed: %s' % (node_name)
+    
     linux_handler = linux.Linux(
         node_ip,
         'core',
@@ -155,7 +159,7 @@ def enable_nns(params, log_id=None):
         my_output.default('Enable lldp on nmstate level [%s]' % (node_name))
 
         for interface in params['interfaces'][node_name]:
-            if not params['settings']['include-down'] and not interface['state']['up']:
+            if not params['include-down'] and not interface['state']['up']:
                 my_output.default('Interface %s - skip on interface oper down' % (interface['name']))
                 continue
 
@@ -187,7 +191,7 @@ def enable_nns(params, log_id=None):
 
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
     object_filter = ['names:%s' % (','.join(policy_names))]
-    policies = params['k8s_handler'].get_node_network_configuration_policies(object_filter=object_filter, cache_enabled=False)
+    policies = params['k8s_handler'].get_node_network_configuration_policys(object_filter=object_filter, cache_enabled=False)
     if policies is not None:
         k8s_output_handler.print_node_network_configuration_policys_state(policies)
 
@@ -198,14 +202,14 @@ def enable_nns(params, log_id=None):
     if not success:
         my_output.error('Not all nncp finished in time')
 
-    policies = params['k8s_handler'].get_node_network_configuration_policies(object_filter=object_filter, cache_enabled=False)
+    policies = params['k8s_handler'].get_node_network_configuration_policys(object_filter=object_filter, cache_enabled=False)
     if policies is not None:
         k8s_output_handler.print_node_network_configuration_policys_state(policies)
 
-    if not params['settings']['delete-nncp']:
+    if not params['delete-nncp']:
         my_output.default('Node network policies not deleted (based on user flag)')
 
-    if params['settings']['delete-nncp']:
+    if params['delete-nncp']:
         my_output.default('All policies are deleted (except for progressing if any)...')
         for policy in policy_names:
             policy_info = params['k8s_handler'].get_node_network_configuration_policy(policy)

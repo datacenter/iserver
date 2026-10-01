@@ -5,6 +5,7 @@ from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.intersight import helper as intersight_helper
 from lib.workflow.ocp_imm import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -42,22 +43,22 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Hardware - Unconfigure', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Unconfigure')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-    
+
     nodes = params['k8s_handler'].get_nodes()
     if nodes is None:
         my_output.error('Failed to get nodes')
@@ -73,7 +74,7 @@ def run(params, log_id=None):
             annotation_key = 'intersight-%s' % (ip_helper.get_string_md5(params['iaccount_key']))
             annotation_key = 'intersight-dev-%s' % (ip_helper.get_string_md5(params['iaccount_key']))
 
-        for annotation in node['annotations']:
+        for annotation in node['annotation']:
             if annotation_key is not None and annotation == annotation_key:
                 my_output.default('- delete annotation: %s' % (annotation_key))
                 if not params['k8s_handler'].delete_node_annotation(node['name'], annotation_key):
@@ -94,7 +95,7 @@ def run(params, log_id=None):
                     return False
 
         if params['iaccount_key'] is None or not is_other_intersight_annotation:
-            for annotation in node['annotations']:
+            for annotation in node['annotation']:
                 if annotation.startswith('server-'):
                     my_output.default('- delete annotation: %s' % (annotation))
                     if not params['k8s_handler'].delete_node_annotation(node['name'], annotation_key):

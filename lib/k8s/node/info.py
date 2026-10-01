@@ -12,10 +12,8 @@ class K8sNodeInfo():
         if node_mo is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
+        info = self.get_base_info(node_mo)
 
-        info['name'] = self.get(node_mo, 'metadata:name')
         info['node_info'] = self.get(node_mo, 'status:node_info')
 
         conditions = self.get(node_mo, 'status:conditions', on_error=[], on_none=[])
@@ -72,8 +70,6 @@ class K8sNodeInfo():
             info['pidTick'] = '\u2713'
             info['__Output']['pidTick'] = 'Green'
 
-        info['label'] = self.get(node_mo, 'metadata:labels', on_error={}, on_none={})
-
         info['role'] = []
         info['master'] = False
         for label in info['label']:
@@ -96,14 +92,13 @@ class K8sNodeInfo():
                 info['cnvTick'] = '\u2713'
                 info['__Output']['cnvTick'] = 'Green'
 
-        info['annotations'] = self.get(node_mo, 'metadata:annotations', on_error={}, on_none={})
         info['mcp_current_config'] = None
         info['mcp_desired_config'] = None
         info['mcpTick'] = '--'
-        if 'machineconfiguration.openshift.io/currentConfig' in info['annotations']:
-            info['mcp_current_config'] = info['annotations']['machineconfiguration.openshift.io/currentConfig']
-        if 'machineconfiguration.openshift.io/desiredConfig' in info['annotations']:
-            info['mcp_desired_config'] = info['annotations']['machineconfiguration.openshift.io/desiredConfig']
+        if 'machineconfiguration.openshift.io/currentConfig' in info['annotation']:
+            info['mcp_current_config'] = info['annotation']['machineconfiguration.openshift.io/currentConfig']
+        if 'machineconfiguration.openshift.io/desiredConfig' in info['annotation']:
+            info['mcp_desired_config'] = info['annotation']['machineconfiguration.openshift.io/desiredConfig']
         if info['mcp_current_config'] is not None and info['mcp_desired_config'] is not None:
             if info['mcp_current_config'] == info['mcp_desired_config']:
                 info['mcpTick'] = '\u2713'
@@ -229,28 +224,6 @@ class K8sNodeInfo():
 
         return info
 
-    def get_nodes_info(self, cache_enabled=True):
-        if cache_enabled:
-            if self.node is not None:
-                return self.node
-
-        managed_objects = self.get_node_mo(cache_enabled=cache_enabled)
-        if managed_objects is None:
-            return None
-
-        self.node = []
-        for managed_object in managed_objects:
-            node_info = {}
-            node_info['info'] = self.get_node_info(
-                managed_object
-            )
-            node_info['mo'] = managed_object
-            self.node.append(
-                node_info
-            )
-
-        return self.node
-
     def filter_node_label(self, labels, label_filter):
         new_labels = {}
 
@@ -348,60 +321,55 @@ class K8sNodeInfo():
         return True
 
     def get_nodes(self, object_filter=None, sriov_phy_info=False, sriov_policy_info=False, sriov_network_info=False, sriov_vf_info=False, return_mo=False, cache_enabled=True):
-        all_nodes = self.get_nodes_info(cache_enabled=cache_enabled)
-        if all_nodes is None:
+        infos = self.get_infos(
+            'node', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+        if infos is None:
             return None
-
+        
+        if return_mo:
+            return infos
+        
         nodes = []
 
-        for node_info in all_nodes:
-            if not self.match_node(node_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                nodes.append(
-                    node_info['mo']
-                )
-                continue
-
+        for node_info in infos:
             label_filter = self.get_node_filter_value(object_filter, 'label')
             if label_filter is not None:
-                node_info['info']['label'] = self.filter_node_label(
-                    node_info['info']['label'],
+                node_info['label'] = self.filter_node_label(
+                    node_info['label'],
                     label_filter
                 )
 
             if sriov_policy_info:
-                node_info['info']['sriov_policy'] = self.get_ocp_node_sriov_policy(
-                    node_info['info']['name']
+                node_info['sriov_policy'] = self.get_ocp_node_sriov_policy(
+                    node_info['name']
                 )
 
             nodes.append(
-                node_info['info']
+                node_info
             )
 
-        if not return_mo:
-            nodes = sorted(
-                nodes,
-                key=lambda i: i['name']
-            )
+        nodes = sorted(
+            nodes,
+            key=lambda i: i['name']
+        )
 
         return nodes
 
-    def get_node(self, node_name, cache_enabled=True):
-        node_filter = ['name:%s' % (node_name)]
-        nodes = self.get_nodes(
-            object_filter=node_filter,
-            cache_enabled=cache_enabled
+    def get_node(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'node', 
+            name,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
         )
 
-        if nodes is None or len(nodes) != 1:
-            return None
-
-        return nodes[0]
-
-    def is_node(self, node_name, cache_enabled=True):
-        if self.get_node(node_name, cache_enabled=cache_enabled) is None:
+    def is_node(self, node_name, cache_enabled=True, optimized=True):
+        if self.get_node(node_name, cache_enabled=cache_enabled, optimized=optimized) is None:
             return False
         return True
 
@@ -561,12 +529,12 @@ class K8sNodeInfo():
             if node_info is None:
                 continue
 
-            if 'annotations' not in node_info or node_info['annotations'] is None:
+            if 'annotation' not in node_info or node_info['annotation'] is None:
                 continue
 
             match = True
             for annotation in annotations:
-                if annotation not in node_info['annotations']:
+                if annotation not in node_info['annotation']:
                     match = False
                     break
 
@@ -734,13 +702,17 @@ class K8sNodeInfo():
             return True
         
         body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Node'
+        body['metadata'] = {}
+        body['metadata']['name'] = node_name
         body['spec'] = {}
         body['spec']['unschedulable'] = True
 
         if my_output is not None:
             my_output.default(yaml.dump(body), wrap='~~~', before_newline=True)
 
-        success = self.patch_node_mo(node_name, body)
+        success = self.patch_resource(body)
         if success:
             if my_output is not None:
                 my_output.default('Node patched')
@@ -763,13 +735,17 @@ class K8sNodeInfo():
             return True
         
         body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Node'
+        body['metadata'] = {}
+        body['metadata']['name'] = node_name
         body['spec'] = {}
         body['spec']['unschedulable'] = None
 
         if my_output is not None:
             my_output.default(yaml.dump(body), wrap='~~~', before_newline=True)
 
-        success = self.patch_node_mo(node_name, body)
+        success = self.patch_resource(body)
         if success:
             if my_output is not None:
                 my_output.default('Node patched')

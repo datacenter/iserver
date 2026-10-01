@@ -110,17 +110,17 @@ def get_advertisement_body(params, my_output):
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - MetalLB Operator - Create bgp advertisement', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
+    ocp_common.print_title(params, my_output, 'Create bgp advertisement')
     params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     subscription = ocp_common.get_subscription(
         params['k8s_handler'],
         params['__default__']['name'],

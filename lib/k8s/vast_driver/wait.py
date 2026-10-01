@@ -10,7 +10,7 @@ class K8sVastDriverWait():
             match_properties=match_properties,
             break_properties=break_properties,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
 
@@ -20,7 +20,7 @@ class K8sVastDriverWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
 
@@ -109,5 +109,27 @@ class K8sVastDriverWait():
                     if my_output is not None:
                         my_output.error('timed out')
                     return False
+
+            if 'resources' in resource and resource['resources'] is not None:
+                for resource_type in resource['resources']:
+                    if resource_type == 'rs':
+                        for sres in resource['resources']['rs']:
+                            success = self.wait_no_replica_set(
+                                sres['namespace'], 
+                                sres['name'], 
+                                my_output=my_output
+                            )
+                            if not success:
+                                return False
+
+                    if resource_type == 'pod':
+                        for sres in resource['resources']['pod']:
+                            success = self.wait_no_pod(
+                                sres['namespace'], 
+                                sres['name'], 
+                                my_output=my_output
+                            )
+                            if not success:
+                                return False
 
         return True

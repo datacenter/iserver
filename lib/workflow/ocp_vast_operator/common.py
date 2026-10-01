@@ -1,79 +1,20 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
-
-
-def initialize(params, my_output, log_id, ssh_check=False, ssh_required=False):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        if 'instance' in display_params and display_params['instance'] is not None:
-            display_params['instance'] = 'user-defined'
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-        
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['ssh-check'] = ssh_check
-    ocp_check_params['ssh-required'] = ssh_required
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-
-    params['ssh-ready'] = False
-    if 'ssh_public_key' in ocp_check_params['data']:
-        params['ssh-ready'] = True
-
-    return params
-
-
 def get_default_params():
     params = {}
     params['namespace'] = 'vast-csi'
     params['name'] = 'vast-csi-operator'
     params['operator-group-name'] = 'vast-operator-group'
+    params['catalog'] = 'certified-operators'
     params['delete-namespace'] = True
+    params['create_subscription'] = 'create_vast_subscription'
+    params['delete_subscription'] = 'delete_vast_subscription'
+    params['title'] = 'OpenShift Workflow - VAST CSI Operator'
     return params
-
-
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
-    return params
-
-
-def sanitize_params(params, allowed_keys, allow_kwargs=False):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    if allow_kwargs:
-        new_params['kwargs'] = {}
-        for key in params:
-            if key not in allowed_keys:
-                new_params['kwargs'][key] = params[key]
-
-    return new_params
 
 def check_state(params, my_output, check_ready=True, check_resources=False):
     state = {}
 
     state['installed'] = params['k8s_handler'].check_vast_subscription(
-        params['name'], 
+        params['__default__']['name'], 
         my_output=my_output,
         check_ready=False
     )
@@ -88,28 +29,37 @@ def check_state(params, my_output, check_ready=True, check_resources=False):
     
     state['dependants'] = False
 
+    my_output.default('VAST CSI Custom Resources', before_newline=True)
+
     state['driver'] = params['k8s_handler'].get_vast_drivers(cache_enabled=False)
-    if state['driver'] is None:
-        my_output.default('- %s driver' % (my_output.add_color('failed to get', 'Red')))
-    else:
-        my_output.default('- %s driver' % (len(state['driver'])))
-        if len(state['driver']) > 0:
-            state['dependants'] = True
+    params['k8s_handler'].get_vast_drivers_summary(
+        state['driver'],
+        my_output=my_output,
+        prefix='- '
+    )
+
+    if state['driver'] is not None and len(state['driver']) > 0:
+        state['dependants'] = True
 
     state['cluster'] = params['k8s_handler'].get_vast_clusters(cache_enabled=False)
-    if state['cluster'] is None:
-        my_output.default('- %s cluster' % (my_output.add_color('failed to get', 'Red')))
-    else:
-        my_output.default('- %s cluster' % (len(state['cluster'])))
-        if len(state['cluster']) > 0:
-            state['dependants'] = True
+    params['k8s_handler'].get_vast_clusters_summary(
+        state['cluster'],
+        my_output=my_output,
+        prefix='- '
+    )
+
+    if state['cluster'] is not None and len(state['cluster']) > 0:
+        state['dependants'] = True
 
     state['storage'] = params['k8s_handler'].get_vast_storages(cache_enabled=False)
+    params['k8s_handler'].get_vast_storages_summary(
+        state['cluster'],
+        my_output=my_output,
+        prefix='- '
+    )
+
     storage_names = []
-    if state['storage'] is None:
-        my_output.default('- %s storage' % (my_output.add_color('failed to get', 'Red')))
-    else:
-        my_output.default('- %s storage' % (len(state['storage'])))
+    if state['storage'] is not None:
         if len(state['storage']) > 0:
             state['dependants'] = True
 
@@ -118,41 +68,53 @@ def check_state(params, my_output, check_ready=True, check_resources=False):
                 item['name']
             )
 
+    my_output.default('Kubernetes Resources', before_newline=True)
+
+    state['dep'] = params['k8s_handler'].get_deployments(object_filter=['namespace:%s' % (params['__default__']['namespace'])])
+    params['k8s_handler'].get_deployments_summary(
+        state['dep'],
+        my_output=my_output,
+        prefix='- '
+    )
+
+    state['ds'] = params['k8s_handler'].get_daemon_sets(object_filter=['namespace:%s' % (params['__default__']['namespace'])])
+    params['k8s_handler'].get_daemon_sets_summary(
+        state['ds'],
+        my_output=my_output,
+        prefix='- '
+    )
+
+    state['pod'] = params['k8s_handler'].get_pods(namespace=params['__default__']['namespace'])
+    params['k8s_handler'].get_pods_summary(
+        state['pod'],
+        my_output=my_output,
+        prefix='- '
+    )
+
     if len(storage_names) == 0:
-        my_output.default('- 0 storage class')
-        my_output.default('- 0 pvc')
+        my_output.default('- 0/0 default StorageClass')
+        my_output.default('- 0/0 PersistentVolumeClaim')
         return state
     
-    state['sc'] = []
-    storage_class_names = []
-    storage_classes = params['k8s_handler'].get_storage_classes(cache_enabled=False)
-    if storage_classes is not None:
-        for storage_class in storage_classes:
-            if storage_class['name'] in storage_names:
-                state['sc'].append(
-                    storage_class
-                )
-                storage_class_names.append(
-                    storage_class['name']
-                )
+    state['sc'] = params['k8s_handler'].get_storage_classes(object_filter=['names:%s' % (','.join(storage_names))], cache_enabled=False)
+    params['k8s_handler'].get_storage_classes_summary(
+        state['sc'],
+        my_output=my_output,
+        prefix='- '
+    )
 
-    my_output.default('- %s storage class' % (len(state['sc'])))
-    
-    if len(state['sc']) == 0:
-        my_output.default('- 0 pvc')
+    if state['sc'] is None or len(state['sc']) == 0:
+        my_output.default('- 0 PersistentVolumeClaim')
         return state
 
-    state['pvc'] = []
-    pvcs = params['k8s_handler'].get_pvcs(cache_enabled=False)
-    if pvcs is not None:
-        for pvc in pvcs:
-            if pvc['storage_class_name'] in storage_class_names:
-                state['pvc'].append(
-                    pvc
-                )
-
-    my_output.default('- %s pvc' % (len(state['pvc'])))
-    if len(state['pvc']) > 0:
+    state['pvc'] = params['k8s_handler'].get_pvcs(object_filter=['scs:%s' % (','.join(storage_names))], cache_enabled=False)
+    params['k8s_handler'].get_pvcs_summary(
+        state['pvc'],
+        my_output=my_output,
+        prefix='- '
+    )
+        
+    if state['pvc'] is not None and len(state['pvc']) > 0:
         state['dependants'] = True
 
     return state

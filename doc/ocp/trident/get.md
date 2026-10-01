@@ -1,4 +1,6 @@
-# Trident Operator - Get Information
+# Trident - Get Information
+
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -9,33 +11,23 @@ Check trident operator state
 ```
 # iserver get ocp trident --cluster bm1
 
-
 OpenShift Workflow - Trident Operator - Get Information
 =======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-operators",
-    "name": "trident-operator",
-    "operator-group-name": "global-operators",
-    "catalog": "certified-operators"
-}
+OpenShift Cluster: bm1
+
+Collecting state...
 
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:*****]
-- api [*****]: ok
-- dns resolution: ok
+State
+-----
+- package   : openshift-marketplace/certified-operators/trident-operator
+- csv       : trident-operator.v26.2.0
+- resources : ✓
+- instance  : ✓
 
-Operator
---------
-- subscription: openshift-operators/trident-operator
-- channel: stable
-- csv: trident-operator.v25.6.2
+
+View: state (def), res, all
 ```
 
 [[Back]](./README.md)

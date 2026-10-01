@@ -33,11 +33,16 @@ class LinuxPvCmd():
 
         return self.pv_cmd
 
-    def delete_pv_cmd(self, pv_name):
+    def delete_pv_cmd(self, pv_name, my_output=None):
+        command = 'sudo pvremove -f %s' % (pv_name)
         success, output, error = self.ssh_handler.run_cmd(
-            'sudo pvremove -f %s' % (pv_name)
+            command
         )
         
+        if my_output is not None:
+            my_output.default('cmd: %s' % (command), before_newline=True)
+            my_output.default('%s\n%s' % (str(output), str(error)), wrap='~~~')
+            
         if not success:
             return False, str(error)
         

@@ -2,6 +2,7 @@ from lib import filter_helper
 from lib import output_helper
 from lib.workflow.ocp_iotel import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -50,7 +51,7 @@ def validate(params):
         'check-verbose',
         'confirmation'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def match_section(params, poller):
@@ -148,17 +149,18 @@ def modify_poller(params, content, my_output):
     
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Open Telemetry (iotel) - Delete Poller', before_newline=True, after_newline=True, double_underline=True)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Poller')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     params = local_common.get_instances(params, my_output)
     if params is None: 
         return False

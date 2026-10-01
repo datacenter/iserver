@@ -26,4 +26,5 @@ class K8sCronJobApi():
         return response
 
     def delete_cron_job_mo(self, namespace, name):
-        return self.delete_resource('CronJob', 'batch/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('CronJob', 'batch/v1', name, namespace=namespace)
+        return success

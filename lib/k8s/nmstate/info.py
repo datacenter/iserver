@@ -133,7 +133,8 @@ class K8sNmstateInfo():
             if not get_confirmation():
                 return False
 
-        if not self.create_nmstate_mo(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

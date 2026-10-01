@@ -3,7 +3,7 @@ class K8sIntersightDelete():
         pass
 
     def delete_intersight(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'CiscoIntersight', 
             'intersight.cisco.com/v1',
             name, 
@@ -13,6 +13,9 @@ class K8sIntersightDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

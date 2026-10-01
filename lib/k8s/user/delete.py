@@ -34,7 +34,7 @@ class K8sUserDelete():
                 
             return True
 
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'User', 
             'user.openshift.io/v1',
             name, 
@@ -43,6 +43,9 @@ class K8sUserDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

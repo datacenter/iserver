@@ -1,4 +1,4 @@
-# LVM Storage Operator - Delete orphan
+# LVM Storage - Delete orphan
 
 ## Workflow
 
@@ -21,71 +21,87 @@ Workflow identifies and deletes the orpans on Linux LVM level.
 
 ## Example
 
-Hint for test: sudo lvcreate -V 100M -T vg1/thin-pool-1 -n lalala
+Hint for test: `sudo lvcreate -V 100M -T vg1/thin-pool-1 -n lalala`
 
 ```
-# iserver delete ocp lvm --mode orphan --no-confirm
+# iserver delete ocp lvm --cluster bm1 --mode orphan --no-confirm
 
-OpenShift Workflow - LVM Operator - Delete Orphan Logical Volumes
-=================================================================
+OpenShift Workflow - LVM - Delete Orphan Logical Volumes
+========================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "ssh-required": true,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "lvms-operator",
-    "operator-group-name": "lvm-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-
+OpenShift Cluster: bm1
 
 LVM Operator
 ------------
-LVM Operator [openshift-storage/lvms] with csv [lvms-operator.v4.18.3]
+
+Operator
+- subscription          : openshift-storage/lvms
+- package               : openshift-marketplace/redhat-operators/lvms-operator
+- channel               : stable-4.18
+- install plan          : openshift-storage/install-2658c
+- install plan approved : ✓
+- installed csv         : lvms-operator.v4.18.4
+- latest_csv            : ✓
+
+LVM Operator [openshift-storage/lvms] with csv [lvms-operator.v4.18.4]
 LVM Subscription resources deployed
-LVM Cluster instance: openshift-storage/lvmcluster
+LVM Cluster instance: openshift-storage/my-lvmcluster
 LVM Cluster instance: ready
 Storage class: lvms-vg1
 
 Collect linux level lv state...
 
-Logical Volumes (LVM) [ocp-bm1]
--------------------------------
+Logical Volumes (LVM) [bm1-1]
+-----------------------------
 
 +-------------+-----+-------------+-------+---------+-------+--------+---------+------+-----------+
 | LV Name     | VG  | LV Pool     | Dev   | LV Size | MSize | Layout | Role    | Snap | K8s Usage |
 +-------------+-----+-------------+-------+---------+-------+--------+---------+------+-----------+
-| lalala      | vg1 | thin-pool-1 | 253:4 | 100.00m | 0.00% | thin   | public  | --   | --        |
-|             |     |             |       |         |       | sparse |         |      |           |
+| lalala      | vg1 | thin-pool-1 | 253:4 | 100.00m | 0.00% | thin   | public  | --   | --        | 
+|             |     |             |       |         |       | sparse |         |      |           | 
 +-------------+-----+-------------+-------+---------+-------+--------+---------+------+-----------+
-| thin-pool-1 | vg1 |             | 253:2 | 1.57t   | 0.00% | thin   | private | --   | N/A       |
-|             |     |             |       |         |       | pool   |         |      |           |
+| thin-pool-1 | vg1 |             | 253:2 | <8.64t  | 0.00% | thin   | private | --   | N/A       | 
+|             |     |             |       |         |       | pool   |         |      |           | 
 +-------------+-----+-------------+-------+---------+-------+--------+---------+------+-----------+
 
 [WARNING] some logical volumes not backed with kube resources
 
+Logical Volumes (LVM) [bm1-2]
+-----------------------------
+
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+| LV Name     | VG  | LV Pool | Dev   | LV Size | MSize | Layout | Role    | Snap | K8s Usage |
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+| thin-pool-1 | vg1 |         | 253:2 | <8.64t  | 0.00% | thin   | private | --   | N/A       | 
+|             |     |         |       |         |       | pool   |         |      |           | 
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+
+Logical Volumes (LVM) [bm1-3]
+-----------------------------
+
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+| LV Name     | VG  | LV Pool | Dev   | LV Size | MSize | Layout | Role    | Snap | K8s Usage |
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+| thin-pool-1 | vg1 |         | 253:2 | <8.64t  | 0.00% | thin   | private | --   | N/A       | 
+|             |     |         |       |         |       | pool   |         |      |           | 
++-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
+
 Orphans to be deleted
-- node [ocp-bm1] lv [/dev/vg1/lalala]
+- node [bm1-1] lv [/dev/vg1/lalala]
 
 Delete orphans
-- node [ocp-bm1] lv [/dev/vg1/lalala]
+- node [bm1-1] lv [/dev/vg1/lalala]
   Logical volume "lalala" successfully removed.
 
 
 Completed tasks
 - Linux logical volumes not backed by PVC/PV or Volume Snapshot (aka orphans) deleted
+
++----+---------+-------+---------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow      | Changes | Success | Duration [s] |
++----+---------+-------+---------------+---------+---------+--------------+
+| 1  | ocp:bm1 | lvm   | delete orphan | 0       | ✓       | 9            | 
++----+---------+-------+---------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

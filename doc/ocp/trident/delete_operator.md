@@ -1,4 +1,6 @@
-# Trident Operator - Delete Operator
+# Trident - Delete Operator
+
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -19,44 +21,48 @@ None
 ## Example
 
 ```
-# iserver delete ocp trident --mode operator --cluster bm1
-
+# iserver delete ocp trident --cluster bm1 --mode operator
 
 OpenShift Workflow - Trident Operator - Delete Operator
 =======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-operators",
-    "name": "trident-operator",
-    "operator-group-name": "global-operators",
-    "catalog": "certified-operators"
-}
+OpenShift Cluster: bm1
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:*****]
-- api [*****]: ok
-- dns resolution: ok
+Operator
+- subscription          : openshift-operators/trident-operator
+- package               : openshift-marketplace/certified-operators/trident-operator
+- channel               : stable
+- install plan          : openshift-operators/install-hv429
+- install plan approved : V
+- installed csv         : trident-operator.v26.2.0
+- latest_csv            : V
 
 
 Delete Subscription
 -------------------
 - subscription: openshift-operators/trident-operator
 - checking cluster service version...
-- csv found and will be deleted: openshift-operators/trident-operator.v25.6.2
+- csv found and will be deleted: openshift-operators/trident-operator.v26.2.0
 - wait for no subscription
-- check cluster service version: openshift-operators/trident-operator.v25.6.2
+- check cluster service version: openshift-operators/trident-operator.v26.2.0
 - wait for no csv
-Wait for deployments deleted (optional: True)...
-- openshift-operators/trident-operator
+- wait for no Deployment openshift-operators/trident-operator [timeout:180s]
+- wait for no ReplicaSet openshift-operators/trident-operator-5f4b49d487 [timeout:180s]
+- wait for no Pod openshift-operators/trident-operator-5f4b49d487-cppq8 [timeout:180s]
+- wait for no Deployment trident/trident-controller [timeout:180s]
+- wait for no DaemonSet trident/trident-node-linux [timeout:180s]
+Subscription trident resources gone
 
 Completed tasks
-- Trident operator deleted
+- Subscription deleted
+- Operator Group deleted
+- Namespace deleted
+
++----+---------+---------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope   | Workflow        | Changes | Success | Duration [s] |
++----+---------+---------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | trident | delete operator | 2       | V       | 10           | 
++----+---------+---------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

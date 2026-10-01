@@ -1,136 +1,85 @@
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_cilium_pnet import feature_enable
-from lib.workflow.ocp_cilium_pnet import network_create
-from lib.workflow.ocp_cilium_pnet import pod_create
-from lib.workflow.ocp_cilium_pnet import webhook_enable
-from lib.workflow.ocp_cilium_pnet import test
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("pnet")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['feature', 'webhook', 'network', 'pod', 'test'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
-@click.option("--fixup", is_flag=True, show_default=True, default=False, help="Fixup private network enablement")
-@click.option("--network", default='', callback=validations.empty_string_to_none, help="Private network name")
-@click.option("--subnet", default='', callback=validations.empty_string_to_none, help="Network subnet")
-@click.option("--gateway", default='', callback=validations.empty_string_to_none, help="Network gateway")
-@click.option("--inb", multiple=True, help="Network bridge")
-@click.option("--namespace", default='default', callback=validations.empty_string_to_none, help="Pod/vm namespace")
-@click.option("--name", default='', callback=validations.empty_string_to_none, help="Pod/vm name")
-@click.option("--image", type=click.Choice(['netshoot'], case_sensitive=False), default='netshoot', show_default=True, help="Pod/vm image")
-@click.option("--ipv4", "ipv4_address", default='', callback=validations.empty_string_to_none, help="Pod/vm ip v4")
-@click.option("--mac", "mac_address", default='', callback=validations.empty_string_to_none, help="Pod/vm mac")
-@click.option("--no-cleanup", is_flag=True, show_default=True, default=False, help="Leave test resources")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['feature', 'network', 'pod', 'test'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
+@click.option("--option", default=[], help="multus, local-access, net-binding, webhook, certmanager", show_default=True, multiple=True)
+@click.option("--option-mode", type=click.Choice(['set', 'add'], case_sensitive=False), default='add', show_default=True, help="Private network option mode")
+# @click.option("--pnet", type=click.Choice(['default', 'bridge', 'local-access'], case_sensitive=False), default='default', show_default=True, help="Private network mode")
+# @click.option("--network", default='', callback=validations.empty_string_to_none, help="Private network name")
+# @click.option("--cidr4", multiple=True, help="Subnet cidrv4")
+# @click.option("--cidr6", multiple=True, help="Subnet cidrv6")
+# @click.option("--nad", multiple=True, help="Multus enablement")
+# @click.option("--inb", multiple=True, help="Network bridge")
+# @click.option("--namespace", default='default', callback=validations.empty_string_to_none, help="Pod/vm namespace")
+# @click.option("--name", default='', callback=validations.empty_string_to_none, help="Pod/vm name")
+# @click.option("--image", type=click.Choice(['netshoot'], case_sensitive=False), default='netshoot', show_default=True, help="Pod/vm image")
+# @click.option("--ipv4", "ipv4_address", default='', callback=validations.empty_string_to_none, help="Pod/vm ip v4")
+# @click.option("--mac", "mac_address", default='', callback=validations.empty_string_to_none, help="Pod/vm mac")
+# @click.option("--no-cleanup", is_flag=True, show_default=True, default=False, help="Leave test resources")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_cilium_pnet_command(
         ctx, 
-        cluster_name, 
+        cluster_names, 
         mode, 
-        fixup, 
-        network, 
-        subnet,
-        gateway,
-        inb,
-        namespace, 
-        name, 
-        image, 
-        ipv4_address, 
-        mac_address, 
-        no_cleanup, 
+        option,
+        option_mode,
+        # pnet,
+        # network,
+        # cidr4,
+        # cidr6,
+        # nad,
+        # inb,
+        # namespace, 
+        # name, 
+        # image, 
+        # ipv4_address, 
+        # mac_address, 
+        # no_cleanup, 
         no_confirm
     ):
-    """Set cilium private networking"""
+    """Set cilium private network"""
 
-    try:
-        if mode in ['feature']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['fixup'] = fixup
-            params['confirmation'] = not no_confirm
+    task = {}
 
-            success = feature_enable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['feature']:
+        task['feature'] = {}
+        task['feature']['option'] = option
+        task['feature']['option-mode'] = option_mode
+        # task['feature']['mode'] = pnet
 
-        if mode in ['webhook']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['confirmation'] = not no_confirm
+    # if mode in ['multus']:
+    #     task['multus'] = {}
 
-            success = webhook_enable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    # if mode in ['webhook']:
+    #     task['webhook'] = {}
 
-        if mode in ['network']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['network'] = network
-            params['subnet'] = subnet
-            params['gateway'] = gateway
-            params['inb'] = []
-            for item in inb:
-                params['inb'].append(item)
-            params['confirmation'] = not no_confirm
+    # if mode in ['network']:
+    #     task['network'] = {}
+    #     task['network']['name'] = network
+    #     task['network']['cidrv4'] = cidr4
+    #     task['network']['cidrv6'] = cidr6
+    #     task['network']['nad'] = nad
+        # task['network']['inb'] = inb
 
-            success = network_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit  
-                        
-        if mode in ['pod']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['network'] = network
-            params['app-namespace'] = namespace
-            params['app-name'] = name
-            params['app-image'] = image
-            params['app-ipv4'] = ipv4_address
-            params['app-mac'] = mac_address
-            params['confirmation'] = not no_confirm
+    # if mode in ['pod']:
+    #     task['pod'] = {}
+    #     task['pod']['network'] = network
+    #     task['pod']['app-namespace'] = namespace
+    #     task['pod']['app-name'] = name
+    #     task['pod']['app-image'] = image
+    #     task['pod']['app-ipv4'] = ipv4_address
+    #     task['pod']['app-mac'] = mac_address
 
-            success = pod_create.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit  
-                        
-        if mode in ['test']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['cleanup'] = not no_cleanup
-            params['confirmation'] = not no_confirm
+    # if mode in ['test']:
+    #     task['test'] = {}
+    #     task['test']['cleanup'] = not no_cleanup
 
-            success = test.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit            
-            
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'cilium-pnet', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

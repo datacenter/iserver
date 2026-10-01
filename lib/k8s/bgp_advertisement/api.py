@@ -26,4 +26,5 @@ class K8sBgpAdvertisementApi():
         return response
 
     def delete_bgp_advertisement_mo(self, namespace, name):
-        return self.delete_resource('BGPAdvertisement', 'metallb.io/v1beta1', name, namespace=namespace)
+        success, _ = self.delete_resource('BGPAdvertisement', 'metallb.io/v1beta1', name, namespace=namespace)
+        return success

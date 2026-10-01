@@ -10,7 +10,7 @@ class K8sBgpPeerWait():
             match_properties=match_properties,
             break_properties=break_properties,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
 
@@ -21,6 +21,6 @@ class K8sBgpPeerWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )

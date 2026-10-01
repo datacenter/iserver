@@ -8,58 +8,10 @@ from lib.workflow import ocp_common
 from menu.common import get_confirmation
 
 
-def initialize(params, my_output, log_id, ssh=False, optional=False):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    if ssh:
-        params['ssh_handler'] = ocp_common.get_management_node_ssh_handler(params['cluster'], log_id, optional=optional)
-        if not optional and params['ssh_handler'] is None:
-            my_output.error('cluster management node ssh failed')
-            return None
-
-    return params
-
-
 def get_default_params():
     params = {}
+    params['title'] = 'OpenShift Workflow - LDAP Identity Provider'
     return params
-
-
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
-    return params
-
-
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params
 
 
 def get_providers_details(params, providers):

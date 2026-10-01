@@ -1,5 +1,7 @@
 # Zap block devices
 
+[[Back]](./README.md)
+
 Storage subystem even if removed can leave some data on the disk that will 
 - keep fs type of the disk to non-empty value
 - prevent the disk from being used again
@@ -27,9 +29,6 @@ where /dev/sdb and /dev/sdc
 +----------+-------+------+---------+--------+------------------+---------+-------+---------+--------------------------------------------------------+
 | Path     | KName | Boot | Maj:Min | Size   | Model            | Serial  | Group | FS Type | Disk ID                                                |
 +----------+-------+------+---------+--------+------------------+---------+-------+---------+--------------------------------------------------------+
-| /dev/sda | sda   | ✓    | 8:0     | 1.1T   | UCSC-RAID12G-2GB | abc     | disk  | ---     | /dev/disk/by-path/pci-0000:3c:00.0-scsi-0:2:0:0        | 
-|          |       |      |         |        |                  |         |       |         | /dev/disk/by-id/wwn-0x6cc167e973700fc029771bd1c31a36fa |
-+----------+-------+------+---------+--------+------------------+---------+-------+---------+--------------------------------------------------------+
 | /dev/sdb | sdb   |      | 8:16    | 894.3G | Micron_5100_MTFD | def     | disk  | Ceph    | /dev/disk/by-path/pci-0000:00:11.5-ata-1.0             | 
 |          |       |      |         |        |                  |         |       |         | /dev/disk/by-id/wwn-0x500a075118ef25c1                 |
 +----------+-------+------+---------+--------+------------------+---------+-------+---------+--------------------------------------------------------+
@@ -41,9 +40,16 @@ where /dev/sdb and /dev/sdc
 ## Workflow 
 
 Execute the following commands on the selected block device
-- sudo sgdisk --zap-all device-name
-- sudo blkdiscard -f device-name
-- sudo lsblk -O --json
+- `sudo sgdisk --zap-all device-name`
+- `sudo blkdiscard -f device-name`
+- `sudo lsblk -O --json`
+
+>[!NOTE]
+>blkdiscard is conditional and TRIM support is detected by [lsblk](./lsblk.md). However, in some cases even on TRIM supported devices you may see an error. the workflow will not break.
+
+```
+blkdiscard: /dev/sdd: BLKDISCARD ioctl failed: Device or resource busy
+```
 
 Reference [document](https://rook.io/docs/rook/v1.12/Getting-Started/ceph-teardown/#delete-the-data-on-hosts)
 
@@ -53,8 +59,14 @@ Reference [document](https://rook.io/docs/rook/v1.12/Getting-Started/ceph-teardo
 # iserver set linux disk --mode zap
   --server TEXT  Linux server name
   --device TEXT  Block device name
+  --fstype TEXT  Filesystem type
   --no-confirm   Confirmation mode
 ```
+
+Notes:
+- device can be e.g., `/dev/sdb` or `sdb`
+- fstype can be one of `LVM2`, `Ceph`
+- device and fstype follow logical OR
 
 ### Zap all non-boot block devices on all nodes of selected cluster
 
@@ -72,6 +84,12 @@ Reference [document](https://rook.io/docs/rook/v1.12/Getting-Started/ceph-teardo
 
 ```
 # iserver set linux disk --server ocp:[cluster-name]:[node-name] --device [device-name] --mode zap 
+```
+
+### Zap LVM2 formatted block devices on selected cluster node
+
+```
+# iserver set linux disk --server ocp:[cluster-name]:[node-name] --fstype LVM2 --mode zap 
 ```
 
 ## Requirements

@@ -26,4 +26,5 @@ class K8sIntersightApi():
         return response
 
     def delete_intersight_mo(self, namespace, name):
-        return self.delete_resource('CiscoIntersight', 'intersight.cisco.com/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('CiscoIntersight', 'intersight.cisco.com/v1', name, namespace=namespace)
+        return success

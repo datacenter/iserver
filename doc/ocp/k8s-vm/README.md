@@ -1,13 +1,5 @@
 # Virtual Machine
 
-## Base Life Cycle
-
-Get, List, Create, Delete
-
-## Versioning
-
-snapshot create, list, restore
-
 ## Configuration Change
 
 Command | Intent | Details
@@ -25,8 +17,14 @@ iserver set k8s vm start | start virtual machine | [Link](./start.md)
 iserver set k8s vm stop | stop virtual machine | [Link](./stop.md)
 iserver set k8s vm unpause | unpause virtual machine | [Link](./unpause.md)
 
-## Deploy-at-scale
+## Example
 
-tasks
+Virtual Machine | Interface | CNI | Network | Option | Overview | Networking
+--- | --- | --- | --- | --- | --- | ---
+Cat8kv | management | Cilium | POD | | [Link](./example-cat8k-pod-provisioning.md) | [Link](./example-cat8k-pod-kubevirt.md)
+Cat8kv | management | Multus | L3 Bridge | | [Link](./example-cat8k-bridge-l3-provisioning.md) | [Link](./example-cat8k-bridge-l3-kubevirt.md)
+Cat8kv | management | Multus | L2 Bridge | | [Link](./example-cat8k-bridge-l2.md) | ---
+Cat8kv | management | Multus | L3 Bridge | user-defined mac address | [Link](./example-cat8k-bridge-mac.md) | ---
+Cat8kv | secondary | Multus | L3 Bridge | | [Link](./example-cat8k-2nd-bridge-l3-provisioning.md) | [Link](./example-cat8k-2nd-bridge-l3-kubevirt.md)
 
 [[Back]](../Operations.md)

@@ -9,7 +9,7 @@ class K8sRouteAdvertisementWait():
             match_properties=match_properties,
             break_properties=break_properties,
             my_output=my_output,
-            prompt='- wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
+            prompt='Wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
             max_time=max_time
         )
 
@@ -18,6 +18,6 @@ class K8sRouteAdvertisementWait():
             'route_advertisement',
             name,
             my_output=my_output,
-            prompt='- wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
+            prompt='Wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
             max_time=max_time
         )

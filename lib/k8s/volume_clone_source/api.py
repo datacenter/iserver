@@ -1,48 +1,21 @@
-import time
-import traceback
-
-
 class K8sVolumeCloneSourceApi():
     def __init__(self):
         self.volume_clone_source_mo = None
-
-    def get_volume_clone_source_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.volume_clone_source_mo is not None:
-                return self.volume_clone_source_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='cdi.kubevirt.io/v1beta1',
-                kind='VolumeCloneSource'
-            )
-            self.volume_clone_source_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'volume_clone_source',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_volume_clone_source_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'volume_clone_source',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'volume_clone_source',
+        
+    def get_volume_clone_source_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.volume_clone_source_mo
         )
+        if cache_hit:
+            return response
 
-        return self.volume_clone_source_mo
+        response, self.volume_clone_source_mo = self.get_resources(
+            'VolumeCloneSource', 
+            'cdi.kubevirt.io/v1beta1', 
+            self.volume_clone_source_mo,
+            name=name
+        )
+
+        return response

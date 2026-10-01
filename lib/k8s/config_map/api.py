@@ -31,4 +31,5 @@ class K8sConfigMapApi():
         return response
     
     def delete_config_map_mo(self, namespace, name):
-        return self.delete_resource('ConfigMap', 'v1', name, namespace=namespace)
+        success, _ = self.delete_resource('ConfigMap', 'v1', name, namespace=namespace)
+        return success

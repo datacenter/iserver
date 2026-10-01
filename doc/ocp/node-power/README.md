@@ -1,5 +1,7 @@
 # Node Power Management
 
+[[Back]](../Operations.md)
+
 Unlike [bare metal host power management](../metal-kubed/README.md), these workflows perform the node power management tasks via [ssh](../Access.md) and include kubernetes-friendly steps such as cordon and drain before shutting down or reloading the node.
 
 Command | Intent | Details

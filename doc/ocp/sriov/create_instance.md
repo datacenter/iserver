@@ -9,7 +9,7 @@
 
 - sriov operator must be [created](./create_operator.md)
 
-## Expected Outcome
+## Expected outcome
 
 ![InstanceCreate](../images/sriov/instance_create.png)
 

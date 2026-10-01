@@ -1,3 +1,4 @@
+import json
 import os
 from lib import output_helper
 from lib import file_helper
@@ -106,6 +107,16 @@ def create_connector(user_settings, cluster_info, my_output, log_id):
     if not success:
         my_output.error('etc_hosts update failed')
 
+    if user_settings['network_type'] == 'Cilium':
+        success = ocp_settings_handler.set_ocp_cluster_file(
+            connector_name,
+            'isovelant.json',
+            json.dumps(user_settings['cilium']['access_token'], indent=4)
+        )
+        if not success:
+            my_output.error('Isovalent access key update failed')
+            return None
+    
     return connector_name
 
 

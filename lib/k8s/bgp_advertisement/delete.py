@@ -3,7 +3,7 @@ class K8sBgpAdvertisementDelete():
         pass
 
     def delete_bgp_advertisement(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'BGPAdvertisement', 
             'metallb.io/v1beta1',
             name, 
@@ -13,6 +13,9 @@ class K8sBgpAdvertisementDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

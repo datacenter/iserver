@@ -26,10 +26,9 @@ def run(params, log_id=None):
         my_output.error(error)
         return False
 
-    if params['initialize']:
-        params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
-        if params is None:
-            return False
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+    if params is None:
+        return False
 
     content = file_helper.get_file_yaml(params['filename'])
     if file_helper.is_kube_kind(content, kind='CiliumConfig', namespace='cilium', spec=True):  

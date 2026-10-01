@@ -23,13 +23,17 @@ class K8sHyperConvergedPatch():
 
         return body
 
-    def disable_hyperconverged_boot_image_import(self, confirmation=False, my_output=None):
+    def disable_hyperconverged_boot_image_import(self, confirmation=False, my_output=None, feature_gates=False):
         body = self.get_hyperconverged_patch_body(my_output=my_output)
         if body is None:
             return False
         
-        body['spec']['featureGates'] = {}
-        body['spec']['featureGates']['enableCommonBootImageImport'] = False
+        body['spec'] = {}
+        if feature_gates:
+            body['spec']['featureGates'] = {}
+            body['spec']['featureGates']['enableCommonBootImageImport'] = False
+        else:
+            body['spec']['enableCommonBootImageImport'] = False
 
         if my_output is not None:
             my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
@@ -38,7 +42,7 @@ class K8sHyperConvergedPatch():
             if not get_confirmation():
                 return False
             
-        if not self.patch_hyperconverged_mo(body):
+        if not self.patch_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -48,13 +52,17 @@ class K8sHyperConvergedPatch():
 
         return True
 
-    def enable_hyperconverged_boot_image_import(self, confirmation=False, my_output=None):
+    def enable_hyperconverged_boot_image_import(self, confirmation=False, my_output=None, feature_gates=False):
         body = self.get_hyperconverged_patch_body(my_output=my_output)
         if body is None:
             return False
         
-        body['spec']['featureGates'] = {}
-        body['spec']['featureGates']['enableCommonBootImageImport'] = True
+        body['spec'] = {}
+        if feature_gates:
+            body['spec']['featureGates'] = {}
+            body['spec']['featureGates']['enableCommonBootImageImport'] = True
+        else:
+            body['spec']['enableCommonBootImageImport'] = True
 
         if my_output is not None:
             my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
@@ -63,7 +71,7 @@ class K8sHyperConvergedPatch():
             if not get_confirmation():
                 return False
             
-        if not self.patch_hyperconverged_mo(body):
+        if not self.patch_resource(body):
             if my_output is not None:
                 my_output.error('REST API failed')
             return False
@@ -72,4 +80,3 @@ class K8sHyperConvergedPatch():
             my_output.default('HyperConverged boot image import enabled', before_newline=True, after_newline=True)
 
         return True
-    

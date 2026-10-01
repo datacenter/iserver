@@ -1,5 +1,6 @@
 from lib.k8s.network_attachment_definition.api import K8sNetworkAttachmentDefinitionApi
 from lib.k8s.network_attachment_definition.info import K8sNetworkAttachmentDefinitionInfo
+from lib.k8s.network_attachment_definition.match import K8sNetworkAttachmentDefinitionMatch
 from lib.k8s.network_attachment_definition.bridge import K8sNetworkAttachmentDefinitionBridge
 from lib.k8s.network_attachment_definition.delete import K8sNetworkAttachmentDefinitionDelete
 from lib.k8s.network_attachment_definition.ipvlan import K8sNetworkAttachmentDefinitionIpVlan
@@ -11,6 +12,7 @@ from lib.k8s.network_attachment_definition.wait import K8sNetworkAttachmentDefin
 class K8sNetworkAttachmentDefinition(
         K8sNetworkAttachmentDefinitionApi,
         K8sNetworkAttachmentDefinitionInfo,
+        K8sNetworkAttachmentDefinitionMatch,
         K8sNetworkAttachmentDefinitionBridge,
         K8sNetworkAttachmentDefinitionDelete,
         K8sNetworkAttachmentDefinitionIpVlan,
@@ -21,6 +23,7 @@ class K8sNetworkAttachmentDefinition(
     def __init__(self):
         K8sNetworkAttachmentDefinitionApi.__init__(self)
         K8sNetworkAttachmentDefinitionInfo.__init__(self)
+        K8sNetworkAttachmentDefinitionMatch.__init__(self)
         K8sNetworkAttachmentDefinitionBridge.__init__(self)
         K8sNetworkAttachmentDefinitionDelete.__init__(self)
         K8sNetworkAttachmentDefinitionIpVlan.__init__(self)

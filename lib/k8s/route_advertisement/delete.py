@@ -3,7 +3,7 @@ class K8sRouteAdvertisementDelete():
         pass
 
     def delete_route_advertisement(self, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'RouteAdvertisements', 
             'k8s.ovn.org/v1',
             name, 
@@ -12,6 +12,9 @@ class K8sRouteAdvertisementDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

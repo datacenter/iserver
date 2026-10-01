@@ -457,7 +457,7 @@ class ComputeExtraAttributes():
                 mac_info = {}
                 mac_info['InterfaceDn'] = 'imc'
                 mac_info['InterfaceName'] = 'imc'
-                mac_info['MacAddress'] = cimc_info['MacAddress'].lower()
+                mac_info['MacAddress'] = cimc_info['MacAddress']
                 mac_info['AdapterModel'] = 'Cisco IMC'
                 mac_info['AdapterPciSlot'] = None
 
@@ -1010,7 +1010,7 @@ class ComputeExtraAttributes():
             mac_info = {}
             mac_info['InterfaceDn'] = interface_info['Dn']
             mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
-            mac_info['MacAddress'] = interface_info['MacAddress'].lower()
+            mac_info['MacAddress'] = interface_info['MacAddress']
             mac_info['AdapterModel'] = None
             mac_info['AdapterPciSlot'] = None
 
@@ -1419,7 +1419,7 @@ class ComputeExtraAttributes():
             mac_info = {}
             mac_info['InterfaceDn'] = interface_info['Dn']
             mac_info['InterfaceName'] = interface_info['Dn'].split('/')[-1]
-            mac_info['MacAddress'] = interface_info['MacAddress'].lower()
+            mac_info['MacAddress'] = interface_info['MacAddress']
             mac_info['AdapterModel'] = None
             mac_info['AdapterPciSlot'] = None
 

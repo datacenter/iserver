@@ -10,36 +10,44 @@ class K8sClusterwidePrivateNetworkInfo():
             return None
 
         info = self.get_base_info(managed_object)
+        info['subnet'] = self.get(managed_object, 'spec:subnets', on_error=[], on_none=[])
 
-        info['cidrv4'] = []
-        info['cidrv6'] = []
+        info['ns'] = []
 
-        subnets_mo = self.get(managed_object, 'spec:subnets', on_error=[], on_none=[])
-        for subnet_mo in subnets_mo:
-            cidr_mo = self.get(subnet_mo, 'cidr')
-            if cidr_mo is not None:
-                if ip_helper.is_valid_ipv4_cidr(subnet_mo['cidr']):
-                    info['cidrv4'].append(subnet_mo['cidr'])
-                if ip_helper.is_valid_ipv6_cidr(subnet_mo['cidr']):
-                    info['cidrv6'].append(subnet_mo['cidr'])
+        nad_mo = self.get(managed_object, 'spec:networkAttachmentDefinitions:namespaceSelector:matchLabels')
+        if nad_mo is not None:
+            namespace = self.get(nad_mo, 'kubernetes.io/metadata.name')
+            if namespace is not None:
+                info['ns'].append(namespace)
 
-        info['inb'] = []
-        bridges_mo = self.get(managed_object, 'spec:networkBridges', on_error=[], on_none=[])
-        for bridge_mo in bridges_mo:
-            info['inb'].append(
-                bridge_mo['cluster']
-            )
+        nad_mo = self.get(managed_object, 'spec:networkAttachmentDefinitions:namespaceSelector:matchExpressions', on_error=[], on_none=[])
+        for item in nad_mo:
+            if self.get(item, 'operator') == 'In':
+                for ns_item in self.get(item, 'values', on_error=[], on_none=[]):
+                    info['ns'].append(ns_item)
 
-        info['destT'] = []
-        info['gatewayT'] = []
-        routes_mo = self.get(managed_object, 'spec:routes', on_error=[], on_none=[])
-        for route_mo in routes_mo:
-            info['destT'].append(
-                route_mo['destination']
-            )
-            info['gatewayT'].append(
-                route_mo['gateway']
-            )
+        info['nad'] = []
+        for nitem in info['ns']:
+            for sitem in info['subnet']:
+                info['nad'].append('%s/%s-%s' % (nitem, info['name'], sitem['name']))
+
+        # info['inb'] = []
+        # bridges_mo = self.get(managed_object, 'spec:networkBridges', on_error=[], on_none=[])
+        # for bridge_mo in bridges_mo:
+        #     info['inb'].append(
+        #         bridge_mo['cluster']
+        #     )
+
+        # info['destT'] = []
+        # info['gatewayT'] = []
+        # routes_mo = self.get(managed_object, 'spec:routes', on_error=[], on_none=[])
+        # for route_mo in routes_mo:
+        #     info['destT'].append(
+        #         route_mo['destination']
+        #     )
+        #     info['gatewayT'].append(
+        #         route_mo['gateway']
+        #     )
 
         return info
 

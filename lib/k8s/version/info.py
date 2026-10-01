@@ -12,11 +12,7 @@ class K8sVersionInfo():
 
         info = {}
         info['__Output'] = {}
-
-        info['version'] = self.get(version_mo, 'k8s:git_version')
-        info['build_date'] = self.get(version_mo, 'k8s:build_date')
-        info['platform'] = self.get(version_mo, 'k8s:platform')
-        info['ocp'] = self.get(version_mo, 'ocp:status:desired:version', on_error='--', on_none='--')
+        info['version'] = self.get(version_mo, 'status:desired:version', on_error='--', on_none='--')
 
         return info
 

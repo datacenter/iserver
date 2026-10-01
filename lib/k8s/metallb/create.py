@@ -16,7 +16,8 @@ class K8sMetalLbCreate():
         if body is None:
             body = self.get_metallb_body()
 
-        if not self.create_resource(body, object_name='metallb', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='metallb', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
         
         if not wait:

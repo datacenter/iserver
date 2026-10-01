@@ -1,5 +1,7 @@
 # Certificate Manager - Enable feature
 
+[[Back]](./README.md)
+
 ## Workflow
 
 - check cert manager repo and helm chart
@@ -9,7 +11,8 @@
 
 ## Requirements
 
-Cluster with [helm cli enabled](../cli/helm.md)
+- Cluster with [helm cli enabled](../cli/helm.md)
+- [bashrc settings](../cli/configure_bashrc.md) may need to be configured with http proxy settings
 
 ## Expected outcome
 
@@ -20,77 +23,36 @@ Certificate manager CRDs available
 ## Configurable options
 
 ```
-# iserver set ocp cert-manager 
+# iserver set ocp cert-manager --mode feature
   --cluster TEXT  Cluster Name
-```
-
-## Non-configurable defaults
-
-```
-{
-    "namespace": "cert-manager",
-    "helm": "cert-manager",
-    "repo_name": "jetstack",
-    "repo_url": "https://charts.jetstack.io"
-}
 ```
 
 ## Example
 
 ```
-# iserver set ocp ocp cert-manager --cluster bm1 
-
+# iserver set ocp ocp cert-manager --cluster bm1 --mode feature
 
 OpenShift Workflow - Certificate Manager - Install
 ==================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "cert-manager",
-    "helm": "cert-manager",
-    "repo_name": "jetstack",
-    "repo_url": "https://charts.jetstack.io"
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-- management node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-- cli helm: ok
-
-Check repo jetstack https://charts.jetstack.io
-Not found
+OpenShift Cluster: bm1
 Add repo jetstack https://charts.jetstack.io
 ~~~
 "jetstack" has been added to your repositories
 
-
 ~~~
 Helm repo added
-Check helm chart cert-manager
-Not found
 Install jetstack/cert-manager
 ~~~
 NAME: cert-manager
-LAST DEPLOYED: Thu Oct 30 16:40:09 2025
+LAST DEPLOYED: Tue May 26 19:48:02 2026
 NAMESPACE: cert-manager
 STATUS: deployed
 REVISION: 1
+DESCRIPTION: Install complete
 TEST SUITE: None
 NOTES:
-⚠️  WARNING: New default private key rotation policy for Certificate resources.
-The default private key rotation policy for Certificate resources was
-changed to `Always` in cert-manager >= v1.18.0.
-Learn more in the [1.18 release notes](https://cert-manager.io/docs/releases/release-notes/release-notes-1.18).
-
-cert-manager v1.19.1 has been deployed successfully!
+cert-manager v1.20.2 has been deployed successfully!
 
 In order to begin issuing certificates, you will need to set up a ClusterIssuer
 or Issuer resource (for example, by creating a 'letsencrypt-staging' issuer).
@@ -106,13 +68,36 @@ documentation:
 
 https://cert-manager.io/docs/usage/ingress/
 
+For information on how to configure cert-manager to automatically provision
+Certificates for Gateway API resources, take a look at the `gateway resource`
+documentation:
+
+https://cert-manager.io/docs/usage/gateway/
 
 ~~~
 Helm installed
-CRDs found
+
++----+--------------+--------------+----------+-----------------------------------------+----------+----------------------+-------------+
+| ID | Namespace    | Name         | Revision | Updated                                 | Status   | Chart                | App Version |
++----+--------------+--------------+----------+-----------------------------------------+----------+----------------------+-------------+
+| 1  | cert-manager | cert-manager | 1        | 2026-05-26 19:48:02.878893726 +0000 UTC | deployed | cert-manager-v1.20.2 | v1.20.2     | 
++----+--------------+--------------+----------+-----------------------------------------+----------+----------------------+-------------+
+
+
+Certificate Manager Resources
+-----------------------------
+- issuer      : 0
+- certificate : 0
+
 
 Completed tasks
 - certificate manager installed
+
++----+---------+--------------+----------------+---------+---------+--------------+
+| ID | Target  | Scope        | Workflow       | Changes | Success | Duration [s] |
++----+---------+--------------+----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | cert-manager | create feature | 0       | ✓       | 89           | 
++----+---------+--------------+----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

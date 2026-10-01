@@ -110,7 +110,7 @@ def get_k8s_nad_command(
             return
 
         if 'state' in view:
-            k8s_output_handler.print_nads(
+            k8s_output_handler.print_nads_state(
                 nads
             )
 

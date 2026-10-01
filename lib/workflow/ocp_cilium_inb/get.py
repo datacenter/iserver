@@ -1,3 +1,4 @@
+import copy
 from lib import filter_helper
 from lib import ip_helper
 from lib import output_helper
@@ -10,52 +11,21 @@ from lib.k8s import main as k8s
 from lib.vc import vcenter
 from lib.workflow.ocp_cilium_inb import common as local_common
 from lib.workflow.ocp_cilium_cni import common as cilium_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'vcenter' not in params:
-        params['vcenter'] = None
-
-    if 'mesh-name' not in params:
-        params['mesh-name'] = None
-
-    if params['mesh-name'] is not None:
-        if not isinstance(params['mesh-name'], str):
-            return None, 'mesh-name param must be str'
-        
-        if len(params['mesh-name']) == 0:
-            return None, 'mesh-name required'
-
-    if 'view' not in params or params['view'] is None:
-        params['view'] = ['ssh', 'vc', 'kube', 'pnet', 'mesh']
-
-    if not isinstance(params['view'], list):
-        return None, 'view param must be list'
-    
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-        
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'vcenter',
-        'mesh-name',
-        'view',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'list-of-str', None, None, None, None],
+        ['vcenter', True, None, 'str', None, None, None, None],
+        ['mesh-name', True, None, 'str', None, None, None, None],
+        ['view', True, ['all'], 'view', None, None, ['ssh', 'vc', 'kube', 'pnet', 'mesh'], None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def get_mesh_peers(params, my_output):
@@ -309,59 +279,63 @@ def get_kubernetes(peer, params, my_output, log_id):
 
         if pnets is not None:
             my_output.default('## Private Network', before_newline=True)
-            k8s_output_handler.print_clusterwide_private_networks(pnets)
+            k8s_output_handler.print_clusterwide_private_networks_state(pnets)
 
         if peps is not None:
             my_output.default('## Private Network Endpoints', before_newline=True)
             k8s_output_handler.print_clusterwide_private_network_endpoints_db(peps)
 
 
-def run(params, log_id=None):
+def run(mparams, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium - Get Isovalent Network Bridge', before_newline=True, after_newline=True, double_underline=True)
 
-    params, error = validate(params)
+    mparams, error = validate(mparams)
     if error is not None:
         my_output.error(error)
         return False
-
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
-
-    if not cilium_common.is_cilium(params, my_output):
-        return False
-
-    success = True
-
-    if params['k8s_handler'].is_cilium_private_network_enabled(cache_enabled=False):
-        my_output.default('Private network %s' % (my_output.add_color('enabled', 'Green')))
-    else:
-        my_output.default('Private network %s' % (my_output.add_color('disabled', 'Red')))
-        success = False    
-
-    if params['k8s_handler'].is_cilium_mesh_enabled():
-        my_output.default('Cluster mesh %s' % (my_output.add_color('enabled', 'Green')))
-    else:
-        my_output.default('Cluster mesh %s' % (my_output.add_color('disabled', 'Red')))
-        success = False    
     
-    if not success:
-        return False
+    for cluster in mparams['cluster']:
+        params = copy.deepcopy(mparams)
+        params['cluster'] = cluster
+
+        ocp_common.print_title(params, my_output, 'Get Information')
+        params = ocp_common.workflow_init(params, my_output, log_id)
+        if params is None:
+            continue
     
-    peers = get_mesh_peers(params, my_output)
-    if peers is None:
-        return True
+        if not cilium_common.is_cilium(params, my_output):
+            return False
+        
+        success = True
 
-    inbs = []
-    for peer in peers:
-        peer_info = is_inb(peer, params, my_output, log_id)
-        if peer_info is not None:
-            inbs.append(peer_info)
+        if params['k8s_handler'].is_cilium_private_network_enabled(cache_enabled=False):
+            my_output.default('Private network %s' % (my_output.add_color('enabled', 'Green')))
+        else:
+            my_output.default('Private network %s' % (my_output.add_color('disabled', 'Red')))
+            success = False    
 
-    for inb in inbs:
-        my_output.default('inb: %s' % (inb['name']), before_newline=True, underline=True)
-        get_linux(inb, params, my_output, log_id)
-        get_kubernetes(inb, params, my_output, log_id)
+        if params['k8s_handler'].is_cilium_mesh_enabled():
+            my_output.default('Cluster mesh %s' % (my_output.add_color('enabled', 'Green')))
+        else:
+            my_output.default('Cluster mesh %s' % (my_output.add_color('disabled', 'Red')))
+            success = False    
+        
+        if not success:
+            continue
+        
+        peers = get_mesh_peers(params, my_output)
+        if peers is None:
+            continue
+
+        inbs = []
+        for peer in peers:
+            peer_info = is_inb(peer, params, my_output, log_id)
+            if peer_info is not None:
+                inbs.append(peer_info)
+
+        for inb in inbs:
+            my_output.default('inb: %s' % (inb['name']), before_newline=True, underline=True)
+            get_linux(inb, params, my_output, log_id)
+            get_kubernetes(inb, params, my_output, log_id)
 
     return True

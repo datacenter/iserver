@@ -26,4 +26,5 @@ class K8sRouteApi():
         return response
 
     def delete_route_mo(self, namespace, name):
-        return self.delete_resource('Route', 'route.openshift.io/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('Route', 'route.openshift.io/v1', name, namespace=namespace)
+        return success

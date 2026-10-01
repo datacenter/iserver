@@ -1,54 +1,54 @@
-import json
-import copy
-from lib.workflow.ocp_access import check as ocp_check
-
-
-def initialize(params, my_output, log_id):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    return params
-
 def get_default_params():
     params = {}
     params['namespace'] = 'aistor'
     params['name'] = 'minio-object-store-operator'
     params['operator-group-name'] = 'minio-operator-group'
     params['delete-namespace'] = True
+    params['create_subscription'] = 'create_minio_subscription'
+    params['delete_subscription'] = 'delete_minio_subscription'
+    params['resource_keys'] = [
+        'admin_job',
+        'policy_binding',
+        'object_store'
+    ]
+    params['resource_output'] = [
+        ['admin job', 'admin_job'],
+        ['policy binding', 'policy_binding'],
+        ['object store', 'object_store']
+    ]
+    params['title'] = 'OpenShift Workflow - MinIO Operator'
     return params
 
 
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
+def collect_state_info(params, my_output):
+    params['summary']['resources'] = False
+
+    for key in params['__default__']['resource_keys']:
+        my_output.debug('- %s' % (key.replace('_', ' ')))
+        params[key] = getattr(params['k8s_handler'], 'get_%ss' % (key))(cache_enabled=False)
+
+    for key in params['__default__']['resource_keys']:
+        params['summary'][key] = '---'
+        if params[key] is not None:
+            params['summary'][key] = len(params[key])
+            if len(params[key]) > 0:
+                params['summary']['resources'] = True
+
     return params
 
 
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
+def wipe(params, my_output):
+    for key in params['__default__']['resource_keys']:
+        if params[key] is not None:
+            if len(params[key]) > 0:
+                success = getattr(
+                    params['k8s_handler'],
+                    'delete_%s' % (key)
+                )(
+                    my_output=my_output,
+                    wait=True
+                )
+                if not success:
+                    return False
 
-    return new_params
+    return True

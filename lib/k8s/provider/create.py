@@ -97,12 +97,14 @@ class K8sProviderCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_resource(secret_body):
+        success, _ = self.create_resource(secret_body)
+        if not success:
             if my_output is not None:
                 my_output.error('Secret REST API failed')
             return False
 
-        if not self.create_provider_mo(provider_body):
+        success, _ = self.create_resource(provider_body)
+        if not success:
             if my_output is not None:
                 my_output.error('Provider REST API failed')
             return False

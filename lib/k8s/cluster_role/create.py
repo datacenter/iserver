@@ -46,7 +46,8 @@ class K8sClusterRoleCreate():
             verbs=verbs
         )
             
-        if not self.create_resource(body, object_name='cluster_role', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='cluster_role', my_output=my_output, confirmation=confirmation)
+        if not success:
             return None
 
         if not wait:
@@ -130,7 +131,8 @@ class K8sClusterRoleCreate():
             name = '%s-%s' % (name, ip_helper.get_short_uuid())
 
         body = self.get_service_account_cluster_role_body(name, cluster_role_name, sa_name, sa_namespace)
-        if not self.create_resource(body, object_name='cluster_role', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='cluster_role', my_output=my_output, confirmation=confirmation)
+        if not success:
             return None
 
         if not wait:

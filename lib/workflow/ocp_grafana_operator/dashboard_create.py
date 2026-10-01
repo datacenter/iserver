@@ -4,6 +4,7 @@ import json
 from lib import file_helper
 from lib import output_helper
 from lib.workflow.ocp_grafana_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def resolve_scope(params):
@@ -145,7 +146,7 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def get_content_template(directory, template_name, my_output):
@@ -347,7 +348,7 @@ def set_dashboard_template(params, filename, scope, my_output):
             label = instance['label']['dashboards']
 
     success = params['k8s_handler'].create_grafana_dashboard(
-        params['namespace'], 
+        params['__default__']['namespace'], 
         content['uid'], 
         label, 
         json.dumps(content, indent=4), 
@@ -364,22 +365,22 @@ def set_dashboard_template(params, filename, scope, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Grafana Operator - Create Dashboard', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Dashboard')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_grafana_subscription(params['namespace'], params['name']):
+    if not params['k8s_handler'].is_grafana_subscription(params['__default__']['namespace'], params['__default__']['name']):
         my_output.error('Grafana Operator is not installed')
         return False
     
-    instance_namespace = params['namespace']
+    instance_namespace = params['__default__']['namespace']
     instance_name = params['instance']
     if not params['k8s_handler'].is_grafana(instance_namespace, instance_name, cache_enabled=False):
         my_output.error('Grafana instance [%s/%s] not defined' % (instance_namespace, instance_name))

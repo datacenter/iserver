@@ -3,7 +3,7 @@ class K8sNodeFeatureDiscoveryDelete():
         pass
 
     def delete_node_feature_discovery(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'NodeFeatureDiscovery', 
             'nfd.openshift.io/v1',
             name, 
@@ -13,6 +13,9 @@ class K8sNodeFeatureDiscoveryDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

@@ -1,6 +1,6 @@
 # Bridge NAD - Example - L2 Mode with VLAN
 
-[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-network.md) [[Next]](./example-bridge-1pod-ipam-static.md)
+[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-network.md) [[Next]](./example-bridge-l2-vlan-nncp.md)
 
 ![Overview](../images/nad/example-bridge-l2-vlan.png)
 
@@ -49,7 +49,7 @@ spec:
 ## L2
 
 > [!NOTE]
-> Ping not working since there is nobody to respond, what we care is checking L2 forwarding out
+> Ping not working since there is nobody to respond, just checking L2 forwarding out
 
 ```
 $ oc exec pod1 -- ping -c 1 10.1.1.14
@@ -63,4 +63,4 @@ fa:f3:2f:74:1e:eb > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vla
   Request who-has 10.1.1.14 tell 10.1.1.8, length 28
 ```
 
-[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-network.md) [[Next]](./example-bridge-1pod-ipam-static.md)
+[[Back]](./example-bridge.md) [[Prev]](./example-bridge-2pod-network.md) [[Next]](./example-bridge-l2-vlan-nncp.md)

@@ -22,8 +22,12 @@ class K8sCiliumConfigTimescape():
             return None
         
         body = {}
-        body['enterprise'] = {}
-        body['enterprise']['featureGate'] = filter_helper.get(cilium_config_mo, 'spec:enterprise:featureGate')
+
+        gates = filter_helper.get(cilium_config_mo, 'spec:enterprise:featureGate', on_error=[], on_none=[])
+        if 'HubbleTimescape' in gates:
+            body['enterprise'] = {}
+            body['enterprise']['featureGate'] = ['HubbleTimescape']
+
         body['hubble'] = filter_helper.get(cilium_config_mo, 'spec:hubble')
         return body
 
@@ -49,7 +53,7 @@ class K8sCiliumConfigTimescape():
         if not self.is_cilium_timescape_enabled(cache_enabled=cache_enabled):
             return False
         
-        cilium_config_mo = self.get_cilium_config(return_mo=True)
+        cilium_config_mo = self.get_cilium_config(cache_enabled=cache_enabled, return_mo=True)
         if cilium_config_mo is None:
             return False
         
@@ -59,12 +63,60 @@ class K8sCiliumConfigTimescape():
                 
         return True
 
-    def get_cilium_timescape_resources(self, cache_enabled=True):
-        resources = {}
-        resources['pod'] = self.get_cilium_timescape_pods(cache_enabled=cache_enabled)
-        resources['service'] = self.get_cilium_timescape_services(cache_enabled=cache_enabled)
-        resources['endpoint'] = self.get_cilium_timescape_endpoints(cache_enabled=cache_enabled)
-        return resources
+    def get_cilium_timescape_config_info(self, config=None, my_output=None, prefix='- ', title='Configuration summary', cache_enabled=False):
+        if config is None:
+            config = self.get_cilium_timescape_config(cache_enabled=cache_enabled)
+            if config is None:
+                return None
+            
+        info = {}
+        info['config'] = config
+        info['summary'] = {}
+        info['summary']['hubble'] = filter_helper.get(config, 'hubble:enabled', on_error=False, on_none=False)
+        info['summary']['relay'] = filter_helper.get(config, 'hubble:relay:enabled', on_error=False, on_none=False)
+        info['summary']['timescape'] = filter_helper.get(config, 'hubble:timescape:enabled', on_error=False, on_none=False)
+
+        mesh_mo = filter_helper.get(config, 'hubble:timescape:clustermesh')
+        if mesh_mo is None:
+            info['summary']['mesh'] = False
+        else:
+            info['summary']['mesh'] = True
+
+        if my_output is not None:
+            my_output.default(title, before_newline=True)
+            for key in info['summary']:
+                my_output.print_property(
+                    key,
+                    info['summary'][key],
+                    prefix=prefix
+                )
+
+        return info
+
+    def get_cilium_timescape_resources_info(self, my_output=None, prefix='- ', title='Resource summary', cache_enabled=False):
+        info = {}
+        info['pod'] = self.get_cilium_timescape_pods(cache_enabled=cache_enabled)
+        info['service'] = self.get_cilium_timescape_services(cache_enabled=cache_enabled)
+        info['endpoint'] = self.get_cilium_timescape_endpoints(cache_enabled=cache_enabled)
+        info['route'] = self.get_cilium_timescape_route(return_info=True, cache_enabled=False)
+
+        info['summary'] = {}
+        info['summary']['ready'], info['summary']['reason'] = self.is_cilium_timescape_ready(resources=info)
+        if info['route'] is None:
+            info['summary']['ui'] = None
+        else:
+            info['summary']['ui'] = 'http://%s' % (info['route']['route'])
+
+        if my_output is not None:
+            my_output.default(title, before_newline=True)
+            for key in info['summary']:
+                my_output.print_property(
+                    key,
+                    info['summary'][key],
+                    prefix=prefix
+                )
+
+        return info
 
     def is_cilium_timescape_ready(self, resources=None, cache_enabled=True):
         if resources is None:
@@ -73,15 +125,22 @@ class K8sCiliumConfigTimescape():
         keys = ['pod', 'service', 'endpoint']
         for key in keys:
             if resources[key] is None:
-                return False
+                return False, 'No resource %s' % (key)
             if len(resources[key]) == 0:
-                return False
+                return False, 'No resource %s' % (key)
 
         for pod in resources['pod']:
             if not pod['running']:
-                return False
+                return False, 'Pod %s not running' % (pod['namespace_name'])
         
-        return True
+        for endpoint in resources['endpoint']:
+            if endpoint['headless']:
+                continue
+            
+            if len(endpoint['address']) == 0:
+                return False, 'No endpoint for %s' % (endpoint['namespace_name'])
+            
+        return True, None
     
     def enable_cilium_timescape(self, my_output=None, confirmation=False, wait=True):
         if my_output is None:
@@ -176,8 +235,14 @@ class K8sCiliumConfigTimescape():
 
                         cilium_spec['enterprise']['featureGate']['approved'] = new_approved
 
-            if 'hubble' in cilium_spec:
-                del cilium_spec['hubble']
+        if 'hubble' in cilium_spec:
+            cilium_spec['hubble']['timescape'] = dict(enabled=False)
+
+            export_mo = filter_helper.get(cilium_spec, 'hubble:export:timescape')
+            if export_mo is not None:
+                del cilium_spec['hubble']['export']['timescape']
+                if len(cilium_spec['hubble']['export']) == 0:
+                    del cilium_spec['hubble']['export']
 
         success = self.update_cilium_config(cilium_spec, my_output=my_output, wait=True, confirmation=confirmation)
         if not success:

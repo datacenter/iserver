@@ -28,7 +28,7 @@ In OpenShift Container Platform clusters running on bare metal or without a clou
 - peering with Nexus [NX-OS](./example/nxos/README.md) fabric
 - [community](./example/community/README.md)
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

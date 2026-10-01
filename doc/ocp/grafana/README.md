@@ -2,7 +2,7 @@
 
 [Grafana Operator](https://github.com/grafana/grafana-operator) is an open-source based Kubernetes operator that manages Grafana instances and its resources. Check [here](./overview.md) for details.
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

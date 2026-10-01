@@ -331,13 +331,20 @@ class K8sMigrationInfo():
 
         return True
 
-    def get_migrations(self, object_filter=None, vm_info=False, vmi_info=False, pvc_info=False, dv_info=False, pod_info=False, return_mo=False, cache_enabled=True):
+    def get_migrations(self, object_filter=None, vm_info=False, vmi_info=False, pvc_info=False, dv_info=False, pod_info=False, all_info=False, return_mo=False, cache_enabled=True):
         all_migrations = self.get_migrations_info(cache_enabled=cache_enabled)
         if all_migrations is None:
             return None
 
         migrations = []
 
+        if all_info:
+            vm_info = True
+            vmi_info = True
+            pvc_info = True
+            dv_info = True
+            pod_info = True
+            
         vms = None
         if vm_info and len(all_migrations) > 0:
             vms = self.get_virtual_machines(cache_enabled=cache_enabled)

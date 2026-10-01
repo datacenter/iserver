@@ -1,4 +1,6 @@
-# Splunk Operator - Delete Standalone Instance
+# Splunk - Delete Standalone Instance
+
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -13,7 +15,7 @@ None
 ## Configurable options
 
 - Option --instance can be defined mulitple times
-- Option --instance value '__all__' selects all instances
+- Option --instance value `__all__` selects all instances
 
 ```
 # iserver delete ocp splunk --mode instance
@@ -21,47 +23,34 @@ None
   --instance TEXT                 Standalone instance name
 ```
 
-## Non-configurable defaults
-
-```
-{
-    "namespace": "splunk-operator"
-}
-```
-
 ## Example
 
 ```
-# iserver delete ocp splunk --mode instance --instance s1
+# iserver delete ocp splunk --mode instance --instance __all__
 
 OpenShift Workflow - Splunk Operator - Delete Instance
 ======================================================
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:*****]
-- api [*****]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
 
 Delete splunk instance route
 ----------------------------
 - instance namespace: splunk-operator
-- instance name: s1
+- instance name: inst1
 - route namespace: splunk-operator
-- route name: splunk-s1-standalone-service
-- route already deleted
+- route name: splunk-inst1-standalone-service
+
+Route deleted
 
 Delete Splunk Standalone Cluster
 --------------------------------
 - namespace: splunk-operator
-- name: s1
+- name: inst1
 
 Standalone cluster deleted
 
-Wait for no pod splunk-operator/splunk-s1-standalone-0...
-Wait for no standalone splunk-operator/s1...
+Wait for no pod splunk-operator/splunk-inst1-standalone-0...
+Wait for no standalone splunk-operator/inst1...
 
 +----+------------+-------+-----+-----+---------+-------+-----+
 | ID | Standalone | Ready | Pod | PVC | Service | Route | URL |
@@ -70,6 +59,12 @@ Wait for no standalone splunk-operator/s1...
 
 Completed tasks
 - Standalone instance deleted
+
++----+---------+--------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope  | Workflow        | Changes | Success | Duration [s] |
++----+---------+--------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | splunk | delete instance | 2       | ✓       | 38           | 
++----+---------+--------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

@@ -1,10 +1,16 @@
-# OpenShift Data Foundation (ODF) Operator
+# OpenShift Data Foundation (ODF)
 
-OpenShift Data Foundation (ODF) is a software-defined storage solution for Red Hat's container platform, OpenShift, that provides unified, persistent storage for containerized applications across various environments as explained on [RedHat documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.19).
+[[Back]](../Operations.md) [[Disk Tools]](../disk/README.md)
+
+OpenShift Data Foundation (ODF) is a software-defined storage solution for Red Hat's container platform, OpenShift, that provides unified, persistent storage for containerized applications across various environments.
 
 ODF can be installed on bare metal infrastructure where OpenShift is already installed. In such case ODF depends on [Local Storage Operator](../lso/README.md). iserver supports such deployment model only.
 
-## Life Cycle Management Commands
+## Knowledge Base
+
+- [OpenShift documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.19)
+
+## Commands
 
 Command | Intent | Details
 --- | --- | ---
@@ -18,4 +24,4 @@ iserver delete ocp odf --mode cluster | delete odf cluster | [Link](./delete_clu
 iserver delete ocp odf --mode all | delete odf cluster and operator | [Link](./delete_all.md)
 iserver delete ocp task | in task way | [Link](./delete_task.md)
 
-[[Back]](../Operations.md)
+[[Back]](../Operations.md) [[Disk Tools]](../disk/README.md)

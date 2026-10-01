@@ -2,38 +2,18 @@ from lib.k8s import output as k8s_output
 from lib import output_helper
 from lib.workflow.ocp_lvm_operator import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if not isinstance(params['confirmation'], bool):
-        return None, 'confirmation param must be true or false'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-            
-    allowed_keys = [
-        'cluster',
-        'ssh-required',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def delete_unused(params, resources, my_output):
@@ -63,7 +43,7 @@ def delete_unused(params, resources, my_output):
         if not pvc['used']:
             for snapshot in resources['snapshot']:
                 if snapshot['namespace'] == pvc['namespace'] and snapshot['info']['pvc'] == pvc['name']:
-                    success = params['k8s_handler'].delete_volume_snapshot(snapshot['namespace'], snapshot['name'])
+                    success = params['k8s_handler'].delete_volume_snapshot_mo(snapshot['namespace'], snapshot['name'])
                     if not success:
                         my_output.error('Volume snapshot delete failed: %s' % (snapshot['namespace_name']))
                         return False
@@ -91,17 +71,17 @@ def delete_unused(params, resources, my_output):
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - LVM Operator - Delete Unused PVC and Volume Snapshots', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Unused PVC and Volume Snapshots')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     if not local_common.is_lvm_ready(params, my_output, check_lvm_cluster=True, instance_required=True, ready_required=False):
         return False
     

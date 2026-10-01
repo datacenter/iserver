@@ -3,12 +3,7 @@ class K8sClusterUserDefinedNetworkDelete():
         pass
 
     def delete_cluster_user_defined_network(self, name, my_output=None, wait=True):
-        info = self.get_cluster_user_defined_network(
-            name,
-            cache_enabled=False
-        )
-
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'ClusterUserDefinedNetwork', 
             'k8s.ovn.org/v1',
             name, 
@@ -17,7 +12,10 @@ class K8sClusterUserDefinedNetworkDelete():
         )
         if not success:
             return False
-        
+
+        if not deleted:
+            return True
+                
         if not wait:
             return True
         
@@ -28,8 +26,5 @@ class K8sClusterUserDefinedNetworkDelete():
         )
         if not success:
             return False
-
-        if info is None:
-            return True
 
         return success            

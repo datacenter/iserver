@@ -1,5 +1,7 @@
 # VAST Cluster
 
+[[Back]](./README.md) [[Driver]](./driver.md) [[Cluster]](./cluster.md) [[Storage]](./storage.md)
+
 ## Get state
 
 ```
@@ -10,7 +12,7 @@ Cluster: bm1 (type: ocp)
 | ID | Vast Cluster | Init | Dep | Spec                                              | Storage    |
 +----+--------------+------+-----+---------------------------------------------------+------------+
 | 1  | vast-csi     | V    | V   | {                                                 | vast-block |
-|    | my-vast      |      |     |   "endpoint": "my-vast.domain.com", | vast-nfs    |
+|    | my-vast      |      |     |   "endpoint": "my-vast.domain.com",               | vast-nfs   |
 |    |              |      |     |   "password": "password",                         |            |
 |    |              |      |     |   "username": "admin"                             |            |
 |    |              |      |     | }                                                 |            |
@@ -54,4 +56,4 @@ Filter: namespace, name
 View:   state (def), manifest
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Driver]](./driver.md) [[Cluster]](./cluster.md) [[Storage]](./storage.md)

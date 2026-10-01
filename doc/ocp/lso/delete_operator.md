@@ -1,4 +1,6 @@
-# Local Storage Operator - Delete operator
+# Local Storage - Delete operator
+
+[[Back]](./README.md)
 
 ## Workflow
 

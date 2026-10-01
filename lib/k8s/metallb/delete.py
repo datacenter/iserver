@@ -8,7 +8,7 @@ class K8sMetalLbDelete():
             cache_enabled=False
         )
         
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'MetalLB', 
             'metallb.io/v1beta1',
             name, 
@@ -18,6 +18,9 @@ class K8sMetalLbDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

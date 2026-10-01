@@ -11,7 +11,7 @@ class K8sDeploymentWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )
     
@@ -29,6 +29,17 @@ class K8sDeploymentWait():
                 name,
                 cache_enabled=False
             )
+            if deployment is None and optional:
+                if my_output is not None:
+                    my_output.default('Success with optional condition')
+
+                if log_on_error:
+                    self.log.debug(
+                        'k8s.wait_deployment_ready_state',
+                        'Deployment optional and not found: %s/%s' % (namespace, name)
+                    )
+                return True
+
             if deployment is not None:
                 if deployment['ready']:
                     return True
@@ -47,17 +58,6 @@ class K8sDeploymentWait():
 
             duration = int(time.time()) - start_time
             if duration > max_time:
-                if optional and deployment is None:
-                    if my_output is not None:
-                        my_output.default('Success with optional condition')
-
-                    if log_on_error:
-                        self.log.debug(
-                            'k8s.wait_deployment_ready_state',
-                            'Max time reached but deployment optional: %s/%s' % (namespace, name)
-                        )
-                    return True
-
                 if log_on_error:
                     self.log.error(
                         'k8s.wait_deployment_ready_state',
@@ -93,7 +93,7 @@ class K8sDeploymentWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             optional=optional,
             log_error_on_timeout=log_error_on_timeout

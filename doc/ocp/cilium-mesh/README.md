@@ -1,8 +1,11 @@
 # Cilium Cluster Mesh
 
-Cluster Mesh is the Isovalent Networking for Kubernetes multi-cluster solution, which extends Cilium's networking datapath across multiple clusters.
+Cluster Mesh is the Isovalent Networking for Kubernetes multi-cluster solution, which extends Cilium's networking datapath across multiple clusters
+- cross-cluster pod-to-pod communication and service load balancing
+- policy enforcement
+- Hubble visibility
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

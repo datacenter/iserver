@@ -8,7 +8,7 @@ class K8sGroupDelete():
             my_output=None,
             wait=True
         ):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'Group', 
             'user.openshift.io/v1',
             name, 
@@ -17,6 +17,9 @@ class K8sGroupDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

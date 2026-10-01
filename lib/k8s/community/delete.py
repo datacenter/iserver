@@ -3,7 +3,7 @@ class K8sCommunityDelete():
         pass
 
     def delete_community(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'Community', 
             'metallb.io/v1beta1',
             name, 
@@ -13,6 +13,9 @@ class K8sCommunityDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

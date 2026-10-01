@@ -8,7 +8,7 @@ Refer to [Isovalent documentation](https://docs.isovalent.com/configuration-guid
 
 Cilium Enterprise CNI
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

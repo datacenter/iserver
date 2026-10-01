@@ -26,4 +26,5 @@ class K8sIpAddressPoolApi():
         return response
 
     def delete_ip_address_pool_mo(self, namespace, name):
-        return self.delete_resource('IPAddressPool', 'metallb.io/v1beta1', name, namespace=namespace)
+        success, _ = self.delete_resource('IPAddressPool', 'metallb.io/v1beta1', name, namespace=namespace)
+        return success

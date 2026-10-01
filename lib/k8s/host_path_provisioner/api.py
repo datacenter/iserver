@@ -1,48 +1,21 @@
-import time
-import traceback
-
-
 class K8sHostPathProvisionerApi():
     def __init__(self):
         self.host_path_provisioner_mo = None
 
-    def get_host_path_provisioner_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.host_path_provisioner_mo is not None:
-                return self.host_path_provisioner_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='hostpathprovisioner.kubevirt.io/v1beta1',
-                kind='HostPathProvisioner'
-            )
-            self.host_path_provisioner_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'host_path_provisioner',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_host_path_provisioner_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'host_path_provisioner',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'host_path_provisioner',
+    def get_host_path_provisioner_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.host_path_provisioner_mo
         )
+        if cache_hit:
+            return response
 
-        return self.host_path_provisioner_mo
+        response, self.host_path_provisioner_mo = self.get_resources(
+            'HostPathProvisioner', 
+            'hostpathprovisioner.kubevirt.io/v1beta1', 
+            self.host_path_provisioner_mo,
+            name=name
+        )
+
+        return response

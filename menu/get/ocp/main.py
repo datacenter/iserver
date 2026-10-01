@@ -1,16 +1,17 @@
 import click
 
 from menu.get.ocp.ai import get_ocp_ai_command
-from menu.get.ocp.bashrc import get_ocp_bashrc_command
+from menu.get.ocp.cli_bashrc import get_ocp_cli_bashrc_command
 from menu.get.ocp.bmh import get_ocp_bmh_command
 from menu.get.ocp.cert_manager import get_ocp_cert_manager_command
 from menu.get.ocp.connector import get_ocp_connector
 from menu.get.ocp.ntp import get_ocp_ntp_command
 from menu.get.ocp.cilium.main import get_ocp_cilium_menu
 from menu.get.ocp.cli_helm import get_ocp_cli_helm
-from menu.get.ocp.cli_web import get_ocp_cli_web
+from menu.get.ocp.terminal import get_ocp_terminal
 from menu.get.ocp.cni import get_ocp_cni_command
 from menu.get.ocp.cnv import get_ocp_cnv_command
+from menu.get.ocp.console import get_ocp_console_command
 from menu.get.ocp.cpolicy import get_ocp_cpolicy_command
 from menu.get.ocp.fabric import get_ocp_cluster_fabric_command
 from menu.get.ocp.gpu import get_ocp_gpu_command
@@ -54,16 +55,16 @@ def get_ocp_menu(ctx):
 
 
 get_ocp_menu.add_command(get_ocp_ai_command)
-get_ocp_menu.add_command(get_ocp_bashrc_command)
 get_ocp_menu.add_command(get_ocp_bmh_command)
 get_ocp_menu.add_command(get_ocp_cert_manager_command)
 get_ocp_menu.add_command(get_ocp_connector)
 get_ocp_menu.add_command(get_ocp_ntp_command)
 get_ocp_menu.add_command(get_ocp_cilium_menu)
+get_ocp_menu.add_command(get_ocp_cli_bashrc_command)
 get_ocp_menu.add_command(get_ocp_cli_helm)
-get_ocp_menu.add_command(get_ocp_cli_web)
 get_ocp_menu.add_command(get_ocp_cni_command)
 get_ocp_menu.add_command(get_ocp_cnv_command)
+get_ocp_menu.add_command(get_ocp_console_command)
 get_ocp_menu.add_command(get_ocp_cpolicy_command)
 get_ocp_menu.add_command(get_ocp_cluster_fabric_command)
 get_ocp_menu.add_command(get_ocp_gpu_command)
@@ -91,6 +92,7 @@ get_ocp_menu.add_command(get_ocp_service_mesh_command)
 get_ocp_menu.add_command(get_ocp_splunk_command)
 get_ocp_menu.add_command(get_ocp_sriov_command)
 get_ocp_menu.add_command(get_ocp_ssh_command)
+get_ocp_menu.add_command(get_ocp_terminal)
 get_ocp_menu.add_command(get_ocp_tetragon_command)
 get_ocp_menu.add_command(get_ocp_trident_command)
 get_ocp_menu.add_command(get_ocp_vast_command)

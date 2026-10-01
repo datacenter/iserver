@@ -1,67 +1,32 @@
-import time
-
-
 class K8sClusterPolicyWait():
     def __init__(self):
         pass
 
-    def wait_cluster_policy(self, name, max_time=60):
-        start_time = int(time.time())
-        while True:
-            info = self.get_cluster_policy(
-                name,
-                cache_enabled=False
-            )
-            if info is not None:
-                return True
+    def wait_cluster_policy(self, name, match_properties={}, break_properties={}, my_output=None, prompt='ClusterPolicy', max_time=60):
+        return self.wait_managed_object(
+            'cluster_policy',
+            name,
+            match_properties=match_properties,
+            break_properties=break_properties,
+            my_output=my_output,
+            prompt='Wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )
 
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                self.log.error(
-                    'k8s.wait_cluster_policy',
-                    'Max time reached: %s' % (name)
-                )
-                return False
-
-            time.sleep(5)
-
-    def wait_cluster_policy_ready(self, name, max_time=180):
-        start_time = int(time.time())
-        while True:
-            info = self.get_cluster_policy(
-                name,
-                cache_enabled=False
-            )
-            if info is not None:
-                if info['ready']:
-                    return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                self.log.error(
-                    'k8s.wait_cluster_policy_ready',
-                    'Max time reached: %s' % (name)
-                )
-                return False
-
-            time.sleep(5)
-
-    def wait_no_cluster_policy(self, name, max_time=60):
-        start_time = int(time.time())
-        while True:
-            info = self.get_cluster_policy(
-                name,
-                cache_enabled=False
-            )
-            if info is None:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                self.log.error(
-                    'k8s.wait_no_cluster_policy',
-                    'Max time reached: %s' % (name)
-                )
-                return False
-
-            time.sleep(5)
+    def wait_no_cluster_policy(self, name, my_output=None, prompt='ClusterPolicy', max_time=60):
+        return self.wait_no_managed_object(
+            'cluster_policy',
+            name,
+            my_output=my_output,
+            prompt='Wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )
+    
+    def wait_cluster_policy_ready(self, name, my_output=None, prompt='ClusterPolicy', max_time=180):
+        return self.wait_cluster_policy(
+            name, 
+            match_properties={'ready': True}, 
+            my_output=my_output, 
+            prompt=prompt, 
+            max_time=max_time
+        )

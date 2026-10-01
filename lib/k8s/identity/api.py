@@ -21,4 +21,5 @@ class K8sIdentityApi():
         return response
     
     def delete_identity_mo(self, name):
-        return self.delete_resource('Identity', 'user.openshift.io/v1', name)
+        success, _ = self.delete_resource('Identity', 'user.openshift.io/v1', name)
+        return success

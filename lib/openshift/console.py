@@ -78,5 +78,5 @@ class Console(AssistedInstall, AccountsMgmt):
             my_output.error('RedHat Console API connection failed: %s' % (error))
             return False
         
-        my_output.default('- RedHat Console API connection sucessfull')
+        my_output.default('- RedHat Console API connection sucessful')
         return True

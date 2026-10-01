@@ -1,4 +1,4 @@
-# OpenShift Data Foundation (ODF) Operator - Create via Task
+# OpenShift Data Foundation (ODF) - Create via Task
 
 ## Input
 

@@ -27,7 +27,8 @@ class K8sServiceAccountCreate():
             namespace,
             name
         )
-        if not self.create_resource(body, object_name='service_account', my_output=my_output, confirmation=confirmation):
+        success, _ = self.create_resource(body, object_name='service_account', my_output=my_output, confirmation=confirmation)
+        if not success:
             return False
         
         if not wait:

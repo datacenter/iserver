@@ -1,85 +1,76 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_minio_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-
-    allowed_keys = [
-        'cluster',
-        'check-verbose',
-        'verbose'
+    rules = [
+        ['cluster', False, None, 'list-of-str', None, None, None, None],
+        ['view', True, ['state'], 'view', None, None, ['state', 'res'], None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
-def run(params, log_id=None):
+def run(mparams, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - MinIO Operator - Get Information', before_newline=True, after_newline=True, double_underline=True)
 
-    params, error = validate(params)
+    mparams, error = validate(mparams)
     if error is not None:
         my_output.error(error)
         return False
-
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
-
-    subscription = params['k8s_handler'].get_subscription_by_package(
-        params['name'],
-        return_mo=False,
-        cache_enabled=False
-    )
-    if subscription is None:
-        my_output.default('Operator not found: %s' % (params['name']))
-        return True
     
-    my_output.default('Operator', underline=True)
-    my_output.default('- subscription: %s' % (subscription['namespace_name']))
-    my_output.default('- channel: %s' % (subscription['channel']))
-    my_output.default('- csv: %s' % (subscription['installed_csv']))
-    
-    csv = params['k8s_handler'].get_cluster_service_version(
-        subscription['namespace'],
-        subscription['installed_csv'],
-        return_mo=False,
-        cache_enabled=False
-    )
-    if csv is None:
-        my_output.debug('[WARNING] CSV not found: %s/%s' % (subscription['namespace'], subscription['installed_csv']))
-    
-    items = params['k8s_handler'].get_admin_jobs(cache_enabled=False)
-    if items is None:
-        my_output.error('Failed to get admin jobs')
-    else:
-        k8s_output_handler.print_admin_jobs(items)
+    for cluster in mparams['cluster']:
+        params = copy.deepcopy(mparams)
+        params['cluster'] = cluster
 
-    items = params['k8s_handler'].get_policy_bindings(cache_enabled=False)
-    if items is None:
-        my_output.error('Failed to get policy bindings')
-    else:
-        k8s_output_handler.print_policy_bindings(items)
+        ocp_common.print_title(params, my_output, 'Get Information')
+        params = ocp_common.workflow_init(params, my_output, log_id)
+        if params is None:
+            continue
 
-    items = params['k8s_handler'].get_object_stores(cache_enabled=False)
-    if items is None:
-        my_output.error('Failed to get object stores')
-    else:
-        k8s_output_handler.print_object_stores(items)
+        params = ocp_common.get_operator(params, my_output)
+        if params['subscription'] is None:
+            continue
+
+        params = collect_state_info(params, my_output)
+
+        if 'state' in params['view']:
+            my_output.dictionary_ng(
+                'State',
+                params['summary'],
+                [
+                    ['package', 'package'],
+                    ['csv', 'csv'],
+                    ['resources', 'readyTick']
+                ]
+            )
+
+            my_output.dictionary_ng(
+                'MinIO Custom Resources',
+                params['summary'],
+                params['__default__']['resource_output']
+            )
+
+        if 'res' in params['view']:
+            my_output.dictionary_ng(
+                'MinIO Custom Resources',
+                params['summary'],
+                params['__default__']['resource_output']
+            )
+
+            for key in local_common.get_resource_keys():
+                if params[key] is None:
+                    continue
+
+                if len(params[key]) == 0:
+                    continue
+
+                getattr(k8s_output_handler, 'print_%ss_state' % (key))(params[key])
 
     return True

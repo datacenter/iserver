@@ -2,7 +2,7 @@ class K8sSplunkStandaloneOutput():
     def __init__(self):
         pass
 
-    def print_standalones(self, info):
+    def print_splunk_standalones_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

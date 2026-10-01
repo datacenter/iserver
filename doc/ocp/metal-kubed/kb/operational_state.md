@@ -1,6 +1,6 @@
-# Metal Kubed - Server operational state
+# Server operational state
 
-[[Back]](../README.md)
+[[Back]](../README.md) [[provisioning]](./provisioning_state.md)
 
 `BareMetalHost` resource shows overal state of the host in `status.operationalStatus`
 
@@ -14,4 +14,4 @@ detached | the host is [detached](./detach.md), no provisioning actions are poss
 
 Refer to details in [official documentation](https://book.metal3.io/bmo/state_machine.html).
 
-[[Back]](../README.md)
+[[Back]](../README.md) [[Back]](../README.md) [[provisioning]](./provisioning_state.md)

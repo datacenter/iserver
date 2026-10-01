@@ -45,21 +45,36 @@ class K8sVastDriverCreate():
             repository,
             extras=extras
         )
-        if not self.create_resource(body, object_name='vast_driver', my_output=my_output, confirmation=confirmation):
+        return self.create_vast_driver_from_body(
+            body,
+            confirmation=confirmation, 
+            my_output=my_output, 
+            wait=wait
+        )
+    
+    def create_vast_driver_from_body(
+        self, 
+        body,
+        confirmation=False, 
+        my_output=None, 
+        wait=True
+    ):
+        namespace = self.get(body, 'metadata:namespace')
+        name = self.get(body, 'metadata:name')
+
+        success = self.create_resource_and_wait(
+            body, 
+            'vast_driver', 
+            wait=wait,
+            my_output=my_output, 
+            confirmation=confirmation
+        )
+        if not success:
             return False
         
         if not wait:
             return True
         
-        success = self.wait_vast_driver(
-            namespace,
-            name,
-            max_time=60,
-            my_output=my_output
-        )
-        if not success:
-            return False
-                            
         success = self.wait_vast_driver(
             namespace,
             name,

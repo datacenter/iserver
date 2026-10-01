@@ -1,6 +1,6 @@
 # Tetragon Operator - Create via Task
 
-## Input
+## HowTo
 
 ```
 [
@@ -9,26 +9,24 @@
             "operator": {
                 "image": "image-name-as-provided-by-isovalent"
             },
-            "prometheus": {},
-            "wipe": {},
             "crd": {
-                "crd": [
-                  "filename-or-directory"
+                "filename": [
+                    "policy/policy.yaml"
                 ]
-            }
+            },
+            "wipe": {}
         }
     }
 ]
 ```
 
+```
+# iserver set ocp task --cluster bm1 --filename C:\tmp\task.json --no-confirm
+```
+
 Notes:
-- [operator](./create_operator.md), [prometheus](./enable_prometheus.md), [wipe](./delete_wipe.md) and [crd](./create_crd.md) trigger workflow execution with optional input parameters
-- not all workflows have to be defined however be aware of workflow execution requirements and dependencies
-- tasks exeucition order
-
-## Requirements
-
-None
+- [operator](./create_operator.md), [crd](./create_crd.md) trigger workflow execution with optional input parameters
+- [wipe](./delete_wipe.md) is ignored in create task
 
 ## Configurable options
 
@@ -41,245 +39,174 @@ None
   --no-confirm     Confirmation mode
 ```
 
-## Expected Outcome
-
-- tetragon operator installed
-- prometheus service monitors enabled
-- policies applied
-
 ## Example
 
 ```
-python.exe .\iserver.py set ocp task --filename C:\tmp\task.json --cluster bm1 --no-confirm
-Cluster: bm1 (type: ocp)
+# iserver set ocp task --cluster bm1 --filename C:\tmp\task.json --no-confirm
 
-OpenShift Workflow - Create Tasks
-=================================
+OpenShift Workflow - Tetragon - Create Operator
+===============================================
 
-Validate Input
---------------
-Completed
+OpenShift Cluster: bm1
 
+Create Namespace
+----------------
+- name: tetragon
 
-OpenShift Workflow - Tetragon Operator - Create Operator
-========================================================
+~~~
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/user-monitoring: 'true'
+  name: tetragon
+~~~
+Namespace [tetragon] created
+Wait for namespace [timeout:60]...
 
-Workflow Parameters
+Check labels
+- openshift.io/user-monitoring:true found
+
+Create CatalogSource
+--------------------
+- namespace: tetragon
+- name: tetragon-catalog
+
+~~~
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: tetragon-catalog
+  namespace: tetragon
+spec:
+  ...
+~~~
+CatalogSource [tetragon/tetragon-catalog] created
+- wait for CatalogSource tetragon/tetragon-catalog [timeout:60s]
+
+Wait for tetragon package...
+Tetragon package found
+
+Create OperatorGroup
+--------------------
+- namespace: tetragon
+- name: tetragon
+
+~~~
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: tetragon
+  namespace: tetragon
+spec:
+  upgradeStrategy: Default
+~~~
+OperatorGroup [tetragon/tetragon] created
+- wait for OperatorGroup tetragon/tetragon [timeout:60s]
+
+Create Subscription
 -------------------
-{
-    "image": "user-defined",
-    "cluster": "bm1",
-    "confirmation": false,
-    "channel": "__default__",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
+Subscription: tetragon/tetragon-operator
+Source: tetragon/tetragon-catalog/tetragon-operator
+Install plan approval: Automatic
+Getting subscription and packege manifest information...
+Resolving channel name...
+Channel: v1.18
+- CSV [tetragon-operator.v1.18.2]
+- CSV Display name [Tetragon Operator]
+- CVS Version [1.18.2]
+- CSV Provider [{'name': 'Isovalent', 'url': 'https://isovalent.com'}]
+- CSV Maturity [alpha]
 
+~~~
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/tetragon-operator.tetragon: ''
+  name: tetragon-operator
+  namespace: tetragon
+spec:
+  channel: v1.18
+  installPlanApproval: Automatic
+  name: tetragon-operator
+  source: tetragon-catalog
+  sourceNamespace: tetragon
+~~~
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+Subscription created
 
-Tetragon Operator already created
-
-OpenShift Workflow - Grafana Operator - Enable user-workload monitoring
-=======================================================================
-
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "grafana-operator",
-    "name": "grafana-operator",
-    "operator-group-name": "grafana-operator-group",
-    "mon-namespace": "openshift-monitoring",
-    "mon-name": "cluster-monitoring-config",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Config Map
-----------
-- namespace: openshift-monitoring
-- name: cluster-monitoring-config
-- found and will be checked
-- enableUserWorkload already enabled
-
-Check for resources
--------------------
-Wait for deployments ready (optional: False, allow zero replicas: False)...
-- openshift-user-workload-monitoring/prometheus-operator
-Wait for stateful sets ready...
-- openshift-user-workload-monitoring/prometheus-user-workload
-- openshift-user-workload-monitoring/thanos-ruler-user-workload
-
+Wait for subscription install plan started [timeout:360]...
+Install plan: install-jk5j4
+Wait for subscription install plan ready [timeout:600]...
+Install plan succeeded
+Wait for deployment tetragon/tetragon-operator ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Wait for daemonset tetragon/tetragon ready (optional: False, timeout: 600s)...
+Subscription tetragon ready
 
 Completed tasks
----------------
-- User workload monitoring enabled
+- Namespace created
+- Operator Group created
+- Tetragon Operator installed
 
-OpenShift Workflow - Tetragon Operator - Enable Prometheus Service Monitor
-==========================================================================
+OpenShift Workflow - Tetragon - Create Policy
+=============================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
+File: policy/policy.yaml
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-Config map [tetragon/tetragon-operator-config] found
-agentDaemonSet found in config map data
-serviceMonitorEnabled already set to true
-
-Completed tasks
-- Tetragon service monitors enabled
-
-OpenShift Workflow - Tetragon Operator - Wipe Resources
-=======================================================
-
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Alert Rule
-----------
-- no resources found
-
-Sandbox Policy
---------------
-- no resources found
-
-Sandbox Policy Namespaced
--------------------------
-- no resources found
-
-Tetragon Network Policy
------------------------
-- no resources found
-
-Tetragon Network Policy Namespaced
-----------------------------------
-- no resources found
-
-Tracing Policy
---------------
-- upper-layers
-
-Tracing Policy Namespaced
--------------------------
-- no resources found
-
-Completed tasks
-- Tetragon resources deleted
-
-OpenShift Workflow - Tetragon Operator - Create Policy
-======================================================
-
-Workflow Parameters
--------------------
-{
-    "crd": "user-defined",
-    "cluster": "bm1",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Create Tracing Policy
----------------------
+Create TracingPolicy
+--------------------
 - name: upper-layers
 
-Tracing policy created
-
-Wait for tracing policy [timeout:60]...
+~~~
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: upper-layers
+spec:
+  parser:
+    burstExitGen:
+      enable: true
+      interval: 1000
+    dns:
+      enable: true
+    http:
+      enable: true
+      http2: true
+      selectors:
+      - matchPorts:
+        - 8080
+        - 80
+    icmp:
+      enable: true
+    interface:
+      enable: true
+      packet: true
+    tcp:
+      enable: true
+      histogram:
+        enable: true
+        max: 50000
+        min: 0
+      statsInterval: 20
+    udp:
+      cgroup: true
+      enable: true
+      statsInterval: 20
+~~~
+TracingPolicy [upper-layers] created
+- wait for TracingPolicy upper-layers [timeout:60s]
 
 Completed tasks
 - CRDs applied
+
++----+---------+----------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope    | Workflow        | Changes | Success | Duration [s] |
++----+---------+----------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | tetragon | create operator | 4       | V       | 65           | 
+| 2  | ocp:bm1 | tetragon | create crd      | 1       | V       | 1            | 
++----+---------+----------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

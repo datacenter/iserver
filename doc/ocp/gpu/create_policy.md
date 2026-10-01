@@ -19,7 +19,7 @@ GPU Operator must be [created](./create_operator).
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![PolicyCreate](../images/gpu/policy_create.png)
 

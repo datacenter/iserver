@@ -15,7 +15,7 @@
             "operator": {},
             "volume": {
                 "sc": "local-sc",
-                "device": ["bm1-1:wwn-0xaaa", "bm1-2:wwn-0xbbb"],
+                "device": ["bm1-1:wwn-0x500a075118ef25c1", "bm1-2:wwn-0x500a075118ef266c"],
                 "volume": "block",
                 "max": 2,
                 "limit": ["type:disk"]

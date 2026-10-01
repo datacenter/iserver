@@ -1,48 +1,26 @@
-import time
-import traceback
-
-
 class K8sNodeFeatureApi():
     def __init__(self):
         self.node_feature_mo = None
+        self.node_feature_namespace_mo = {}
 
-    def get_node_feature_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.node_feature_mo is not None:
-                return self.node_feature_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='nfd.openshift.io/v1alpha1',
-                kind='NodeFeature'
-            )
-            self.node_feature_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'node_feature',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_node_feature_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'node_feature',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'node_feature',
-            self.node_feature_mo
+    def get_node_feature_mo(self, namespace=None, name=None, cache_enabled=True):
+        cache_hit, response = self.get_namespaced_cache(
+            cache_enabled, 
+            namespace, 
+            name,
+            self.node_feature_mo,
+            self.node_feature_namespace_mo
+        )
+        if cache_hit:
+            return response
+                
+        response, self.node_feature_mo, self.node_feature_namespace_mo = self.get_namespaced_resources(
+            'NodeFeature', 
+            'nfd.openshift.io/v1alpha1', 
+            self.node_feature_mo,
+            self.node_feature_namespace_mo,
+            namespace=namespace,
+            name=name
         )
 
-        return self.node_feature_mo
+        return response

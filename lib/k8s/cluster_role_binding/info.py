@@ -1,12 +1,11 @@
-from lib import filter_helper
-from lib import ip_helper
-
-
 class K8sClusterRoleBindingInfo():
     def __init__(self):
         self.cluster_role_binding = None
 
     def get_cluster_role_binding_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )

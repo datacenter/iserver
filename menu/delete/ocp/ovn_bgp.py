@@ -1,94 +1,42 @@
 import sys
-import traceback
 import click
-from lib.workflow.ocp_ovn_bgp import feature_disable
-from lib.workflow.ocp_ovn_bgp import ra_disable
-from lib.workflow.ocp_ovn_bgp import configuration_delete
-from lib.workflow.ocp_ovn_bgp import ra_delete
-from lib.workflow.ocp_ovn_bgp import wipe
+from lib.workflow import ocp_common
 from menu import validations
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
 
 
 @click.command("ovn-bgp")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--mode", type=click.Choice(['feature', 'ra', 'all', 'config', 'ra-config', 'wipe', 'nuke'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
 @click.option("--config", default='', callback=validations.empty_string_to_none, show_default=True, help="FRR configuration name")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def delete_ocp_ovn_bgp(
         ctx,
-        cluster_name,
+        cluster_names,
         mode,
-        config
+        config,
+        no_confirm
         ):
     """Delete ocp cluster ovn bgp"""
 
-    ctx.developer = False
+    task = {}
+    if mode in ['config']:
+        task['config'] = {}
+        task['config']['config'] = config
 
-    try:
-        if mode == 'config':
-            params = {}
-            params['cluster'] = cluster_name
-            params['config'] = config
-            
-            success = configuration_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
+    if mode in ['ra-config']:
+        task['ra-config'] = {}
+        task['ra-config']['config'] = config
 
-        if mode == 'ra-config':
-            params = {}
-            params['cluster'] = cluster_name
-            params['config'] = config
-            
-            success = ra_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
+    if mode in ['wipe', 'nuke']:
+        task['wipe'] = {}
 
-        if mode in ['wipe', 'nuke']:
-            params = {}
-            params['cluster'] = cluster_name
-            
-            success = wipe.run(
-                params,
-                log_id=ctx.run_id
-            )
+    if mode in ['ra', 'all', 'nuke']:
+        task['ra'] = {}
 
-        if mode in ['ra', 'all', 'nuke']:
-            params = {}
-            params['cluster'] = cluster_name
+    if mode in ['feature', 'all', 'nuke']:
+        task['feature'] = {}
 
-            success = ra_disable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-
-        if mode in ['feature', 'all', 'nuke']:
-            params = {}
-            params['cluster'] = cluster_name
-
-            success = feature_disable.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
-
-    except ErrorExit:
-        ctx.busy = False
-        sys.exit(1)
-
-    except BaseException:
-        ctx.busy = False
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.delete_workflow(cluster_names, 'ovn-bgp', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

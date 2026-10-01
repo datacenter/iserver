@@ -11,7 +11,7 @@ iserver features
 
 Note: intersight-otel deployments per intersight iaccount is required
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

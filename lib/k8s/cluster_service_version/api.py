@@ -30,4 +30,5 @@ class K8sClusterServiceVersionApi():
         return response
     
     def delete_cluster_service_version_mo(self, namespace, name):
-        return self.delete_resource('ClusterServiceVersion', 'operators.coreos.com/v1alpha1', name, namespace=namespace)
+        success, _ = self.delete_resource('ClusterServiceVersion', 'operators.coreos.com/v1alpha1', name, namespace=namespace)
+        return success

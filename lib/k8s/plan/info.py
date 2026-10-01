@@ -209,13 +209,17 @@ class K8sPlanInfo():
 
         return True
 
-    def get_plans(self, object_filter=None, smap_info=False, nmap_info=False, return_mo=False, cache_enabled=True):
+    def get_plans(self, object_filter=None, smap_info=False, nmap_info=False, all_info=False, return_mo=False, cache_enabled=True):
         all_plans = self.get_plans_info(cache_enabled=cache_enabled)
         if all_plans is None:
             return None
 
         plans = []
 
+        if all_info:
+            smap_info = True
+            nmap_info = True
+            
         if nmap_info and not cache_enabled:
             self.get_network_maps(cache_enabled=False)
 

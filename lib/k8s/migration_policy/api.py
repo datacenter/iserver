@@ -1,48 +1,21 @@
-import time
-import traceback
-
-
 class K8sMigrationPolicyApi():
     def __init__(self):
         self.migration_policy_mo = None
 
-    def get_migration_policy_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.migration_policy_mo is not None:
-                return self.migration_policy_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='migrations.kubevirt.io/v1alpha1',
-                kind='MigrationPolicy'
-            )
-            self.migration_policy_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'migration_policy',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_migration_policy_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'migration_policy',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'migration_policy',
+    def get_migration_policy_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.migration_policy_mo
         )
+        if cache_hit:
+            return response
 
-        return self.migration_policy_mo
+        response, self.migration_policy_mo = self.get_resources(
+            'MigrationPolicy', 
+            'migrations.kubevirt.io/v1alpha1', 
+            self.migration_policy_mo,
+            name=name
+        )
+
+        return response

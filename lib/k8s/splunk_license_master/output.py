@@ -2,32 +2,10 @@ class K8sSplunkLicenseMasterOutput():
     def __init__(self):
         pass
 
-    def print_splunk_license_masters(self, info, title=False):
-        if title:
-            self.my_output.default(
-                'Splunk License Master [#%s]' % (len(info)),
-                underline=True,
-                before_newline=True
-            )
-
-        if len(info) == 0:
-            self.my_output.default('None')
-            return
-
-        order = [
-            'namespace_name'
-        ]
-
-        headers = [
-            'Splunk License Master'
-        ]
-
-        self.my_output.my_table(
+    def print_splunk_license_masters_state(self, info):
+        self.my_output.my_table_ng(
             info,
-            order=order,
-            headers=headers,
-            row_separator=True,
-            allow_order_subkeys=True,
-            underline=True,
-            table=True
+            [
+                ['Splunk License Master', 'namespace_nameT']
+            ]
         )

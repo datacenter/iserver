@@ -1,212 +1,65 @@
 from lib import output_helper
-from lib.workflow.ocp_access import check as ocp_check
 from lib.workflow.ocp_tetragon_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = True
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
-
-
-def wipe_alert_rule(params, my_output):
-    my_output.default('Alert Rule', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_alert_rules(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s' % (item['name']))
-            success = params['k8s_handler'].delete_alert_rule_mo(item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_sandbox_policy(params, my_output):
-    my_output.default('Sandbox Policy', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_sandbox_policies(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s' % (item['name']))
-            success = params['k8s_handler'].delete_sandbox_policy_mo(item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_sandbox_policy_namespaced(params, my_output):
-    my_output.default('Sandbox Policy Namespaced', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_sandbox_policies_namespaced(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s/%s' % (item['namespace'], item['name']))
-            success = params['k8s_handler'].delete_sandbox_policy_namespaced_mo(item['namespace'], item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_tetragon_network_policy(params, my_output):
-    my_output.default('Tetragon Network Policy', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_tetragon_network_policies(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s' % (item['name']))
-            success = params['k8s_handler'].delete_tetragon_network_policy_mo(item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_tetragon_network_policy_namespaced(params, my_output):
-    my_output.default('Tetragon Network Policy Namespaced', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_tetragon_network_policies_namespaced(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s/%s' % (item['namespace'], item['name']))
-            success = params['k8s_handler'].delete_tetragon_network_policy_namespaced_mo(item['namespace'], item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_tracing_policy(params, my_output):
-    my_output.default('Tracing Policy', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_tracing_policies(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s' % (item['name']))
-            success = params['k8s_handler'].delete_tracing_policy_mo(item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
-
-
-def wipe_tracing_policy_namespaced(params, my_output):
-    my_output.default('Tracing Policy Namespaced', before_newline=True, underline=True)
-    managed_objects = params['k8s_handler'].get_tracing_policies_namespaced(cache_enabled=False)
-    if managed_objects is None:
-        my_output.error('REST API failed')
-        return False
-    
-    if len(managed_objects) == 0:
-        my_output.default('- no resources found')
-
-    if len(managed_objects) > 0:
-        for item in managed_objects:
-            my_output.default('- %s/%s' % (item['namespace'], item['name']))
-            success = params['k8s_handler'].delete_tracing_policy_namespaced_mo(item['namespace'], item['name'])
-            if not success:
-                my_output.error('REST API failed')
-                return False
-            
-    return True
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Tetragon Operator - Wipe Resources', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Wipe')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_tetragon_subscription(params['namespace'], params['name']):
-        my_output.error('Tetragon Operator is not installed: %s/%s' % (params['namespace'], params['name']))
+    if not params['k8s_handler'].is_tetragon_subscription(params['__default__']['namespace'], params['__default__']['name']):
+        my_output.default('Tetragon Operator %s' % (my_output.add_color('not installed', 'Red')))
         return True
     
-    if not wipe_alert_rule(params, my_output):
+    success = params['k8s_handler'].delete_alert_rules(my_output=my_output, wait=True)
+    if not success:
+        return False
+
+    success = params['k8s_handler'].delete_sandbox_policys(my_output=my_output, wait=True)
+    if not success:
+        return False
+
+    success = params['k8s_handler'].delete_sandbox_policy_namespaceds(my_output=my_output, wait=True)
+    if not success:
         return False
     
-    if not wipe_sandbox_policy(params, my_output):
+    # success = params['k8s_handler'].delete_tetragon_network_policys(my_output=my_output, wait=True)
+    # if not success:
+    #     return False
+    
+    # success = params['k8s_handler'].delete_tetragon_network_policy_namespaceds(my_output=my_output, wait=True)
+    # if not success:
+    #     return False
+    
+    success = params['k8s_handler'].delete_tracing_policys(my_output=my_output, wait=True)
+    if not success:
         return False
-
-    if not wipe_sandbox_policy_namespaced(params, my_output):
-        return False
-
-    if not wipe_tetragon_network_policy(params, my_output):
-        return False
-
-    if not wipe_tetragon_network_policy_namespaced(params, my_output):
-        return False
-
-    if not wipe_tracing_policy(params, my_output):
-        return False
-
-    if not wipe_tracing_policy_namespaced(params, my_output):
+    
+    success = params['k8s_handler'].delete_tracing_policy_namespaceds(my_output=my_output, wait=True)
+    if not success:
         return False
 
     my_output.default('')
     my_output.default('Completed tasks')
     my_output.default('- Tetragon resources deleted')
-
     return True

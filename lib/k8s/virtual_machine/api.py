@@ -26,5 +26,5 @@ class K8sVirtualMachineApi():
         return response
     
     def delete_virtual_machine_mo(self, namespace, name):
-        return self.delete_resource('VirtualMachine', 'kubevirt.io/v1', name, namespace=namespace)
-    
+        success, _ = self.delete_resource('VirtualMachine', 'kubevirt.io/v1', name, namespace=namespace)
+        return success    

@@ -2,56 +2,32 @@ from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_mtv_operator import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'nmap_namespace' not in params:
-        params['nmap_namespace'] = None
-
-    if 'nmap_name' not in params:
-        params['nmap_name'] = None
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'type',
-        'nmap_namespace',
-        'nmap_name',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['namespace', True, 'openshift-mtv', 'str', None, None, None, None],
+        ['name', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Migration Toolkit for Virtualization Operator - Delete Network Map', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Network Map')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
@@ -59,10 +35,10 @@ def run(params, log_id=None):
         return True
 
     object_filter = []
-    if params['nmap_namespace'] is not None:
-        object_filter.append('namespace:%s' % (params['nmap_namespace']))
-    if params['nmap_name'] is not None:
-        object_filter.append('name:%s' % (params['nmap_name']))
+    if params['namespace'] is not None:
+        object_filter.append('namespace:%s' % (params['namespace']))
+    if params['name'] is not None:
+        object_filter.append('name:%s' % (params['name']))
 
     maps = params['k8s_handler'].get_network_maps(
         object_filter=object_filter, 
@@ -77,7 +53,7 @@ def run(params, log_id=None):
         my_output.default('No network map defined')
         return True
     
-    k8s_output_handler.print_network_maps(maps)
+    k8s_output_handler.print_network_maps_state(maps)
 
     if params['confirmation']:
         if not get_confirmation():

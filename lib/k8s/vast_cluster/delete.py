@@ -3,27 +3,14 @@ class K8sVastClusterDelete():
         pass
 
     def delete_vast_cluster(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success = self.delete_resource_and_wait(
             'VastCluster', 
             'storage.vastdata.com/v1',
             name, 
+            'vast_cluster',
             namespace=namespace, 
-            object_name='vast_cluster',
+            wait=wait, 
+            max_time=60, 
             my_output=my_output
         )
-        if not success:
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_no_vast_cluster(
-            namespace,
-            name,
-            max_time=60,
-            my_output=my_output
-        )
-        if not success:
-            return False
-                            
-        return True
+        return success

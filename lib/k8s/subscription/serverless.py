@@ -1,9 +1,9 @@
 class K8sSubscriptionServerless():
     def __init__(self):
-        self.subscription_serverless_deployments = [
-            {'namespace': 'openshift-serverless', 'name': 'knative-openshift'},
-            {'namespace': 'openshift-serverless', 'name': 'knative-openshift-ingress'},
-            {'namespace': 'openshift-serverless', 'name': 'knative-operator-webhook'}
+        self.subscription_serverless_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-serverless', 'name': 'knative-openshift'},
+            {'type': 'deployment', 'namespace': 'openshift-serverless', 'name': 'knative-openshift-ingress'},
+            {'type': 'deployment', 'namespace': 'openshift-serverless', 'name': 'knative-operator-webhook'}
         ]
 
     def create_serverless_subscription(self, namespace, name, channel, confirmation=False, my_output=None, wait=True):
@@ -30,6 +30,11 @@ class K8sSubscriptionServerless():
         return True
 
     def delete_serverless_subscription(self, namespace, name, my_output=None, wait=True):
+        resources = self.get_subscription_resources(
+            self.subscription_serverless_resources,
+            cache_enabled=False
+        )
+
         success = self.delete_subscription(
             namespace, 
             name, 
@@ -39,59 +44,19 @@ class K8sSubscriptionServerless():
         if not success:
             return False
         
-        if wait:
-            success = self.wait_no_subscription_serverless(my_output=my_output)
-            if not success:
-                return False
+        if not wait:
+            return True
+        
+        success = self.wait_no_subscription_resources('serverless', resources, my_output=my_output)
+        if not success:
+            return False
         
         return True
 
-    def is_subscription_serverless_ready(self):
-        for deployment in self.subscription_serverless_deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
-                return False
-
-        return True
+    def is_subscription_serverless_ready(self, my_output=None, details=False, break_on_error=False, cache_enabled=False):
+        resources = self.subscription_serverless_resources
+        return self.is_subscription_ready('serverless', resources, my_output=my_output, details=details, break_on_error=break_on_error, cache_enabled=cache_enabled)
     
     def wait_subscription_serverless_ready(self, my_output=None):
-        success = self.wait_deployments_ready_state(
-            self.subscription_serverless_deployments, 
-            my_output=my_output, 
-            optional=True
-        )
-        if not success:
-            return False
-
-        return True
-
-    def wait_no_subscription_serverless(self, my_output=None):
-        pods = self.get_pods(
-            object_filter=['namespace:openshift-serverless']
-        )
-        if pods is None:
-            return False
-        
-        success = self.wait_no_deployments(
-            self.subscription_serverless_deployments, 
-            my_output=my_output, 
-            optional=False
-        )
-        if not success:
-            return False
-
-        if my_output is not None:
-            my_output.default('Wait for pods deleted...')
-            
-        for pod in pods:
-            if my_output is not None:
-                my_output.default('- %s/%s' % (pod['namespace'], pod['name']))
-
-            success = self.wait_no_pod(
-                pod['namespace'],
-                pod['name'],
-                max_time=180
-            )
-            if not success:
-                return False
-            
-        return True
+        resources = self.subscription_serverless_resources
+        return self.wait_subscription_resources('serverless', resources, my_output=my_output)

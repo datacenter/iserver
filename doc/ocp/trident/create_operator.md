@@ -1,4 +1,6 @@
-# Trident Operator - Create Operator
+# Trident - Create Operator
+
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -18,39 +20,25 @@ None
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/trident/operator_create.png)
 
 ## Example
 
 ```
-# iserver set ocp trident --mode operator --no-confirm --cluster bm1
-
+# iserver set ocp trident --cluster bm1 --mode operator --no-confirm
 
 OpenShift Workflow - Trident Operator - Create Operator
 =======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "channel": "__default__",
-    "confirmation": true,
-    "check-verbose": true,
-    "namespace": "openshift-operators",
-    "name": "trident-operator",
-    "operator-group-name": "global-operators",
-    "catalog": "certified-operators"
-}
+OpenShift Cluster: bm1
+Subscription not found trident-operator
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:*****]
-- api [*****]: ok
-- dns resolution: ok
-
+Create Namespace
+----------------
+- name: openshift-operators
+- already created
 
 Create Subscription
 -------------------
@@ -60,9 +48,9 @@ Install plan approval: Automatic
 Getting subscription and packege manifest information...
 Resolving channel name...
 Channel: stable
-- CSV [trident-operator.v25.6.2]
+- CSV [trident-operator.v26.2.0]
 - CSV Display name [NetApp Trident]
-- CVS Version [25.6.2]
+- CVS Version [26.2.0]
 - CSV Provider [{'name': 'NetApp, Inc.', 'url': 'https://www.netapp.com/'}]
 
 ~~~
@@ -77,20 +65,37 @@ spec:
   name: trident-operator
   source: certified-operators
   sourceNamespace: openshift-marketplace
-
 ~~~
 
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-h6g7s
+Install plan: install-llppc
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- openshift-operators/trident-operator
+Wait for deployment openshift-operators/trident-operator ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Subscription trident ready
+
+Operator
+- subscription          : openshift-operators/trident-operator
+- package               : openshift-marketplace/certified-operators/trident-operator
+- channel               : stable
+- install plan          : openshift-operators/install-llppc
+- install plan approved : V
+- installed csv         : trident-operator.v26.2.0
+- latest_csv            : V
+
 
 Completed tasks
-- Trident Operator installed
+- Namespace created
+- Operator Group created
+- Subscription created
+
++----+---------+---------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope   | Workflow        | Changes | Success | Duration [s] |
++----+---------+---------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | trident | create operator | 1       | V       | 25           | 
++----+---------+---------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

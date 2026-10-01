@@ -6,6 +6,7 @@ from lib import iaccount_helper
 from lib import file_helper
 from lib.workflow.ocp_iotel import common as local_common
 from lib.workflow.ocp_prometheus import common as prometheus_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -130,16 +131,16 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def generate_names(params, my_output):
     my_output.default('Resources', underline=True, before_newline=True)
 
-    my_output.default('namespace: %s' % (params['namespace']))
+    my_output.default('namespace: %s' % (params['__default__']['namespace']))
 
-    params['secret_namespace'] = params['namespace']
-    params['secret_name'] = params['secret-basename']
+    params['secret_namespace'] = params['__default__']['namespace']
+    params['secret_name'] = params['__default__']['secret-basename']
     if len(params['suffix']) > 0:
         params['secret_name'] = '%s-%s' % (params['secret_name'], params['suffix'])
 
@@ -149,36 +150,36 @@ def generate_names(params, my_output):
     params['secret_content']['intersight-key'] = params['private_key']
     params['secret_content']['intersight-key-id'] = params['key_id']
 
-    params['intersight_config_namespace'] = params['namespace']
-    params['intersight_config_name'] = params['intersight-basename']
+    params['intersight_config_namespace'] = params['__default__']['namespace']
+    params['intersight_config_name'] = params['__default__']['intersight-basename']
     if len(params['suffix']) > 0:
         params['intersight_config_name'] = '%s-%s' % (params['intersight_config_name'], params['suffix'])
 
     my_output.default('intersight-otel config map: %s/%s' % (params['intersight_config_namespace'], params['intersight_config_name']))
     
-    params['otel_config_namespace'] = params['namespace']
-    params['otel_config_name'] = params['otel-basename']
+    params['otel_config_namespace'] = params['__default__']['namespace']
+    params['otel_config_name'] = params['__default__']['otel-basename']
     if len(params['suffix']) > 0:
         params['otel_config_name'] = '%s-%s' % (params['otel_config_name'], params['suffix'])
 
     my_output.default('otel-collector config map: %s/%s' % (params['otel_config_namespace'], params['otel_config_name']))
     
-    params['deployment_namespace'] = params['namespace']
-    params['deployment_name'] = params['deployment-basename']
+    params['deployment_namespace'] = params['__default__']['namespace']
+    params['deployment_name'] = params['__default__']['deployment-basename']
     if len(params['suffix']) > 0:
         params['deployment_name'] = '%s-%s' % (params['deployment_name'], params['suffix'])
 
     my_output.default('deployment: %s/%s' % (params['deployment_namespace'], params['deployment_name']))
 
-    params['service_namespace'] = params['namespace']
-    params['service_name'] = params['service-basename']
+    params['service_namespace'] = params['__default__']['namespace']
+    params['service_name'] = params['__default__']['service-basename']
     if len(params['suffix']) > 0:
         params['service_name'] = '%s-%s' % (params['service_name'], params['suffix'])
 
     my_output.default('service: %s/%s' % (params['service_namespace'], params['service_name']))
 
-    params['service_monitor_namespace'] = params['namespace']
-    params['service_monitor_name'] = params['service-monitor-basename']
+    params['service_monitor_namespace'] = params['__default__']['namespace']
+    params['service_monitor_name'] = params['__default__']['service-monitor-basename']
     if len(params['suffix']) > 0:
         params['service_monitor_name'] = '%s-%s' % (params['service_monitor_name'], params['suffix'])
 
@@ -228,7 +229,7 @@ def get_otel_config():
 def get_intersight_otel_body(params):
     container = {}
     container['name'] = 'intersight-otel'
-    container['image'] = params['intersight-image']
+    container['image'] = params['__default__']['intersight-image']
     container['command'] = [
         '/target/release/intersight_otel',
         '-c',
@@ -294,7 +295,7 @@ def get_intersight_otel_body(params):
 def get_otel_collector_body(params):
     container = {}
     container['name'] = 'otel-collector'
-    container['image'] = params['otel-image']
+    container['image'] = params['__default__']['otel-image']
     container['command'] = [
         '/otelcol',
         '--config=/conf/otel-collector-config.yaml'
@@ -412,7 +413,7 @@ def get_service_monitor_body(params):
 
 def create_instance(params, my_output):        
     success = params['k8s_handler'].create_namespace(
-        params['namespace'],
+        params['__default__']['namespace'],
         confirmation=params['confirmation'],
         my_output=my_output,
         wait=True
@@ -503,14 +504,15 @@ def create_instance(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Open Telemetry (iotel) - Create Instance', before_newline=True, after_newline=True, double_underline=True)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Instance')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 

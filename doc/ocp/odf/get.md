@@ -1,4 +1,4 @@
-# OpenShift Data Foundation (ODF) Operator - Get Information
+# OpenShift Data Foundation (ODF) - Get Information
 
 ## Workflow
 

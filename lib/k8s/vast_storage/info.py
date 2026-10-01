@@ -8,6 +8,15 @@ class K8sVastStorageInfo():
     def get_vast_storage_info(self, managed_object):
         return self.get_vast_managed_object_info(managed_object)
 
+    def get_vast_storages_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'VastStorage',
+            my_output=my_output,
+            prefix=prefix
+        )
+    
     def get_vast_storages(self, object_filter=None, return_mo=False, cache_enabled=True):
         return self.get_infos(
             'vast_storage', 

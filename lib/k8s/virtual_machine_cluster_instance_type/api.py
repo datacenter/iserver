@@ -1,48 +1,21 @@
-import time
-import traceback
-
-
 class K8sVirtualMachineClusterInstanceTypeApi():
     def __init__(self):
         self.virtual_machine_cluster_instance_type_mo = None
 
-    def get_virtual_machine_cluster_instance_type_mo(self, cache_enabled=True):
-        if cache_enabled:
-            if self.virtual_machine_cluster_instance_type_mo is not None:
-                return self.virtual_machine_cluster_instance_type_mo
-
-        api_handler = self.get_api(cluster_type='ocp')
-        if api_handler is None:
-            return None
-
-        try:
-            start_time = int(time.time() * 1000)
-            response = api_handler.resources.get(
-                api_version='instancetype.kubevirt.io/v1alpha2',
-                kind='VirtualMachineClusterInstancetype'
-            )
-            self.virtual_machine_cluster_instance_type_mo = response.get().to_dict()['items']
-            self.log.k8s(
-                'get',
-                'virtual_machine_cluster_instance_type',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-
-        except BaseException:
-            self.log.error('k8s.get_virtual_machine_cluster_instance_type_mo', traceback.format_exc())
-            self.log.k8s(
-                'get',
-                'virtual_machine_cluster_instance_type',
-                True,
-                int(time.time() * 1000) - start_time
-            )
-            print(traceback.format_exc())
-            return None
-
-        self.log.k8s_mo(
-            'virtual_machine_cluster_instance_type',
+    def get_virtual_machine_cluster_instance_type_mo(self, name=None, cache_enabled=True):
+        cache_hit, response = self.get_cache(
+            cache_enabled, 
+            name,
             self.virtual_machine_cluster_instance_type_mo
         )
+        if cache_hit:
+            return response
 
-        return self.virtual_machine_cluster_instance_type_mo
+        response, self.virtual_machine_cluster_instance_type_mo = self.get_resources(
+            'VirtualMachineClusterInstancetype', 
+            'instancetype.kubevirt.io/v1beta1', 
+            self.virtual_machine_cluster_instance_type_mo,
+            name=name
+        )
+
+        return response

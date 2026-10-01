@@ -85,7 +85,7 @@ class K8sMachineConfigSsh():
 
         return body
     
-    def add_machine_config_ssh_mo(self, keys, role):
+    def add_machine_config_ssh_mo(self, keys, role, my_output=None):
         create = False
         machine_config_mo = self.get_machine_config('99-%s-ssh' % (role), return_mo=True, cache_enabled=False)
         if machine_config_mo is None:
@@ -100,7 +100,8 @@ class K8sMachineConfigSsh():
                     )
 
         if create:
-            if not self.create_machine_config_mo(machine_config_mo):
+            success, _ = self.create_resource(machine_config_mo, my_output=my_output)
+            if not success:
                 error = 'Machine config create failed: 99-%s-ssh' % (role)
                 self.log.error(
                     'add_machine_config_ssh_mo',
@@ -109,7 +110,7 @@ class K8sMachineConfigSsh():
                 return False, error, False
 
         if not create:
-            if not self.set_machine_config_mo(machine_config_mo):
+            if not self.replace_resource(machine_config_mo, my_output=my_output):
                 error = 'Machine config update failed: 99-%s-ssh' % (role)
                 self.log.error(
                     'add_machine_config_ssh_mo',
@@ -139,7 +140,11 @@ class K8sMachineConfigSsh():
                 if my_output is not None:
                     my_output.default('New master keys [%s] will be added' % (len(new_keys)))
 
-                success, error, modified = self.add_machine_config_ssh_mo(new_keys, 'master')
+                success, error, modified = self.add_machine_config_ssh_mo(
+                    new_keys, 
+                    'master',
+                    my_output=my_output
+                )
                 if not success:
                     if my_output is not None:
                         my_output.error(error)
@@ -165,7 +170,11 @@ class K8sMachineConfigSsh():
                 if my_output is not None:
                     my_output.default('New worker keys [%s] will be added' % (len(new_keys)))
 
-                success, error, modified = self.add_machine_config_ssh_mo(new_keys, 'worker')
+                success, error, modified = self.add_machine_config_ssh_mo(
+                    new_keys, 
+                    'worker',
+                    my_output=my_output
+                )
                 if not success:
                     if my_output is not None:
                         my_output.error(error)
@@ -183,7 +192,7 @@ class K8sMachineConfigSsh():
         )
         return success
     
-    def delete_machine_config_ssh_mo(self, key_matches, role):
+    def delete_machine_config_ssh_mo(self, key_matches, role, my_output=None):
         machine_config = self.get_machine_config('99-%s-ssh' % (role))
         if machine_config is None:
             error = 'Machine config not found: 99-%s-ssh' % (role)
@@ -218,7 +227,7 @@ class K8sMachineConfigSsh():
                 
                 user_mo['sshAuthorizedKeys'] = new_keys
 
-        if not self.set_machine_config_mo(machine_config_mo):
+        if not self.replace_resource(machine_config_mo, my_output=my_output):
             error = 'Machine config update failed: 99-%s-ssh' % (role)
             self.log.error(
                 'delete_machine_config_ssh_mo',
@@ -232,7 +241,11 @@ class K8sMachineConfigSsh():
         wait_for = []
 
         if role in ['any', 'master']:
-            success, error, modified = self.delete_machine_config_ssh_mo(key_matches, 'master')
+            success, error, modified = self.delete_machine_config_ssh_mo(
+                key_matches, 
+                'master',
+                my_output=my_output
+            )
             if not success:
                 if my_output is not None:
                     my_output.error(error)
@@ -242,7 +255,11 @@ class K8sMachineConfigSsh():
                 wait_for.append('99-master-ssh')
 
         if role in ['any', 'worker']:
-            success, error, modified = self.delete_machine_config_ssh_mo(key_matches, 'worker')
+            success, error, modified = self.delete_machine_config_ssh_mo(
+                key_matches, 
+                'worker',
+                my_output=my_output
+            )
             if not success:
                 if my_output is not None:
                     my_output.error(error)

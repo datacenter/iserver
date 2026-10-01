@@ -3,7 +3,7 @@ class K8sCronJobDelete():
         pass
 
     def delete_cron_job(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'CronJob', 
             'batch/v1',
             name, 
@@ -13,6 +13,9 @@ class K8sCronJobDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

@@ -1,4 +1,4 @@
-# Serverless Operator - Get
+# Serverless - Get
 
 ## Workflow
 
@@ -18,33 +18,26 @@ OpenShift Workflow - Serverless Operator - Get Information
 ==========================================================
 
 OpenShift Cluster: bm1
-Operator
---------
-- subscription: openshift-serverless/serverless-operator
-- channel: stable
-- csv: serverless-operator.v1.36.1
 
-+----+------------------+
-| ID | Knative Eventing |
-+----+------------------+
-+----+------------------+
+Collecting state...
 
-+----+-----------------+---------+-------+--------------------------+---------+------------------------+
-| ID | Knative Serving | Version | Ready | Conditions               | Ingress | Deployment             |
-+----+-----------------+---------+-------+--------------------------+---------+------------------------+
-| 1  | knative-serving | 1.16    | ✓     | DependenciesInstalled    | istio   | ✓ activator            |
-|    | knative-serving |         |       | DeploymentsAvailable     |         | ✓ autoscaler           |
-|    |                 |         |       | InstallSucceeded         |         | ✓ autoscaler-hpa       |
-|    |                 |         |       | Ready                    |         | ✓ controller           |
-|    |                 |         |       | VersionMigrationEligible |         | ✓ net-istio-controller |
-|    |                 |         |       |                          |         | ✓ net-istio-webhook    |
-|    |                 |         |       |                          |         | ✓ webhook              |
-+----+-----------------+---------+-------+--------------------------+---------+------------------------+
 
-+----+---------------+
-| ID | Knative Kafka |
-+----+---------------+
-+----+---------------+
+State
+-----
+- package   : openshift-marketplace/redhat-operators/serverless-operator
+- csv       : serverless-operator.v1.37.1
+- resources : V
+
+
+
+Serverless Custom Resources
+---------------------------
+- eventing : 0
+- serving  : 0
+- kafka    : 0
+
+
+View: state (def), res, all
 ```
 
 [[Back]](./README.md)

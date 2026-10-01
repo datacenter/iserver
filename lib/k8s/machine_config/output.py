@@ -328,21 +328,7 @@ class K8sMachineConfigOutput():
             table=True
         )
 
-    def print_machine_configs_ssh(self, info, cluster_name=None, title=False):
-        if title:
-            if cluster_name is None:
-                self.my_output.default(
-                    'OpenShift ssh public keys access',
-                    underline=True,
-                    before_newline=True
-                )
-            else:
-                self.my_output.default(
-                    'OpenShift [%s] ssh public keys access' % (cluster_name),
-                    underline=True,
-                    before_newline=True
-                )
-
+    def print_machine_configs_ssh(self, info):
         users = {}
         for item in info:
             (key_type, key, user) = item['key'].split(' ')
@@ -367,26 +353,12 @@ class K8sMachineConfigOutput():
                 users[user]
             )
 
-        order = [
-            'user',
-            'type',
-            'key',
-            'node'
-        ]
-
-        headers = [
-            'Id',
-            'Type',
-            'Key',
-            'Node'
-        ]
-
-        self.my_output.my_table(
+        self.my_output.my_table_ng(
             users_list,
-            order=order,
-            headers=headers,
-            allow_order_subkeys=True,
-            underline=True,
-            row_separator=True,
-            table=True
+            [
+                ['SSH User', 'user'],
+                ['Key Type', 'type'],
+                ['Key', 'key'],
+                ['OpenShift Node', 'node']
+            ]
         )

@@ -1,4 +1,4 @@
-# LVM Storage Operator - Get
+# LVM Storage - Get
 
 ## Workflow
 
@@ -11,35 +11,21 @@
 ## Example
 
 ```
-# iserver get ocp lvm 
+# iserver get ocp lvm --cluster bm1
 
-OpenShift Workflow - LVM Operator - Get Information
-===================================================
+OpenShift Workflow - LVM - Get Information
+==========================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "ssh-check": true,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "lvms-operator",
-    "operator-group-name": "lvm-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
+Collecting state...
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
 
 Operator
---------
-- subscription: openshift-storage/lvms
-- csv: lvms-operator.v4.18.3
+- package   : openshift-marketplace/redhat-operators/lvms-operator
+- csv       : lvms-operator.v4.18.4
+- resources : ✓
+
 
 
 LVMCluster
@@ -57,90 +43,57 @@ Device Class
 - Name            : vg1
 - Filesystem Type : xfs
 - Default         : ✗
-- Nodes Ready     : 1/1
+- Nodes Ready     : 3/3
 
 
-+---------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
-| Node    | Discovery Policy | Status | Devices  | Excluded  | Reason                                                                  |
-+---------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
-| ocp-bm1 | RuntimeDynamic   | Ready  | /dev/sda | /dev/sdc  | /dev/sdc has children block devices and could not be considered         |
-|         |                  |        | /dev/sdb | /dev/sdc1 | /dev/sdc1 has an invalid partition label "BIOS-BOOT"                    |
-|         |                  |        | /dev/sdd | /dev/sdc2 | /dev/sdc2 has an invalid filesystem signature (vfat) and cannot be used |
-|         |                  |        |          | /dev/sdc3 | /dev/sdc3 has an invalid filesystem signature (ext4) and cannot be used |
-|         |                  |        |          | /dev/sdc4 | /dev/sdc3 has an invalid partition label "boot"                         |
-|         |                  |        |          |           | /dev/sdc4 has an invalid filesystem signature (xfs) and cannot be used  |
-+---------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
++-------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
+| Node  | Discovery Policy | Status | Devices  | Excluded  | Reason                                                                  |
++-------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
+| bm1-1 | RuntimeDynamic   | Ready  | /dev/sda | /dev/sdg  | /dev/sdg has children block devices and could not be considered         | 
+|       |                  |        | /dev/sdb | /dev/sdg1 | /dev/sdg1 has an invalid partition label "BIOS-BOOT"                    | 
+|       |                  |        | /dev/sdc | /dev/sdg2 | /dev/sdg2 has an invalid filesystem signature (vfat) and cannot be used | 
+|       |                  |        | /dev/sdd | /dev/sdg3 | /dev/sdg3 has an invalid filesystem signature (ext4) and cannot be used | 
+|       |                  |        | /dev/sde | /dev/sdg4 | /dev/sdg3 has an invalid partition label "boot"                         | 
+|       |                  |        | /dev/sdf |           | /dev/sdg4 has an invalid filesystem signature (xfs) and cannot be used  | 
+|       |                  |        | /dev/sdh |           |                                                                         | 
+|       |                  |        | /dev/sdi |           |                                                                         | 
+|       |                  |        | /dev/sdj |           |                                                                         | 
+|       |                  |        | /dev/sdk |           |                                                                         | 
++-------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
+| bm1-2 | RuntimeDynamic   | Ready  | /dev/sda | /dev/sdh  | /dev/sdh has children block devices and could not be considered         | 
+|       |                  |        | /dev/sdb | /dev/sdh1 | /dev/sdh1 has an invalid partition label "BIOS-BOOT"                    | 
+|       |                  |        | /dev/sdc | /dev/sdh2 | /dev/sdh2 has an invalid filesystem signature (vfat) and cannot be used | 
+|       |                  |        | /dev/sdd | /dev/sdh3 | /dev/sdh3 has an invalid filesystem signature (ext4) and cannot be used | 
+|       |                  |        | /dev/sde | /dev/sdh4 | /dev/sdh3 has an invalid partition label "boot"                         | 
+|       |                  |        | /dev/sdf |           | /dev/sdh4 has an invalid filesystem signature (xfs) and cannot be used  | 
+|       |                  |        | /dev/sdg |           |                                                                         | 
+|       |                  |        | /dev/sdi |           |                                                                         | 
+|       |                  |        | /dev/sdj |           |                                                                         | 
+|       |                  |        | /dev/sdk |           |                                                                         | 
++-------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
+| bm1-3 | RuntimeDynamic   | Ready  | /dev/sda | /dev/sdh  | /dev/sdh has an invalid filesystem signature (xfs) and cannot be used   | 
+|       |                  |        | /dev/sdb | /dev/sdk  | /dev/sdk has children block devices and could not be considered         | 
+|       |                  |        | /dev/sdc | /dev/sdk1 | /dev/sdk1 has an invalid partition label "BIOS-BOOT"                    | 
+|       |                  |        | /dev/sdd | /dev/sdk2 | /dev/sdk2 has an invalid filesystem signature (vfat) and cannot be used | 
+|       |                  |        | /dev/sde | /dev/sdk3 | /dev/sdk3 has an invalid filesystem signature (ext4) and cannot be used | 
+|       |                  |        | /dev/sdf | /dev/sdk4 | /dev/sdk3 has an invalid partition label "boot"                         | 
+|       |                  |        | /dev/sdg |           | /dev/sdk4 has an invalid filesystem signature (xfs) and cannot be used  | 
+|       |                  |        | /dev/sdi |           |                                                                         | 
+|       |                  |        | /dev/sdj |           |                                                                         | 
++-------+------------------+--------+----------+-----------+-------------------------------------------------------------------------+
 
 
-LVM storage class
------------------
 
-+----------+---------+-------------+----------------+----------------------+------------------------+
-| Name     | Default | Provisioner | Reclaim Policy | Volume Binding Mode  | Allow Volume Expansion |
-+----------+---------+-------------+----------------+----------------------+------------------------+
-| lvms-vg1 |         | topolvm.io  | Delete         | WaitForFirstConsumer | True                   |
-+----------+---------+-------------+----------------+----------------------+------------------------+
+LVM Related Resources
+---------------------
+- storage class : 1
+- pvc           : 0
+- dv            : ---
+- pv            : ---
+- snapshot      : ---
 
-Perstistent Volume Claims
--------------------------
-None
 
-Collect linux level lvm state...
-- ocp-bm1: collected [blks, lvs, vgs, pvs]
-
-Block Devices [ocp-bm1]
------------------------
-
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| Path     | KName | Boot | Maj:Min | Size   | Model            | Serial                           | Group | FS Type |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sda | sda   |      | 8:0     | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | LVM2    |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdb | sdb   |      | 8:16    | 894.3G | Micron_5100_MTFD | xxxxxxxxxxx                      | disk  | LVM2    |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdc | sdc   | ✓    | 8:32    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | ---     |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-| /dev/sdd | sdd   |      | 8:48    | 1.1T   | UCSC-RAID12G-2GB | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | disk  | LVM2    |
-+----------+-------+------+---------+--------+------------------+----------------------------------+-------+---------+
-
-Physical Volume (LVM) [ocp-bm1]
--------------------------------
-
-+----------+-----+------+------+---------+----------+
-| PV       | VG  | Fmt  | Attr | PSize   | PFree    |
-+----------+-----+------+------+---------+----------+
-| /dev/sda | vg1 | lvm2 | a--  | 894.25g | <290.52g |
-| /dev/sdb | vg1 | lvm2 | a--  | 894.25g | 0        |
-| /dev/sdd | vg1 | lvm2 | a--  | 1.09t   | 0        | 
-+----------+-----+------+------+---------+----------+
-
-Volume Groups (LVM) [ocp-bm1]
------------------------------
-
-+-----+-----+-----+--------+--------+----------+
-| VG  | #PV | #LV | Attr   | VSize  | VFree    |
-+-----+-----+-----+--------+--------+----------+
-| vg1 | 3   | 1   | wz--n- | <2.84t | <290.52g |
-+-----+-----+-----+--------+--------+----------+
-
-Logical Volumes (LVM) [ocp-bm1]
--------------------------------
-
-+-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
-| LV Name     | VG  | LV Pool | Dev   | LV Size | MSize | Layout | Role    | Snap | K8s Usage |
-+-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
-| thin-pool-1 | vg1 |         | 253:2 | 2.55t   | 0.00% | thin   | private | --   | N/A       |
-|             |     |         |       |         |       | pool   |         |      |           |
-+-------------+-----+---------+-------+---------+-------+--------+---------+------+-----------+
-
-Summary
--------
-- operator: lvms-operator.v4.18.3
-- lvm cluster: openshift-storage/my-lvmcluster [Ready]
-- storage class [not default]: lvms-vg1
-- no persistent volume claims
-- server lvm info fully collected
-- all logical volumes back by kube resources
+View: state (def), res, lvm, all
 ```
 
 [[Back]](./README.md)

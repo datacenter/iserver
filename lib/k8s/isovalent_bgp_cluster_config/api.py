@@ -25,5 +25,5 @@ class K8sIsovalentBGPClusterConfigApi():
         return response
 
     def delete_isovalent_bgp_cluster_config_mo(self, name):
-        return self.delete_resource('IsovalentBGPClusterConfig', 'isovalent.com/v1', name)
-    
+        success, _ = self.delete_resource('IsovalentBGPClusterConfig', 'isovalent.com/v1', name)
+        return success

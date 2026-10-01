@@ -1,6 +1,7 @@
 from lib import output_helper
 from lib import ip_helper
 from lib.workflow.ocp_cilium_pnet import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -61,22 +62,21 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium Private Network - Attach POD', before_newline=True, after_newline=True, double_underline=True) 
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Attach POD')
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
-
+    
     if not local_common.is_pnet_ready(params, my_output):
         return False
     

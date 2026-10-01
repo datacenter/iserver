@@ -26,4 +26,5 @@ class K8sVastDriverApi():
         return response
 
     def delete_vast_driver_mo(self, namespace, name):
-        return self.delete_resource('VastCSIDriver', 'storage.vastdata.com/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('VastCSIDriver', 'storage.vastdata.com/v1', name, namespace=namespace)
+        return success

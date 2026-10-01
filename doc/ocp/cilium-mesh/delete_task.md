@@ -72,7 +72,7 @@ OpenShift Workflow - Cilium - Delete Cluster from Mesh
 Workflow Parameters
 -------------------
 {
-    "mesh-ip": "10.58.28.208",
+    "mesh-ip": "10.10.10.208",
     "mesh-name": "inb",
     "cluster": "bm1",
     "confirmation": true,
@@ -112,7 +112,7 @@ Cluster to be deleted
 
 ~~~
 ips:
-- 10.58.28.208
+- 10.10.10.208
 name: inb
 port: 32380
 

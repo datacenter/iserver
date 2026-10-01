@@ -5,7 +5,10 @@ class K8sPodWait():
     def __init__(self):
         pass
            
-    def wait_pod_phase(self, namespace, name, target_phase, max_time=60, log_error_on_timeout=True):
+    def wait_pod_phase(self, namespace, name, target_phase, max_time=60, log_error_on_timeout=True, my_output=None):
+        if my_output is not None:
+            my_output.default('Wait until pod %s/%s is running [timeout:%ss]...' % (namespace, name, max_time))
+
         start_time = int(time.time())
         while True:
             pod_info = self.get_pod(
@@ -34,7 +37,7 @@ class K8sPodWait():
             name,
             namespace=namespace,
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time,
             log_error_on_timeout=log_error_on_timeout
         )

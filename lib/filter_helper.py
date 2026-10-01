@@ -802,14 +802,16 @@ def compare_dict(dict1, dict2):
     return True
 
 
-def json_fixup(output):
+def json_fixup(output, double_quote=True):
     if output is None:
         return None
 
     if not isinstance(output, str):
         return None
     
-    output = output.replace('"', '\\"')
+    if double_quote:
+        output = output.replace('"', '\\"')
+        
     output = output.replace('\n', '')
     output = output.replace('}{', '},{')
     output = output.replace('\'', '\"')
@@ -847,6 +849,30 @@ def replace_attributes(content, variables):
     return content
 
 
+def get_word_attribute(word):
+    if '${' in word:
+        pattern = word.split('${')[1]
+        if '}' in pattern:
+            value = pattern.split('}')[0]
+            return value
+    return None
+
+def get_content_attributes(content):
+    attributes = []
+    for line in content.split('\n'):
+        for word in line.split(' '):
+            attribute = get_word_attribute(word)
+            if attribute is not None:
+                attributes.append(attribute)
+    return attributes
+
+
+def is_content_attributes(content):
+    if len(get_content_attributes(content)) == 0:
+        return False
+    return True
+
+
 def flatten(items, subitem, map={}):
     if not isinstance(items, list):
         return None
@@ -872,3 +898,49 @@ def flatten(items, subitem, map={}):
                 new_items.append(new_item)
 
     return new_items
+
+
+def add_tick(info, attribute_name, success_value, property_name, bool_attribute=None, managed_object=None, condition=False):
+    if not isinstance(info, dict):
+        return info
+    
+    value = None
+    if condition:
+        condition_mos = get(info, 'status:conditions', on_error=[], on_none=[])
+        for condition_mo in condition_mos:
+            if get(condition_mo, 'type') == attribute_name:
+                value = get(condition_mo, 'status')
+                
+    if not condition:
+        if managed_object is None:
+            value = get(info, attribute_name)
+        else:
+            value = get(managed_object, attribute_name)
+    
+    if '__Output' not in info:
+        info['__Output'] = {}
+
+    if isinstance(value, list):
+        if success_value in value:
+            info[property_name] = '\u2713'
+            info['__Output'][property_name] = 'Green'
+            if bool_attribute is not None:
+                info[bool_attribute] = True
+        else:
+            info[property_name] = '\u2717'
+            info['__Output'][property_name] = 'Red'
+            if bool_attribute is not None:
+                info[bool_attribute] = False
+    else:
+        if value == success_value:
+            info[property_name] = '\u2713'
+            info['__Output'][property_name] = 'Green'
+            if bool_attribute is not None:
+                info[bool_attribute] = True
+        else:
+            info[property_name] = '\u2717'
+            info['__Output'][property_name] = 'Red'
+            if bool_attribute is not None:
+                info[bool_attribute] = False
+                
+    return info

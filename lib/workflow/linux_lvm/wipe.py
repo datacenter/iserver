@@ -1,4 +1,4 @@
-def run(linux_handler, my_output, server_name=None):
+def run(linux_handler, my_output, server_name=None, break_on_error=True):
     if server_name is None:
         my_output.default('LVM Cleanup', before_newline=True, underline=True)
     else:
@@ -25,33 +25,37 @@ def run(linux_handler, my_output, server_name=None):
     success = True
     for item in lvs:
         if not item['is_pool']:
-            my_output.default('- delete lvs: %s' % (item['lv_path']))
-            lv_removed, cmd_output = linux_handler.delete_lv_cmd(item['lv_path'])
-            my_output.default(cmd_output)
+            lv_removed, cmd_output = linux_handler.delete_lv_cmd(item['lv_path'], my_output=my_output)
             if not lv_removed:
+                linux_handler.get_lv_display_cmd(item['lv_path'], my_output=my_output)
                 my_output.error('Logical volume delete failed')
                 success = False
+                if break_on_error:
+                    return False
 
     for item in lvs:
         if item['is_pool']:
-            my_output.default('- delete lv pool: %s' % (item['lv_dm_path']))
-            lv_removed, cmd_output = linux_handler.delete_lv_cmd(item['lv_dm_path'])
-            my_output.default(cmd_output)
+            lv_removed, cmd_output = linux_handler.delete_lv_cmd(item['lv_dm_path'], my_output=my_output)
             if not lv_removed:
+                linux_handler.get_lv_display_cmd(item['lv_path'], my_output=my_output)
                 my_output.error('Logical volume pool delete failed')
                 success = False
+                if break_on_error:
+                    return False
 
     for item in vgs:
         my_output.default('- deactivate vg: %s' % (item['vg_name']))
-        vg_deactivated, cmd_output = linux_handler.deactivate_vg_cmd(item['vg_name'])
+        vg_deactivated, cmd_output = linux_handler.deactivate_vg_cmd(item['vg_name'], my_output=my_output)
         my_output.default(cmd_output)
         if not vg_deactivated:
             my_output.error('Volume group deactive failed')
             success = False
+            if break_on_error:
+                return False
             continue
 
         my_output.default('- delete vg: %s' % (item['vg_name']))
-        vg_deleted, cmd_output = linux_handler.delete_vg_cmd(item['vg_name'])
+        vg_deleted, cmd_output = linux_handler.delete_vg_cmd(item['vg_name'], my_output=my_output)
         my_output.default(cmd_output)
         if not vg_deleted:
             my_output.error('Volume group delete failed')
@@ -59,28 +63,37 @@ def run(linux_handler, my_output, server_name=None):
 
             if 'Consider vgreduce --removemissing' in cmd_output:
                 my_output.default('- reduce vg: %s' % (item['vg_name']))
-                vg_reduced, cmd_output = linux_handler.reduce_vg_cmd(item['vg_name'])
+                vg_reduced, cmd_output = linux_handler.reduce_vg_cmd(item['vg_name'], my_output=my_output)
                 if not vg_reduced:
                     my_output.error('Volume group reduce failed')
+                    if break_on_error:
+                        return False
                 else:
                     my_output.default('- delete (again) vg: %s' % (item['vg_name']))
-                    vg_deleted, cmd_output = linux_handler.delete_vg_cmd(item['vg_name'])
+                    vg_deleted, cmd_output = linux_handler.delete_vg_cmd(item['vg_name'], my_output=my_output)
                     my_output.default(cmd_output)
                     if not vg_deleted:
                         my_output.error('Volume group delete failed after vg reduce')
                         success = False
+                    if break_on_error:
+                        return False
                     else:
                         success = True
+            else:
+                if break_on_error:
+                    return False
 
     for item in pvs:
         if item['pv_name'] in ['[unknown]']:
             continue
         
         my_output.default('- delete pv: %s' % (item['pv_name']))
-        pv_deleted, cmd_output = linux_handler.delete_pv_cmd(item['pv_name'])
+        pv_deleted, cmd_output = linux_handler.delete_pv_cmd(item['pv_name'], my_output=my_output)
         my_output.default(cmd_output)
         if not pv_deleted:
             my_output.error('Physical volume delete failed')
             success = False
+            if break_on_error:
+                return False
 
     return success

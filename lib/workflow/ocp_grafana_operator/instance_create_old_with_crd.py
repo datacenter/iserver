@@ -112,7 +112,7 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def add_cluster_role_binding(params, my_output):
@@ -132,7 +132,7 @@ def add_cluster_role_binding(params, my_output):
             if crb_subject['kind'] != 'ServiceAccount':
                 continue
 
-            if crb_subject['namespace'] != params['namespace']:
+            if crb_subject['namespace'] != params['__default__']['namespace']:
                 continue
 
             if crb_subject['name'] != sa_name:
@@ -157,7 +157,7 @@ def add_cluster_role_binding(params, my_output):
             crb_name,
             'cluster-monitoring-view',
             sa_name,
-            params['namespace']
+            params['__default__']['namespace']
         )
         if crb_name is None:
             my_output.error('Failed to create cluster role binding')
@@ -181,7 +181,7 @@ def add_crd(params, my_output):
             continue
 
         success = params['k8s_handler'].create_grafana_dashboard_from_yaml(
-            params['namespace'], 
+            params['__default__']['namespace'], 
             params['instance'], 
             crd, 
             fixup=params['fixup'],
@@ -197,28 +197,28 @@ def add_crd(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Grafana Operator - Create Instance', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Instance')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_grafana_subscription(params['namespace'], params['name']):
+    if not params['k8s_handler'].is_grafana_subscription(params['__default__']['namespace'], params['__default__']['name']):
         my_output.error('Grafana Operator is not installed')
         return False
     
-    instance_namespace = params['namespace']
+    instance_namespace = params['__default__']['namespace']
     instance_name = params['instance']
     if params['k8s_handler'].is_grafana(instance_namespace, instance_name, cache_enabled=False):
         my_output.default('Grafana instance [%s/%s] already defined' % (instance_namespace, instance_name))
     else:
         success = params['k8s_handler'].create_grafana(
-            params['namespace'], 
+            params['__default__']['namespace'], 
             params['instance'], 
             username=params['username'],
             password=params['password'],
@@ -240,7 +240,7 @@ def run(params, log_id=None):
             return False
 
         success = params['k8s_handler'].create_grafana_datasource_thanos(
-            params['namespace'], 
+            params['__default__']['namespace'], 
             params['instance'], 
             params['datasource'], 
             confirmation=params['confirmation'], 

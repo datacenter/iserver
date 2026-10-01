@@ -1,3 +1,6 @@
+from lib import ip_helper
+
+
 class ManagementInterfaceInfo():
     def __init__(self):
         pass
@@ -26,4 +29,5 @@ class ManagementInterfaceInfo():
             if key in managed_object:
                 info[key] = managed_object[key]
 
+        info['MacAddress'] = ip_helper.reformat_mac(info['MacAddress'])
         return info

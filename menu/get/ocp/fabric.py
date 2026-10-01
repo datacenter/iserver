@@ -21,7 +21,7 @@ class ErrorExit(Exception):
 @click.pass_obj
 @click.option("--dir", "location", is_flag=False, show_default=False, default='', type=click.STRING, callback=validations.empty_string_to_none, help="Cluster definition directory")
 @click.option("--cluster", "cluster_name", default='', callback=validations.empty_string_to_none, help="Select cluster by name")
-def get_ocp_cluster_fabric_command(ctx, cluster_name, location):
+def get_ocp_cluster_fabric_command(ctx, cluster_names, location):
     """Get OCP cluster fabric state"""
 
     try:

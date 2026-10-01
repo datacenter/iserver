@@ -800,6 +800,13 @@ class K8sPodInfo():
         return True
 
     def get_pods(self, namespace=None, object_filter=None, service_info=False, log_info=False, return_mo=False, cache_enabled=True):
+        if namespace is None and object_filter is not None:
+            for item in object_filter:
+                key = item.split(':')[0]
+                value = ':'.join(item.split(':')[1:])
+                if key == 'namespace':
+                    namespace = value
+
         all_pods = self.get_pods_info(namespace=namespace, cache_enabled=cache_enabled)
         if all_pods is None:
             return None
@@ -1009,26 +1016,14 @@ class K8sPodInfo():
         
         return True
 
-    def get_pods_summary(self, pods, summary_type='ready'):
-        if summary_type == 'ready':
-            up = 0
-            total = 0
-            if pods is not None:
-                total = len(pods)
-                for pod in pods:
-                    if pod['running']:
-                        up += 1
-
-            info = {}
-            info['__Output'] = {}
-            info['__Output']['summary'] = 'Red'
-            info['summary'] = '%s/%s' % (up, total)
-            if total > 0 and up == total:
-                info['__Output']['summary'] = 'Green'
-
-            return info
-
-        return None
+    def get_pods_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'running',
+            'Pod',
+            my_output=my_output,
+            prefix=prefix
+        )
     
     # def get_pod_replicaset_info(self, pod_id):
     #     try:

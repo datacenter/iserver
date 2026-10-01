@@ -233,14 +233,14 @@ def check_fqdn(params, settings_handler, my_output):
     if config_info is None:
         return params, 'Failed to get cluster ingress configuration'
 
-    if config_info['info']['domain'] is None:
+    if config_info['domain'] is None:
         return params, 'Failed to get cluster ingress domain'
 
     infra_info = params['data']['ocp_handler'].k8s_handler.get_infrastructure_cluster_config()
     if infra_info is None:
         return params, 'Failed to get cluster infrastructure configuration'
 
-    params['result']['domain'] = config_info['info']['domain']
+    params['result']['domain'] = config_info['domain']
     params['result']['api_ip'] = infra_info['api_ip']
     params['result']['api_hostname'] = infra_info['api_hostname']
 
@@ -258,21 +258,33 @@ def check_fqdn(params, settings_handler, my_output):
         infra_info['api_hostname']
     )
 
-    keys = [
+    mandatory_keys = [
         'oauth-openshift',
-        'console-openshift-console',
+        'console-openshift-console'
+    ]
+
+    optional_keys = [
         'grafana-openshift-monitoring',
         'thanos-querier-openshift-monitoring',
         'prometheus-k8s-openshift-monitoring',
         'alertmanager-main-openshift-monitoring',
         'hyperconverged-cluster-cli-download-openshift-cnv'
     ]
-    for key in keys:
+
+    for key in mandatory_keys:
         entries = '%s\n%s\t%s.%s' % (
             entries,
             infra_info['ingress_ip'],
             key,
-            config_info['info']['domain']
+            config_info['domain']
+        )
+
+    for key in optional_keys:
+        entries = '%s\n%s\t%s.%s' % (
+            entries,
+            infra_info['ingress_ip'],
+            key,
+            config_info['domain']
         )
 
     if not settings_handler.set_etc_hosts(params['cluster'], entries):
@@ -283,10 +295,14 @@ def check_fqdn(params, settings_handler, my_output):
         failed = []
         if etc_hosts is not None:
             for item in etc_hosts:
-                if not item['resolved']:
-                    failed.append('FQDN [%s] <=> IP [%s]' % (item['address'], item['fqdn']))
+                if item['fqdn'].split('.')[0] in optional_keys:
+                    continue
 
-        return params, 'DNS resolution failed: %s' % (','.join(failed))
+                if not item['resolved']:
+                    failed.append('FQDN [%s] <=> IP [%s]' % (item['fqdn'], item['address']))
+
+        if len(failed) > 0:
+            return params, 'DNS resolution failed: %s' % (','.join(failed))
 
     params['result']['fqdnTick'] = '\u2713'
     params['__Output']['result.fqdnTick'] = 'Green'

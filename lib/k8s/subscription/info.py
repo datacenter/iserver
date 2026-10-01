@@ -138,18 +138,25 @@ class K8sSubscriptionInfo():
         )
         subscriptions = self.get_subscriptions(
             object_filter=object_filter,
-            csv_info=csv_info,
-            plan_info=plan_info,
-            return_mo=return_mo,
+            csv_info=False,
+            plan_info=False,
+            return_mo=False,
             cache_enabled=cache_enabled
         )
         if subscriptions is None:
             return None
 
-        if len(subscriptions) == 1:
-            return subscriptions[0]
-
-        return None
+        if len(subscriptions) != 1:
+            return None
+        
+        return self.get_subscription(
+            subscriptions[0]['namespace'], 
+            subscriptions[0]['name'],
+            csv_info=csv_info,
+            plan_info=plan_info,
+            return_mo=return_mo,
+            cache_enabled=cache_enabled
+        )
 
     def is_subscription_by_package(self, package, cache_enabled=True):
         if self.get_subscription_by_package(package, cache_enabled=cache_enabled):

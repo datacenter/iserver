@@ -77,7 +77,8 @@ class K8sStorageMapCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_storage_map_mo(map_body):
+        success, _ = self.create_resource(map_body)
+        if not success:
             if my_output is not None:
                 my_output.error('Provider REST API failed')
             return False

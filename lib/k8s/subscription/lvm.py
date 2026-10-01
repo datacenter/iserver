@@ -1,9 +1,12 @@
-import time
-
-
 class K8sSubscriptionLvm():
     def __init__(self):
-        pass
+        self.subscription_lvm_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-storage', 'name': 'lvms-operator'}
+        ]
+
+        self.cluster_lvm_resources = [
+            {'type': 'daemonset', 'namespace': 'openshift-storage', 'name': 'vg-manager'}
+        ]
 
     def is_lvm_subscription(self, namespace, name, cache_enabled=True):
         return self.is_subscription(namespace, name, cache_enabled=cache_enabled)
@@ -32,6 +35,11 @@ class K8sSubscriptionLvm():
         return True
     
     def delete_lvm_subscription(self, namespace, name, my_output=None, wait=True):
+        resources = self.get_subscription_resources(
+            self.subscription_lvm_resources + self.cluster_lvm_resources,
+            cache_enabled=False
+        )
+
         success = self.delete_subscription(
             namespace, 
             name, 
@@ -41,66 +49,30 @@ class K8sSubscriptionLvm():
         if not success:
             return False
 
-        if wait:        
-            success = self.wait_no_subscription_lvm(my_output=my_output)
-            if not success:
-                return False
+        if not wait:
+            return True
 
-            # or check if pods are not yet there... but normally it takes few seconds for them to disappear
-            time.sleep(5)
-                    
-        return True
-
-    def is_subscription_lvm_ready(self):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'lvms-operator'}
-        ]
-
-        for deployment in deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name'], cache_enabled=False):
-                return False
-
-        daemon_sets = [
-            {'namespace': 'openshift-storage', 'name': 'vg-manager'}
-        ]
-        for daemon_set in daemon_sets:
-            if self.is_daemon_set(daemon_set['namespace'], daemon_set['name'], cache_enabled=False):
-                if not self.is_daemon_set_ready(daemon_set['namespace'], daemon_set['name'], cache_enabled=False):
-                    return False
-            
-        return True
-
-    def wait_subscription_lvm_ready(self, my_output=None, with_lvm_cluster=True):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'lvms-operator'}
-        ]
-        success = self.wait_deployments_ready_state(deployments, my_output=my_output, optional=False)
+        success = self.wait_no_subscription_resources('lvm', resources, my_output=my_output)
         if not success:
             return False
 
-        if with_lvm_cluster:
-            daemon_sets = [
-                {'namespace': 'openshift-storage', 'name': 'vg-manager'}
-            ]
-            success = self.wait_daemon_sets_ready_state(daemon_sets, my_output=my_output, optional=False)
-            if not success:
-                return False
-        
         return True
+
+    def is_subscription_lvm_ready(self, with_instance=False, my_output=None, details=False, break_on_error=False, cache_enabled=False):
+        resources = self.subscription_lvm_resources
+        if with_instance:
+            resources.extend(self.cluster_lvm_resources)
+
+        return self.is_subscription_ready('lvm', resources, my_output=my_output, details=details, break_on_error=break_on_error, cache_enabled=cache_enabled)
+    
+    def wait_subscription_lvm_ready(self, with_lvm_cluster=True, my_output=None):
+        resources = self.subscription_lvm_resources
+        if with_lvm_cluster:
+            resources.extend(self.cluster_lvm_resources)
+
+        return self.wait_subscription_resources('lvm', resources, my_output=my_output)
 
     def wait_no_subscription_lvm(self, my_output=None):
-        deployments = [
-            {'namespace': 'openshift-storage', 'name': 'lvms-operator'}
-        ]
-        success = self.wait_no_deployments(deployments, my_output=my_output, optional=False)
-        if not success:
-            return False
-
-        daemon_sets = [
-            {'namespace': 'openshift-storage', 'name': 'vg-manager'}
-        ]
-        success = self.wait_no_daemon_sets(daemon_sets, my_output=my_output, optional=False)
-        if not success:
-            return False
-
-        return True
+        resources = self.subscription_lvm_resources
+        resources.extend(self.cluster_lvm_resources)
+        return self.wait_no_subscription_resources('lvm', resources, my_output=my_output)

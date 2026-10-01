@@ -1,25 +1,39 @@
-import os
 import yaml
 from lib import file_helper
 from lib import output_helper
-from lib.k8s import output as k8s_output
 from lib.workflow.ocp_cilium_bgp import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['filename', False, None, 'file-k8s', None, None, None, None]
+    ]
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
-    if 'filename' not in params:
-        return None, 'CRD filename required'
-    
-    if not os.path.isfile(params['filename']):
-        return None, 'CRD filename not found'
-    
+
+def run(params, log_id=None):
+    my_output = output_helper.OutputHelper(log_id=log_id)
+    params, error = validate(params)
+    if error is not None:
+        my_output.error(error)
+        return False
+
+    ocp_common.print_title(params, my_output, 'Apply configuration')
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+    if params is None:
+        return False
+
     content = file_helper.get_file_text(params['filename'])
     if content is None:
-        return None, 'CRD file read failed'
+        my_output.error('CRD file read failed: %s' % (params['filename']))
+        return False
     
     params['crd'] = []
     for item in content.split('---'):
@@ -37,51 +51,9 @@ def validate(params):
         params['crd'].append(yitem)
     
     if len(params['crd']) == 0:
-        return None, 'No bgp crd found'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if not isinstance(params['confirmation'], bool):
-        return None, 'confirmation param must be true or false'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-        
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
+        my_output.error('No bgp crd found: %s' % (params['filename']))
+        return False
     
-    allowed_keys = [
-        'cluster',
-        'filename',
-        'crd',
-        'confirmation',
-        'check-verbose',
-        'verbose'
-    ]
-    return local_common.sanitize_params(params, allowed_keys), None
-
-
-def run(params, log_id=None):
-    my_output = output_helper.OutputHelper(log_id=log_id)
-    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium BGP Control Plane - Apply configuration', before_newline=True, after_newline=True, double_underline=True)
-
-    params, error = validate(params)
-    if error is not None:
-        my_output.error(error)
-        return False
-
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
-
     content = []
     for item in params['crd']:
         content.append(yaml.safe_dump(item))

@@ -1,4 +1,4 @@
 def get_default_params():
     params = {}
-    params['namespace'] = 'openshift-machine-api'
+    params['title'] = 'OpenShift Workflow - Bare Metal Host'
     return params

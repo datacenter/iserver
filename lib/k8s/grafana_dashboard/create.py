@@ -52,7 +52,7 @@ class K8sGrafanaDashboardCreate():
                 return False
         
         if 'resourceVersion' in new_body['metadata']:
-            success = self.replace_grafana_dashboard_mo(new_body)
+            success = self.replace_resource(new_body)
             if not success:
                 if my_output is not None:
                     my_output.error('Grafana dashboard update failed')
@@ -63,7 +63,7 @@ class K8sGrafanaDashboardCreate():
         
             return True
         
-        success = self.create_grafana_dashboard_mo(new_body)
+        success = self.create_resource(new_body)
         if not success:
             if my_output is not None:
                 my_output.error('Grafana dashboard update failed')
@@ -137,7 +137,7 @@ class K8sGrafanaDashboardCreate():
                 return False
         
         if 'resourceVersion' in new_body['metadata']:
-            success = self.replace_grafana_dashboard_mo(new_body)
+            success = self.replace_resource(new_body)
             if not success:
                 if my_output is not None:
                     my_output.error('Grafana dashboard update failed')
@@ -148,7 +148,7 @@ class K8sGrafanaDashboardCreate():
         
             return True
         
-        success = self.create_grafana_dashboard_mo(new_body)
+        success = self.create_resource(new_body)
         if not success:
             if my_output is not None:
                 my_output.error('Grafana dashboard update failed')

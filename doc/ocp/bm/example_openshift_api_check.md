@@ -14,7 +14,7 @@ Checking openshift API
 - Pull secret filename: /home/cisco/.itool/openshift/pull_secret.txt
 - Pull secret file read successful
 - API handler object initialized
-- RedHat Console API connection sucessfull
+- RedHat Console API connection sucessful
 ```
 
 [[Back]](../BareMetalCluster.md) [[Next]](./example_web_check.md) [[Prev]](./example_input_data_check.md)

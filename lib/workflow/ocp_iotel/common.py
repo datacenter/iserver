@@ -3,33 +3,6 @@ import copy
 from lib.workflow.ocp_access import check as ocp_check
 
 
-def initialize(params, my_output, log_id):
-    params = augment_params(params)
-
-    if params['verbose']:
-        my_output.default('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.default(json.dumps(display_params, indent=4), after_newline=True)
-    else:
-        my_output.debug('Workflow Parameters', underline=True)
-        display_params = copy.deepcopy(params)
-        my_output.debug(json.dumps(display_params, indent=4), after_newline=True)
-        
-    ocp_check_params = {}
-    ocp_check_params['cluster'] = params['cluster']
-    ocp_check_params['verbose'] = params['check-verbose']
-    ocp_params, errors = ocp_check.run(
-        ocp_check_params,
-        log_id=log_id
-    )
-    if errors is not None:
-        my_output.error(errors)
-        return None
-
-    params['k8s_handler'] = ocp_params['data']['ocp_handler'].k8s_handler
-    return params
-
-
 def get_default_params():
     params = {}
     params['namespace'] = 'intersight-otel'
@@ -41,34 +14,17 @@ def get_default_params():
     params['service-monitor-basename'] = 'otel'
     params['intersight-image'] = 'ghcr.io/cgascoig/intersight-otel:v0.1.2'
     params['otel-image'] = 'otel/opentelemetry-collector:0.59.0'
-    params['mon-namespace'] = 'openshift-monitoring'
-    params['mon-name'] = 'cluster-monitoring-config'
     params['delete-namespace'] = True
+    params['title'] = 'Intersight Open Telemetry (iotel)'
     return params
-
-
-def augment_params(params):
-    defaults = get_default_params()
-    for key in defaults:
-        params[key] = defaults[key]
-    return params
-
-
-def sanitize_params(params, allowed_keys):
-    new_params = {}
-    for key in params:
-        if key in allowed_keys:
-            new_params[key] = params[key]
-
-    return new_params
 
 
 def get_resources(params, my_output):
-    my_output.default('Collect resources in namespace %s' % (params['namespace']), before_newline=True)
+    my_output.default('Collect resources in namespace %s' % (params['__default__']['namespace']), before_newline=True)
 
     my_output.default('- deployment')
     params['deployment'] = params['k8s_handler'].get_deployments(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if params['deployment'] is None:
         my_output.error('deployments rest api failed')
@@ -76,7 +32,7 @@ def get_resources(params, my_output):
 
     my_output.default('- pod')
     params['pod'] = params['k8s_handler'].get_pods(
-        object_filter=['namespace:%s' % (params['namespace'])],
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])],
         service_info=True
     )
     if params['pod'] is None:
@@ -85,7 +41,7 @@ def get_resources(params, my_output):
     
     my_output.default('- secret')
     params['secret'] = params['k8s_handler'].get_secrets(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if params['secret'] is None:
         my_output.error('secrets rest api failed')
@@ -93,7 +49,7 @@ def get_resources(params, my_output):
     
     my_output.default('- config map')
     params['config_map'] = params['k8s_handler'].get_config_maps(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if params['config_map'] is None:
         my_output.error('config maps rest api failed')
@@ -101,7 +57,7 @@ def get_resources(params, my_output):
     
     my_output.default('- service')
     params['service'] = params['k8s_handler'].get_services(
-        object_filter=['namespace:%s' % (params['namespace'])],
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])],
         endpoint_info=True
     )
     if params['service'] is None:
@@ -110,7 +66,7 @@ def get_resources(params, my_output):
     
     my_output.default('- service monitor')
     params['service_monitor'] = params['k8s_handler'].get_service_monitors(
-        object_filter=['namespace:%s' % (params['namespace'])],
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])],
         endpoint_info=True, 
         target_info=True
     )
@@ -126,7 +82,7 @@ def get_instances(params, my_output):
 
     my_output.default('- deployment')
     params['deployment'] = params['k8s_handler'].get_deployments(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if params['deployment'] is None:
         my_output.error('deployments rest api failed')
@@ -134,7 +90,7 @@ def get_instances(params, my_output):
 
     my_output.default('- secret')
     secrets = params['k8s_handler'].get_secrets(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if secrets is None:
         my_output.error('secrets rest api failed')
@@ -142,7 +98,7 @@ def get_instances(params, my_output):
     
     my_output.default('- config map')
     config_maps = params['k8s_handler'].get_config_maps(
-        object_filter=['namespace:%s' % (params['namespace'])]
+        object_filter=['namespace:%s' % (params['__default__']['namespace'])]
     )
     if config_maps is None:
         my_output.error('config maps rest api failed')

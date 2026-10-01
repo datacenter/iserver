@@ -3,7 +3,7 @@ class K8sBgpPeerDelete():
         pass
 
     def delete_bgp_peer(self, namespace, name, my_output=None, wait=True):
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'BGPPeer', 
             'metallb.io/v1beta2',
             name, 
@@ -13,6 +13,9 @@ class K8sBgpPeerDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True

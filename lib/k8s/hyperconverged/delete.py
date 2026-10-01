@@ -28,7 +28,7 @@ class K8sHyperConvergedDelete():
         if my_output is not None:
             my_output.default('- wait for no hyperconverged instance and resources')
 
-        success = self.wait_no_hyperconverged_resources()
+        success = self.wait_no_instance_cnv(my_output=my_output)
         if not success:
             if my_output is not None:
                 my_output.error('Timed out')

@@ -1,10 +1,15 @@
 # Delete LVM from block devices
 
+[[Back]](./README.md)
+
 If non-root disks are not formatted, they may have lvm filesystem from previous instance. This workflow will remove LVM entirely from the disks.
+
+>[!CAUTION]
+>No kubernetes resource should exist as it will disable logical volume removal (resource used flag)
 
 ## Workflow 
 
-- get lvs, vgs and pvs
+- get [lv](./lv.md), [vg](./vg.md) and [pv](./pv.md) resources
 - remove one-by-one
 
 ## Configurable options

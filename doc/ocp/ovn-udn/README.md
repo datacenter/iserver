@@ -38,7 +38,7 @@ L3 | Secondary | :white_check_mark: w/overlay | :x: | :x: | :x: | :white_check_m
 
 - Virtual machine primary interface does not work with L3 topology ([Link](./l3/vm.md))
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

@@ -101,41 +101,40 @@ class LinuxLvInfo():
             pvcs = None
             ocp_handler = self.get_ocp_handler()
             if ocp_handler is not None:
-                pvcs = ocp_handler.k8s_handler.get_pvcs(
-                    usage_info=True,
+                pvs = ocp_handler.k8s_handler.get_pvs(
                     cache_enabled=cache_enabled
                 )
 
-            descendants = {}
-            for item in lvs:
-                item['orphan'] = True
-                item['usage'] = '--'
-                item['pvc'] = None
-                item['snapshot'] = None
+                descendants = {}
+                for item in lvs:
+                    item['orphan'] = True
+                    item['usage'] = '--'
+                    item['pvc'] = None
+                    item['snapshot'] = None
 
-                if pvcs is not None:
-                    for pvc in pvcs:
-                        if item['lv_name'] == pvc['csi_handle']:
-                            item['pvc'] = pvc['namespace_name']
+                    if pvs is not None:
+                        for pv in pvs:
+                            if item['lv_name'] == pv['csi_handle']:
+                                item['pvc'] = '%s/%s' % (pv['pvc_namespace'], pv['pvc_name'])
 
-                for descendant in item['lv_descendants'].split(','):
-                    descendants[descendant] = item['pvc']
+                    for descendant in item['lv_descendants'].split(','):
+                        descendants[descendant] = item['pvc']
 
-            for item in lvs:
-                if item['is_pool']:
-                    item['orphan'] = False
-                    item['usage'] = 'N/A'
-                    continue
+                for item in lvs:
+                    if item['is_pool']:
+                        item['orphan'] = False
+                        item['usage'] = 'N/A'
+                        continue
 
-                if item['pvc'] is not None:
-                    item['orphan'] = False
-                    item['usage'] = '(pvc) %s' % (item['pvc'])
-                    continue
+                    if item['pvc'] is not None:
+                        item['orphan'] = False
+                        item['usage'] = '(pvc) %s' % (item['pvc'])
+                        continue
 
-                if item['lv_name'] in descendants:
-                    item['orphan'] = False
-                    item['usage'] = '(snap) %s' % (descendants[item['lv_name']])
-                    continue
+                    if item['lv_name'] in descendants:
+                        item['orphan'] = False
+                        item['usage'] = '(snap) %s' % (descendants[item['lv_name']])
+                        continue
 
         self.log.linux_mo(
             '%s.lv' % (self.server_display_name),

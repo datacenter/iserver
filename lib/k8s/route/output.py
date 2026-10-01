@@ -8,7 +8,7 @@ class K8sRouteOutput():
             [
                 ['Route', 'namespace_nameT'],
                 ['Ready', 'readyTick'],
-                ['Route', 'route'],
+                ['Route', 'routeT'],
                 ['Service', 'service']
             ]
         )

@@ -9,6 +9,15 @@ class K8sRouteInfo():
         info = self.get_base_info(managed_object)
 
         info['route'] = self.get(managed_object, 'spec:host')
+        info['routeT'] = self.get(managed_object, 'spec:host')
+
+        if info['routeT'] is not None:
+            if self.get(managed_object, 'spec:port:targetPort') == 'http':
+                info['routeT'] = 'http://%s' % (info['routeT'])
+
+            if self.get(managed_object, 'spec:port:targetPort') == 'https':
+                info['routeT'] = 'https://%s' % (info['routeT'])
+
         info['service'] = None
         to_kind = self.get(managed_object, 'spec:to:kind')
         if to_kind == 'Service':

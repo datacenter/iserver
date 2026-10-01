@@ -11,7 +11,7 @@
 
 None
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/cnv/operator_create.png)
 
@@ -29,30 +29,11 @@ None
 ```
 # iserver set ocp cnv --mode operator --cluster bm1 --no-confirm
 
-
 OpenShift Workflow - Container Virtualization Operator - Create Operator
 ========================================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "channel": "__default__",
-    "confirmation": false,
-    "check-verbose": true,
-    "namespace": "openshift-cnv",
-    "name": "kubevirt-hyperconverged",
-    "operator-group-name": "cnv-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
+OpenShift Cluster: bm1
+Subscription not found kubevirt-hyperconverged
 
 Create Namespace
 ----------------
@@ -63,16 +44,14 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: openshift-cnv
-
 ~~~
-
-Namespace created
-
+Namespace [openshift-cnv] created
 Wait for namespace [timeout:60]...
 
-Create Operator Group
----------------------
-Operator group: openshift-cnv/cnv-operator-group
+Create OperatorGroup
+--------------------
+- namespace: openshift-cnv
+- name: cnv-operator-group
 
 ~~~
 apiVersion: operators.coreos.com/v1
@@ -84,12 +63,9 @@ spec:
   targetNamespaces:
   - openshift-cnv
   upgradeStrategy: Default
-
 ~~~
-
-Operator group created
-
-Wait for operator group [timeout:60]...
+OperatorGroup [openshift-cnv/cnv-operator-group] created
+- wait for OperatorGroup openshift-cnv/cnv-operator-group [timeout:60s]
 
 Create Subscription
 -------------------
@@ -99,9 +75,9 @@ Install plan approval: Automatic
 Getting subscription and packege manifest information...
 Resolving channel name...
 Channel: stable
-- CSV [kubevirt-hyperconverged-operator.v4.18.17]
+- CSV [kubevirt-hyperconverged-operator.v4.21.3]
 - CSV Display name [OpenShift Virtualization]
-- CVS Version [4.18.17]
+- CVS Version [4.21.3]
 - CSV Provider [{'name': 'Red Hat'}]
 - CSV Maturity [alpha]
 
@@ -117,30 +93,44 @@ spec:
   name: kubevirt-hyperconverged
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-
 ~~~
 
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-n8vsn
+Install plan: install-gvkg8
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
-Wait for deployments ready (optional: True, allow zero replicas: False)...
-- openshift-cnv/aaq-operator
-- openshift-cnv/cdi-operator
-- openshift-cnv/cluster-network-addons-operator
-- openshift-cnv/hco-operator
-- openshift-cnv/hco-webhook
-- openshift-cnv/hostpath-provisioner-operator
-- openshift-cnv/hyperconverged-cluster-cli-download
-- openshift-cnv/ssp-operator
-- openshift-cnv/virt-operator
+Wait for deployment openshift-cnv/aaq-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/cdi-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/cluster-network-addons-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/hco-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/hco-webhook ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/hostpath-provisioner-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/hyperconverged-cluster-cli-download ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/ssp-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+Wait for deployment openshift-cnv/virt-operator ready (optional: True, allow zero replicas: False, timeout: 600s)...
+
+Operator
+- subscription          : openshift-cnv/kubevirt-hyperconverged
+- package               : openshift-marketplace/redhat-operators/kubevirt-hyperconverged
+- channel               : stable
+- install plan          : openshift-cnv/install-gvkg8
+- install plan approved : V
+- installed csv         : kubevirt-hyperconverged-operator.v4.21.3
+- latest_csv            : V
+
 
 Completed tasks
 - Namespace created
 - Operator Group created
-- Cnv Operator installed
+- Subscription created
+
++----+---------+-------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
++----+---------+-------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | cnv   | create operator | 3       | V       | 512          | 
++----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

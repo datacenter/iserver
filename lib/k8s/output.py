@@ -39,8 +39,10 @@ from lib.k8s.ceph_object_zone_group.output import K8sCephObjectZoneGroupOutput
 from lib.k8s.ceph_operator_config.output import K8sCephOperatorConfigOutput
 from lib.k8s.ceph_rdb_mirror.output import K8sCephRdbMirrorOutput
 from lib.k8s.certificate.output import K8sCertificateOutput
+from lib.k8s.certificate_request.output import K8sCertificateRequestOutput
 from lib.k8s.cilium_config.output import K8sCiliumConfigOutput
 from lib.k8s.cilium_load_balancer_ip_pool.output import CiliumLoadBalancerIpPoolOutput
+from lib.k8s.cluster_issuer.output import K8sClusterIssuerOutput
 from lib.k8s.cluster_operator.output import K8sClusterOperatorOutput
 from lib.k8s.cluster_policy.output import K8sClusterPolicyOutput
 from lib.k8s.cluster_quota.output import K8sClusterQuotaOutput
@@ -161,6 +163,7 @@ from lib.k8s.portworx_storage_node.output import K8sPortworxStorageNodeOutput
 from lib.k8s.priority_class.output import K8sPriorityClassOutput
 from lib.k8s.private_network_endpoint_slice.output import K8sPrivateNetworkEndpointSliceOutput
 from lib.k8s.private_network_external_endpoint.output import K8sPrivateNetworkExternalEndpointOutput
+from lib.k8s.private_network_node_attachment.output import K8sPrivateNetworkNodeAttachmentOutput
 from lib.k8s.probe.output import K8sProbeOutput
 from lib.k8s.profile.output import K8sProfileOutput
 from lib.k8s.prometheus.output import K8sPrometheusOutput
@@ -217,6 +220,7 @@ from lib.k8s.tetragon_network_policy_namespaced.output import K8sTetragonNetwork
 from lib.k8s.thanos_ruler.output import K8sThanosRulerOutput
 from lib.k8s.tracing_policy.output import K8sTracingPolicyOutput
 from lib.k8s.tracing_policy_namespaced.output import K8sTracingPolicyNamespacedOutput
+from lib.k8s.trident_orchestrator.output import K8sTridentOrchestratorOutput
 from lib.k8s.tuned.output import K8sTunedOutput
 from lib.k8s.upload_token_request.output import K8sUploadTokenRequestOutput
 from lib.k8s.user.output import K8sUserOutput
@@ -288,8 +292,10 @@ class K8sOutput(
     K8sCephOperatorConfigOutput,
     K8sCephRdbMirrorOutput,
     K8sCertificateOutput,
+    K8sCertificateRequestOutput,
     K8sCiliumConfigOutput,
     CiliumLoadBalancerIpPoolOutput,
+    K8sClusterIssuerOutput,
     K8sClusterOperatorOutput,
     K8sClusterPolicyOutput,
     K8sClusterQuotaOutput,
@@ -410,6 +416,7 @@ class K8sOutput(
     K8sPriorityClassOutput,
     K8sPrivateNetworkEndpointSliceOutput,
     K8sPrivateNetworkExternalEndpointOutput,
+    K8sPrivateNetworkNodeAttachmentOutput,
     K8sProbeOutput,
     K8sProfileOutput,
     K8sPrometheusOutput,
@@ -466,6 +473,7 @@ class K8sOutput(
     K8sThanosRulerOutput,
     K8sTracingPolicyOutput,
     K8sTracingPolicyNamespacedOutput,
+    K8sTridentOrchestratorOutput,
     K8sTunedOutput,
     K8sUploadTokenRequestOutput,
     K8sUserOutput,
@@ -542,8 +550,10 @@ class K8sOutput(
         K8sCephOperatorConfigOutput.__init__(self)
         K8sCephRdbMirrorOutput.__init__(self)
         K8sCertificateOutput.__init__(self)
+        K8sCertificateRequestOutput.__init__(self)
         K8sCiliumConfigOutput.__init__(self)
         CiliumLoadBalancerIpPoolOutput.__init__(self)
+        K8sClusterIssuerOutput.__init__(self)
         K8sClusterOperatorOutput.__init__(self)
         K8sClusterPolicyOutput.__init__(self)
         K8sClusterQuotaOutput.__init__(self)
@@ -655,6 +665,7 @@ class K8sOutput(
         K8sPriorityClassOutput.__init__(self)
         K8sPrivateNetworkEndpointSliceOutput.__init__(self)
         K8sPrivateNetworkExternalEndpointOutput.__init__(self)
+        K8sPrivateNetworkNodeAttachmentOutput.__init__(self)
         K8sProbeOutput.__init__(self)
         K8sProfileOutput.__init__(self)
         K8sPrometheusOutput.__init__(self)
@@ -710,6 +721,7 @@ class K8sOutput(
         K8sThanosRulerOutput.__init__(self)
         K8sTracingPolicyOutput.__init__(self)
         K8sTracingPolicyNamespacedOutput.__init__(self)
+        K8sTridentOrchestratorOutput.__init__(self)
         K8sTunedOutput.__init__(self)
         K8sUploadTokenRequestOutput.__init__(self)
         K8sUserOutput.__init__(self)

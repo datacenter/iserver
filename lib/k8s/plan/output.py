@@ -2,7 +2,7 @@ class K8sPlanOutput():
     def __init__(self):
         pass
 
-    def print_plans(self, info):
+    def print_plans_state(self, info):
         self.my_output.my_table_ng(
             info,
             [

@@ -1,5 +1,7 @@
 # Certificate Manager - Disable feature
 
+[[Back]](./README.md)
+
 ## Workflow
 
 - check cert manager crds
@@ -21,17 +23,6 @@ Cluster with [helm cli enabled](../cli/helm.md)
   --wipe          Wipe crds
 ```
 
-## Non-configurable defaults
-
-```
-{
-    "namespace": "cert-manager",
-    "helm": "cert-manager",
-    "repo_name": "jetstack",
-    "repo_url": "https://charts.jetstack.io"
-}
-```
-
 ## Example
 
 ```
@@ -40,37 +31,16 @@ Cluster with [helm cli enabled](../cli/helm.md)
 OpenShift Workflow - Certificate Manager - Uninstall
 ====================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "wipe": true,
-    "check-verbose": true,
-    "namespace": "cert-manager",
-    "helm": "cert-manager",
-    "repo_name": "jetstack",
-    "repo_url": "https://charts.jetstack.io"
-}
+OpenShift Cluster: bm1
 
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-- cluster node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-- management node [10.10.10.10] [key:C:\Users\user\.itool\ocp-clusters\bm1\ssh.pub]: ok
-- cli helm: ok
+Certificate Manager Resources
+-----------------------------
+- issuer      : 0
+- certificate : 0
 
-Check cluster manager crds...
-- Issuer CRD [#2]
-- Certificate CRD [#4]
-Check helm chart cert-manager
-Found
 Uninstall helm cert-manager
 Helm installed
-Check repo jetstack https://charts.jetstack.io
-Found
 Remove helm repo jetstack
 Helm repo removed
 
@@ -79,19 +49,26 @@ Delete Namespace
 - name: cert-manager
 
 Namespace [cert-manager] resources
-- no pods
 - no deployments
-- no daemon sets
-- no replica sets
+- no daemon_sets
+- no replica_sets
+- no pods
 - no services
 - no pvcs
-- wait for no namespace
+- no jobs
+Wait for no Namespace cert-manager [timeout:60s]
 
 Completed tasks
 - resources wiped
 - helm uninstalled
 - helm repo removed
 - namespace deleted
+
++----+---------+--------------+----------------+---------+---------+--------------+
+| ID | Target  | Scope        | Workflow       | Changes | Success | Duration [s] |
++----+---------+--------------+----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | cert-manager | delete feature | 1       | ✓       | 19           | 
++----+---------+--------------+----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

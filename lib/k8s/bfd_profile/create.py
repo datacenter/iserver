@@ -3,22 +3,14 @@ class K8sBfdProfileCreate():
         pass
 
     def create_bfd_profile(self, body, my_output=None, confirmation=False, wait=True):
-        if not self.create_resource(body, object_name='bfd_profile', my_output=my_output, confirmation=confirmation):
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_bfd_profile(
-            body['metadata']['namespace'],
-            body['metadata']['name'],
-            max_time=60,
-            my_output=my_output
+        success = self.create_resource_and_wait(
+            body, 
+            'bfd_profile', 
+            wait=wait,
+            my_output=my_output, 
+            confirmation=confirmation
         )
-        if not success:
-            return False
-
-        return True
+        return success
     
     def create_or_update_bfd_profile(
             self, 

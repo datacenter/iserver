@@ -1,8 +1,10 @@
-# OpenShift nodes ssh access - Get keys
+# SSH Access - Get keys
+
+[[Back]](./README.md) [[Add]](./create_key.md) [[Delete]](./delete_key.md)
 
 ## Workflow
 
-- identify machine config objects that define SSH keys; typically it will be 99-master-ssh and 99-worker-ssh
+- identify machine config objects that define SSH keys; typically it will be `99-master-ssh` and `99-worker-ssh`
 - download the content of machine config object into YAML file
 - show public keys
 
@@ -13,7 +15,7 @@ None
 ## Configurable options
 
 ```
-# iserver set ocp nfd --mode operator
+# iserver get ocp ssh
   --cluster TEXT              Cluster name
 ```
 
@@ -22,24 +24,20 @@ None
 ```
 # iserver get ocp ssh --cluster bm1 
 
-OpenShift Workflow - Get SSH public keys
-========================================
+OpenShift Workflow - SSH Public Key - Get
+=========================================
 
+OpenShift Cluster: bm1
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-+--------------------------------+-------------+-------------------------+----------------------+
-| Id                             | Type        | Key                     | Node                 |
-+--------------------------------+-------------+-------------------------+----------------------+
-| user1@host1                    | ssh-ed25519 | AAAAC3NzaC...UDXorVCR71 | ['master', 'worker'] |
-+--------------------------------+-------------+-------------------------+----------------------+
-| user2@host2                    | ssh-ed25519 | AAAAC3NzaC...xtIULcEKAJ | ['master', 'worker'] |
-+--------------------------------+-------------+-------------------------+----------------------+
++----+--------------------------------+-------------+-------------------------+----------------+
+| ID | SSH User                       | Key Type    | Key                     | OpenShift Node |
++----+--------------------------------+-------------+-------------------------+----------------+
+| 1  | user@host1                     | ssh-ed25519 | AAAAC3NzaC...UDXorVCR71 | master         | 
+|    |                                |             |                         | worker         | 
++----+--------------------------------+-------------+-------------------------+----------------+
+| 2  | user@host2                     | ssh-ed25519 | AAAAC3NzaC...xtIULcEKAJ | master         | 
+|    |                                |             |                         | worker         | 
++----+--------------------------------+-------------+-------------------------+----------------+
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[Add]](./create_key.md) [[Delete]](./delete_key.md)

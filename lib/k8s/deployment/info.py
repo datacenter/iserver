@@ -50,6 +50,15 @@ class K8sDeploymentInfo():
 
         return info
 
+    def get_deployments_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'Deployment',
+            my_output=my_output,
+            prefix=prefix
+        )
+    
     def get_deployments(self, object_filter=None, return_mo=False, cache_enabled=True):
         infos = self.get_infos(
             'deployment', 

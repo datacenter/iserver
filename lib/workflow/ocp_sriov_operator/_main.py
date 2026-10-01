@@ -10,10 +10,10 @@ def validate(params):
         return None, 'Cluster name required'
     
     if 'namespace' not in params:
-        params['namespace'] = 'openshift-sriov-network-operator'
+        params['__default__']['namespace'] = 'openshift-sriov-network-operator'
 
     if 'name' not in params:
-        params['name'] = 'sriov-network-operator'
+        params['__default__']['name'] = 'sriov-network-operator'
 
     if 'channel' not in params:
         params['channel'] = 'stable'

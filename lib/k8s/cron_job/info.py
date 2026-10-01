@@ -3,6 +3,9 @@ class K8sCronJobInfo():
         self.cron_job = None
 
     def get_cron_job_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )

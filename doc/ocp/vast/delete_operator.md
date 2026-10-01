@@ -1,4 +1,4 @@
-# VAST Operator - Delete operator
+# VAST CSI - Delete operator
 
 ## Workflow
 
@@ -29,19 +29,29 @@ OpenShift Workflow - VAST CSI Operator - Delete Operator
 OpenShift Cluster: bm1
 
 VAST CSI Operator Subscription
-------------------------------
 - subscription: vast-csi/vast-csi-operator
 - package: vast-csi-operator
 - csv: vast-csi-operator.v2.6.4
 
 VAST CSI Operator Resources
----------------------------
 - deployment vast-csi/vast-csi-operator-controller-manager ready
-- 0 driver
-- 0 cluster
-- 0 storage
-- 0 storage class
-- 0 pvc
+
+VAST CSI Custom Resources
+- 0/0 VastCSIDriver
+- 0/0 VastCluster
+- 0/0 VastStorage
+- 0/0 default StorageClass
+- 0/0 PersistentVolumeClaim
+
+Operator
+- subscription          : vast-csi/vast-csi-operator
+- package               : openshift-marketplace/certified-operators/vast-csi-operator
+- channel               : stable
+- install plan          : vast-csi/install-xc8bk
+- install plan approved : V
+- installed csv         : vast-csi-operator.v2.6.4
+- latest_csv            : V
+
 
 Delete Subscription
 -------------------
@@ -51,18 +61,14 @@ Delete Subscription
 - wait for no subscription
 - check cluster service version: vast-csi/vast-csi-operator.v2.6.4
 - wait for no csv
-Wait for deployments deleted (optional: False)...
-- vast-csi/vast-csi-operator-controller-manager
+- wait for no Deployment vast-csi/vast-csi-operator-controller-manager [timeout:180s]
 
-Delete Operator Group
----------------------
+Delete OperatorGroup
+--------------------
 - namespace: vast-csi
 - name: vast-operator-group
-- wait for no operator group
-
-Delete Namespace
-----------------
-- name: vast-csi
+- deleted
+- wait for no OperatorGroup vast-csi/vast-operator-group [timeout:60s]
 
 Namespace [vast-csi] resources
 - no pods
@@ -71,12 +77,29 @@ Namespace [vast-csi] resources
 - no replica sets
 - no services
 - no pvcs
+- no user defined networks
+- no cluster user defined networks
+
+Delete Namespace
+----------------
+- name: vast-csi
 - wait for no namespace
+
+Completed tasks
+- Subscription deleted
+- Operator Group deleted
+- Namespace deleted
 
 Completed tasks
 - Subscription and csv deleted
 - Operator Group deleted
 - Namespace deleted
+
++----+---------+-------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
++----+---------+-------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | vast  | delete operator | 4       | V       | 32           | 
++----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

@@ -13,10 +13,12 @@ from menu.delete.k8s.nad import delete_k8s_nad_command
 from menu.delete.k8s.nncp import delete_k8s_nncp_command
 from menu.delete.k8s.ns import delete_k8s_ns_command
 from menu.delete.k8s.pod import delete_k8s_pod_command
+from menu.delete.k8s.pv import delete_k8s_pv_command
 from menu.delete.k8s.pvc import delete_k8s_pvc_command
 from menu.delete.k8s.sec import delete_k8s_sec_command
 from menu.delete.k8s.srnnp import delete_k8s_srnnp_command
 from menu.delete.k8s.user import delete_k8s_user_command
+from menu.delete.k8s.vm import delete_k8s_vm_command
 
 
 class Failure(Exception):
@@ -42,7 +44,9 @@ delete_k8s_menu.add_command(delete_k8s_nad_command)
 delete_k8s_menu.add_command(delete_k8s_nncp_command)
 delete_k8s_menu.add_command(delete_k8s_ns_command)
 delete_k8s_menu.add_command(delete_k8s_pod_command)
+delete_k8s_menu.add_command(delete_k8s_pv_command)
 delete_k8s_menu.add_command(delete_k8s_pvc_command)
 delete_k8s_menu.add_command(delete_k8s_sec_command)
 delete_k8s_menu.add_command(delete_k8s_srnnp_command)
 delete_k8s_menu.add_command(delete_k8s_user_command)
+delete_k8s_menu.add_command(delete_k8s_vm_command)

@@ -1,53 +1,22 @@
+import copy
 import yaml
 from lib import output_helper
 from lib.k8s import output as k8s_output
 from lib.workflow.ocp_cilium_bgp import common as local_common
 from lib.workflow.ocp_cilium_cni import common as cilium_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'cli' not in params:
-        params['cli'] = False
-
-    if not isinstance(params['cli'], bool):
-        return None, 'cli param must be true or false'
-
-    if 'crd' not in params:
-        params['crd'] = False
-
-    if not isinstance(params['crd'], bool):
-        return None, 'crd param must be true or false'
-
-    if 'state' not in params:
-        params['state'] = False
-
-    if not isinstance(params['state'], bool):
-        return None, 'state param must be true or false'
-    
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-        
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'cli',
-        'crd',
-        'state',
-        'check-verbose',
-        'verbose'
+    rules = [
+        ['cluster', False, None, 'list-of-str', None, None, None, None],
+        ['view', True, ['state'], 'view', None, None, ['state', 'res', 'cli'], None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def cleanup(managed_object):
@@ -142,27 +111,36 @@ def get_state(params, my_output, k8s_output_handler):
     
     k8s_output_handler.print_isovalent_bgp_node_configs(info)
 
-def run(params, log_id=None):
+
+def run(mparams, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium BGP Control Plane - Get', before_newline=True, after_newline=True, double_underline=True)
 
-    params, error = validate(params)
+    mparams, error = validate(mparams)
     if error is not None:
         my_output.error(error)
         return False
+    
+    for cluster in mparams['cluster']:
+        params = copy.deepcopy(mparams)
+        params['cluster'] = cluster
 
-    params = local_common.initialize(params, my_output, log_id)
-    if params is None:
-        return False
+        ssh_required = False
+        if 'cli' in params['view']:
+            ssh_required = True
 
-    if params['state']:
-        get_state(params, my_output, k8s_output_handler)
+        ocp_common.print_title(params, my_output, 'Get Information')
+        params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=ssh_required)
+        if params is None:
+            continue
+
+        if 'state' in params['view']:
+            get_state(params, my_output, k8s_output_handler)
         
-    if params['crd']:
-        get_crds(params, my_output)
+        if 'res' in params['view']:
+            get_crds(params, my_output)
 
-    if params['cli']:
-        get_cli(params, my_output)
+        if 'cli' in params['view']:
+            get_cli(params, my_output)
 
     return True

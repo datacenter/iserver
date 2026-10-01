@@ -30,4 +30,5 @@ class K8sOperatorGroupApi():
         return response
 
     def delete_operator_group_mo(self, namespace, name):
-        return self.delete_resource('OperatorGroup', 'operators.coreos.com/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('OperatorGroup', 'operators.coreos.com/v1', name, namespace=namespace)
+        return success

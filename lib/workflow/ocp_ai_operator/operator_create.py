@@ -1,56 +1,34 @@
-import os
-from lib import file_helper
 from lib import output_helper
 from lib.workflow.ocp_ai_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'channel' not in params:
-        params['channel'] = 'stable'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'channel',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['channel', True, 'stable', 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Data Science (AI) - Create Operator', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Create Operator')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
     subscription = params['k8s_handler'].get_subscription_by_package(
-        params['name'],
+        params['__default__']['name'],
         return_mo=False,
         cache_enabled=False
     )
@@ -59,7 +37,7 @@ def run(params, log_id=None):
         return True
     
     success = params['k8s_handler'].create_namespace(
-        params['namespace'],
+        params['__default__']['namespace'],
         confirmation=params['confirmation'],
         my_output=my_output,
         wait=True
@@ -68,8 +46,8 @@ def run(params, log_id=None):
         return False
 
     success = params['k8s_handler'].create_operator_group(
-        params['namespace'], 
-        name=params['operator-group-name'],
+        params['__default__']['namespace'], 
+        name=params['__default__']['operator-group-name'],
         confirmation=params['confirmation'], 
         add_target_namespaces=False,
         my_output=my_output, 
@@ -79,8 +57,8 @@ def run(params, log_id=None):
         return False
 
     success = params['k8s_handler'].create_ods_subscription(
-        params['namespace'], 
-        params['name'], 
+        params['__default__']['namespace'], 
+        params['__default__']['name'], 
         channel=params['channel'],
         confirmation=params['confirmation'], 
         my_output=my_output, 
@@ -102,18 +80,19 @@ def run(params, log_id=None):
     if not success:
         return False
 
-    auth = params['k8s_handler'].wait_any_auth(
+    if not params['k8s_handler'].wait_any_auth(
         my_output=my_output
-    )
-    if auth is None:
+    ):
         return False
     
-    success = params['k8s_handler'].wait_auth_ready(
-        auth,
-        my_output=my_output
-    )
-    if not success:
-        return False
+    auths = params['k8s_handler'].get_auths(cache_enabled=False)
+    for auth in auths:
+        success = params['k8s_handler'].wait_auth_ready(
+            auth['name'],
+            my_output=my_output
+        )
+        if not success:
+            return False
     
     my_output.default('')
     my_output.default('Completed tasks')

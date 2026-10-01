@@ -1,111 +1,33 @@
 import os
 import base64
+import traceback
 from lib import file_helper
 from lib import output_helper
 from lib.workflow.ocp_cilium_mesh import common as local_common
-from lib.workflow.ocp_cilium_cni import common as cilium_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-    
-    if 'mesh-id' not in params:
-        return None, 'mesh-id required'
-
-    if not isinstance(params['mesh-id'], int):
-        return None, 'mesh-id param must be int'
-
-    if  params['mesh-id'] < 1 or params['mesh-id'] > 255:
-        return None, 'mesh-id param must be int in [1, 255] range'
-    
-    if 'mesh-name' not in params or params['mesh-name'] is None:
-        return None, 'mesh-name required'
-
-    if not isinstance(params['mesh-name'], str):
-        return None, 'mesh-name param must be str'
-
-    if 'mesh-port' not in params:
-        return None, 'mesh-port required'
-
-    if params['mesh-port'] is not None and not isinstance(params['mesh-port'], int):
-        return None, 'mesh-port param must be int'
-
-    if  params['mesh-port'] < 1 or params['mesh-port'] > 65535:
-        return None, 'mesh-port param must be int in [1, 65535] range'
-    
-    if 'ca-crt' not in params or params['ca-crt'] is None:
-        return None, 'Root ca certificate file required'
-    
-    try:
-        if not os.path.isabs(params['ca-crt']):
-            params['ca-crt'] = os.path.join(
-                params['base_directory'],
-                params['ca-crt']
-            )
-    except BaseException:
-        return None, 'Root ca certificate file path detection failed'
-    
-    content = file_helper.get_file(params['ca-crt'])
-    if content is None:
-        return None, 'Root ca certificate file read failed: %s' % (params['ca-crt'])
-    
-    params['root-ca-crt'] = base64.b64encode(content.encode('utf-8')).decode('utf-8')
-
-    if 'ca-key' not in params or params['ca-key'] is None:
-        return None, 'Root ca private key file required'
-    
-    try:
-        if not os.path.isabs(params['ca-key']):
-            params['ca-key'] = os.path.join(
-                params['base_directory'],
-                params['ca-key']
-            )
-    except BaseException:
-        return None, 'Root ca private key file path detection failed'
-    
-    content = file_helper.get_file(params['ca-key'])
-    if content is None:
-        return None, 'Root ca private key file read failed: %s' % (params['ca-key'])
-    
-    params['root-ca-key'] = base64.b64encode(content.encode('utf-8')).decode('utf-8')
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'mesh-id',
-        'mesh-name',
-        'mesh-port',
-        'ca-crt',
-        'ca-key',
-        'root-ca-crt',
-        'root-ca-key',
-        'verbose',
-        'confirmation',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['mesh-id', False, None, 'int', 1, 255, None, None],
+        ['mesh-name', False, None, 'str', None, None, None, None],
+        ['mesh-port', False, None, 'int', 1, 65535, None, None],
+        ['ca-crt', False, None, 'file', None, None, None, None],
+        ['ca-key', False, None, 'file', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def prepare_secret(params, my_output):
     my_output.default('Root CA Cert', before_newline=True, underline=True)
 
-    secret_namespace = params['namespace']
-    secret_name = params['secret']
+    secret_namespace = params['__default__']['namespace']
+    secret_name = params['__default__']['secret']
 
     my_output.default('Cilium root ca secret')
     my_output.default('- namespace: %s' % (secret_namespace))
@@ -136,9 +58,9 @@ def prepare_secret(params, my_output):
 
 def prepare_cert(params, my_output):     
     success = params['k8s_handler'].create_issuer(
-        params['namespace'], 
-        params['secret'], 
-        params['secret'], 
+        params['__default__']['namespace'], 
+        params['__default__']['secret'], 
+        params['__default__']['secret'], 
         confirmation=params['confirmation'], 
         my_output=my_output, 
         wait=True
@@ -147,9 +69,9 @@ def prepare_cert(params, my_output):
         return False
     
     success = params['k8s_handler'].create_certificate(
-        params['namespace'],  
-        params['certificate'], 
-        params['secret'], 
+        params['__default__']['namespace'],  
+        params['__default__']['certificate'], 
+        params['__default__']['secret'], 
         confirmation=params['confirmation'], 
         my_output=my_output, 
         wait=True
@@ -158,9 +80,9 @@ def prepare_cert(params, my_output):
         return False
     
     success = params['k8s_handler'].create_issuer(
-        params['namespace'], 
-        params['namespace'], 
-        params['certificate'], 
+        params['__default__']['namespace'], 
+        params['__default__']['namespace'], 
+        params['__default__']['certificate'], 
         confirmation=params['confirmation'], 
         my_output=my_output, 
         wait=True
@@ -173,19 +95,51 @@ def prepare_cert(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Cilium - Enable Cluster Mesh', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Enable')
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
     if params is None:
         return False
-
-    if not cilium_common.is_cilium(params, my_output):
+    
+    if params['base_directory'] is not None:
+        if not os.path.isabs(params['ca-crt']):
+            try:
+                params['ca-crt'] = os.path.join(
+                    params['base_directory'],
+                    params['ca-crt']
+                )
+            except BaseException:
+                my_output.error('Root ca certificate file path detection failed: %s' % (params['ca-crt']))
+                return False
+    
+    content = file_helper.get_file(params['ca-crt'])
+    if content is None:
+        my_output.error('Root ca certificate file read failed: %s' % (params['ca-crt']))
         return False
+    
+    params['root-ca-crt'] = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+
+    if params['base_directory'] is not None:
+        if not os.path.isabs(params['ca-key']):
+            try:
+                params['ca-key'] = os.path.join(
+                    params['base_directory'],
+                    params['ca-key']
+                )
+            except BaseException:
+                my_output.error('Root ca private key file path detection failed: %s' % (params['ca-key']))
+                return False
+    
+    content = file_helper.get_file(params['ca-key'])
+    if content is None:
+        my_output.error('Root ca private key file read failed: %s' % (params['ca-key']))
+        return False
+    
+    params['root-ca-key'] = base64.b64encode(content.encode('utf-8')).decode('utf-8')
 
     cilium_config = params['k8s_handler'].get_cilium_config()
     if cilium_config is None:

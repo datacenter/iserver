@@ -4,7 +4,7 @@ OpenShift AI as per [documentation](https://www.redhat.com/en/products/ai/opensh
 
 ![Dependencies](../images/ai/dependencies.png)
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

@@ -1,6 +1,6 @@
 # User
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

@@ -40,7 +40,7 @@ None
   --no-confirm     Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 - gpu operator installed
 - policy created

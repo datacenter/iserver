@@ -1,5 +1,8 @@
+import json
 import yaml
 from lib import filter_helper
+from lib import ip_helper
+from lib.workflow.ocp_cilium_registry import common as cilium_common
 
 
 def get_cilium_config_filename(manifests):
@@ -165,6 +168,8 @@ def validate_cilium_manifests(user_settings, manifests, manifests_type, my_outpu
         my_output.error('CiliumConfig manifest property spec:ipam:operator:clusterPoolIPv4PodCIDRList missing')
         return None
 
+    my_output.default('- spec:ipam:operator:clusterPoolIPv4PodCIDRList found in cilium config')
+
     if manifests_type == 'olm':
         if ipv4_cidr.replace('"', '').replace('QUOTE', '') != user_settings['cluster_network_cidr']:
             my_output.error('CiliumConfig manifest property spec:ipam:operator:clusterPoolIPv4PodCIDRList not aligned with cluster.json cluster_network_cidr')
@@ -183,9 +188,13 @@ def validate_cilium_manifests(user_settings, manifests, manifests_type, my_outpu
         my_output.error('CiliumConfig manifest property spec:ipam:operator:clusterPoolIPv4MaskSize missing')
         return None
 
+    my_output.default('- spec:ipam:operator:clusterPoolIPv4MaskSize found in cilium config')
+
     if ipv4_mask != user_settings['cluster_network_host_prefix']:
         my_output.error('CiliumConfig manifest property spec:ipam:operator:clusterPoolIPv4MaskSize not aligned with cluster.json cluster_network_host_prefix')
         return None
+
+    my_output.default('- spec:ipam:operator:clusterPoolIPv4MaskSize aligned with cluster.json cluster_network_host_prefix')
 
     ipv4_cidr = filter_helper.get_attr(
         cilium_config, 'spec:cilium:nativeRoutingCIDR'
@@ -194,6 +203,8 @@ def validate_cilium_manifests(user_settings, manifests, manifests_type, my_outpu
         if ipv4_cidr.replace('"', '').replace('QUOTE', '') != user_settings['cluster_network_cidr']:
             my_output.error('CiliumConfig manifest property spec:cilium:nativeRoutingCIDR not aligned with cluster.json cluster_network_cidr')
             return None
+
+    my_output.default('- spec:cilium:nativeRoutingCIDR aligned with cluster.json cluster_network_cidr')
 
     if user_settings['cilium']['analyze']:
         cilium_devices = filter_helper.get_attr(cilium_config, 'spec:devices')
@@ -205,13 +216,17 @@ def validate_cilium_manifests(user_settings, manifests, manifests_type, my_outpu
                             my_output.error('Mismatch between cilium device %s and server %s nmstate interfaces [%s]' % (cilium_device, server['hostname'], ', '.join(server['nmstate_interface'])))
                             return None
 
+            my_output.default('- spec:devices verified')
+
         cilium_device = filter_helper.get_attr(cilium_config, 'spec:directRoutingDevice')
         if cilium_device is not None:
             for server in user_settings['server']:
                 if cilium_device not in server['nmstate_interface']:
                     my_output.error('Mismatch between cilium directRoutingDevice %s and server %s nmstate interfaces [%s]' % (cilium_device, server['hostname'], ', '.join(server['nmstate_interface'])))
                     return None
-                
+
+            my_output.default('- spec:directRoutingDevice verified')
+
     return manifests
 
 
@@ -260,6 +275,9 @@ def get_cilium_manifests(user_settings, manifests, my_output, silent=False):
                 my_output.default('- cilium version: %s' % (cilium_version))
 
     if user_settings['cilium']['manage']:
+        if not silent:
+            my_output.default('- automatic fixups enabled')
+
         manifests = fixup_cilium_manifests(user_settings, manifests, manifests_type)
         if manifests is None:
             return None
@@ -269,3 +287,39 @@ def get_cilium_manifests(user_settings, manifests, my_output, silent=False):
 
     manifests = validate_cilium_manifests(user_settings, manifests, manifests_type, my_output)
     return manifests
+
+def update_access_token(user_settings, data, infra, my_output, log_id):
+    registry_settings = cilium_common.get_registry_settings(my_output=my_output, log_id=log_id)
+    if registry_settings is None:
+        my_output.error('Isovalent registry settings not defined')
+        return None, None, None
+    
+    success = cilium_common.check_identity_token(
+        registry_settings['registry'], 
+        registry_settings['identity_token']
+    )
+    if not success:
+        my_output.error('Invalid Isovalent identity token')
+        return None, None, None
+
+    user_settings['cilium']['access_token'] = cilium_common.create_access_token(
+        registry_settings['registry'], 
+        registry_settings['identity_token'],
+        description='openshift-%s' % (user_settings['name'])
+    )
+    if user_settings['cilium']['access_token'] is None:
+        my_output.error('Isovalent access token create failed')
+        return None, None, None
+
+    credentials = dict(auth=ip_helper.encode_text_64('%s:%s' % (
+        user_settings['cilium']['access_token']['username'],
+        user_settings['cilium']['access_token']['access_token']
+    )))
+
+    pull_secret = json.loads(data['pull_secret'])
+    pull_secret['auths'][registry_settings['registry']] = credentials
+    data['pull_secret'] = json.dumps(pull_secret)
+    infra['pull_secret'] = json.dumps(pull_secret)
+    my_output.default(json.dumps(pull_secret, indent=4), wrap='~~~')
+
+    return user_settings, data, infra

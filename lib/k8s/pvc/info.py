@@ -26,9 +26,9 @@ class K8sPvcInfo():
         )
         info.update(metadata_info)
 
-        info['access_modes'] = self.get(pvc_mo, 'status:access_modes', on_error=[], on_none=[])
+        info['access_modes'] = self.get(pvc_mo, 'status:accessModes', on_error=[], on_none=[])
         if len(info['access_modes']) == 0:
-            info['access_modes'] = self.get(pvc_mo, 'spec:access_modes', on_error=[], on_none=[])
+            info['access_modes'] = self.get(pvc_mo, 'spec:accessModes', on_error=[], on_none=[])
         info['access_modes_string'] = ','.join(
             info['access_modes']
         )
@@ -67,9 +67,9 @@ class K8sPvcInfo():
             info['__Output']['phase'] = 'Red'
             info['ready'] = False
 
-        info['volume_name'] = self.get(pvc_mo, 'spec:volume_name')
-        info['volume_mode'] = self.get(pvc_mo, 'spec:volume_mode')
-        info['storage_class_name'] = self.get(pvc_mo, 'spec:storage_class_name')
+        info['volume_name'] = self.get(pvc_mo, 'spec:volumeName')
+        info['volume_mode'] = self.get(pvc_mo, 'spec:volumeMode')
+        info['storage_class_name'] = self.get(pvc_mo, 'spec:storageClassName')
         info['storage_provisioner'] = self.get(pvc_mo, 'metadata:annotations:volume.kubernetes.io/storage-provisioner', on_error='--')
         info['selected_node'] = self.get(pvc_mo, 'metadata:annotations:volume.kubernetes.io/selected-node', on_error='--')
 
@@ -197,6 +197,15 @@ class K8sPvcInfo():
 
         return info
 
+    def get_pvcs_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'PerstistentVolumeClaim',
+            my_output=my_output,
+            prefix=prefix
+        )
+
     def match_pvc(self, pvc_info, object_filter):
         if object_filter is None or len(object_filter) == 0:
             return True
@@ -219,6 +228,16 @@ class K8sPvcInfo():
             if key == 'sc':
                 key_found = True
                 if not filter_helper.match_string(value, pvc_info['storage_class_name']):
+                    return False
+
+            if key == 'scs':
+                key_found = True
+                value_found = False
+                for sc_name in value.split(','):
+                    if filter_helper.match_string(sc_name, pvc_info['storage_class_name']):
+                        value_found = True
+
+                if not value_found:
                     return False
 
             if key == 'cron':
@@ -276,7 +295,7 @@ class K8sPvcInfo():
 
         return self.pvc
 
-    def get_pvcs(self, object_filter=None, usage_info=False, return_mo=False, cache_enabled=True):
+    def get_pvcs(self, object_filter=None, usage_info=False, exclude_pods=False, return_mo=False, cache_enabled=True):
         all_pvcs = self.get_pvcs_info(cache_enabled=cache_enabled)
         if all_pvcs is None:
             return None
@@ -284,7 +303,9 @@ class K8sPvcInfo():
         pvcs = []
 
         if usage_info and not cache_enabled:
-            self.get_pods(cache_enabled=False)
+            if not exclude_pods:
+                self.get_pods(cache_enabled=False)
+                
             self.get_pvs(cache_enabled=False)
             self.get_virtual_machine_instances(cache_enabled=False)
             self.get_data_volumes(cache_enabled=False)
@@ -320,7 +341,7 @@ class K8sPvcInfo():
             return False
         return pvc_info['used']
 
-    def get_pvc(self, namespace, name, usage_info=False, return_mo=False, cache_enabled=True):
+    def get_pvc(self, namespace, name, usage_info=False, exclude_pods=False, return_mo=False, cache_enabled=True):
         object_filter = []
         object_filter.append(
             'namespace:%s' % (namespace)
@@ -331,6 +352,7 @@ class K8sPvcInfo():
         pvcs = self.get_pvcs(
             object_filter=object_filter,
             usage_info=usage_info,
+            exclude_pods=exclude_pods,
             return_mo=return_mo,
             cache_enabled=cache_enabled
         )

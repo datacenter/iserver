@@ -1,31 +1,21 @@
-# Splunk Operator - Get Information
+# Splunk - Get Information
+
+[[Back]](./README.md)
 
 ## Workflow
 
 - check operator subscription 
 - check standalone instances
 
-## Requirements
-
-None
-
 ## Configurable options
 
 ```
 # iserver get ocp splunk 
-  --cluster TEXT                Cluster Name
+  --cluster TEXT   Cluster name
+  -v, --view TEXT  [state|res|all]  [default: state]
 ```
 
-## Non-configurable defaults
-
-```
-{
-    "namespace": "splunk-operator",
-    "name": "splunk-operator"
-}
-```
-
-## Example
+## Example (view:state)
 
 ```
 # iserver get ocp splunk --cluster bm1
@@ -33,32 +23,67 @@ None
 OpenShift Workflow - Splunk Operator - Get Information
 ======================================================
 
+OpenShift Cluster: bm1
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:*****]
-- api [*****]: ok
-- dns resolution: ok
+Collecting state...
 
 
-
-Operator
---------
-- subscription          : splunk-operator/splunk-operator
-- package               : openshift-marketplace/certified-operators/splunk-operator
-- channel               : stable
-- install plan          : splunk-operator/install-xd8w9
-- install plan approved : ✓
-- installed csv         : splunk-operator.v3.0.0
-- latest_csv            : ✓
+State
+-----
+- package   : openshift-marketplace/certified-operators/splunk-operator
+- csv       : splunk-operator.v3.1.0
+- resources : V
 
 
-+----+-----------------+-------+-----+-----+---------+-------+--------------------------------------------------------------------------+
-| ID | Standalone      | Ready | Pod | PVC | Service | Route | URL                                                                      |
-+----+-----------------+-------+-----+-----+---------+-------+--------------------------------------------------------------------------+
-| 1  | splunk-operator | ✓     | ✓   | 2/2 | ✓       | 1/1   | http://splunk-s1-standalone-service-splunk-operator.apps.bm1.domain.com |
-|    | s1              |       |     |     |         |       | (admin, password)                                                        |
-+----+-----------------+-------+-----+-----+---------+-------+--------------------------------------------------------------------------+
+
+Splunk Custom Resources
+-----------------------
+- standalone          : 1
+- cluster master      : 0
+- cluster manager     : 0
+- indexer cluster     : 0
+- license manager     : 0
+- license master      : 0
+- monitoring console  : 0
+- search head cluster : 0
+
+
+View: state (def), res, all
+```
+
+## Example (view:res)
+
+```
+# iserver get ocp splunk --cluster bm1 -v res
+
+OpenShift Workflow - Splunk Operator - Get Information
+======================================================
+
+OpenShift Cluster: bm1
+
+Collecting state...
+
+
+Splunk Custom Resources
+-----------------------
+- standalone          : 1
+- cluster master      : 0
+- cluster manager     : 0
+- indexer cluster     : 0
+- license manager     : 0
+- license master      : 0
+- monitoring console  : 0
+- search head cluster : 0
+
+
++----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
+| ID | Standalone      | Ready | Pod | PVC | Service | Route | URL                                                                        |
++----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
+| 1  | splunk-operator | V     | V   | 2/2 | V       | 1/1   | http://splunk-inst1-standalone-service-splunk-operator.apps.bm1.domain.com | 
+|    | inst1           |       |     |     |         |       |                                                                            | 
++----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
+
+View: state (def), res, all
 ```
 
 [[Back]](./README.md)

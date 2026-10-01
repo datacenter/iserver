@@ -1,54 +1,30 @@
 import os
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_cli import apply as task_handler
-
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
+from lib.workflow import ocp_common
 
 
 @click.command("file")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
 @click.option("--namespace", default='', callback=validations.empty_string_to_none, show_default=True, help="Namespace name")
-@click.option("--location", multiple=True, help="YAML crds location")
+@click.option("--filename", multiple=True, help="YAML crds filename")
 @click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
 def set_ocp_file_command(
         ctx, 
-        cluster_name, 
+        cluster_names, 
         namespace,
-        location,
+        filename,
         no_confirm
     ):
     """Set openshift crds from file(s)"""
 
-    try:
-        params = {}
-        params['cluster'] = cluster_name
-        params['namespace'] = namespace
-        params['location'] = []
-        for item in location:
-            params['location'].append(item)
-        params['confirmation'] = not no_confirm
-        
-        success = task_handler.run(
-            params,
-            log_id=ctx.run_id
-        )
-        if not success:
-            raise ErrorExit
-        
-    except ErrorExit:
-        sys.exit(1)
+    task = {}
+    task['file'] = {}
+    task['file']['namespace'] = namespace
+    task['file']['filename'] = filename
 
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.set_workflow(cluster_names, 'cli', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

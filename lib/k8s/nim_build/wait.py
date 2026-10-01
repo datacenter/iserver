@@ -1,48 +1,25 @@
-import time
-
-
 class K8sNimBuildWait():
     def __init__(self):
         pass
 
-    def wait_nim_build(self, namespace, name, max_time=60):
-        start_time = int(time.time())
-        while True:
-            info = self.get_nim_build(
-                namespace,
-                name,
-                cache_enabled=False
-            )
-            if info is not None:
-                return True
+    def wait_nim_build(self, namespace, name, match_properties={}, break_properties={}, my_output=None, prompt='NIMBuild', max_time=60):
+        return self.wait_managed_object(
+            'nim_build',
+            name,
+            namespace=namespace,
+            match_properties=match_properties,
+            break_properties=break_properties,
+            my_output=my_output,
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            max_time=max_time
+        )
 
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                self.log.error(
-                    'k8s.wait_no_nim_build',
-                    'Max time reached: %s/%s' % (namespace, name)
-                )
-                return False
-
-            time.sleep(5)
-
-    def wait_no_nim_build(self, namespace, name, max_time=60):
-        start_time = int(time.time())
-        while True:
-            info = self.get_nim_build(
-                namespace,
-                name,
-                cache_enabled=False
-            )
-            if info is None:
-                return True
-
-            duration = int(time.time()) - start_time
-            if duration > max_time:
-                self.log.error(
-                    'k8s.wait_no_nim_build',
-                    'Max time reached: %s/%s' % (namespace, name)
-                )
-                return False
-
-            time.sleep(5)
+    def wait_no_nim_build(self, namespace, name, max_time=60, my_output=None, prompt='NIMBuild'):
+        return self.wait_no_managed_object(
+            'nim_build',
+            name,
+            namespace=namespace,
+            my_output=my_output,
+            prompt='Wait for no %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            max_time=max_time
+        )

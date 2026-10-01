@@ -1,5 +1,7 @@
+from lib.k8s import output as k8s_output
 from lib import output_helper
 from lib.workflow.ocp_iotel import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -36,51 +38,51 @@ def validate(params):
         'verbose',
         'check-verbose'
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys), None
 
 
 def generate_names(params, my_output):
     my_output.default('Resources', underline=True, before_newline=True)
 
-    my_output.default('namespace: %s' % (params['namespace']))
+    my_output.default('namespace: %s' % (params['__default__']['namespace']))
 
-    params['secret_namespace'] = params['namespace']
-    params['secret_name'] = params['secret-basename']
+    params['secret_namespace'] = params['__default__']['namespace']
+    params['secret_name'] = params['__default__']['secret-basename']
     if len(params['suffix']) > 0:
         params['secret_name'] = '%s-%s' % (params['secret_name'], params['suffix'])
 
     my_output.default('intersight-otel secret: %s/%s' % (params['secret_namespace'], params['secret_name']))
 
-    params['intersight_config_namespace'] = params['namespace']
-    params['intersight_config_name'] = params['intersight-basename']
+    params['intersight_config_namespace'] = params['__default__']['namespace']
+    params['intersight_config_name'] = params['__default__']['intersight-basename']
     if len(params['suffix']) > 0:
         params['intersight_config_name'] = '%s-%s' % (params['intersight_config_name'], params['suffix'])
 
     my_output.default('intersight-otel config map: %s/%s' % (params['intersight_config_namespace'], params['intersight_config_name']))
     
-    params['otel_config_namespace'] = params['namespace']
-    params['otel_config_name'] = params['otel-basename']
+    params['otel_config_namespace'] = params['__default__']['namespace']
+    params['otel_config_name'] = params['__default__']['otel-basename']
     if len(params['suffix']) > 0:
         params['otel_config_name'] = '%s-%s' % (params['otel_config_name'], params['suffix'])
 
     my_output.default('otel-collector config map: %s/%s' % (params['otel_config_namespace'], params['otel_config_name']))
     
-    params['deployment_namespace'] = params['namespace']
-    params['deployment_name'] = params['deployment-basename']
+    params['deployment_namespace'] = params['__default__']['namespace']
+    params['deployment_name'] = params['__default__']['deployment-basename']
     if len(params['suffix']) > 0:
         params['deployment_name'] = '%s-%s' % (params['deployment_name'], params['suffix'])
 
     my_output.default('deployment: %s/%s' % (params['deployment_namespace'], params['deployment_name']))
 
-    params['service_namespace'] = params['namespace']
-    params['service_name'] = params['service-basename']
+    params['service_namespace'] = params['__default__']['namespace']
+    params['service_name'] = params['__default__']['service-basename']
     if len(params['suffix']) > 0:
         params['service_name'] = '%s-%s' % (params['service_name'], params['suffix'])
 
     my_output.default('service: %s/%s' % (params['service_namespace'], params['service_name']))
 
-    params['service_monitor_namespace'] = params['namespace']
-    params['service_monitor_name'] = params['service-monitor-basename']
+    params['service_monitor_namespace'] = params['__default__']['namespace']
+    params['service_monitor_name'] = params['__default__']['service-monitor-basename']
     if len(params['suffix']) > 0:
         params['service_monitor_name'] = '%s-%s' % (params['service_monitor_name'], params['suffix'])
 
@@ -89,7 +91,7 @@ def generate_names(params, my_output):
     return params
 
 
-def delete_instance(params, my_output):        
+def delete_instance(params, my_output, k8s_output_handler):        
     success = params['k8s_handler'].delete_service_monitor(
         params['service_monitor_namespace'], 
         params['service_monitor_name'],
@@ -144,16 +146,17 @@ def delete_instance(params, my_output):
     if not success:
         return False
     
-    if not params['delete-namespace']:
+    if not params['__default__']['delete-namespace']:
         return True
     
-    used = params['k8s_handler'].check_namespace_usage_and_state(
-        params['namespace'],
-        my_output=my_output
+    used = params['k8s_handler'].check_namespace_usage(
+        params['__default__']['namespace'],
+        my_output=my_output,
+        k8s_output_handler=k8s_output_handler
     )
     if not used:
         success = params['k8s_handler'].delete_namespace(
-            params['namespace'],
+            params['__default__']['namespace'],
             check_usage=False,
             my_output=my_output,
             wait=True
@@ -164,7 +167,7 @@ def delete_instance(params, my_output):
     return True
 
 
-def wipe(params, my_output):
+def wipe(params, my_output, k8s_output_handler):
     for deployment in params['deployment']:
         success = params['k8s_handler'].delete_deployment(
             deployment['namespace'], 
@@ -217,16 +220,17 @@ def wipe(params, my_output):
         if not success:
             return False
         
-    if not params['delete-namespace']:
+    if not params['__default__']['delete-namespace']:
         return True
     
-    used = params['k8s_handler'].check_namespace_usage_and_state(
-        params['namespace'],
-        my_output=my_output
+    used = params['k8s_handler'].check_namespace_usage(
+        params['__default__']['namespace'],
+        my_output=my_output,
+        k8s_output_handler=k8s_output_handler
     )
     if not used:
         success = params['k8s_handler'].delete_namespace(
-            params['namespace'],
+            params['__default__']['namespace'],
             check_usage=False,
             my_output=my_output,
             wait=True
@@ -239,27 +243,28 @@ def wipe(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Intersight Open Telemetry (iotel) - Delete Instance', before_newline=True, after_newline=True, double_underline=True)
+    k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Instance')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     if params['wipe']:
         params = local_common.get_resources(params, my_output)
         if params is None:
             return False
 
-        if not wipe(params, my_output):
+        if not wipe(params, my_output, k8s_output_handler):
             return False
     else:
         params = generate_names(params, my_output)
-        if not delete_instance(params, my_output):
+        if not delete_instance(params, my_output, k8s_output_handler):
             return False
 
     my_output.default('')

@@ -10,7 +10,7 @@ Every cluster node CRD with extra annotation for
 - management ip
 - Intersight server identity
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

@@ -29,7 +29,8 @@ class K8sObjectStoreCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_object_store_mo(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('object store create failed')
             return False

@@ -50,6 +50,58 @@ class K8sStorageClassInfo():
              
         return info
 
+    def get_storage_classes_summary(self, infos, my_output=None, prefix=''):
+        if infos is None:
+            summary = {}
+            summary['__Output'] = {}
+            summary['summary'] = '--'
+            summary['__Output']['summary'] = 'Red'
+        else:
+            summary = {}
+            summary['__Output'] = {}
+            summary['count'] = 0
+            summary['default'] = None
+
+            for info in infos:
+                summary['count'] += 1
+                if info['default']:
+                    summary['default'] = info['name']
+
+            if summary['count'] > 0 :
+                summary['__Output']['count'] = 'Green'
+            else:
+                summary['__Output']['count'] = 'Red'
+    
+        if my_output is not None:
+            if summary['default'] is None:
+                my_output.default(
+                    '%s%s StorageClass without default' % (
+                        prefix,
+                        my_output.add_color(
+                            '%s' % (
+                                summary['count']
+                            ),
+                            summary['__Output']['count']
+                        )
+                    )
+                )
+
+            if summary['default'] is not None:
+                my_output.default(
+                    '%s%s StorageClass with default %s' % (
+                        prefix,
+                        my_output.add_color(
+                            '%s' % (
+                                summary['count']
+                            ),
+                            summary['__Output']['count']
+                        ),
+                        summary['default']
+                    )
+                )
+
+        return summary
+
     def get_storage_classes_info(self, cache_enabled=True):
         if cache_enabled:
             if self.storage_class is not None:
@@ -85,6 +137,17 @@ class K8sStorageClassInfo():
             if key == 'name':
                 key_found = True
                 if not filter_helper.match_string(value, storage_class_info['name']):
+                    return False
+
+            if key == 'names':
+                key_found = True
+                value_found = False
+                for name in value.split(','):
+                    if filter_helper.match_string(name, storage_class_info['name']):
+                        value_found = True
+                        break
+
+                if not value_found:
                     return False
 
             if key == 'provisioner':

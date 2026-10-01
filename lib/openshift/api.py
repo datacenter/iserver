@@ -1,3 +1,4 @@
+import os
 import json
 import time
 import traceback
@@ -36,6 +37,9 @@ class Api():
             json.dumps(data, indent=4)
         )
 
+        if os.path.isfile('/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit'):
+            os.environ['REQUESTS_CA_BUNDLE'] = '/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit'
+            
         requests.packages.urllib3.disable_warnings()
         start_time = int(time.time() * 1000)
         error = None

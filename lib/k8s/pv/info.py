@@ -18,15 +18,9 @@ class K8sPvInfo():
         if pv_mo is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
+        info = self.get_base_info(pv_mo)
 
-        metadata_info = self.get_metadata_info(
-            pv_mo
-        )
-        info.update(metadata_info)
-
-        info['access_modes'] = self.get(pv_mo, 'spec:access_modes', on_error=[], on_none=[])
+        info['access_modes'] = self.get(pv_mo, 'spec:accessModes', on_error=[], on_none=[])
         info['access_modes_string'] = ','.join(
             info['access_modes']
         )
@@ -52,12 +46,12 @@ class K8sPvInfo():
 
             info['access_modesT'].append(item)
             
-        info['volume_mode'] = self.get(pv_mo, 'spec:volume_mode')
+        info['volume_mode'] = self.get(pv_mo, 'spec:volumeMode')
         info['capacity'] = self.get(pv_mo, 'spec:capacity')
         info['csi_driver'] = self.get(pv_mo, 'spec:csi:driver')
         info['csi_driverT'] = self.get(pv_mo, 'spec:csi:driver', on_error='--')
-        info['csi_handle'] = self.get(pv_mo, 'spec:csi:volume_handle')
-        info['csi_handleT'] = self.get(pv_mo, 'spec:csi:volume_handle', on_error='--')
+        info['csi_handle'] = self.get(pv_mo, 'spec:csi:volumeHandle')
+        info['csi_handleT'] = self.get(pv_mo, 'spec:csi:volumeHandle', on_error='--')
 
         owner = self.get(pv_mo, 'metadata:labels:storage.openshift.com/owner-kind')
 
@@ -89,8 +83,8 @@ class K8sPvInfo():
             else:
                 info['deviceT'] = '%s [%s]' % (info['deviceT'], info['device_hostname'])
 
-        info['pvc_namespace'] = self.get(pv_mo, 'spec:claim_ref:namespace')
-        info['pvc_name'] = self.get(pv_mo, 'spec:claim_ref:name')
+        info['pvc_namespace'] = self.get(pv_mo, 'spec:claimRef:namespace')
+        info['pvc_name'] = self.get(pv_mo, 'spec:claimRef:name')
         if info['pvc_namespace'] is None:
             info['pvc_namespace_nameT'] = '--'
         else:    
@@ -106,7 +100,7 @@ class K8sPvInfo():
         if info['phase'] is not None and info['phase'] == 'Available':
             info['__Output']['phase'] = 'Blue'
 
-        info['storage_class'] = self.get(pv_mo, 'spec:storage_class_name')
+        info['storage_class'] = self.get(pv_mo, 'spec:storageClassName')
 
         return info
 
@@ -138,7 +132,12 @@ class K8sPvInfo():
 
                 if not found:
                     return False
-                
+            
+            if key == 'phase':
+                key_found = True
+                if not filter_helper.match_string(value, pv_info['phase']):
+                    return False
+            
             if key == 'local-volume':
                 key_found = True
                 if not filter_helper.match_string(value, pv_info['local_volume']):

@@ -1,9 +1,11 @@
-# LVM Storage Operator - Delete All
+# LVM Storage - Delete All
+
+[[Back]](./README.md)
 
 ## Workflow
 
 Workflows deployed in sequence
-- [delete dashboard](./delete_dashboard.md)
 - [delete cluster](./delete_cluster.md)
+- [delete operator](./delete_operator.md)
 
 [[Back]](./README.md)

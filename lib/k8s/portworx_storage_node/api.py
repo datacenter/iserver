@@ -26,4 +26,5 @@ class K8sPortworxStorageNodeApi():
         return response
 
     def delete_portworx_storage_node_mo(self, namespace, name):
-        return self.delete_resource('StorageNode', 'core.libopenstorage.org/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('StorageNode', 'core.libopenstorage.org/v1', name, namespace=namespace)
+        return success

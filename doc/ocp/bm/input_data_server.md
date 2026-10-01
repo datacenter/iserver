@@ -107,6 +107,6 @@ $ iserver get redfish fi --ip 10.1.1.1 --username admin --password pass
 
 - max of 2 interfaces can be defined in the liast
 - [nmstate-yaml](./input_data_nmstate.md) file must exist in the same directory 
-- all variables must [resolve](https://wwwin-github.cisco.com/emear-telcocloud/ocp-bm-cluster/blob/master/variables.md)
+- all variables must [resolve](https://github.com/akaliwod/ocp-bm-cluster/blob/main/variables.md)
 
 [[Back]](../BareMetalCluster.md) [[Next]](./input_data_redfish.md) [[Prev]](./input_data_cluster_base.md)

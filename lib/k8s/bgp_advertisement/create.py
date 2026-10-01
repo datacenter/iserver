@@ -3,22 +3,14 @@ class K8sBgpAdvertisementCreate():
         pass
 
     def create_bgp_advertisement(self, body, my_output=None, confirmation=False, wait=True):
-        if not self.create_resource(body, object_name='bgp_advertisement', my_output=my_output, confirmation=confirmation):
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_bgp_advertisement(
-            body['metadata']['namespace'],
-            body['metadata']['name'],
-            max_time=60,
-            my_output=my_output
+        success = self.create_resource_and_wait(
+            body, 
+            'bgp_advertisement', 
+            wait=wait,
+            my_output=my_output, 
+            confirmation=confirmation
         )
-        if not success:
-            return False
-
-        return True
+        return success
     
     def create_or_update_bgp_advertisement(
             self, 

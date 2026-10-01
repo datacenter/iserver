@@ -9,29 +9,40 @@ class K8sVastDriverDelete():
             cache_enabled=False
         )
 
-        success = self.delete_resource(
+        if info is not None:
+            for resource in info['resource']:
+                resource['resources'] = None
+
+                if resource['kind'] == 'Deployment':
+                    resource['resources'] = self.get_deployment_resources(
+                        resource['namespace'],
+                        resource['name'],
+                        cache_enabled=False
+                    )
+
+                if resource['kind'] == 'DaemonSet':
+                    resource['resources'] = self.get_daemon_set_resources(
+                        resource['namespace'],
+                        resource['name'],
+                        cache_enabled=False
+                    )
+
+        success = self.delete_resource_and_wait(
             'VastCSIDriver', 
             'storage.vastdata.com/v1',
             name, 
+            'vast_driver',
             namespace=namespace, 
-            object_name='vast_driver',
-            my_output=my_output
-        )
-        if not success:
-            return False
-        
-        if not wait:
-            return True
-        
-        success = self.wait_no_vast_driver(
-            namespace,
-            name,
-            max_time=60,
+            wait=wait, 
+            max_time=60, 
             my_output=my_output
         )
         if not success:
             return False
 
+        if not wait:
+            return True
+        
         if info is None:
             return True
         

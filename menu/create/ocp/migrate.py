@@ -91,7 +91,7 @@ def create_ocp_migrate_command(
                 ctx.my_output.error('Virtual machine not found: %s/%s' % (tenant_name, vm_name))
                 raise ErrorExit
 
-            osp_output_handler.print_virtual_machines(
+            osp_output_handler.print_virtual_machines_state(
                 [osp_virtual_machine_info]
             )
 

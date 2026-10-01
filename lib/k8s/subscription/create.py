@@ -86,9 +86,9 @@ class K8sSubscriptionCreate():
                 my_output.default('Subscription already defined')
             return True
 
-        package_info = self.get_package(
+        package_info = self.get_package_catalog(
             subscription_name,
-            catalog=subscrition_source
+            subscrition_source
         )
         if package_info is None:
             if my_output is not None:
@@ -206,7 +206,8 @@ class K8sSubscriptionCreate():
             if not get_confirmation():
                 return False
 
-        if not self.create_resource(body):
+        success, _ = self.create_resource(body)
+        if not success:
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

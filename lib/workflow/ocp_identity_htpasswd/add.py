@@ -6,6 +6,7 @@ import bcrypt
 from lib import file_helper
 from lib import output_helper
 from lib.workflow.ocp_identity_htpasswd import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
@@ -97,8 +98,22 @@ def validate(params):
 
     if not isinstance(params['confirmation'], bool):
         return None, 'confirmation param must be true or false'
-    
-    return params, None
+
+    allowed_keys = [
+        'cluster',
+        'filename',
+        'content',
+        'userpass',
+        'provider',
+        'mode',
+        'users',
+        'admins',
+        'verbose',
+        'check-verbose',
+        'confirmation',
+        '__break_on_error__'
+    ]
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def validate_add(params, my_output):
@@ -297,14 +312,14 @@ def run_post(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Add HTPasswd Identity Provider', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Add')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 

@@ -6,7 +6,7 @@ from lib import file_helper
 from lib import filter_helper
 from lib import ip_helper
 from lib import template
-from lib.workflow.ocp_task import create as task
+from lib.workflow.task import create as task
 from lib.openshift import console
 
 
@@ -162,9 +162,7 @@ def validate_web(user_settings, my_output):
 def validate_tasks(user_settings, my_output):
     if 'tasks' in user_settings:
         new_tasks, error = task.validate(
-            user_settings['tasks'], 
-            user_settings['name'], 
-            cluster_settings=user_settings
+            user_settings['tasks']
         )
         if error is not None:
             my_output.error(error)
@@ -175,6 +173,7 @@ def validate_tasks(user_settings, my_output):
 
 def validate_cilium(user_settings, my_output):
     settings = {}
+    settings['version'] = None
     settings['verify'] = True
     settings['analyze'] = True
     settings['manage'] = True
@@ -191,9 +190,14 @@ def validate_cilium(user_settings, my_output):
         if key not in user_settings['cilium']:
             user_settings['cilium'][key] = settings[key]
 
-        if not isinstance(user_settings['cilium'][key], bool):
-            my_output.error('cilium.%s must be true or false' % (key))
-            return None
+        if key == 'version':
+            if user_settings['cilium'][key] is not None and not isinstance(user_settings['cilium'][key], str):
+                my_output.error('cilium.%s must be string' % (key))
+                return None
+        else:
+            if not isinstance(user_settings['cilium'][key], bool):
+                my_output.error('cilium.%s must be true or false' % (key))
+                return None
 
     return user_settings
 
@@ -697,6 +701,7 @@ def validate_iso(user_settings, my_output):
     iso_defaults['timeout'] = 600
     iso_defaults['core'] = None
     iso_defaults['manual'] = False
+    iso_defaults['download'] = 'auto'
     iso_defaults['ip'] = None
     iso_defaults['username'] = None
     iso_defaults['password'] = None

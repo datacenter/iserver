@@ -66,7 +66,7 @@ class K8sStorageClassDefault():
             if my_output is not None:
                 my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
     
-            success = self.patch_storage_class_mo(body)
+            success = self.patch_resource(body)
             if not success:
                 if my_output is not None:
                     my_output.error('rest api failed')
@@ -79,7 +79,7 @@ class K8sStorageClassDefault():
         if my_output is not None:
             my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
 
-        success = self.patch_storage_class_mo(body)
+        success = self.patch_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed')
@@ -110,7 +110,7 @@ class K8sStorageClassDefault():
         if my_output is not None:
             my_output.default(yaml.dump(body), before_newline=True, wrap='~~~')
 
-        success = self.patch_storage_class_mo(body)
+        success = self.patch_resource(body)
         if not success:
             if my_output is not None:
                 my_output.error('rest api failed')

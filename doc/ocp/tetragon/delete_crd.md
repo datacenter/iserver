@@ -1,4 +1,4 @@
-# Tetragon Enterprise Operator - Delete Policy
+# Tetragon - Delete Policy
 
 ## Workflow
 
@@ -22,46 +22,28 @@
 ## Example
 
 ```
-# iserver delete ocp tetragon --mode crd --cluster bm1 --crd my-crd-absolute-location
+# iserver delete ocp tetragon --cluster bm1 --mode crd --filename C:\tmp\policy
 
-OpenShift Workflow - Tetragon Operator - Delete Policy
-======================================================
+OpenShift Workflow - Tetragon - Delete Policy
+=============================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "crd": "user-defined",
-    "check-verbose": true,
-    "namespace": "tetragon",
-    "name": "tetragon-operator",
-    "operator-group-name": "tetragon",
-    "catalog-namespace": "tetragon",
-    "catalog-name": "tetragon-catalog",
-    "operator-cm-namespace": "tetragon",
-    "operator-cm-name": "tetragon-operator-config",
-    "cm-namespace": "tetragon",
-    "cm-name": "tetragon-config",
-    "sm-namespace": "tetragon",
-    "sm-name": "tetragon",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
+File: .\tasks\tetragon\policy\policy.yaml
 
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Delete Tracing Policy
----------------------
+Delete TracingPolicy
+--------------------
 - name: upper-layers
-- wait for no tracing policy
+- deleted
+- wait for no TracingPolicy upper-layers [timeout:60s]
 
 Completed tasks
 - CRDs deleted
+
++----+---------+----------+------------+---------+---------+--------------+
+| ID | Target  | Scope    | Workflow   | Changes | Success | Duration [s] |
++----+---------+----------+------------+---------+---------+--------------+
+| 1  | ocp:bm1 | tetragon | delete crd | 1       | V       | 2            | 
++----+---------+----------+------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

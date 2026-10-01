@@ -1,4 +1,4 @@
-# LVM Storage Operator - Delete operator
+# LVM Storage - Delete operator
 
 ## Workflow
 
@@ -20,66 +20,59 @@ LVM Cluster instance must not exist.
 ## Example
 
 ```
-# iserver delete ocp lvm --mode operator
+# iserver delete ocp lvm --cluster bm1 --mode operator
+ 
+OpenShift Workflow - LVM - Delete Operator
+==========================================
 
-OpenShift Workflow - LVM Operator - Delete Operator
-===================================================
+OpenShift Cluster: bm1
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "lvms-operator",
-    "operator-group-name": "lvm-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+Operator
+- subscription          : openshift-storage/lvms
+- package               : openshift-marketplace/redhat-operators/lvms-operator
+- channel               : stable-4.18
+- install plan          : openshift-storage/install-2658c
+- install plan approved : ✓
+- installed csv         : lvms-operator.v4.18.4
+- latest_csv            : ✓
 
 
 Delete Subscription
 -------------------
 - subscription: openshift-storage/lvms-operator
 - checking cluster service version...
-- csv found and will be deleted: openshift-storage/lvms-operator.v4.18.3
+- csv found and will be deleted: openshift-storage/lvms-operator.v4.18.4
 - wait for no subscription
-- check cluster service version: openshift-storage/lvms-operator.v4.18.3
+- check cluster service version: openshift-storage/lvms-operator.v4.18.4
 - wait for no csv
-Wait for deployments deleted (optional: False)...
-- openshift-storage/lvms-operator
-Wait for deamon sets deleted...
-- openshift-storage/vg-manager
+- wait for no Deployment openshift-storage/lvms-operator [timeout:180s]
+- wait for no ReplicaSet openshift-storage/lvms-operator-5d8fcfdfbc [timeout:180s]
+- wait for no ReplicaSet openshift-storage/lvms-operator-776775ff8f [timeout:180s]
+- wait for no Pod openshift-storage/lvms-operator-776775ff8f-rh4dc [timeout:180s]
+- wait for no DaemonSet openshift-storage/vg-manager [timeout:180s]
+Subscription lvm resources gone
 
-Delete Operator Group
----------------------
-- namespace: openshift-storage
-- name: openshift-storage-operatorgroup
-- wait for no operator group
+OperatorGroup openshift-storage/lvm-operator-group already deleted
+
+Namespace [openshift-storage] resources
+- no deployments
+- no daemon_sets
+- no replica_sets
+- no pods
+- no services
+- no pvcs
+- no jobs
 
 Delete Namespace
 ----------------
 - name: openshift-storage
-
-Namespace [openshift-storage] resources
-- no pods
-- no deployments
-- no daemon sets
-- no replica sets
-- no services
-- no pvcs
 - wait for no namespace
 
-Completed tasks
-- Subscription and csv deleted
-- Operator Group deleted
-- Namespace deleted
++----+---------+-------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
++----+---------+-------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | lvm   | delete operator | 3       | V       | 76           | 
++----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

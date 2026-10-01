@@ -153,7 +153,7 @@ class K8sOcsInitializationInfo():
 
         return None
 
-    def delete_namespaced_ocs_initialization(self, namespace, my_output=None, wait=True):
+    def delete_namespaced_ocs_initialization(self, namespace, my_output=None, wait=True, optional=False):
         if my_output is not None:
             my_output.default('Delete odf ocs initialization', before_newline=True, underline=True)
             my_output.default('- namespace: %s' % (namespace))
@@ -162,6 +162,8 @@ class K8sOcsInitializationInfo():
             object_filter=['namespace:%s' % (namespace)]
         )
         if items is None:
+            if optional:
+                return True
             if my_output is not None:
                 my_output.error('REST API failed')
             return False

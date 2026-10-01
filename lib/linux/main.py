@@ -5,6 +5,7 @@ from lib.linux.container_policy.main import LinuxContainerPolicy
 from lib.linux.commands import LinuxCommands
 from lib.linux.crictl.main import LinuxCrictl
 from lib.linux.genisoimage.main import LinuxGenIsoImage
+from lib.linux.helm.main import LinuxHelm
 from lib.linux.huge_pages.main import LinuxHugePages
 from lib.linux.interface import LinuxInterface
 from lib.linux.lsblk.main import LinuxLsblk
@@ -34,6 +35,7 @@ class Linux(
         LinuxCommands,
         LinuxCrictl,
         LinuxGenIsoImage,
+        LinuxHelm,
         LinuxHugePages,
         LinuxInterface,
         LinuxLsblk,
@@ -103,6 +105,7 @@ class Linux(
         LinuxCommands.__init__(self)
         LinuxCrictl.__init__(self)
         LinuxGenIsoImage.__init__(self)
+        LinuxHelm.__init__(self)
         LinuxHugePages.__init__(self)
         LinuxInterface.__init__(self)
         LinuxLsblk.__init__(self)

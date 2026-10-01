@@ -1,3 +1,4 @@
+
 # OpenShift Container Platform (OCP)
 
 ## Get OCP Cluster settings and state

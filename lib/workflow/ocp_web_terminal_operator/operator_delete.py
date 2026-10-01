@@ -1,44 +1,32 @@
 from lib import output_helper
 from lib.workflow.ocp_web_terminal_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Web Terminal Operator - Delete Operator', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Operator')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     success = params['k8s_handler'].delete_dev_workspaces(
         my_output=my_output, 
         wait=True
@@ -47,54 +35,21 @@ def run(params, log_id=None):
         return False
 
     success = params['k8s_handler'].delete_web_terminal_subscription(
-        params['namespace'],
-        params['name'],
-        params['workspace'],
+        params['__default__']['namespace'],
+        params['__default__']['name'],
+        params['__default__']['workspace'],
         my_output=my_output, 
         wait=True
     )
     if not success:
         return False
 
-    if params['operator-group-name'] is not None:
-        success = params['k8s_handler'].delete_operator_group(
-            params['namespace'],
-            params['operator-group-name'],
-            my_output=my_output,
-            wait=True
-        )
-        if not success:
-            return False
-
-    if params['delete-namespace']:
-        success = params['k8s_handler'].delete_namespace(
-            params['namespace'],
-            my_output=my_output,
-            wait=True
-        )
-        if not success:
-            return False
-
-    success = params['k8s_handler'].delete_namespace(
-        params['terminal-ns'],
-        my_output=my_output,
-        wait=True
+    success = ocp_common.delete_operator(
+        params,
+        my_output,
+        skip_subscription=True
     )
     if not success:
         return False
     
-    # may be required
-    # $ oc delete validatingwebhookconfigurations.admissionregistration.k8s.io controller.devfile.io
-    # validatingwebhookconfiguration.admissionregistration.k8s.io "controller.devfile.io" deleted
-    
-    my_output.default('')
-    my_output.default('Completed tasks')
-    my_output.default('- Dev workspace templates deleted')
-    my_output.default('- Subscription and csv deleted')
-    my_output.default('- Resources cleaned')
-    if params['operator-group-name'] is not None:
-        my_output.default('- Operator Group deleted')
-    if params['delete-namespace']:
-        my_output.default('- Namespace deleted')
-
     return True

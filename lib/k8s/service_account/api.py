@@ -26,4 +26,5 @@ class K8sServiceAccountApi():
         return response
 
     def delete_service_account_mo(self, namespace, name):
-        return self.delete_resource('ServiceAccount', 'v1', name, namespace=namespace)
+        success, _ = self.delete_resource('ServiceAccount', 'v1', name, namespace=namespace)
+        return success

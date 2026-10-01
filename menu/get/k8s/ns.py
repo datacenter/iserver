@@ -18,7 +18,7 @@ class ErrorExit(Exception):
 @click.pass_obj
 @click.option("--cluster", default='', help="Cluster name")
 @click.option("--name", default='', callback=validations.empty_string_to_none, help="Filter by name")
-@click.option("--view", "-v", default=['state'], help="[state|udn]", show_default=True, multiple=True)
+@click.option("--view", "-v", default=['state'], help="[state|res|udn]", show_default=True, multiple=True)
 @click.option("--output", "-o", type=click.Choice(['default', 'mo', 'json'], case_sensitive=False), default='default', show_default=True)
 def get_k8s_ns_command(
         ctx,
@@ -30,14 +30,19 @@ def get_k8s_ns_command(
     """Get k8s namespace"""
 
     try:
+        res_info = False
+        if 'res' in view:
+            res_info = True
+
         success = common.get(
             ctx,
             cluster,
             'namespace',
             output,
             view,
-            'state (def), udn',
-            filter_params=dict(name=name)
+            'state (def), res, udn',
+            filter_params=dict(name=name),
+            get_params=dict(res_info=res_info)
         )
         if not success:
             raise ErrorExit

@@ -21,4 +21,5 @@ class K8sIsovalentBGPAdvertisementApi():
         return response
     
     def delete_isovalent_bgp_advertisement_mo(self, name):
-        return self.delete_resource('IsovalentBGPAdvertisement', 'isovalent.com/v1', name)
+        success, _ = self.delete_resource('IsovalentBGPAdvertisement', 'isovalent.com/v1', name)
+        return success

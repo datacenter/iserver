@@ -5,6 +5,15 @@ class K8sVastClusterInfo():
     def get_vast_cluster_info(self, managed_object):
         return self.get_vast_managed_object_info(managed_object)
 
+    def get_vast_clusters_summary(self, infos, my_output=None, prefix=''):
+        return self.get_infos_readiness_summary(
+            infos,
+            'ready',
+            'VastCluster',
+            my_output=my_output,
+            prefix=prefix
+        )
+    
     def get_vast_clusters(self, object_filter=None, storage_info=False, return_mo=False, cache_enabled=True):
         infos = self.get_infos(
             'vast_cluster', 
@@ -15,6 +24,9 @@ class K8sVastClusterInfo():
 
         if return_mo:
             return infos
+        
+        if infos is None:
+            return None
         
         if storage_info:
             for item in infos:

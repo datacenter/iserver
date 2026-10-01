@@ -59,26 +59,25 @@ def validate(params):
         if params['data'][key] is None:
             return None, 'Config map data file read failed: %s' % (filename)
 
-        if file_helper.is_content_attributes(params['data'][key]):
-            unresolved = file_helper.get_content_attributes(params['data'][key])
+        if filter_helper.is_content_attributes(params['data'][key]):
+            unresolved = filter_helper.get_content_attributes(params['data'][key])
             return None, 'Config map data file %s has unresolved variables: %s' % (filename, ', '.join(unresolved))
         
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys, add_defaults=False, copy_handler=False), None
 
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('Kubernetes Workflow - Config Map - Create', before_newline=True, after_newline=True, double_underline=True)
-
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Config Map - Create')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     success = params['k8s_handler'].create_or_update_config_map(
         params['namespace'], 
         params['name'], 

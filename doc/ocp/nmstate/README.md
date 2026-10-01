@@ -21,7 +21,7 @@ The Kubernetes NMState Operator provides a Kubernetes API for performing state-d
     - LLDP neighbor information
 - [configure](../nncp/README.md) networking stack via `NodeNetworkConfigurationPolicy` CRD and verify configuration intent with `NodeNetworkConfigurationEnactment` CRD
 
-## Life Cycle Management Commands
+## Commands
 
 Command | Intent | Details
 --- | --- | ---

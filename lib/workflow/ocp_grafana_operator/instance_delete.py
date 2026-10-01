@@ -1,37 +1,19 @@
 from lib import filter_helper
 from lib import output_helper
 from lib.workflow.ocp_grafana_operator import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'instance' not in params:
-        return None, 'instance name required'
-
-    if not isinstance(params['instance'], str):
-        return None, 'instance param must be string'
-        
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'instance',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['instance', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def delete_cluster_role_binding(params, my_output):
@@ -52,7 +34,7 @@ def delete_cluster_role_binding(params, my_output):
             if crb_subject['kind'] != 'ServiceAccount':
                 continue
 
-            if crb_subject['namespace'] != params['namespace']:
+            if crb_subject['namespace'] != params['__default__']['namespace']:
                 continue
 
             if crb_subject['name'] != sa_name:
@@ -124,22 +106,22 @@ def delete_data_source(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Grafana Operator - Delete instance', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Delete Instance')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_grafana_subscription(params['namespace'], params['name']):
+    if not params['k8s_handler'].is_grafana_subscription(params['__default__']['namespace'], params['__default__']['name']):
         my_output.error('Grafana Operator is not installed')
         return False
     
-    instance_namespace = params['namespace']
+    instance_namespace = params['__default__']['namespace']
     instance_name = params['instance']
     if not params['k8s_handler'].is_grafana(instance_namespace, instance_name, cache_enabled=False):
         my_output.default('Grafana instance [%s/%s] not defined' % (instance_namespace, instance_name))
@@ -152,7 +134,7 @@ def run(params, log_id=None):
         return False
     
     success = params['k8s_handler'].delete_grafana(
-        params['namespace'], 
+        params['__default__']['namespace'], 
         params['instance'], 
         my_output=my_output, 
         wait=True

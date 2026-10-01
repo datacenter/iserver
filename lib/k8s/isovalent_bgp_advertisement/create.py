@@ -99,7 +99,8 @@ class K8sIsovalentBGPAdvertisementCreate():
                 return False
 
         if current_resource is None:
-            if not self.create_resource(body):
+            success, _ = self.create_resource(body)
+            if not success:
                 if my_output is not None:
                     my_output.error('REST API failed')
                 return False
@@ -217,7 +218,8 @@ class K8sIsovalentBGPAdvertisementCreate():
                 return False
 
         if current_resource is None:
-            if not self.create_resource(body):
+            success, _ = self.create_resource(body)
+            if not success:
                 if my_output is not None:
                     my_output.error('REST API failed')
                 return False

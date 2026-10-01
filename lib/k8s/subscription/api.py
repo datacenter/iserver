@@ -26,4 +26,5 @@ class K8sSubscriptionApi():
         return response
 
     def delete_subscription_mo(self, namespace, name):
-        return self.delete_resource('Subscription', 'operators.coreos.com/v1alpha1', name, namespace=namespace)
+        success, _ = self.delete_resource('Subscription', 'operators.coreos.com/v1alpha1', name, namespace=namespace)
+        return success

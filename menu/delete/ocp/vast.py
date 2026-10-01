@@ -1,55 +1,40 @@
 import sys
-import traceback
 import click
-
 from menu import validations
-from lib.workflow.ocp_vast_operator import wipe
-from lib.workflow.ocp_vast_operator import operator_delete
-
-class Failure(Exception):
-    pass
-
-
-class ErrorExit(Exception):
-    pass
-
+from lib.workflow import ocp_common
 
 @click.command("vast")
 @click.pass_obj
-@click.option("--cluster", "cluster_name", is_flag=False, show_default=False, default='', callback=validations.validate_ocp_cluster_name_no_prompt, type=click.STRING, help="Cluster Name")
-@click.option("--mode", type=click.Choice(['operator', 'wipe', 'all'], case_sensitive=False), default='', show_default=True, help="Mode of operation")
-@click.option("--verbose", is_flag=True, show_default=True, default=False, help="Verbose output")
-def delete_ocp_vast_command(ctx, cluster_name, mode, verbose):
-    """Delete vast csi operator in openshift cluster"""
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['operator', 'driver', 'cluster', 'storage', 'wipe', 'all'], case_sensitive=False), callback=validations.validate_option, help="Mode of operation")
+@click.option("--filename", default='', callback=validations.validate_k8s_yaml_file_optional, show_default=True, help="VAST CSI CRD")
+@click.option("--name", default='', callback=validations.empty_string_to_none, show_default=True, help="CRD name")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
+def delete_ocp_vast_command(ctx, cluster_names, mode, filename, name, no_confirm):
+    """Delete vast operator in openshift cluster"""
 
-    try:
-        if mode in ['wipe', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['verbose'] = verbose
+    task = {}
+    if mode in ['operator', 'all']:
+        task['operator'] = {}
 
-            success = wipe.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['driver', 'all']:
+        task['driver'] = {}
+        task['driver']['filename'] = filename
+        task['driver']['name'] = name
 
-        if mode in ['operator', 'all']:
-            params = {}
-            params['cluster'] = cluster_name
-            params['verbose'] = verbose
+    if mode in ['cluster', 'all']:
+        task['cluster'] = {}
+        task['cluster']['filename'] = filename
+        task['cluster']['name'] = name
 
-            success = operator_delete.run(
-                params,
-                log_id=ctx.run_id
-            )
-            if not success:
-                raise ErrorExit
+    if mode in ['storage', 'all']:
+        task['storage'] = {}
+        task['storage']['filename'] = filename
+        task['storage']['name'] = name
+    
+    if mode in ['wipe', 'all']:
+        task['wipe'] = {}
 
-    except ErrorExit:
-        sys.exit(1)
-
-    except BaseException:
-        ctx.my_output.traceback(traceback.format_exc())
+    success = ocp_common.delete_workflow(cluster_names, 'vast', task, not no_confirm, ctx.run_id)
+    if not success:
         sys.exit(1)

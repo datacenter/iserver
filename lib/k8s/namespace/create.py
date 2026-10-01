@@ -44,10 +44,13 @@ class K8sNamespaceCreate():
             annotations=annotations
         )
 
-        success = self.create_resource(body, object_name='namespace', my_output=my_output, confirmation=confirmation)
+        success, created = self.create_resource(body, object_name='namespace', my_output=my_output, confirmation=confirmation)
         if not success:
             return False
 
+        if not created:
+            return True
+        
         if wait:
             if my_output is not None:
                 my_output.default('Wait for namespace [timeout:60]...')

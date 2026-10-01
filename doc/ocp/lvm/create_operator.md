@@ -1,4 +1,6 @@
-# LVM Storage Operator - Install and configure
+# LVM Storage - Create operator
+
+[[Back]](./README.md) [[kb]](./kb/operator.md) [[cluster]](./create_cluster.md)
 
 ## Workflow
 
@@ -26,47 +28,25 @@ None
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/lvm/operator_create.png)
 
 ## Example
 
 ```
-# iserver set ocp lvm --mode operator --cluster bm1
-
-OpenShift Workflow - LVM Operator - Create Operator
-===================================================
-
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "channel": "__default__",
-    "confirmation": true,
-    "check-verbose": true,
-    "namespace": "openshift-storage",
-    "name": "lvms-operator",
-    "operator-group-name": "lvm-operator-group",
-    "delete-namespace": true
-}
+# iserver set ocp lvm --cluster bm1 --mode operator --no-confirm
 
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Workflow - LVM - Create Operator
+==========================================
 
+OpenShift Cluster: bm1
+Subscription not found lvms-operator
 
 Create Namespace
 ----------------
 - name: openshift-storage
-- labels
-        openshift.io/cluster-monitoring:true
-        pod-security.kubernetes.io/enforce:privileged
-        pod-security.kubernetes.io/audit:privileged
-        pod-security.kubernetes.io/warn:privileged
 
 ~~~
 apiVersion: v1
@@ -78,41 +58,34 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
   name: openshift-storage
-
 ~~~
-Continue [Y/N]? y
-
-Namespace created
-
+Namespace [openshift-storage] created
 Wait for namespace [timeout:60]...
 
 Check labels
-- openshift.io/cluster-monitoring:true
-- pod-security.kubernetes.io/enforce:privileged
-- pod-security.kubernetes.io/audit:privileged
-- pod-security.kubernetes.io/warn:privileged
+- openshift.io/cluster-monitoring:true found
+- pod-security.kubernetes.io/enforce:privileged found
+- pod-security.kubernetes.io/audit:privileged found
+- pod-security.kubernetes.io/warn:privileged found
 
-Create Operator Group
----------------------
-Operator group: openshift-storage/openshift-storage-operatorgroup
-Target namespaces: openshift-storage
+Create OperatorGroup
+--------------------
+- namespace: openshift-storage
+- name: lvm-operator-group
 
 ~~~
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: openshift-storage-operatorgroup
+  name: lvm-operator-group
   namespace: openshift-storage
 spec:
   targetNamespaces:
   - openshift-storage
-
+  upgradeStrategy: Default
 ~~~
-Continue [Y/N]? y
-
-Operator group created
-
-Wait for operator group [timeout:60]...
+OperatorGroup [openshift-storage/lvm-operator-group] created
+- wait for OperatorGroup openshift-storage/lvm-operator-group [timeout:60s]
 
 Create Subscription
 -------------------
@@ -122,9 +95,9 @@ Install plan approval: Automatic
 Getting subscription and packege manifest information...
 Resolving channel name...
 Channel: stable-4.18
-- CSV [lvms-operator.v4.18.3]
+- CSV [lvms-operator.v4.18.4]
 - CSV Display name [LVM Storage]
-- CVS Version [4.18.3]
+- CVS Version [4.18.4]
 - CSV Provider [{'name': 'Red Hat'}]
 - CSV Maturity [alpha]
 
@@ -140,21 +113,37 @@ spec:
   name: lvms-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-
 ~~~
-Continue [Y/N]? y
 
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-sqgq7
+Install plan: install-9t9vh
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
-Wait for deployments ready (optional: False, allow zero replicas: False)...
-- openshift-storage/lvms-operator
+Wait for deployment openshift-storage/lvms-operator ready (optional: False, allow zero replicas: False, timeout: 600s)...
+Subscription lvm ready
+
+Operator
+- subscription          : openshift-storage/lvms
+- package               : openshift-marketplace/redhat-operators/lvms-operator
+- channel               : stable-4.18
+- install plan          : openshift-storage/install-9t9vh
+- install plan approved : ✓
+- installed csv         : lvms-operator.v4.18.4
+- latest_csv            : ✓
+
 
 Completed tasks
-- LVM storage operator installed
+- Namespace created
+- Operator Group created
+- Subscription created
+
++----+---------+-------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope | Workflow        | Changes | Success | Duration [s] |
++----+---------+-------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | lvm   | create operator | 3       | ✓       | 23           | 
++----+---------+-------+-----------------+---------+---------+--------------+
 ```
 
-[[Back]](./README.md)
+[[Back]](./README.md) [[kb]](./kb/operator.md) [[cluster]](./create_cluster.md)

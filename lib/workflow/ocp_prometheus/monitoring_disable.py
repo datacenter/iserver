@@ -2,34 +2,18 @@ import yaml
 from lib import filter_helper
 from lib import output_helper
 from lib.workflow.ocp_prometheus import common as local_common
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    allowed_keys = [
-        'cluster',
-        'confirmation',
-        'verbose',
-        'check-verbose'
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None]
     ]
-    return local_common.sanitize_params(params, allowed_keys), None
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def edit_config_map(params, config_map_mo, my_output):
@@ -61,8 +45,8 @@ def edit_config_map(params, config_map_mo, my_output):
         return False, False
 
     success = params['k8s_handler'].update_config_map(
-        params['mon-namespace'],
-        params['mon-name'],
+        params['__default__']['mon-namespace'],
+        params['__default__']['mon-name'],
         all_data_json,
         confirmation=params['confirmation'],
         my_output=my_output
@@ -75,12 +59,12 @@ def edit_config_map(params, config_map_mo, my_output):
 
 def disable_user_workload_monitoring(params, my_output):
     my_output.default('Config Map', before_newline=True, underline=True)
-    my_output.default('- namespace: %s' % (params['mon-namespace']))
-    my_output.default('- name: %s' % (params['mon-name']))
+    my_output.default('- namespace: %s' % (params['__default__']['mon-namespace']))
+    my_output.default('- name: %s' % (params['__default__']['mon-name']))
 
     config_map_mo = params['k8s_handler'].get_config_map(
-        params['mon-namespace'], 
-        params['mon-name'], 
+        params['__default__']['mon-namespace'], 
+        params['__default__']['mon-name'], 
         cache_enabled=False, 
         return_mo=True
     )
@@ -103,17 +87,17 @@ def disable_user_workload_monitoring(params, my_output):
 
 def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
-    my_output.default('OpenShift Workflow - Prometheus - Disable user-workload monitoring', before_newline=True, after_newline=True, double_underline=True)
 
     params, error = validate(params)
-    if params is None:
+    if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id)
+    ocp_common.print_title(params, my_output, 'Disable user-workload monitoring')
+    params = ocp_common.workflow_init(params, my_output, log_id)
     if params is None:
         return False
-
+    
     if not disable_user_workload_monitoring(params, my_output):
         return False
     

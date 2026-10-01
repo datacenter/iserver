@@ -5,6 +5,7 @@ import platform
 import uuid
 import yaml
 import hashlib
+import base64
 
 
 def get_main_dir():
@@ -68,7 +69,10 @@ def get_local_file_location(filename, subdir=None):
     return os.path.join(main_dir, filename)
 
 
-def get_file(filename):
+def get_file(filename, base_directory=None):
+    if base_directory is not None:
+        filename = os.path.join(base_directory, filename)
+
     if not os.path.isfile(filename):
         return None
 
@@ -88,31 +92,18 @@ def get_file(filename):
     return content
 
 
-def get_word_attribute(word):
-    if '${' in word:
-        pattern = word.split('${')[1]
-        if '}' in pattern:
-            value = pattern.split('}')[0]
-            return value
-    return None
+def get_file_base64(filename, base_directory=None):
+    content = get_file(filename, base_directory=base_directory)
+    if content is None:
+        return None
 
-def get_content_attributes(content):
-    attributes = []
-    for line in content.split('\n'):
-        for word in line.split(' '):
-            attribute = get_word_attribute(word)
-            if attribute is not None:
-                attributes.append(attribute)
-    return attributes
+    return base64.b64encode(content.encode('utf-8')).decode('utf-8')
 
 
-def is_content_attributes(content):
-    if len(get_content_attributes(content)) == 0:
-        return False
-    return True
+def get_file_text(filename, vars=None, base_directory=None):
+    if base_directory is not None:
+        filename = os.path.join(base_directory, filename)
 
-
-def get_file_text(filename, vars=None):
     if not os.path.isfile(filename):
         return None
 
@@ -130,22 +121,12 @@ def get_file_text(filename, vars=None):
     return content
 
 
-def get_files_text(location, yaml_only=False):
-    filenames = []
+def get_files_text(locations, base_directory=None, yaml_only=False):
+    filenames = get_filenames(locations, base_directory=base_directory)
+    if filenames is None:
+        return None
+
     files = {}
-
-    if os.path.isfile(location):
-        filenames.append(location)
-
-    if os.path.isdir(location):
-        for filename in os.listdir(location):
-            filenames.append(
-                os.path.join(
-                    location,
-                    filename
-                )
-            )
-
     for filename in filenames:
         content = get_file_text(filename)
         if yaml_only:
@@ -161,7 +142,10 @@ def get_files_text(location, yaml_only=False):
     return files
 
 
-def get_file_json(filename):
+def get_file_json(filename, base_directory=None):
+    if base_directory is not None:
+        filename = os.path.join(base_directory, filename)
+
     if not os.path.isfile(filename):
         return None
 
@@ -184,7 +168,10 @@ def get_file_json(filename):
     return content
 
 
-def get_file_yaml(filename):
+def get_file_yaml(filename, base_directory=None):
+    if base_directory is not None:
+        filename = os.path.join(base_directory, filename)
+
     if not os.path.isfile(filename):
         return None
 
@@ -227,8 +214,12 @@ def is_kube_kind(content, kind=None, namespace=None, name=None, spec=False):
     if 'kind' not in content:
         return False
     
-    if kind is not None and content['kind'] != kind:
-        return False
+    if kind is not None:
+        if isinstance(kind, str):
+            kind = [kind]
+
+        if content['kind'] not in kind:
+            return False
     
     if 'metadata' not in content:
         return False
@@ -254,6 +245,58 @@ def is_kube_kind(content, kind=None, namespace=None, name=None, spec=False):
             return False
         
     return True
+
+
+def get_filenames(locations, base_directory=None):
+    if isinstance(locations, str):
+        locations = [locations]
+
+    if not isinstance(locations, list):
+        return None
+    
+    filenames = []
+    for location in locations:
+        if not os.path.isfile(location) and base_directory is not None:
+            location = os.path.join(base_directory, location)
+
+        if os.path.isdir(location):
+            for dfile in os.listdir(location):
+                filenames.append(
+                    os.path.join(
+                        location,
+                        dfile
+                    )
+                )
+
+        if os.path.isfile(location):
+            filenames.append(location)
+
+    return filenames
+
+
+def get_k8s_files(locations, base_directory=None, kind=None):
+    filenames = get_filenames(locations, base_directory=base_directory)
+    if filenames is None:
+        return None
+    
+    contents = []
+    for filename in filenames:
+        info = {}
+        info['filename'] = filename
+        info['text'] = get_file_text(filename)
+        if info['text'] is None:
+            continue
+
+        info['yaml'] = get_file_yaml(filename)
+        if info['yaml'] is None:
+            continue
+
+        if not is_kube_kind(info['yaml'], kind=kind):
+            continue
+
+        contents.append(info)
+
+    return contents
 
 
 def set_file(filename, content):

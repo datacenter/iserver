@@ -10,7 +10,7 @@ Execute two workflows in sequence
 
 None
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/sriov/operator_create.png)
 

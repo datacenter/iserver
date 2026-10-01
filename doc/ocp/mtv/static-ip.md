@@ -31,6 +31,7 @@ Options
     - target network
         - POD default network with masquerade
         - Multus network (Network Attachment Definition)
+        - [Private Network](../cilium-pnet/README.md) when deployed with [Isovalent Network Bridge](../cilium-inb/README.md)
 
 Tick
 - :white_check_mark: means virtual machine after migration will be IP reachable without any OS changes as long as external dependencies are met (if any)
@@ -42,10 +43,14 @@ Works | Interface IP | Preserve | Network | OS Changes | External Dependencies
 :x: | Static | No | POD | Add new interface w/DHCP | ---
 :white_check_mark: | Static | Yes | Multus | --- | DCN configuration
 :x: | Static | No | Multus | Add new interface w/static | DCN configuration
+:white_check_mark: | Static | Yes | [PrivNet](../cilium-pnet/README.md) | --- | [Isovalent Network Bridge](../cilium-inb/README.md)
+:x: | Static | No | [PrivNet](../cilium-pnet/README.md) | Add new interface w/static | [Isovalent Network Bridge](../cilium-inb/README.md)
 :white_check_mark: | DHCP | Yes | POD | --- | ---
 :x: | DHCP | No | POD | Add new interface w/DHCP | ---
 :white_check_mark: | DHCP | Yes | Multus | --- | DCN configuration incl. DHCP server/relay
 :x: | DHCP | No | Multus | Add new interface w/DHCP | DCN configuration incl. DHCP server/relay
+:x: | DHCP | Yes | [PrivNet](../cilium-pnet/README.md) | Static IP required | [Isovalent Network Bridge](../cilium-inb/README.md)
+:x: | DHCP | No | [PrivNet](../cilium-pnet/README.md) | Add new interface w/static | [Isovalent Network Bridge](../cilium-inb/README.md)
 
 Note:
 - if IP connectivity works out-of-the-box during the first boot of the OS, without the need of making any OS changes, [first boot system preparation scripts](./first-boot.md) should run to completion incl. [qemu-guest-agent automatic installation](./qga-autoinstall.md).

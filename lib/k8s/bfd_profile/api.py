@@ -26,4 +26,5 @@ class K8sBfdProfileApi():
         return response
 
     def delete_bfd_profile_mo(self, namespace, name):
-        return self.delete_resource('BFDProfile', 'metallb.io/v1beta1', name, namespace=namespace)
+        success, _ = self.delete_resource('BFDProfile', 'metallb.io/v1beta1', name, namespace=namespace)
+        return success

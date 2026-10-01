@@ -17,21 +17,23 @@ class K8sSubscriptionDelete():
             my_output.default('Delete Subscription', before_newline=True, underline=True)
             my_output.default('- subscription: %s/%s' % (namespace, name))        
 
-        if my_output is not None:
-            my_output.default('- checking cluster service version...')
+        if subscription_info['installed_csv'] is not None:
+            if my_output is not None:
+                my_output.default('- checking cluster service version...')
 
-        csv_info = self.get_cluster_service_version(
-            subscription_info['namespace'],
-            subscription_info['installed_csv'],
-            return_mo=False,
-            cache_enabled=False
-        )
-        if csv_info is not None:
-            if my_output is not None:
-                my_output.default('- csv found and will be deleted: %s/%s' % (subscription_info['namespace'], subscription_info['installed_csv']))
-        if csv_info is None:
-            if my_output is not None:
-                my_output.default('- [WARNING] csv not found: %s/%s' % (subscription_info['namespace'], subscription_info['installed_csv']))
+            csv_info = self.get_cluster_service_version(
+                subscription_info['namespace'],
+                subscription_info['installed_csv'],
+                return_mo=False,
+                cache_enabled=False
+            )
+            if csv_info is not None:
+                if my_output is not None:
+                    my_output.default('- csv found and will be deleted: %s/%s' % (subscription_info['namespace'], subscription_info['installed_csv']))
+
+            if csv_info is None:
+                if my_output is not None:
+                    my_output.default('- [WARNING] csv not found: %s/%s' % (subscription_info['namespace'], subscription_info['installed_csv']))
 
         success = self.delete_subscription_mo(
             subscription_info['namespace'], 

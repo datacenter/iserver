@@ -19,7 +19,7 @@ None
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![OperatorCreate](../images/gpu/operator_create.png)
 

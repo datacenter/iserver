@@ -26,4 +26,5 @@ class K8sVastClusterApi():
         return response
 
     def delete_vast_cluster_mo(self, namespace, name):
-        return self.delete_resource('VastCluster', 'storage.vastdata.com/v1', name, namespace=namespace)
+        success, _ = self.delete_resource('VastCluster', 'storage.vastdata.com/v1', name, namespace=namespace)
+        return success

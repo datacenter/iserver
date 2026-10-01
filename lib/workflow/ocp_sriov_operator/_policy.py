@@ -89,7 +89,7 @@ def run(params, my_output):
     for policy in policies:
         exists = params['k8s_handler'].is_sriov_network_node_policy(
             policy['name'],
-            namespace=params['namespace'],
+            namespace=params['__default__']['namespace'],
             cache_enabled=False
         )
         if exists:
@@ -100,7 +100,7 @@ def run(params, my_output):
         body['apiVersion'] = 'sriovnetwork.openshift.io/v1'
         body['kind'] = 'SriovNetworkNodePolicy'
         body['metadata'] = {}
-        body['metadata']['namespace'] = params['namespace']
+        body['metadata']['namespace'] = params['__default__']['namespace']
         body['metadata']['name'] = policy['name']
         body['spec'] = {}
         body['spec']['deviceType'] = policy['type']
@@ -127,7 +127,7 @@ def run(params, my_output):
 
         my_output.default(body_yaml)
 
-        if not params['k8s_handler'].create_sriov_network_node_policy(body):
+        if not params['k8s_handler'].create_resource(body):
             return False, False, 'SRIOV policy create failed'
 
         created = True

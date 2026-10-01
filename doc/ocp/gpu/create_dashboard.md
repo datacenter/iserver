@@ -16,7 +16,7 @@ GPU Operator must be [created](./create_operator) and policy [configured](./crea
   --no-confirm                    Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 ![DashboardCreate](../images/gpu/dashboard_create.png)
 

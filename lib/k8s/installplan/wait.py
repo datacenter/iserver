@@ -9,6 +9,6 @@ class K8sInstallplanWait():
             namespace=namespace,
             match_properties={'ready':True},
             my_output=my_output,
-            prompt='- wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
+            prompt='Wait for %s %s/%s [timeout:%ss]' % (prompt, namespace, name, max_time),
             max_time=max_time
         )

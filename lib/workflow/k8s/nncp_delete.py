@@ -10,7 +10,7 @@ def validate(params):
     if not success:
         return None, params
         
-    return local_common.sanitize_params(params, allowed_keys), None
+    return ocp_common.sanitize_params(params, allowed_keys, add_defaults=False, copy_handler=False), None
 
 
 def run(params, log_id=None):

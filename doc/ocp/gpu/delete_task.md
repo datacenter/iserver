@@ -38,7 +38,7 @@ None
   --no-confirm     Confirmation mode
 ```
 
-## Expected Outcome
+## Expected outcome
 
 - policies deleted
 - prometheus service monitors disabled

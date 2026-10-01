@@ -4,52 +4,21 @@ from lib.linux import output as linux_output
 from lib import output_helper
 from lib.workflow.ocp_lvm_operator import common as local_common
 from menu.common import get_confirmation
+from lib.workflow import ocp_common
 
 
 def validate(params):
-    if 'cluster' not in params or params['cluster'] is None:
-        return None, 'Cluster name required'
-
-    if 'ssh-required' not in params:
-        params['ssh-required'] = True
-
-    if not isinstance(params['ssh-required'], bool):
-        return None, 'ssh-required params must be true or false'
-    
-    if 'test-namespace' not in params:
-        params['test-namespace'] = 'test-lvm'
-
-    if 'cleanup' not in params:
-        params['cleanup'] = True
-
-    if not isinstance(params['cleanup'], bool):
-        return None, 'cleanup params must be true or false'
-
-    if 'cleanup-on-error' not in params:
-        params['cleanup-on-error'] = False
-
-    if not isinstance(params['cleanup-on-error'], bool):
-        return None, 'cleanup-on-error params must be true or false'
-
-    if 'confirmation' not in params:
-        params['confirmation'] = True
-
-    if not isinstance(params['confirmation'], bool):
-        return None, 'confirmation param must be true or false'
-
-    if 'verbose' not in params:
-        params['verbose'] = False
-
-    if not isinstance(params['verbose'], bool):
-        return None, 'verbose param must be true or false'
-    
-    if 'check-verbose' not in params:
-        params['check-verbose'] = params['verbose']
-
-    if not isinstance(params['check-verbose'], bool):
-        return None, 'check-verbose param must be true or false'
-    
-    return params, None
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['test-namespace', True, 'test-lvm', 'str', None, None, None, None],
+        ['cleanup', True, True, 'bool', None, None, None, None],
+        ['cleanup-on-error', True, False, 'bool', None, None, None, None],
+    ]
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
 
 
 def prepare_namespace(name, k8s_handler, my_output):
@@ -147,7 +116,7 @@ def prepare_snapshot(namespace, k8s_handler, my_output):
         snapshot_name = '%s-snap' % (pvc_name)
         body = k8s_handler.get_volume_snapshot_definition(namespace, snapshot_name, storage_class['name'], pvc_name=pvc_name)
         my_output.default(yaml.dump(body), wrap='~~~')
-        if not k8s_handler.create_volume_snapshot(body):
+        if not k8s_handler.create_resource(body):
             my_output.error('Volume snapshot create failed')
             return False
         
@@ -342,7 +311,7 @@ def cleanup_snapshot(namespace, k8s_handler, my_output):
     
     for snapshot in snapshots:
         my_output.default('- delete snapshot %s' % (snapshot['namespace_name']))
-        if not k8s_handler.delete_volume_snapshot(snapshot['namespace'], snapshot['name']):
+        if not k8s_handler.delete_volume_snapshot_mo(snapshot['namespace'], snapshot['name']):
             my_output.error('Volume snapshot delete failed')
             return False
         
@@ -439,14 +408,14 @@ def run(params, log_id=None):
     my_output = output_helper.OutputHelper(log_id=log_id)
     k8s_output_handler = k8s_output.K8sOutput(log_id=log_id)
     linux_output_handler = linux_output.LinuxOutput(log_id=log_id)
-    my_output.default('OpenShift Workflow - LVM Operator - Functional Test', before_newline=True, after_newline=True, double_underline=True) 
 
     params, error = validate(params)
     if error is not None:
         my_output.error(error)
         return False
 
-    params = local_common.initialize(params, my_output, log_id, ssh_required=True)
+    ocp_common.print_title(params, my_output, 'Functional Test')
+    params = ocp_common.workflow_init(params, my_output, log_id, ssh_required=True)
     if params is None:
         return False
 

@@ -2,6 +2,7 @@ import os
 from lib import output_helper
 from lib.ocp import settings
 from lib import ip_helper
+from lib.workflow import ocp_common
 
 
 def validate(params):

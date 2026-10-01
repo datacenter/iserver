@@ -3,12 +3,7 @@ class K8sNodeNetworkConfigurationPolicyDelete():
         pass
 
     def delete_node_network_configuration_policy(self, name, my_output=None, wait=True):
-        info = self.get_node_network_configuration_policy(
-            name,
-            cache_enabled=False
-        )
-
-        success = self.delete_resource(
+        success, deleted = self.delete_resource(
             'NodeNetworkConfigurationPolicy', 
             'nmstate.io/v1',
             name, 
@@ -17,6 +12,9 @@ class K8sNodeNetworkConfigurationPolicyDelete():
         )
         if not success:
             return False
+        
+        if not deleted:
+            return True
         
         if not wait:
             return True
@@ -35,7 +33,7 @@ class K8sNodeNetworkConfigurationPolicyDelete():
         if my_output is not None:
             my_output.default('Delete Node Network Configuration Policies', before_newline=True, underline=True)
 
-        items = self.get_node_network_configuration_policies(cache_enabled=False)
+        items = self.get_node_network_configuration_policys(cache_enabled=False)
         if items is None:
             if my_output is not None:
                 my_output.error('Failed to get nncp information')
