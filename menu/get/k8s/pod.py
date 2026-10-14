@@ -145,6 +145,10 @@ def get_k8s_pod_command(
             )
             return
 
+        if pods is None:
+            ctx.my_output.error('Failed to get pod info')
+            return
+
         ctx.my_output.json_output(pods)
         
         if 'state' in view:

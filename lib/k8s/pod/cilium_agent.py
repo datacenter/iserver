@@ -124,13 +124,21 @@ class K8sPodCiliumAgent():
                 ['cilium', 'shell', 'db/show', '%s -f json' % (db_name)]
             )
 
+            output = None
             try:
-                output = json.loads(filter_helper.json_fixup(content, double_quote=False))
+                output = json.loads(filter_helper.json_fixup(content, double_quote=True))
             except BaseException:
-                self.log.error('get_cilium_agent_db', str(db_name))
-                self.log.error('get_cilium_agent_db', str(content))
-                self.log.error('get_cilium_agent_db', traceback.format_exc())
-                output = None
+                pass
+
+            if output is None:
+                try:
+                    output = json.loads(filter_helper.json_fixup(content, double_quote=False))
+                except BaseException:
+                    pass
+
+            if output is None:
+                self.log.error('get_cilium_agent_db', content)
+
         else:
             output = self.get_pod_exec(
                 self.cilium_namespace,
@@ -178,8 +186,8 @@ class K8sPodCiliumAgent():
                 output = json.loads(filter_helper.json_fixup(content))
             except BaseException:
                 self.log.error('get_cilium_agent_status', str(name))
-                self.log.error('get_cilium_agent_db', str(content))
-                self.log.error('get_cilium_agent_db', traceback.format_exc())
+                self.log.error('get_cilium_agent_status', str(content))
+                self.log.error('get_cilium_agent_status', traceback.format_exc())
                 continue
 
             output[0]['agent'] = name

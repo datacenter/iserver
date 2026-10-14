@@ -108,10 +108,7 @@ def get_k8s_nnce_command(
         ctx.my_output.json_output(enactments)
 
         if 'state' in view:
-            k8s_output_handler.print_node_network_configuration_enactment(
-                enactments,
-                title=True
-            )
+            k8s_output_handler.print_node_network_configuration_enactments_state(enactments)
 
         ctx.my_output.default('Filter: name', before_newline=True)
         ctx.my_output.default('View:   state (def)')

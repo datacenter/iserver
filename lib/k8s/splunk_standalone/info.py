@@ -94,13 +94,22 @@ class K8sSplunkStandaloneInfo():
                 info['credentials'][key] = None
                 key_mo = self.get(info['secret'], 'data:%s' % (key))
                 if key_mo is not None:
-                    info['credentials'][key] = base64.b64decode(
+                    secret_value = base64.b64decode(
                         key_mo.encode('utf-8')
                     ).decode('utf-8')
+
+                    info['credentials'][key] = secret_value
             
             if info['credentials']['password'] is not None:
                 info['urlT'].append('(admin, %s)' % (info['credentials']['password']))
-                
+
+            for key in keys:
+                if key == 'password':
+                    continue
+
+                if info['credentials'][key] is not None:
+                    info['urlT'].append('%s:%s' % (key, info['credentials'][key]))
+
         return info
     
     def get_splunk_standalones(self, object_filter=None, pod_info=False, pvc_info=False, service_info=False, route_info=False, secret_info=False, return_mo=False, cache_enabled=True):

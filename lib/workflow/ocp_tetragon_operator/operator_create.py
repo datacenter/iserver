@@ -1,13 +1,16 @@
+import json
+from lib import ip_helper
 from lib import output_helper
 from lib.workflow.ocp_tetragon_operator import common as local_common
+from lib.workflow.ocp_cilium_registry import common as registry_common
+from lib.workflow.ocp_cilium_registry import helper as registry_helper
 from lib.workflow import ocp_common
 
 
 def validate(params):
     rules = [
         ['cluster', False, None, 'str', None, None, None, None],
-        ['channel', True, '__default__', 'str', None, None, None, None],
-        ['image', False, None, 'str', None, None, None, None]
+        ['version', False, None, 'str', None, None, None, None]
     ]
     success, params, allowed_keys = ocp_common.check_parameters(params, rules)
     if not success:
@@ -35,7 +38,16 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_namespace(params['__default__']['namespace']):
+    if params['k8s_handler'].is_tetragon_subscription(params['__default__']['namespace'], params['__default__']['name']):
+        my_output.default('Tetragon Operator already created')
+        return True
+
+    if params['k8s_handler'].is_namespace(params['__default__']['namespace']):
+        my_output.default('Namespace %s %s' % (
+            params['__default__']['namespace'],
+            my_output.add_color('already created', 'Green')
+        ))
+    else:
         success = params['k8s_handler'].create_namespace(
             params['__default__']['namespace'],
             labels=get_labels(),
@@ -46,26 +58,70 @@ def run(params, log_id=None):
         if not success:
             return False
 
-    success = params['k8s_handler'].create_catalog_source(
-        params['__default__']['catalog-namespace'],
-        params['__default__']['catalog-name'],
-        params['image'],
-        confirmation=params['confirmation'],
-        my_output=my_output,
-        wait=True
-    )
-    if not success:
-        return False
+    if params['k8s_handler'].is_catalog_source(params['__default__']['catalog-namespace'], params['__default__']['catalog-name'], cache_enabled=False):
+        my_output.default('CatalogSource %s/%s %s' % (
+            params['__default__']['catalog-namespace'],
+            params['__default__']['catalog-name'],
+            my_output.add_color('already created', 'Green')
+        ))
+    else:
+        registry_settings = registry_common.get_registry_settings(my_output=my_output, log_id=log_id)
+        if registry_settings is None:
+            if my_output is not None:
+                my_output.error('Isovalent registry settings not defined')
+            return False
 
-    my_output.default('Wait for tetragon package...', before_newline=True)
+        access_token = registry_common.create_access_token(
+            registry_settings['registry'],
+            registry_settings['identity_token'],
+            my_output=my_output
+        )
+        if access_token is None:
+            return False
+
+        data = {}
+        data['auths'] = {}
+        data['auths'][registry_settings['registry']] = {}
+        data['auths'][registry_settings['registry']]['username'] = access_token['username']
+        data['auths'][registry_settings['registry']]['password'] = access_token['access_token']
+        data['auths'][registry_settings['registry']]['auth'] = ip_helper.encode_text_64(
+            '%s:%s' % (
+                access_token['username'],
+                access_token['access_token']
+            )
+        )
+        my_output.default('CatalogSource secret data')
+        my_output.default(json.dumps(data, indent=4), wrap='~~~')
+        
+        success = params['k8s_handler'].create_secret_docker(
+            params['__default__']['namespace'], 
+            params['__default__']['secret-name'],
+            json.dumps(data),
+            confirmation=params['confirmation'], 
+            my_output=my_output, 
+            wait=True
+        )
+        if not success:
+            return False
+
+        success = params['k8s_handler'].create_catalog_source(
+            params['__default__']['catalog-namespace'],
+            params['__default__']['catalog-name'],
+            registry_helper.fixup_tetragon_url(registry_settings['registry']),
+            secrets=[params['__default__']['secret-name']],
+            confirmation=params['confirmation'],
+            my_output=my_output,
+            wait=True
+        )
+        if not success:
+            return False
+
+    my_output.default('Wait for tetragon package...')
     if not params['k8s_handler'].wait_tetragon_package():
         my_output.error('Tetragon package not found')
         return False
+    
     my_output.default('Tetragon package %s' % (my_output.add_color('found', 'Green')))
-
-    if params['k8s_handler'].is_tetragon_subscription(params['__default__']['namespace'], params['__default__']['name']):
-        my_output.default('Tetragon Operator already created')
-        return True
 
     success = params['k8s_handler'].create_operator_group(
         params['__default__']['namespace'], 
@@ -83,7 +139,7 @@ def run(params, log_id=None):
         params['__default__']['name'], 
         params['__default__']['catalog-namespace'], 
         params['__default__']['catalog-name'], 
-        params['channel'],
+        None,
         confirmation=params['confirmation'], 
         my_output=my_output, 
         wait=True            

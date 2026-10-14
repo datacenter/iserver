@@ -1,27 +1,23 @@
 from lib import output_helper
 from lib.k8s import output as k8s_output
-from lib.linux import main as linux
+from lib import linux_helper
 from lib.workflow import ocp_common as workflow_common
+from lib.workflow import netshoot_helper
 
 
-def get_interfaces(params, my_output, log_id, node_name_filter=None):
+def get_interfaces(params, my_output, node_name_filter=None):
     my_output.default('Get interface details', before_newline=True, underline=True)
 
-    node_ip = params['k8s_handler'].get_nodes_ip()
-
     interfaces = {}
-    for node_name in node_ip:
+
+    for node_name in params['netshoot']:
         if node_name_filter is not None and node_name != node_name_filter:
             continue
 
-        my_output.default('- node [%s]' % (node_name))
         interfaces[node_name], error = get_node_ethernet_details(
-            params['k8s_handler'],
-            params['cluster'],
+            params,
             node_name,
-            node_ip[node_name],
-            my_output,
-            log_id
+            my_output
         )
 
         if interfaces[node_name] is None:
@@ -30,26 +26,15 @@ def get_interfaces(params, my_output, log_id, node_name_filter=None):
     return interfaces, None
 
 
-def get_node_ethernet_details(k8s_handler, cluster_name, node_name, node_ip, my_output, log_id):
-    key_filename = workflow_common.get_ocp_cluster_filename(cluster_name, log_id=log_id)
-    if key_filename is None:
-        return None, 'Node ssh public key not found'
-
-    success = k8s_handler.wait_node_network_state(node_name)
+def get_node_ethernet_details(params, node_name, my_output):
+    success = params['k8s_handler'].wait_node_network_state(node_name)
     if not success:
         return None, 'Node network state collection failed: %s' % (node_name)
 
-    nns = k8s_handler.get_node_network_state(node_name)
+    nns = params['k8s_handler'].get_node_network_state(node_name)
     if nns is None:
         return None, 'Node network state collection failed: %s' % (node_name)
     
-    linux_handler = linux.Linux(
-        node_ip,
-        'core',
-        key_filename=key_filename,
-        log_id=log_id
-    )
-
     ethernet_ifs = []
 
     for interface in nns['interface']:
@@ -61,7 +46,6 @@ def get_node_ethernet_details(k8s_handler, cluster_name, node_name, node_ip, my_
             continue
 
         ethernet_if = {}
-        ethernet_if['linux_handler'] = linux_handler
         ethernet_if['name'] = interface['name']
         ethernet_if['lldp_configurable'] = False
         ethernet_if['lldp_enabled'] = False
@@ -70,24 +54,57 @@ def get_node_ethernet_details(k8s_handler, cluster_name, node_name, node_ip, my_
             ethernet_if['lldp_enabled'] = interface['lldp_enabled']
 
         my_output.default('\t\tethtool')
-        ethernet_if['params'] = linux_handler.get_inteface_ethtool(interface['name'])
-        if ethernet_if['params'] is None:
-            return None, 'Ethtool failed on %s' % (interface['name'])
+        output = netshoot_helper.get_netshoot_cli(
+            params,
+            'ethtool -i %s' % (interface['name']),
+            node_name=node_name
+        )
+        if output is None:
+            my_output.default('aaa')
+            return None, 'Ethtool failed on %s' % (ethernet_if['name'])
 
-        my_output.default('\t\tlspci')
-        ethernet_if['lspci'] = linux_handler.get_inteface_lspci(ethernet_if['params']['bus-info'])
-        if ethernet_if['lspci'] is None:
-            return None, 'lspci failed on %s' % (interface['name'])
+        ethernet_if['params'] = {}
+
+        for line in output[node_name].strip().split('\n'):
+            key = line.split(':')[0].strip()
+            value = ':'.join(line.split(':')[1:]).strip()
+            ethernet_if['params'][key] = value
 
         my_output.default('\t\tpriv flags')
-        ethernet_if['flags'] = None
-        if 'Intel' in ethernet_if['lspci']:
-            ethernet_if['flags'] = linux_handler.get_inteface_ethtool_priv_flags(interface['name'])
 
-        my_output.default('\t\tstate')
-        ethernet_if['state'] = linux_handler.get_interface_by_name(
-            interface['name']
+        ethernet_if['flags'] = None
+        output = netshoot_helper.get_netshoot_cli(
+            params,
+            'ethtool --show-priv-flags %s' % (ethernet_if['name']),
+            node_name=node_name,
         )
+        if output is not None and 'Operation not supported' not in output:
+            ethernet_if['flags'] = {}
+            for line in output[node_name].strip().split('\n'):
+                key = line.split(':')[0].strip()
+                value = ':'.join(line.split(':')[1:]).strip()
+                ethernet_if['flags'][key] = value
+                    
+        my_output.default('\t\tstate')
+
+        output = netshoot_helper.get_netshoot_cli(
+            params,
+            'ip a l %s' % (ethernet_if['name']),
+            node_name=node_name,
+        )
+        if output is None:
+            my_output.default('aaa')
+            return None, 'interface state failed on %s' % (ethernet_if['name'])
+
+        try:
+            istate = linux_helper.analyze_ip_link_show_output(output[node_name])
+        except BaseException:
+            return None, 'interface state parse failed on %s: %s' % (ethernet_if['name'], output[node_name])
+
+        if istate is None or len(istate) != 1:
+            return None, 'interface state parse failed on %s: %s' % (ethernet_if['name'], output[node_name])
+        
+        ethernet_if['state'] = istate[0]
 
         ethernet_ifs.append(
             ethernet_if
@@ -96,42 +113,42 @@ def get_node_ethernet_details(k8s_handler, cluster_name, node_name, node_ip, my_
     return ethernet_ifs, None
 
 
-def configure_node(node_name, interfaces, log_id):
+def configure_node(params, node_name, interfaces, my_output):
     # https://edc.intel.com/content/www/us/en/design/products/ethernet/adapters-and-devices-user-guide/firmware-link-layer-discovery-protocol-fw-lldp/
-    my_output = output_helper.OutputHelper(log_id=log_id)
 
     my_output.default('Disable lldp on ethernet interface fw level [%s]' % (node_name))
 
     for interface in interfaces:
-        my_output.debug('Interface state %s' % (interface['name']))
-        my_output.debug('- driver: %s' % (interface['params']['driver']))
-        my_output.debug('- version: %s' % (interface['params']['version']))
-        my_output.debug('- pci: %s' % (interface['params']['bus-info']))
-        my_output.debug('- vendor: %s' % (interface['lspci'].split('Ethernet controller: '))[1])
+        my_output.default('Interface state %s' % (interface['name']))
+        my_output.default('- driver: %s' % (interface['params']['driver']))
+        my_output.default('- version: %s' % (interface['params']['version']))
+        my_output.default('- pci: %s' % (interface['params']['bus-info']))
 
         is_action = False
         if interface['flags'] is not None:
             if 'fw-lldp-agent' in interface['flags']:
-                my_output.debug('- fw-lldp-agent: %s' % (interface['flags']['fw-lldp-agent']))
+                my_output.default('- fw-lldp-agent: %s' % (interface['flags']['fw-lldp-agent']))
                 if interface['flags']['fw-lldp-agent'] == 'on':
                     is_action = True
                     my_output.default('Action: set fw-lldp-agent to off')
-                    interface['linux_handler'].set_inteface_ethtool_priv_flags(
-                        interface['name'],
-                        'fw-lldp-agent',
-                        'off'
+                    output = netshoot_helper.get_netshoot_cli(
+                        params,
+                        'ethtool --set-priv-flags %s %s %s' % (interface['name'], 'fw-lldp-agent', 'off'),
+                        node_name=node_name
                     )
+                    my_output.default(output, wrap='~~~')
 
             if 'disable-fw-lldp' in interface['flags']:
-                my_output.debug('- disable-fw-lldp: %s' % (interface['flags']['disable-fw-lldp']))
+                my_output.default('- disable-fw-lldp: %s' % (interface['flags']['disable-fw-lldp']))
                 if interface['flags']['disable-fw-lldp'] == 'off':
                     is_action = True
                     my_output.default('Action: set disable-fw-lldp to on')
-                    interface['linux_handler'].set_inteface_ethtool_priv_flags(
-                        interface['name'],
-                        'disable-fw-lldp',
-                        'on'
+                    output = netshoot_helper.get_netshoot_cli(
+                        params,
+                        'ethtool --set-priv-flags %s %s %s' % (interface['name'], 'disable-fw-lldp', 'on'),
+                        node_name=node_name
                     )
+                    my_output.default(output, wrap='~~~')
 
         if is_action:
             my_output.default('Interface %s [%s] - fw lldp disabled' % (interface['name'], interface['params']['bus-info']))
@@ -139,19 +156,17 @@ def configure_node(node_name, interfaces, log_id):
             my_output.default('Interface %s [%s] - no change' % (interface['name'], interface['params']['bus-info']))
 
 
-def configure_nic(params, log_id=None):
-    node_ip = params['k8s_handler'].get_nodes_ip()
-    for node_name in node_ip:
+def configure_nic(params, my_output):
+    for node_name in params['netshoot']:
         configure_node(
+            params,
             node_name,
             params['interfaces'][node_name],
-            log_id
+            my_output
         )
 
 
-def enable_nns(params, log_id=None):
-    my_output = output_helper.OutputHelper(log_id=log_id)
-
+def enable_nns(params, my_output, log_id=None):
     params['success'] = True
     params['error'] = None
     policy_names = []

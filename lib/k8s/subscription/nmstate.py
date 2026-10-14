@@ -1,9 +1,15 @@
 class K8sSubscriptionNmstate():
     def __init__(self):
-        pass
+        self.subscription_nmstate_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-nmstate', 'name': 'nmstate-operator'}
+        ]
 
-    def is_nmstate_subscription(self, namespace, name, cache_enabled=True):
-        return self.is_subscription(namespace, name, cache_enabled=cache_enabled)
+        self.instance_nmstate_resources = [
+            {'type': 'deployment', 'namespace': 'openshift-nmstate', 'name': 'nmstate-console-plugin'},
+            {'type': 'deployment', 'namespace': 'openshift-nmstate', 'name': 'nmstate-metrics'},
+            {'type': 'deployment', 'namespace': 'openshift-nmstate', 'name': 'nmstate-webhook'},
+            {'type': 'daemonset', 'namespace': 'openshift-nmstate', 'name': 'nmstate-handler'}
+        ]
 
     def create_nmstate_subscription(self, namespace, name, channel, confirmation=False, my_output=None, wait=True):
         success = self.create_subscription(
@@ -29,6 +35,11 @@ class K8sSubscriptionNmstate():
         return True
 
     def delete_nmstate_subscription(self, namespace, name, my_output=None, wait=True):
+        resources = self.get_subscription_resources(
+            self.subscription_nmstate_resources + self.instance_nmstate_resources,
+            cache_enabled=False
+        )
+
         success = self.delete_subscription(
             namespace, 
             name, 
@@ -38,69 +49,37 @@ class K8sSubscriptionNmstate():
         if not success:
             return False
         
-        if wait:
-            success = self.wait_no_subscription_nmstate(my_output=my_output)
-            if not success:
-                return False
-        
+        if not wait:
+            return True
+
+        success = self.wait_no_subscription_resources('nmstate', resources, my_output=my_output)
+        if not success:
+            return False
+
         return True
 
-    def is_subscription_nmstate_ready(self, with_instance=False):
-        deployments = [
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-operator'}
-        ]
-
-        instance_deployments = [
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-console-plugin'},
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-webhook'}
-        ]
-
+    def is_subscription_nmstate_ready(self, with_instance=False, my_output=None, details=False, break_on_error=False, cache_enabled=False):
+        resources = self.subscription_nmstate_resources
         if with_instance:
-            deployments.extend(instance_deployments)
+            resources.extend(self.instance_nmstate_resources)
 
-        for deployment in deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
-                return False
-
-        return True
+        return self.is_subscription_ready('nmstate', resources, my_output=my_output, details=details, break_on_error=break_on_error, cache_enabled=cache_enabled)
     
     def wait_subscription_nmstate_ready(self, my_output=None, with_instance=False):
-        deployments = [
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-operator'}
-        ]
-
-        instance_deployments = [
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-console-plugin'},
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-webhook'}
-        ]
-
+        resources = self.subscription_nmstate_resources
         if with_instance:
-            deployments.extend(instance_deployments)
+            resources.extend(self.instance_nmstate_resources)
 
-        success = self.wait_deployments_ready_state(deployments, my_output=my_output, optional=True)
-        if not success:
-            return False
-
+        return self.wait_subscription_resources('nmstate', resources, my_output=my_output)
+        
+    def wait_no_subscription_nmstate(self, my_output=None, instance_only=False, with_instance=True):
+        resources = []
+        if not instance_only:
+            resources.extend(self.subscription_nmstate_resources)
         if with_instance:
-            nodes = self.get_nodes()
-            if nodes is None:
-                return False
+            resources.extend(self.instance_nmstate_resources)
 
-            for node in nodes:
-                success = self.wait_node_network_state(node['name'], my_output=my_output)
-                if not success:
-                    return False
-
-        return True
-
-    def wait_no_subscription_nmstate(self, my_output=None):
-        deployments = [
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-console-plugin'},
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-operator'},
-            {'namespace': 'openshift-nmstate', 'name': 'nmstate-webhook'}
-        ]
-        success = self.wait_no_deployments(deployments, my_output=my_output, optional=False)
-        if not success:
-            return False
-
-        return True
+        if len(resources) == 0:
+            return True
+            
+        return self.wait_no_subscription_resources('nmstate', resources, my_output=my_output)

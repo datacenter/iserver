@@ -3,6 +3,7 @@ from lib import filter_helper
 
 def get_task_map():
     fmap = {}
+    fmap['adm'] = 'ocp_adm'
     fmap['ai'] = 'ocp_ai_operator'
     fmap['bmh'] = 'ocp_bare_metal_host'
     fmap['cert-manager'] = 'ocp_cert_manager'

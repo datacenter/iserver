@@ -62,8 +62,8 @@ Authentication and Authorization
 
 Command hints
 -------------
-iserver get k8s pod --namespace openshift-authentication-operator -v logs
-iserver get k8s pod --namespace openshift-authentication -v logs
+iserver get k8s pod --namespace openshift-authentication-operator -v log
+iserver get k8s pod --namespace openshift-authentication -v log
 iserver get ocp htpasswd
 iserver get ocp ldap
 iserver get k8s user

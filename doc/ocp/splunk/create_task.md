@@ -4,18 +4,25 @@
 
 ## Input
 
-```
+```json
 [
     {
         "splunk": {
             "operator": {
-                "channel": "channel-name"
+                "version": "3.1.0"
             },
-            "instance": [
-                {
-                    "instance": "instance-name"
-                }
-            ]
+            "instance": {
+                "instance": [
+                    {
+                        "name": "inst1",
+                        "etc-size": "10Gi",
+                        "etc-sc": "lvms-vg1",
+                        "var-size": "100Gi",
+                        "var-sc": "lvms-vg1",
+                        "sa": "default"
+                    }
+                ]
+            }
         }
     }
 ]

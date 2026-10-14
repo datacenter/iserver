@@ -2,10 +2,13 @@
 
 ## Workflow
 
+>[!NOTE]
+>Check tetragon operator version at Isovalent registry directly or in the documentation
+
 - create tetragon namespace 
-- create catalog source with user-defined image
+- create catalog source with user-defined version
 - create operator group
-- create subscription with user controlled channel or defaultChannelName
+- create subscription 
 
 ## Requirements
 
@@ -28,7 +31,7 @@ None
 ## Example
 
 ```
-# iserver set ocp tetragon --mode operator --cluster bm1 --image image-name-as-provided-by-isovalent --no-confirm
+# iserver set ocp tetragon --cluster bm1 --mode operator --version 1.19.4 --no-confirm
 
 OpenShift Workflow - Tetragon - Create Operator
 ===============================================
@@ -52,6 +55,48 @@ Wait for namespace [timeout:60]...
 
 Check labels
 - openshift.io/user-monitoring:true found
+Access token created
+~~~
+{
+    "token_id": "aaa",
+    "access_token": "bbb",
+    "expires_in": 7776000,
+    "scope": "applied-permissions/user",
+    "token_type": "Bearer",
+    "description": "iserver-test-token",
+    "username": "userid"
+}
+~~~
+CatalogSource secret data
+~~~
+{
+    "auths": {
+        "artifactory.devhub-cloud.cisco.com": {
+            "username": "userid",
+            "password": "bbb",
+            "auth": "base64 endoced userid:bbb"
+        }
+    }
+}
+~~~
+
+Create Secret
+-------------
+- namespace: tetragon
+- name: isovalent-registry
+
+~~~
+apiVersion: v1
+data:
+  .dockerconfigjson: ...
+kind: Secret
+metadata:
+  name: isovalent-registry
+  namespace: tetragon
+type: kubernetes.io/dockerconfigjson
+~~~
+Secret [tetragon/isovalent-registry] created
+Wait for Secret tetragon/isovalent-registry [timeout:60s]
 
 Create CatalogSource
 --------------------
@@ -65,11 +110,13 @@ metadata:
   name: tetragon-catalog
   namespace: tetragon
 spec:
-  ...
+  image: artifactory.devhub-cloud.cisco.com/isovalent-iep-docker-local/tetragon-operator-index:v0.0.1
+  secrets:
+  - isovalent-registry
+  sourceType: grpc
 ~~~
 CatalogSource [tetragon/tetragon-catalog] created
-- wait for CatalogSource tetragon/tetragon-catalog [timeout:60s]
-
+Wait for CatalogSource tetragon/tetragon-catalog [timeout:60s]
 Wait for tetragon package...
 Tetragon package found
 
@@ -88,7 +135,7 @@ spec:
   upgradeStrategy: Default
 ~~~
 OperatorGroup [tetragon/tetragon] created
-- wait for OperatorGroup tetragon/tetragon [timeout:60s]
+Wait for OperatorGroup tetragon/tetragon [timeout:60s]
 
 Create Subscription
 -------------------
@@ -96,13 +143,6 @@ Subscription: tetragon/tetragon-operator
 Source: tetragon/tetragon-catalog/tetragon-operator
 Install plan approval: Automatic
 Getting subscription and packege manifest information...
-Resolving channel name...
-Channel: v1.18
-- CSV [tetragon-operator.v1.18.2]
-- CSV Display name [Tetragon Operator]
-- CVS Version [1.18.2]
-- CSV Provider [{'name': 'Isovalent', 'url': 'https://isovalent.com'}]
-- CSV Maturity [alpha]
 
 ~~~
 apiVersion: operators.coreos.com/v1alpha1
@@ -113,7 +153,6 @@ metadata:
   name: tetragon-operator
   namespace: tetragon
 spec:
-  channel: v1.18
   installPlanApproval: Automatic
   name: tetragon-operator
   source: tetragon-catalog
@@ -123,7 +162,7 @@ spec:
 Subscription created
 
 Wait for subscription install plan started [timeout:360]...
-Install plan: install-sd9g7
+Install plan: install-vglpl
 Wait for subscription install plan ready [timeout:600]...
 Install plan succeeded
 Wait for deployment tetragon/tetragon-operator ready (optional: False, allow zero replicas: False, timeout: 600s)...
@@ -138,7 +177,7 @@ Completed tasks
 +----+---------+----------+-----------------+---------+---------+--------------+
 | ID | Target  | Scope    | Workflow        | Changes | Success | Duration [s] |
 +----+---------+----------+-----------------+---------+---------+--------------+
-| 1  | ocp:bm1 | tetragon | create operator | 4       | V       | 56           | 
+| 1  | ocp:bm1 | tetragon | create operator | 5       | ✓       | 76           | 
 +----+---------+----------+-----------------+---------+---------+--------------+
 ```
 

@@ -104,48 +104,23 @@ class K8sReplicaSetInfo():
         return True
 
     def get_replica_sets(self, object_filter=None, return_mo=False, cache_enabled=True):
-        all_replica_sets = self.get_replica_sets_info(cache_enabled=cache_enabled)
-        if all_replica_sets is None:
-            return None
-
-        replica_sets = []
-
-        for replica_set_info in all_replica_sets:
-            if not self.match_replica_set(replica_set_info['info'], object_filter):
-                continue
-
-            if return_mo:
-                replica_sets.append(
-                    replica_set_info['mo']
-                )
-                continue
-
-            replica_sets.append(
-                replica_set_info['info']
-            )
-
-        return replica_sets
-
-    def get_replica_set(self, namespace, name, return_mo=False, cache_enabled=True):
-        object_filter = []
-        object_filter.append(
-            'namespace:%s' % (namespace)
-        )
-        object_filter.append(
-            'name:%s' % (name)
-        )
-        replica_sets = self.get_replica_sets(
-            object_filter=object_filter,
-            return_mo=return_mo,
+        infos = self.get_infos(
+            'replica_set', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
             cache_enabled=cache_enabled
         )
-        if replica_sets is None:
-            return None
+        return infos
 
-        if len(replica_sets) == 1:
-            return replica_sets[0]
-
-        return None
+    def get_replica_set(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'replica_set', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
+        )
 
     def is_replica_set(self, namespace, name, cache_enabled=True):
         if self.get_replica_set(namespace, name, cache_enabled=cache_enabled) is None:

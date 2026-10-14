@@ -156,8 +156,8 @@ def print_state_summary(params, my_output, k8s_output_handler):
     my_output.default('- group: %s with %s from ldap' % (len(params['state']['group']), params['state']['ldap_groups']))
 
     my_output.default('Command hints', before_newline=True, underline=True)
-    my_output.default('iserver get k8s pod --namespace openshift-authentication-operator -v logs')
-    my_output.default('iserver get k8s pod --namespace openshift-authentication -v logs')
+    my_output.default('iserver get k8s pod --namespace openshift-authentication-operator -v log')
+    my_output.default('iserver get k8s pod --namespace openshift-authentication -v log')
     my_output.default('iserver get ocp htpasswd')
     my_output.default('iserver get ocp ldap')
     my_output.default('iserver get k8s user')

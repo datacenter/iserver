@@ -21,64 +21,113 @@ None
   --cluster TEXT         Cluster Name
 ```
 
-## Example
+## Example (view:state)
 
 ```
-python.exe .\iserver.py get ocp nmstate                
+# iserver get ocp nmstate --cluster bm1 -v state
 
 OpenShift Workflow - NMState Operator - Get Information
 =======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-nmstate",
-    "name": "kubernetes-nmstate-operator",
-    "operator-group-name": "nmstate-operator-group",
-    "delete-namespace": true
-}
-
-
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+OpenShift Cluster: bm1
 
 Operator
---------
-- subscription: openshift-nmstate/kubernetes-nmstate-operator
-- channel: stable
-- csv: kubernetes-nmstate-operator.4.18.0-202509241752
-- instance: nmstate
+- subscription          : openshift-nmstate/kubernetes-nmstate-operator
+- package               : openshift-marketplace/redhat-operators/kubernetes-nmstate-operator
+- channel               : stable
+- install plan          : openshift-nmstate/install-l2bpx
+- install plan approved : ✓
+- installed csv         : kubernetes-nmstate-operator.4.21.0-202609301335
+- latest_csv            : ✓
 
-Operator functional readiness
------------------------------
-ready
+Nmstate instance: nmstate (ready)
 
 Node Network State
-------------------
-- ocp-bm1: found
+- bm1: found
+Node network configuration policy: 0
+Node network configuration enactment: 0
+```
 
-Node Network Configuration Policy [#1]
---------------------------------------
+## Example (view:res)
 
-+--------+-----------+------------------------+
-| Name   | Status    | Reason                 |
-+--------+-----------+------------------------+
-| policy | Available | SuccessfullyConfigured |
-+--------+-----------+------------------------+
+```
+# iserver get ocp nmstate --cluster bm1 -v res
 
-Node Network Configuration Enactment [#1]
------------------------------------------
+OpenShift Workflow - NMState Operator - Get Information
+=======================================================
 
-+----------------+-----------+
-| Name           | Status    |
-+----------------+-----------+
-| my-node.policy | Available |
-+----------------+-----------+
+OpenShift Cluster: bm1
+
++----+-----------------------------------+--------+--------+
+| ID | Node Network Configuration Policy | Status | Reason |
++----+-----------------------------------+--------+--------+
++----+-----------------------------------+--------+--------+
+
++----+--------------------------------------+--------+
+| ID | Node Network Configuration Enactment | Status |
++----+--------------------------------------+--------+
++----+--------------------------------------+--------+
+
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| ID | Pod                                     | Ready | Status  | Annotation         | Node | IP           | Net | Restart | Age  |
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| 1  | openshift-nmstate                       | 1/1   | Running | Initialized: ✓     | bm1  | 10.128.0.157 | 1   | 0       | 2h1m | 
+|    | nmstate-console-plugin-5749566764-spffq |       |         | PodScheduled: ✓    |      |              |     |         |      | 
+|    |                                         |       |         | ContainersReady: ✓ |      |              |     |         |      | 
+|    |                                         |       |         | Ready: ✓           |      |              |     |         |      | 
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| 2  | openshift-nmstate                       | 1/1   | Running | Initialized: ✓     | bm1  | 10.58.29.81  | 0   | 0       | 2h1m | 
+|    | nmstate-handler-n4ln6                   |       |         | PodScheduled: ✓    |      |              |     |         |      | 
+|    |                                         |       |         | ContainersReady: ✓ |      |              |     |         |      | 
+|    |                                         |       |         | Ready: ✓           |      |              |     |         |      | 
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| 3  | openshift-nmstate                       | 2/2   | Running | Initialized: ✓     | bm1  | 10.128.1.141 | 1   | 0       | 2h1m | 
+|    | nmstate-metrics-6878cd9f58-7qf4g        |       |         | PodScheduled: ✓    |      |              |     |         |      | 
+|    |                                         |       |         | ContainersReady: ✓ |      |              |     |         |      | 
+|    |                                         |       |         | Ready: ✓           |      |              |     |         |      | 
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| 4  | openshift-nmstate                       | 1/1   | Running | Initialized: ✓     | bm1  | 10.128.1.169 | 1   | 0       | 2h3m | 
+|    | nmstate-operator-79db9c9bb7-x9655       |       |         | PodScheduled: ✓    |      |              |     |         |      | 
+|    |                                         |       |         | ContainersReady: ✓ |      |              |     |         |      | 
+|    |                                         |       |         | Ready: ✓           |      |              |     |         |      | 
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+| 5  | openshift-nmstate                       | 1/1   | Running | Initialized: ✓     | bm1  | 10.128.1.166 | 1   | 0       | 2h1m | 
+|    | nmstate-webhook-6cffdc64b7-9ht9w        |       |         | PodScheduled: ✓    |      |              |     |         |      | 
+|    |                                         |       |         | ContainersReady: ✓ |      |              |     |         |      | 
+|    |                                         |       |         | Ready: ✓           |      |              |     |         |      | 
++----+-----------------------------------------+-------+---------+--------------------+------+--------------+-----+---------+------+
+
++----+------------------------+-------+------------+-----------+------+
+| ID | Deployment             | Ready | Up-To-Date | Available | Age  |
++----+------------------------+-------+------------+-----------+------+
+| 1  | openshift-nmstate      | 1/1   | 1          | 1         | 2h1m | 
+|    | nmstate-console-plugin |       |            |           |      | 
++----+------------------------+-------+------------+-----------+------+
+| 2  | openshift-nmstate      | 1/1   | 1          | 1         | 2h1m | 
+|    | nmstate-metrics        |       |            |           |      | 
++----+------------------------+-------+------------+-----------+------+
+| 3  | openshift-nmstate      | 1/1   | 1          | 1         | 2h3m | 
+|    | nmstate-operator       |       |            |           |      | 
++----+------------------------+-------+------------+-----------+------+
+| 4  | openshift-nmstate      | 1/1   | 1          | 1         | 2h1m | 
+|    | nmstate-webhook        |       |            |           |      | 
++----+------------------------+-------+------------+-----------+------+
+
++----+-----------------------------------+------------------------+---------+---------+-------+------+
+| ID | Replica Set                       | Owner                  | Desired | Current | Ready | Age  |
++----+-----------------------------------+------------------------+---------+---------+-------+------+
+| 1  | openshift-nmstate                 | Deployment             | 1       | 1       | 1     | 2h1m | 
+|    | nmstate-console-plugin-5749566764 | nmstate-console-plugin |         |         |       |      | 
++----+-----------------------------------+------------------------+---------+---------+-------+------+
+| 2  | openshift-nmstate                 | Deployment             | 1       | 1       | 1     | 2h1m | 
+|    | nmstate-metrics-6878cd9f58        | nmstate-metrics        |         |         |       |      | 
++----+-----------------------------------+------------------------+---------+---------+-------+------+
+| 3  | openshift-nmstate                 | Deployment             | 1       | 1       | 1     | 2h3m | 
+|    | nmstate-operator-79db9c9bb7       | nmstate-operator       |         |         |       |      | 
++----+-----------------------------------+------------------------+---------+---------+-------+------+
+| 4  | openshift-nmstate                 | Deployment             | 1       | 1       | 1     | 2h1m | 
+|    | nmstate-webhook-6cffdc64b7        | nmstate-webhook        |         |         |       |      | 
++----+-----------------------------------+------------------------+---------+---------+-------+------+
 ```
 
 [[Back]](./README.md)

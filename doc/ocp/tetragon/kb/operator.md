@@ -1,11 +1,8 @@
 # Tetragon - Operator
 
-[[Back]](../README.md) [[iserver-way]](../create_operator.md)
+[[Back]](../README.md)
 
 Tetragon Enterprise in an OpenShift cluster is installed as operator with the Operator Lifecycle Manager (OLM) framework.
-
-> [!NOTE]
-> Tetragon can be installed independently of Cilium CNI
 
 ![Resources](../../images/tetragon/resources.png)
 
@@ -22,8 +19,29 @@ metadata:
 
 ## Catalog Source
 
-> [!CAUTION]
-> CatalogSource [required](https://docs.isovalent.com/iep/latest/tetragon/installation/openshift.html) to install Tetragon operator
+Refer to official [documentation](https://docs.isovalent.com/iep/latest/tetragon/installation/openshift.html) for details.
+
+```
+kubectl create ns tetragon
+kubectl create secret docker-registry isovalent-registry \
+  --namespace tetragon \
+  --docker-server=containers.isovalent.com \
+  --docker-username=<username> \
+  --docker-password=<password>
+
+cat <<EOF | kubectl create -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: tetragon-catalog
+  namespace: tetragon
+spec:
+  sourceType: grpc
+  image: containers.isovalent.com/tetragon-operator-index:v0.0.1
+  secrets:
+    - isovalent-registry
+EOF
+```
 
 ## Operator Group
 
@@ -48,7 +66,6 @@ metadata:
   name: tetragon-operator
   namespace: tetragon
 spec:
-  channel: v1.18
   installPlanApproval: Automatic
   name: tetragon-operator
   source: tetragon-catalog
@@ -61,24 +78,24 @@ spec:
 
 ```
 $ oc get all -n tetragon
-NAME                                                                  READY   STATUS      RESTARTS   AGE
-pod/tetragon-9hwbf                                                    1/1     Running     0          73s
-pod/tetragon-catalog-s8rjs                                            1/1     Running     0          5m36s
-pod/tetragon-d2455                                                    1/1     Running     0          73s
-pod/tetragon-gwnbs                                                    1/1     Running     0          73s
-pod/tetragon-operator-646c4b6845-th7ld                                1/1     Running     0          74s
+Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
+NAME                                                                  READY   STATUS      RESTARTS      AGE
+pod/tetragon-85mjh                                                    1/1     Running     2 (21m ago)   42m
+pod/tetragon-catalog-ghkhc                                            1/1     Running     1             50m
+pod/tetragon-operator-dd8d5848-2sxnc                                  1/1     Running     0             20m
 
-NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
-service/tetragon-catalog   ClusterIP   172.244.28.46   <none>        50051/TCP   5m36s
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+service/tetragon-catalog   ClusterIP   172.30.178.247   <none>        50051/TCP   66m
 
 NAME                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
-daemonset.apps/tetragon   3         3         3       3            3           kubernetes.io/os=linux   73s
+daemonset.apps/tetragon   1         1         1       1            1           kubernetes.io/os=linux   42m
 
 NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/tetragon-operator   1/1     1            1           74s
+deployment.apps/tetragon-operator   1/1     1            1           44m
 
-NAME                                           DESIRED   CURRENT   READY   AGE
-replicaset.apps/tetragon-operator-646c4b6845   1         1         1       74s
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/tetragon-operator-6cfb585fd   0         0         0       44m
+replicaset.apps/tetragon-operator-dd8d5848    1         1         1       20m
 ```
 
-[[Back]](../README.md) [[iserver-way]](../create_operator.md)
+[[Back]](../README.md)

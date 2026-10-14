@@ -90,7 +90,7 @@ class K8sDeploymentInfo():
             return False
         return info['ready']
 
-    def get_deployment_resources(self, namespace, name, cache_enabled=True):
+    def get_deployment_resources(self, namespace, name, cache_enabled=True, details=False):
         resources = {}
         resources['rs'] = []
         resources['pod'] = []
@@ -104,22 +104,32 @@ class K8sDeploymentInfo():
             return resources
         
         for replica_set in replica_sets:
-            resources['rs'].append(
-                dict(
-                    namespace=replica_set['namespace'],
-                    name=replica_set['name']
+            if details:
+                resources['rs'].append(
+                    replica_set
                 )
-            )
+            else:
+                resources['rs'].append(
+                    dict(
+                        namespace=replica_set['namespace'],
+                        name=replica_set['name']
+                    )
+                )
             pods = self.get_pods_replica_set(namespace, replica_set['name'], cache_enabled=cache_enabled)
             if pods is None:
                 continue
 
             for pod in pods:
-                resources['pod'].append(
-                    dict(
-                        namespace=pod['namespace'],
-                        name=pod['name']
+                if details:
+                    resources['pod'].append(
+                        pod
                     )
-                )
+                else:
+                    resources['pod'].append(
+                        dict(
+                            namespace=pod['namespace'],
+                            name=pod['name']
+                        )
+                    )
 
         return resources

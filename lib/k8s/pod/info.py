@@ -573,18 +573,23 @@ class K8sPodInfo():
 
         # Phase: Pending, Running, Succeeded (Completed), Failed, Unknown
         info['phase'] = self.get(pod_mo, 'status:phase', on_error='Unknown', on_none='Unknown')
-        info['phaseT'] = info['phase']
-        if info['phaseT'] == 'Succeeded':
-            info['phaseT'] = 'Completed'
-
-        if info['phaseT'] in ['Running', 'Completed']:
-            info['__Output']['phaseT'] = 'Green'
-
-        if info['phaseT'] in ['Failed', 'Unknown']:
+        if info['deletion_timestamp'] is not None:
+            info['phase'] = 'Terminating'
+            info['phaseT'] = info['phase']
             info['__Output']['phaseT'] = 'Red'
+        else:
+            info['phaseT'] = info['phase']
+            if info['phaseT'] == 'Succeeded':
+                info['phaseT'] = 'Completed'
 
-        if info['phaseT'] in ['Pending']:
-            info['__Output']['phaseT'] = 'Yellow'
+            if info['phaseT'] in ['Running', 'Completed']:
+                info['__Output']['phaseT'] = 'Green'
+
+            if info['phaseT'] in ['Failed', 'Unknown']:
+                info['__Output']['phaseT'] = 'Red'
+
+            if info['phaseT'] in ['Pending']:
+                info['__Output']['phaseT'] = 'Yellow'
 
         info['running'] = False
         if info['phase'] == 'Running':

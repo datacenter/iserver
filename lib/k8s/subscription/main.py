@@ -22,7 +22,6 @@ from lib.k8s.subscription.ods import K8sSubscriptionOds
 from lib.k8s.subscription.portworx import K8sSubscriptionPortworx
 from lib.k8s.subscription.serverless import K8sSubscriptionServerless
 from lib.k8s.subscription.service_mesh import K8sSubscriptionServiceMesh
-from lib.k8s.subscription.splunk import K8sSubscriptionSplunk
 from lib.k8s.subscription.sriov import K8sSubscriptionSriov
 from lib.k8s.subscription.tetragon import K8sSubscriptionTetragon
 from lib.k8s.subscription.trident import K8sSubscriptionTrident
@@ -55,7 +54,6 @@ class K8sSubscription(
         K8sSubscriptionPortworx,
         K8sSubscriptionServerless,
         K8sSubscriptionServiceMesh,
-        K8sSubscriptionSplunk,
         K8sSubscriptionSriov,
         K8sSubscriptionTetragon,
         K8sSubscriptionTrident,
@@ -87,7 +85,6 @@ class K8sSubscription(
         K8sSubscriptionPortworx.__init__(self)
         K8sSubscriptionServerless.__init__(self)
         K8sSubscriptionServiceMesh.__init__(self)
-        K8sSubscriptionSplunk.__init__(self)
         K8sSubscriptionSriov.__init__(self)
         K8sSubscriptionTetragon.__init__(self)
         K8sSubscriptionTrident.__init__(self)

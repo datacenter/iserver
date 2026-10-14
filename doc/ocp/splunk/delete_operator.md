@@ -4,9 +4,8 @@
 
 ## Workflow
 
-- delete splunk operator subscription
+- delete `splunk-operator` namespaced resources
 - wait for resources deleted
-- delete operator group
 - delete namespace
 
 ## Requirements
@@ -28,17 +27,6 @@ No Splunk CRD may exist
   --cluster TEXT                  Cluster Name
 ```
 
-## Non-configurable defaults
-
-```
-{
-    "namespace": "splunk-operator",
-    "name": "splunk-operator",
-    "operator-group-name": "splunk-operator-group",
-    "delete-namespace": true
-}
-```
-
 ## Example
 
 ```
@@ -47,92 +35,178 @@ No Splunk CRD may exist
 OpenShift Workflow - Splunk Operator - Delete Operator
 ======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "splunk-operator",
-    "name": "splunk-operator",
-    "operator-group-name": "splunk-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
 
-OpenShift Cluster
+Splunk Custom Resources
+-----------------------
+- standalone          : 0
+- cluster master      : 0
+- cluster manager     : 0
+- indexer cluster     : 0
+- license manager     : 0
+- license master      : 0
+- monitoring console  : 0
+- search head cluster : 0
+
+
+Delete Deployment
 -----------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
+- namespace: splunk-operator
+- name: splunk-operator-controller-manager
+- replica set: splunk-operator-controller-manager-5679c957f
+- pod: splunk-operator-controller-manager-5679c957f-tmh7g
+- wait for no deployment
+- wait for no replica set splunk-operator/splunk-operator-controller-manager-5679c957f
+- wait for no pod: splunk-operator-controller-manager-5679c957f-tmh7g
 
+Delete Custom Resource Definition
+---------------------------------
+- name: clustermanagers.enterprise.splunk.com
+- wait for no custom resource definition
 
-ClusterManager
---------------
-- no resources found
+Delete Custom Resource Definition
+---------------------------------
+- name: clustermasters.enterprise.splunk.com
+- wait for no custom resource definition
 
-ClusterMaster
--------------
-- no resources found
+Delete Custom Resource Definition
+---------------------------------
+- name: indexerclusters.enterprise.splunk.com
+- wait for no custom resource definition
 
-IndexerCluster
---------------
-- no resources found
+Delete Custom Resource Definition
+---------------------------------
+- name: ingestorclusters.enterprise.splunk.com
+- wait for no custom resource definition
 
-LicenseManager
---------------
-- no resources found
+Delete Custom Resource Definition
+---------------------------------
+- name: licensemanagers.enterprise.splunk.com
+- wait for no custom resource definition
 
-LicenseMaster
--------------
-- no resources found
+Delete Custom Resource Definition
+---------------------------------
+- name: licensemasters.enterprise.splunk.com
+- wait for no custom resource definition
 
-MonitoringConsole
+Delete Custom Resource Definition
+---------------------------------
+- name: monitoringconsoles.enterprise.splunk.com
+- wait for no custom resource definition
+
+Delete Custom Resource Definition
+---------------------------------
+- name: objectstorages.enterprise.splunk.com
+- wait for no custom resource definition
+
+Delete Custom Resource Definition
+---------------------------------
+- name: queues.enterprise.splunk.com
+- wait for no custom resource definition
+
+Delete Custom Resource Definition
+---------------------------------
+- name: searchheadclusters.enterprise.splunk.com
+- wait for no custom resource definition
+
+Delete Custom Resource Definition
+---------------------------------
+- name: standalones.enterprise.splunk.com
+- wait for no custom resource definition
+
+Delete Config Map
 -----------------
-- no resources found
+- namespace: splunk-operator
+- name: splunk-operator-config
+- wait for no config map
 
-SearchHeadCluster
+Delete Config Map
 -----------------
-- no resources found
+- namespace: splunk-operator
+- name: splunk-operator-manager-config
+- wait for no config map
 
-Standalone
-----------
-- no resources found
+Delete Config Map
+-----------------
+- namespace: splunk-operator
+- name: splunk-operator-manager-telemetry
+- wait for no config map
 
-Delete Subscription
--------------------
-- subscription: splunk-operator/splunk-operator
-- checking cluster service version...
-- csv found and will be deleted: splunk-operator/splunk-operator.v3.0.0
-- wait for no subscription
-- check cluster service version: splunk-operator/splunk-operator.v3.0.0
-- wait for no csv
-Wait for deployments deleted (optional: True)...
-- splunk-operator/splunk-operator-controller-manager
+Delete Config Map
+-----------------
+- namespace: splunk-operator
+- name: splunk-splunk-operator-probe-configmap
+- wait for no config map
 
-Delete Operator Group
+Delete Service
+--------------
+- namespace: splunk-operator
+- name: splunk-operator-controller-manager-metrics-service
+- wait for no service
+
+Delete Service
+--------------
+- namespace: splunk-operator
+- name: splunk-operator-controller-manager-service
+- wait for no service
+
+Delete Persistent Volume Claim
+------------------------------
+- namespace: splunk-operator
+- name: splunk-operator-app-download
+- wait for no pvc
+
+Delete RoleBinding
+------------------
+- namespace: splunk-operator
+- name: splunk-operator-leader-election-rolebinding
+- deleted
+- wait for no role binding
+
+Delete RoleBinding
+------------------
+- namespace: splunk-operator
+- name: system:openshift:scc:nonroot-v2
+- deleted
+- wait for no role binding
+
+Delete Role
+-----------
+- namespace: splunk-operator
+- name: splunk-operator-leader-election-role
+- deleted
+- wait for no role
+
+Delete ServiceAccount
 ---------------------
 - namespace: splunk-operator
-- name: splunk-operator-group
-- wait for no operator group
+- name: splunk-operator-controller-manager
+- deleted
+Wait for no ServiceAccount splunk-operator/splunk-operator-controller-manager [timeout:60s]
 
 Delete Namespace
 ----------------
 - name: splunk-operator
 
 Namespace [splunk-operator] resources
-- no pods
 - no deployments
-- no daemon sets
-- no replica sets
+- no daemon_sets
+- no replica_sets
+- no pods
 - no services
 - no pvcs
-- wait for no namespace
+- no jobs
+Wait for no Namespace splunk-operator [timeout:60s]
 
 Completed tasks
-- Splunk resources checked
-- Subscription and csv deleted
-- Operator Group deleted
-- Namespace deleted
+- Splunk operator deleted
+
++----+---------+--------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope  | Workflow        | Changes | Success | Duration [s] |
++----+---------+--------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | splunk | delete operator | 24      | ✓       | 114          | 
++----+---------+--------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

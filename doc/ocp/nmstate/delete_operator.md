@@ -4,7 +4,7 @@
 
 ## Workflow
 
-- delete NodeNetworkConfigurationPolicy objects
+- nmstate instance must not exist
 - delete operator subscription
 - delete operator group
 - delete namespace
@@ -23,69 +23,70 @@ None
 ## Example
 
 ```
-python.exe .\iserver.py delete ocp nmstate
+# iserver delete ocp nmstate
+
 
 OpenShift Workflow - NMState Operator - Delete Operator
 =======================================================
 
-Workflow Parameters
--------------------
-{
-    "cluster": "bm1",
-    "check-verbose": true,
-    "namespace": "openshift-nmstate",
-    "name": "kubernetes-nmstate-operator",
-    "operator-group-name": "nmstate-operator-group",
-    "delete-namespace": true
-}
+OpenShift Cluster: bm1
 
+Operator
+- subscription          : openshift-nmstate/kubernetes-nmstate-operator
+- package               : openshift-marketplace/redhat-operators/kubernetes-nmstate-operator
+- channel               : stable
+- install plan          : openshift-nmstate/install-sh6mx
+- install plan approved : ✓
+- installed csv         : kubernetes-nmstate-operator.4.21.0-202609301335
+- latest_csv            : ✓
 
-OpenShift Cluster
------------------
-- cluster: bm1 [domain:local]
-- api [C:\Users\user\.itool\ocp-clusters\bm1\kubeconfig]: ok
-- dns resolution: ok
-
-
-Delete Node Network Configuration Policies
-------------------------------------------
-- no nncp found
 
 Delete Subscription
 -------------------
 - subscription: openshift-nmstate/kubernetes-nmstate-operator
 - checking cluster service version...
-- csv found and will be deleted: openshift-nmstate/kubernetes-nmstate-operator.4.18.0-202509241752
+- csv found and will be deleted: openshift-nmstate/kubernetes-nmstate-operator.4.21.0-202609301335
 - wait for no subscription
-- check cluster service version: openshift-nmstate/kubernetes-nmstate-operator.4.18.0-202509241752
+- check cluster service version: openshift-nmstate/kubernetes-nmstate-operator.4.21.0-202609301335
 - wait for no csv
-Wait for deployments deleted (optional: False)...
-- openshift-nmstate/nmstate-console-plugin
-- openshift-nmstate/nmstate-operator
-- openshift-nmstate/nmstate-webhook
+Wait for no Deployment openshift-nmstate/nmstate-controller-manager [timeout:180s]
+Wait for no Deployment openshift-nmstate/nmstate-console-plugin [timeout:180s]
+Wait for no Deployment openshift-nmstate/nmstate-metrics [timeout:180s]
+Wait for no Deployment openshift-nmstate/nmstate-webhook [timeout:180s]
+Wait for no DaemonSet openshift-nmstate/nmstate-handler [timeout:180s]
+Subscription nmstate resources gone
 
-Delete Operator Group
----------------------
+Delete OperatorGroup
+--------------------
 - namespace: openshift-nmstate
-- name: kubernetes-nmstate-operator
-- already deleted
+- name: nmstate-operator-group
+- deleted
+Wait for no OperatorGroup openshift-nmstate/nmstate-operator-group [timeout:60s]
 
 Delete Namespace
 ----------------
 - name: openshift-nmstate
 
 Namespace [openshift-nmstate] resources
-- no pods
 - no deployments
-- no daemon sets
-- no replica sets
+- no daemon_sets
+- no replica_sets
+- no pods
 - no services
 - no pvcs
-- wait for no namespace
+- no jobs
+Wait for no Namespace openshift-nmstate [timeout:60s]
 
 Completed tasks
-- NMState resources deleted
-- NMState operator unconfigured and deleted
+- Subscription deleted
+- Operator Group deleted
+- Namespace deleted
+
++----+---------+---------+-----------------+---------+---------+--------------+
+| ID | Target  | Scope   | Workflow        | Changes | Success | Duration [s] |
++----+---------+---------+-----------------+---------+---------+--------------+
+| 1  | ocp:bm1 | nmstate | delete operator | 4       | ✓       | 20           | 
++----+---------+---------+-----------------+---------+---------+--------------+
 ```
 
 [[Back]](./README.md)

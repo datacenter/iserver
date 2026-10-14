@@ -24,3 +24,7 @@ class K8sRoleApi():
         )
 
         return response
+
+    def delete_role_mo(self, namespace, name):
+        success, _ = self.delete_resource('Role', 'rbac.authorization.k8s.io/v1', name, namespace=namespace)
+        return success

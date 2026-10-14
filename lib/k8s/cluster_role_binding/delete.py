@@ -73,3 +73,34 @@ class K8sClusterRoleBindingDelete():
         crb_mo = self.cleanup_managed_object(crb_mo, exclude=['resourceVersion'])
         crb_mo['subjects'] = new_subjects
         return self.replace_resource(crb_mo, object_name='cluster_role_binding', my_output=my_output, confirmation=confirmation)
+
+    def delete_labeled_cluster_role_bindings(self, labels, my_output=None, wait=True):
+        cluster_role_bindings = self.get_cluster_role_bindings(cache_enabled=False)
+        if cluster_role_bindings is None:
+            if my_output is not None:
+                my_output.error('Failed to get cluster role bindings')
+            return False
+
+        for cluster_role_binding in cluster_role_bindings:
+            match = True
+            for key in labels:
+                if key not in cluster_role_binding['label']:
+                    match = False
+                    break
+
+                if cluster_role_binding['label'] != labels[key]:
+                    match = False
+                    break
+
+            if not match:
+                continue
+
+            success = self.delete_cluster_role_binding(
+                cluster_role_binding['name'],
+                my_output=my_output,
+                wait=wait
+            )
+            if not success:
+                return False
+
+        return True

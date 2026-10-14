@@ -57,9 +57,9 @@ class K8sSubscriptionMtv():
         
         return True
 
-    def is_subscription_mtv_ready(self):
+    def is_subscription_mtv_ready(self, cache_enabled=False):
         for deployment in self.subscription_mtv_deployments:
-            if not self.is_deployment_ready(deployment['namespace'], deployment['name']):
+            if not self.is_deployment_ready(deployment['namespace'], deployment['name'], cache_enabled=cache_enabled):
                 return False
         return True
     

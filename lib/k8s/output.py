@@ -40,6 +40,7 @@ from lib.k8s.ceph_operator_config.output import K8sCephOperatorConfigOutput
 from lib.k8s.ceph_rdb_mirror.output import K8sCephRdbMirrorOutput
 from lib.k8s.certificate.output import K8sCertificateOutput
 from lib.k8s.certificate_request.output import K8sCertificateRequestOutput
+from lib.k8s.certificate_signing_request.output import K8sCsrOutput
 from lib.k8s.cilium_config.output import K8sCiliumConfigOutput
 from lib.k8s.cilium_load_balancer_ip_pool.output import CiliumLoadBalancerIpPoolOutput
 from lib.k8s.cluster_issuer.output import K8sClusterIssuerOutput
@@ -309,6 +310,7 @@ class K8sOutput(
     K8sCommunityOutput,
     K8sConfigMapOutput,
     K8sCronJobOutput,
+    K8sCsrOutput,
     K8sCustomResourceDefinitionOutput,
     K8sDaemonSetOutput,
     K8sDataImportCronOutput,
@@ -566,6 +568,7 @@ class K8sOutput(
         K8sCommunityOutput.__init__(self)
         K8sConfigMapOutput.__init__(self)
         K8sCronJobOutput.__init__(self)
+        K8sCsrOutput.__init__(self)
         K8sCustomResourceDefinitionOutput.__init__(self)
         K8sDaemonSetOutput.__init__(self)
         K8sDataImportCronOutput.__init__(self)

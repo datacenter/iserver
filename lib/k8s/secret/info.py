@@ -6,9 +6,14 @@ class K8sSecretInfo():
         self.secret = None
 
     def get_secret_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
         info = self.get_base_info(
             managed_object
         )
+
+        info['data'] = self.get(managed_object, 'data')
         return info
 
     def get_secrets(self, object_filter=None, return_mo=False, cache_enabled=True):

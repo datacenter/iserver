@@ -52,11 +52,34 @@ class K8sCiliumConfigPrivateNetwork():
         body = {}
         body['spec'] = {}
         body['spec']['enterprise'] = {}
+
+        approved = filter_helper.get(cilium_config_mo, 'spec:enterprise:featureGate:approved', on_error=None, on_none=None)
+        if approved is not None:
+            body['spec']['enterprise']['featureGate'] = {}
+            body['spec']['enterprise']['featureGate']['approved'] = []
+            pnet_gates = ['PrivateNetworks', 'MultiNetwork', 'PrivateNetworkLocalAccess', 'BGPControlPlane', 'BGPRouteImport', 'EVPN', 'EnterpriseBGPControlPlane', 'VTEPIntegration']
+            for item in approved:
+                if item in pnet_gates:
+                    body['spec']['enterprise']['featureGate']['approved'].append(item)
+
         body['spec']['enterprise']['privateNetworks'] = filter_helper.get(cilium_config_mo, 'spec:enterprise:privateNetworks')
 
         if body['spec']['enterprise']['privateNetworks'] is None:
             return None
-        
+
+        evpn_enabled = filter_helper.get(cilium_config_mo, 'spec:enterprise:bgpControlPlane:enabled', on_error=False, on_none=False)
+        evpn_enabled = evpn_enabled and filter_helper.get(cilium_config_mo, 'spec:enterprise:bgpControlPlane:routeImport:enabled', on_error=False, on_none=False)
+        evpn_enabled = evpn_enabled and filter_helper.get(cilium_config_mo, 'spec:enterprise:evpn:enabled', on_error=False, on_none=False)
+        if evpn_enabled:
+            body['spec']['enterprise']['bgpControlPlane'] = filter_helper.get(cilium_config_mo, 'spec:enterprise:bgpControlPlane')
+            body['spec']['enterprise']['evpn'] = filter_helper.get(cilium_config_mo, 'spec:enterprise:evpn')
+
+        body['spec']['kubeProxyReplacement'] = filter_helper.get(cilium_config_mo, 'spec:kubeProxyReplacement', on_error=False, on_none=False)
+
+        cni = filter_helper.get(cilium_config_mo, 'spec:cni', on_error=None, on_none=None)
+        if cni is not None:
+            body['spec']['cni'] = cni
+
         return body
 
     def is_cilium_private_network_configured(self, cache_enabled=True):
@@ -76,6 +99,132 @@ class K8sCiliumConfigPrivateNetwork():
                 return True
 
         return False
+
+    def get_clusterwide_private_network_configuration_body(self, settings):
+        body = {}
+        body['spec'] = {}
+        body['spec']['enterprise'] = {}
+        body['spec']['enterprise']['featureGate'] = {}
+        body['spec']['enterprise']['featureGate']['approved'] = ['PrivateNetworks']
+        if settings['multus']:
+            body['spec']['enterprise']['featureGate']['approved'].append('MultiNetwork')
+        if settings['localaccess']:
+            body['spec']['enterprise']['featureGate']['approved'].append('PrivateNetworkLocalAccess')
+        if settings['evpn']:
+            body['spec']['enterprise']['featureGate']['approved'].append('BGPControlPlane')
+            body['spec']['enterprise']['featureGate']['approved'].append('BGPRouteImport')
+            body['spec']['enterprise']['featureGate']['approved'].append('EVPN')
+            body['spec']['enterprise']['featureGate']['approved'].append('EnterpriseBGPControlPlane')
+            body['spec']['enterprise']['featureGate']['approved'].append('VTEPIntegration')
+
+        body['spec']['enterprise']['privateNetworks'] = dict(enabled=True)
+
+        if settings['multus']:
+            body['spec']['enterprise']['privateNetworks']['networkAttachmentDefinitions'] = dict(enabled=True)
+
+        if settings['tls']:
+            body['spec']['enterprise']['privateNetworks']['api'] = {}
+            body['spec']['enterprise']['privateNetworks']['api']['enabled'] = True
+            body['spec']['enterprise']['privateNetworks']['api']['method'] = 'certmanager'
+            body['spec']['enterprise']['privateNetworks']['api']['certmanager'] = {}
+            body['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef'] = {}
+            body['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['group'] = 'cert-manager.io'
+            body['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['kind'] = 'Issuer'
+            body['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['name'] = 'cilium'
+
+        if settings['webhook']:
+            body['spec']['enterprise']['privateNetworks']['webhook'] = dict(enabled=True)
+            body['spec']['enterprise']['privateNetworks']['webhook']['vms'] = dict(networkBinding=self.pnet_webhook_name)
+
+        if settings['localaccess']:
+            body['spec']['enterprise']['privateNetworks']['mode'] = 'local-access'
+
+        if settings['evpn']:
+            body['spec']['enterprise']['bgpControlPlane'] = {}
+            body['spec']['enterprise']['bgpControlPlane']['enabled'] = True
+            body['spec']['enterprise']['bgpControlPlane']['routeImport'] = dict(enabled=True)
+            body['spec']['enterprise']['evpn'] = dict(enabled=True)
+
+        body['spec']['kubeProxyReplacement'] = True
+        body['spec']['cni'] = {}
+        body['spec']['cni']['chainingMode'] = 'none'
+
+        return body
+
+    def set_cilium_private_network_configuration(self, settings, my_output=None, confirmation=False):
+        if my_output is None:
+            confirmation = False
+
+        body = self.get_clusterwide_private_network_configuration_body(settings)
+        if my_output is not None:
+            my_output.default(yaml.dump(body), wrap='~~~')
+
+        if confirmation:
+            if not get_confirmation():
+                return False
+
+        cilium_config = self.get_cilium_config(return_mo=True, cache_enabled=False)
+
+        cilium_config['spec']['kubeProxyReplacement'] = body['spec']['kubeProxyReplacement']
+        if 'cni' in cilium_config['spec']:
+            cilium_config['spec']['cni']['chainingMode'] = body['spec']['cni']['chainingMode']
+
+        ## feature itself
+
+        if 'enterprise' not in cilium_config['spec']:
+            cilium_config['spec']['enterprise'] = {}
+
+        if 'featureGate' not in cilium_config['spec']['enterprise']:
+            cilium_config['spec']['enterprise']['featureGate'] = {}
+
+        if 'approved' not in cilium_config['spec']['enterprise']['featureGate']:
+            cilium_config['spec']['enterprise']['featureGate']['approved'] = []
+
+        for key in body['spec']['enterprise']['featureGate']['approved']:
+            if key not in cilium_config['spec']['enterprise']['featureGate']['approved']:
+                cilium_config['spec']['enterprise']['featureGate']['approved'].append(key)
+
+        cilium_config['spec']['enterprise']['privateNetworks'] = body['spec']['enterprise']['privateNetworks']
+
+        if settings['multus']:
+            if 'networkAttachmentDefinitions' not in cilium_config['spec']['enterprise']['privateNetworks']:
+                cilium_config['spec']['enterprise']['privateNetworks']['networkAttachmentDefinitions'] = {}
+
+            cilium_config['spec']['enterprise']['privateNetworks']['networkAttachmentDefinitions']['enabled'] = True
+
+        if settings['tls']:
+            cilium_config['spec']['enterprise']['privateNetworks']['api'] = {}
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['enabled'] = True
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['method'] = 'certmanager'
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['certmanager'] = {}
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef'] = {}
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['group'] = 'cert-manager.io'
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['kind'] = 'Issuer'
+            cilium_config['spec']['enterprise']['privateNetworks']['api']['certmanager']['issuerRef']['name'] = 'cilium'
+
+        if settings['webhook']:
+            cilium_config['spec']['enterprise']['privateNetworks']['webhook'] = dict(enabled=True)
+            cilium_config['spec']['enterprise']['privateNetworks']['webhook']['vms'] = dict(networkBinding=self.pnet_webhook_name)
+
+        if settings['localaccess']:
+            cilium_config['spec']['enterprise']['privateNetworks']['mode'] = 'local-access'
+
+        if settings['evpn']:
+            if 'bgpControlPlane' not in cilium_config['spec']['enterprise']:
+                cilium_config['spec']['enterprise']['bgpControlPlane'] = {}
+
+            if 'routeImport' not in cilium_config['spec']['enterprise']['bgpControlPlane']:
+                cilium_config['spec']['enterprise']['bgpControlPlane']['routeImport'] = {}
+
+            cilium_config['spec']['enterprise']['bgpControlPlane']['enabled'] = True
+            cilium_config['spec']['enterprise']['bgpControlPlane']['routeImport']['enabled'] = True
+
+            if 'evpn' not in cilium_config['spec']['enterprise']:
+                cilium_config['spec']['enterprise']['evpn'] = {}
+
+            cilium_config['spec']['enterprise']['evpn']['enabled'] = True
+
+        return self.update_cilium_config(cilium_config['spec'], my_output=my_output, wait=True)
 
     def get_enable_cilium_private_network_body(self):
         body = {}

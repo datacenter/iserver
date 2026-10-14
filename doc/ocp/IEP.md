@@ -62,4 +62,41 @@ Access token deleted: bbb
 Registry authentication and access token manipulation successfully verified
 ```
 
+## Get access token
+
+```
+# iserver get ocp cilium token
+
+OpenShift Workflow - Isovalent registry access settings
+=======================================================
+
+Registry: registry.isovalent.com
+Identity token: aaa
+Access token created
+~~~
+{
+    "token_id": "bbb",
+    "access_token": "ccc",
+    "expires_in": 7776000,
+    "scope": "applied-permissions/user",
+    "token_type": "Bearer",
+    "description": "iserver-test-token",
+    "username": "userid"
+}
+~~~
+```
+
+## Revoke access token
+
+```
+# iserver delete ocp cilium token --token-id bbb
+
+OpenShift Workflow - Isovalent registry access settings
+=======================================================
+
+Registry: registry.isovalent.com
+Identity token: aaa
+Access token deleted: bbb
+```
+
 [[Back]](./Operations.md) [[Next]](./BareMetalCluster.md)

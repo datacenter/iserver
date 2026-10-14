@@ -19,3 +19,7 @@ class K8sNodeNetworkConfigurationEnactmentApi():
         )
 
         return response
+
+    def delete_node_network_configuration_enactment_mo(self, name):
+        success, _ = self.delete_resource('NodeNetworkConfigurationEnactment', 'nmstate.io/v1beta1', name)
+        return success  

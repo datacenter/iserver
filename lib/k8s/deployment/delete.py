@@ -66,3 +66,22 @@ class K8sDeploymentDelete():
                     return False
 
         return True
+
+    def delete_namespaced_deployments(self, namespace, my_output=None, wait=True):
+        deployments = self.get_deployments(object_filter=['namespace:%s' % (namespace)], cache_enabled=False)
+        if deployments is None:
+            if my_output is not None:
+                my_output.error('Failed to get deployments')
+            return False
+
+        for deployment in deployments:
+            success = self.delete_deployment(
+                deployment['namespace'],
+                deployment['name'],
+                my_output=my_output,
+                wait=wait
+            )
+            if not success:
+                return False
+
+        return True

@@ -44,6 +44,7 @@ from lib.k8s.ceph_operator_config.main import K8sCephOperatorConfig
 from lib.k8s.ceph_rdb_mirror.main import K8sCephRdbMirror
 from lib.k8s.certificate.main import K8sCertificate
 from lib.k8s.certificate_request.main import K8sCertificateRequest
+from lib.k8s.certificate_signing_request.main import K8sCsr
 from lib.k8s.cron_job.main import K8sCronJob
 from lib.k8s.cilium_config.main import K8sCiliumConfig
 from lib.k8s.cluster_issuer.main import K8sClusterIssuer
@@ -320,6 +321,7 @@ class K8s(
         K8sCommunity,
         K8sConfigMap,
         K8sCronJob, 
+        K8sCsr,
         K8sCustomResourceDefinition,
         K8sDaemonSet,
         K8sDataImportCron,
@@ -520,7 +522,7 @@ class K8s(
         K8sVolumeSnapshotClass,
         K8sVolumeSnapshotContent
         ):
-    def __init__(self, kubeconfig_filename, cluster_type='standard', cluster_name=None, verbose=False, debug=False, log_id=None):
+    def __init__(self, kubeconfig_filename, cluster_type='ocp', cluster_name=None, verbose=False, debug=False, log_id=None):
         K8sApi.__init__(self, kubeconfig_filename, cluster_type=cluster_type)
         K8sCommon.__init__(self)
 
@@ -580,6 +582,7 @@ class K8s(
         K8sCommunity.__init__(self)
         K8sConfigMap.__init__(self)
         K8sCronJob.__init__(self)
+        K8sCsr.__init__(self)
         K8sCustomResourceDefinition.__init__(self)
         K8sDaemonSet.__init__(self)
         K8sDataImportCron.__init__(self)

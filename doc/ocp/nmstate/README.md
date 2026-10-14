@@ -25,12 +25,13 @@ The Kubernetes NMState Operator provides a Kubernetes API for performing state-d
 
 Command | Intent | Details
 --- | --- | ---
-iserver get ocp nmstate | check the NMState operator state | [Link](./get.md)
-iserver set ocp nmstate --mode operator | install and configure NMState operator | [Link](./create_operator.md)
-iserver set ocp nmstate --mode lldp | enable LLDP in NMState operator and optionally disable on interfaces | [Link](./enable_lldp.md)
-iserver set ocp nmstate --mode all | install operator and enable lldp | [Link](./create_all.md)
+iserver get ocp nmstate | check the nmstate operator state | [Link](./get.md)
+iserver set ocp nmstate --mode operator | install and configure nmstate operator | [Link](./create_operator.md)
+iserver set ocp nmstate --mode instance | create nmstate instance | [Link](./create_instance.md)
+iserver set ocp nmstate --mode lldp | enable LLDP in nmstate operator and optionally disable on interfaces | [Link](./enable_lldp.md)
 iserver set ocp task | in task way | [Link](./create_task.md)
-iserver delete ocp nmstate --mode operator | remove NMState operator | [Link](./delete_operator.md)
+iserver delete ocp nmstate --mode operator | remove nmstate operator | [Link](./delete_operator.md)
+iserver delete ocp nmstate --mode instance | remove nmstate instance | [Link](./delete_instance.md)
 iserver delete ocp task | in task way | [Link](./delete_task.md)
 
 ## Related Commands

@@ -7,6 +7,7 @@ def get_default_params():
         ['management mode', 'management'],
         ['enabled plugins', 'plugin'],
         ['deployment', 'deployment'],
+        ['pod', 'pod'],
         ['url', 'url']
     ]
     return params
@@ -44,6 +45,22 @@ def collect_state_info(params):
         params['state']['deployment'] = params['resource']['deployment']['readyT']
         params['state']['__Output']['deployment'] = params['resource']['deployment']['__Output']['readyT']
 
+    # deployment resources
+
+    resources = params['k8s_handler'].get_deployment_resources(
+        params['__default__']['namespace'],
+        params['__default__']['deployment'],
+        details=True
+    )
+    for key in resources:
+        params['resource'][key] = resources[key]
+
+    pod_summary = params['k8s_handler'].get_pods_summary(params['resource']['pod'])
+    params['state']['pod'] = '%s/%s' % (pod_summary['ready'], pod_summary['count'])
+    params['state']['__Output']['pod'] = 'Green'
+    if pod_summary['count'] == 0 or pod_summary['count'] != pod_summary['ready']:
+        params['state']['__Output']['pod'] = 'Red'
+    
     # console.operator
 
     params['resource']['operator'] = None
@@ -66,3 +83,10 @@ def print_state(params, my_output):
         params['state'],
         params['__default__']['state_output']
     )   
+
+
+def print_resources(params, k8s_output_handler):
+    k8s_output_handler.print_deployment(params['resource']['deployment'])
+    k8s_output_handler.print_replica_sets_state(params['resource']['rs'])
+    k8s_output_handler.print_pods_state(params['resource']['pod'])
+    k8s_output_handler.print_operator_consoles_state(params['resource']['operator'])

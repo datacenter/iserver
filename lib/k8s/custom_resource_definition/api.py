@@ -19,3 +19,7 @@ class K8sCustomResourceDefinitionApi():
         )
 
         return response
+
+    def delete_custom_resource_definition_mo(self, name):
+        success, _ = self.delete_resource('CustomResourceDefinition', 'apiextensions.k8s.io/v1', name)
+        return success

@@ -14,19 +14,18 @@ None
 
 ## Configurable options
 
-- Option --instance can be defined mulitple times
-- Option --instance value `__all__` selects all instances
-
 ```
 # iserver delete ocp splunk --mode instance
-  --cluster TEXT                  Cluster Name
-  --instance TEXT                 Standalone instance name
+  --cluster TEXT              Cluster name
+  --name TEXT                 Standalone instance name
+  --no-confirm                Confirmation mode
 ```
 
 ## Example
 
 ```
-# iserver delete ocp splunk --mode instance --instance __all__
+# iserver delete ocp splunk --cluster bm1 --mode instance --name inst1
+
 
 OpenShift Workflow - Splunk Operator - Delete Instance
 ======================================================
@@ -42,20 +41,13 @@ Delete splunk instance route
 
 Route deleted
 
-Delete Splunk Standalone Cluster
---------------------------------
+Delete Standalone
+-----------------
 - namespace: splunk-operator
 - name: inst1
-
-Standalone cluster deleted
-
-Wait for no pod splunk-operator/splunk-inst1-standalone-0...
-Wait for no standalone splunk-operator/inst1...
-
-+----+------------+-------+-----+-----+---------+-------+-----+
-| ID | Standalone | Ready | Pod | PVC | Service | Route | URL |
-+----+------------+-------+-----+-----+---------+-------+-----+
-+----+------------+-------+-----+-----+---------+-------+-----+
+- deleted
+Wait for no Pod splunk-operator/splunk-inst1-standalone-0 [timeout:300s]
+Wait for no Standalone splunk-operator/inst1 [timeout:60s]
 
 Completed tasks
 - Standalone instance deleted

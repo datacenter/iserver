@@ -1,3 +1,6 @@
+from lib import ip_helper
+
+
 class K8sSecretCreate():
     def __init__(self):
         pass
@@ -94,3 +97,60 @@ class K8sSecretCreate():
             my_output=my_output, 
             wait=wait
         )
+
+    def get_create_secret_docker_body(
+            self,
+            namespace, 
+            name,
+            data, 
+            labels={}
+    ):
+        body = {}
+        body['apiVersion'] = 'v1'
+        body['kind'] = 'Secret'
+        body['metadata'] = {}
+        body['metadata']['namespace'] = namespace
+        body['metadata']['name'] = name
+        if len(labels) > 0:
+            body['metadata']['labels'] = {}
+            for key in labels:
+                body['metadata']['labels'][key] = labels[key]
+
+        body['type'] = 'kubernetes.io/dockerconfigjson'
+        body['data'] = {}
+        body['data']['.dockerconfigjson'] = ip_helper.encode_text_64(data)
+        return body
+
+    def create_secret_docker(
+            self, 
+            namespace, 
+            name,
+            data, 
+            labels={},
+            confirmation=False, 
+            my_output=None, 
+            wait=True
+        ):
+        body = self.get_create_secret_docker_body(
+            namespace,
+            name,
+            data, 
+            labels=labels
+        )
+        success, _ = self.create_resource(body, object_name='secret', my_output=my_output, confirmation=confirmation)
+        if not success:
+            return False
+
+        if not wait:
+            return True
+
+        success = self.wait_secret(
+            namespace,
+            name,
+            max_time=60,
+            my_output=my_output
+        )
+        if not success:
+            return False
+        
+        return True    

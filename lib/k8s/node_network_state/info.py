@@ -283,9 +283,11 @@ class K8sNodeNetworkStateInfo():
     def get_node_network_states(self, object_filter=None, return_mo=False, cluster_name=None, fixup=False, cache_enabled=True):
         if fixup and cluster_name is not None:
             if cache_enabled and self.node_network_state_interface_up is None or not cache_enabled:
-                params = {}
-                params['cluster'] = self.cluster_name
-                self.node_network_state_interface_up = ocp_workflow.run(params, log_id=self.log_id)
+                child_params = {}
+                child_params['cluster'] = self.cluster_name
+                response = ocp_workflow.run(params, log_id=self.log_id)
+                if response is not None:
+                    self.node_network_state_interface_up = response['up']
 
         all_node_network_states = self.get_node_network_states_info(cache_enabled=cache_enabled)
         if all_node_network_states is None:

@@ -1,5 +1,7 @@
 import re
+import copy
 import json
+import yaml
 import time
 import datetime
 
@@ -173,7 +175,7 @@ class K8sCommon():
 
         return self.convert_age(int(time.time()) - timestamp)
 
-    def get_base_info(self, managed_object, condition_map=None):
+    def get_base_info(self, managed_object, condition_map=None, condition_table=False):
         if managed_object is None:
             return None
         
@@ -190,7 +192,19 @@ class K8sCommon():
 
         if condition_map is not None:
             info = self.get_condition_info(managed_object, condition_map, info)
-        
+
+        if condition_table:
+            info['condition'] = []
+            for condition_mo in self.get(managed_object, 'status:conditions', on_error=[], on_none=[]):
+                item = {}
+                item['type'] = self.get(condition_mo, 'type', on_error='---', on_none='---')
+                item['status'] = self.get(condition_mo, 'status', on_error='---', on_none='---')
+                item['reason'] = self.get(condition_mo, 'reason', on_error='---', on_none='---')
+                item['message'] = self.get(condition_mo, 'message', on_error='---', on_none='---')
+                item['lastTransitionTime'] = self.get(condition_mo, 'lastTransitionTime', on_error='---', on_none='---')
+                item['lastUpdateTime'] = self.get(condition_mo, 'lastUpdateTime', on_error='---', on_none='---')
+                info['condition'].append(item)
+
         return info
 
     def get_metadata_info(self, managed_object, exclude_labels=[], exclude_annotations=[]):
@@ -237,6 +251,9 @@ class K8sCommon():
         timestamp_name = 'creation_timestamp'
         if timestamp_name not in managed_object['metadata']:
             timestamp_name = 'creationTimestamp'
+
+        info['creation_timestamp'] = self.get(managed_object, 'metadata:creation_timestamp')
+        info['deletion_timestamp'] = self.get(managed_object, 'metadata:deletion_timestamp')
 
         info['uid'] = self.get(
             managed_object,
@@ -885,3 +902,254 @@ class K8sCommon():
             )
 
         return summary
+
+    def apply_bodies(self, body, my_output=None, wait=False, only=[], skip=[]):
+        for crd in body:
+            if len(only) > 0 and crd['kind'] not in only:
+                continue
+
+            if crd['kind'] in skip:
+                continue
+
+            if crd['kind'] == 'Namespace':
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_namespace(name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('Namespace already exists: %s' % (name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'CustomResourceDefinition':
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_custom_resource_definition(name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('CustomResourceDefinition already exists: %s' % (name))
+                else:
+                    if my_output is not None:
+                        short_crd = copy.deepcopy(crd)
+                        short_crd['spec'] = {}
+                        my_output.default(yaml.dump(short_crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+                    
+                if wait:
+                    success = self.wait_custom_resource_definition_established(
+                        name,
+                        my_output=my_output
+                    )
+                    if not success:
+                        return False
+
+            if crd['kind'] == 'ServiceAccount':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_service_account(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('ServiceAccount already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+                if wait:
+                    success = self.wait_service_account(namespace, name, my_output=my_output)
+                    if not success:
+                        return False
+
+            if crd['kind'] == 'Role':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_role(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('Role already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'ClusterRole':
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_cluster_role(name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('ClusterRole already exists: %s' % (name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'RoleBinding':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_role_binding(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('RoleBinding already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'ClusterRoleBinding':
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_cluster_role_binding(name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('ClusterRoleBinding already exists: %s' % (name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'ConfigMap':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_config_map(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('ConfigMap already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'Service':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_service(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('Service already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'PersistentVolumeClaim':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_pvc(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('PersistentVolumeClaim already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created')
+
+            if crd['kind'] == 'Deployment':
+                namespace = filter_helper.get(crd, 'metadata:namespace')
+                name = filter_helper.get(crd, 'metadata:name')
+                if self.is_deployment(namespace, name, cache_enabled=False):
+                    if my_output is not None:
+                        my_output.default('Deployment already exists: %s/%s' % (namespace, name))
+                else:
+                    if my_output is not None:
+                        my_output.default(yaml.dump(crd), wrap='~~~')
+                    success, _ = self.create_resource(crd)
+                    if not success:
+                        if my_output is not None:
+                            my_output.error('Create REST API failed')
+                        return False
+
+                    if my_output is not None:
+                        my_output.default('Created') 
+
+                if wait:
+                    success = self.wait_deployment_ready_state(
+                        namespace, 
+                        name, 
+                        max_time=600, 
+                        my_output=my_output
+                    )
+                    if not success:
+                        return False
+
+        return True
+
+    def unapply_bodies(self, body, my_output=None, wait=False, reverse=False, skip=[]):
+        if reverse:
+            body.reverse()
+
+        for crd in body:
+            if filter_helper.get(crd, 'kind') in skip:
+                continue
+
+            success = self.delete_resource(
+                filter_helper.get(crd, 'kind'), 
+                filter_helper.get(crd, 'apiVersion'), 
+                filter_helper.get(crd, 'metadata:name'), 
+                namespace=filter_helper.get(crd, 'metadata:namespace'), 
+                object_name=self.get_kind_to_object_name(filter_helper.get(crd, 'kind')), 
+                my_output=my_output
+            )
+            if not success:
+                return False
+
+        return True

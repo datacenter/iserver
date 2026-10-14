@@ -64,3 +64,22 @@ class K8sServiceDelete():
                         return False
                     
         return True
+
+    def delete_namespaced_services(self, namespace, my_output=None, wait=True):
+        services = self.get_services(object_filter=['namespace:%s' % (namespace)], cache_enabled=False)
+        if services is None:
+            if my_output is not None:
+                my_output.error('Failed to get services')
+            return False
+
+        for service in services:
+            success = self.delete_service(
+                service['namespace'],
+                service['name'],
+                my_output=my_output,
+                wait=wait
+            )
+            if not success:
+                return False
+
+        return True

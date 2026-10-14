@@ -36,20 +36,11 @@ def run(mparams, log_id=None):
             continue
 
         params = local_common.collect_state_info(params)
-
+            
         if 'state' in params['view']:
             local_common.print_state(params, my_output)
 
-        # if 'res' in params['view']:
-        #     local_common.print_resource_summary(params, my_output)
-        #     local_common.print_resources(params, k8s_output_handler)
-
-
-
-        # if routes is None or len(routes) == 0:
-        #     my_output.default('Console route %s' % (my_output.add_color('not found', 'Red')))
-        #     return True
-        
-        # k8s_output_handler.print_routes(routes)
+        if 'res' in params['view']:
+            local_common.print_resources(params, k8s_output_handler)
 
     return True

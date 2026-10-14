@@ -1,16 +1,21 @@
+import yaml
+from lib import file_helper
+from lib import ip_helper
+
+
 def get_default_params():
     params = {}
     params['namespace'] = 'splunk-operator'
     params['name'] = 'splunk-operator'
     params['operator-group-name'] = 'splunk-operator-group'
     params['operator-target-namespaces'] = ['splunk-operator']
+    params['deployment'] = 'splunk-operator-controller-manager'
+    params['base_url'] = 'https://github.com/splunk/splunk-operator/releases/download/%s/splunk-operator-cluster.yaml'
     params['license-at-splunk'] = True
     params['role-binding'] = True
     params['role-binding-name'] = 'system:openshift:scc:nonroot-v2'
     params['pvc-finalizers'] = True
     params['delete-namespace'] = True
-    params['create_subscription'] = 'create_splunk_subscription'
-    params['delete_subscription'] = 'delete_splunk_subscription'
     params['title'] = 'OpenShift Workflow - Splunk Operator'
     params['resource_keys'] = [
         'standalone',
@@ -35,10 +40,10 @@ def get_default_params():
     return params
 
 
-def collect_state_info(params, my_output):
+def collect_state_info(params):
+    params['summary'] = {}
     params['summary']['resources'] = False
 
-    my_output.debug('- standalone')
     params['standalone'] = params['k8s_handler'].get_splunk_standalones(
         pod_info=True,
         pvc_info=True,
@@ -51,7 +56,6 @@ def collect_state_info(params, my_output):
         if key == 'standalone':
             continue
 
-        my_output.debug('- %s' % (key.replace('_', ' ')))
         params[key] = getattr(params['k8s_handler'], 'get_splunk_%ss' % (key))(cache_enabled=False)
 
     for key in params['__default__']['resource_keys']:
@@ -62,3 +66,35 @@ def collect_state_info(params, my_output):
                 params['summary']['resources'] = True
 
     return params
+
+
+def get_body(params, my_output):
+    operator_yaml_source = params['__default__']['base_url'] % (params['version'])
+    operator_yaml = '/tmp/splunk_operator.yaml'
+    my_output.default('Download manifest from: %s to %s' % (operator_yaml_source, operator_yaml))
+
+    operator_yaml, error = ip_helper.download_url(
+        operator_yaml_source,
+        operator_yaml,
+        return_error=True,
+        proxies=ip_helper.get_proxies()
+    )
+    if operator_yaml is None:
+        my_output.error('Download failed')
+        my_output.default(error, wrap='~~~')
+        return None
+
+    operator_yaml_body = file_helper.get_file_yaml(operator_yaml)
+    if operator_yaml_body is None:
+        my_output.error('Failed to read yaml content')
+        return None
+
+    for item in operator_yaml_body:
+        if not file_helper.is_kube_kind(item):
+            my_output.error('Unexpected content')
+            my_output.default(item, wrap='~~~')
+            return None
+
+    my_output.default('File downloaded with %s crds' % (len(operator_yaml_body)))
+
+    return operator_yaml_body

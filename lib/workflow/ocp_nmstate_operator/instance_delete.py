@@ -1,5 +1,5 @@
 from lib import output_helper
-from lib.workflow.ocp_nfd_operator import common as local_common
+from lib.workflow.ocp_nmstate_operator import common as local_common
 from lib.workflow import ocp_common
 
 
@@ -47,8 +47,18 @@ def run(params, log_id=None):
         my_output=my_output,
         wait=True
     )
-            
+    if not success:
+        return False
+
+    success = params['k8s_handler'].wait_no_subscription_nmstate(
+        my_output=my_output, 
+        instance_only=True
+    )
+    if not success:
+        return False
+
     my_output.default('')
     my_output.default('Completed tasks')
-    my_output.default('- Node feature discovery instances deleted')
+    my_output.default('- nncp crds deleted')
+    my_output.default('- nmstate instance deleted')
     return True

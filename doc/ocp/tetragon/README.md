@@ -4,10 +4,10 @@
 
 ![Logo](../images/tetragon/logo.png) 
 
-[Tetragon Enterprise Operator](https://isovalent.com/blog/post/isovalent-enterprise-for-tetragon-1-14/) is a Kubernetes-native synchronous monitoring, filtering & enforcement tool that applies policies and filtering directly in-kernel with eBPF using custom resources
+[Tetragon Enterprise Operator](https://docs.isovalent.com/iep/latest/tetragon/index.html/) is a Kubernetes-native synchronous monitoring, filtering & enforcement tool that applies policies and filtering directly in-kernel with eBPF using custom resources
 
-> [!CAUTION]
-> Source image [required](https://docs.isovalent.com/iep/latest/tetragon/installation/openshift.html) to install Tetragon operator
+>[!CAUTION]
+>Isovalent Registry Access [configuration](./IEP.md) is mandatory for operator installation.
 
 ## Knowledge Base
 
@@ -29,7 +29,6 @@ iserver set ocp task | in task way | [Link](./create_task.md)
 iserver delete ocp tetragon --mode operator | delete tetragon operator | [Link](./delete_operator.md)
 iserver delete ocp tetragon --mode crd | delete tetragon crds | [Link](./delete_crd.md)
 iserver delete ocp tetragon --mode wipe | delete all tetragon configurations | [Link](./delete_wipe.md)
-iserver delete ocp tetragon --mode all | delete everything | [Link](./delete_all.md)
 iserver delete ocp task | in task way | [Link](./delete_task.md)
 
 [[Back]](../Operations.md)

@@ -222,7 +222,7 @@ class K8sDaemonSetInfo():
 
         return True
 
-    def get_daemon_set_resources(self, namespace, name, cache_enabled=True):
+    def get_daemon_set_resources(self, namespace, name, cache_enabled=True, brief=True):
         resources = {}
         resources['pod'] = []
 
@@ -234,12 +234,16 @@ class K8sDaemonSetInfo():
         if pods is None:
             return resources
 
-        for pod in pods:
-            resources['pod'].append(
-                dict(
-                    namespace=pod['namespace'],
-                    name=pod['name']
+        if brief:
+            for pod in pods:
+                resources['pod'].append(
+                    dict(
+                        namespace=pod['namespace'],
+                        name=pod['name']
+                    )
                 )
-            )
+        else:
+            for pod in pods:
+                resources['pod'].append(pod)
 
         return resources

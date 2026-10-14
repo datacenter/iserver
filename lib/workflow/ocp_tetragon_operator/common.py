@@ -7,6 +7,7 @@ def get_default_params():
     params['catalog-name'] = 'tetragon-catalog'
     params['operator-cm-namespace'] = 'tetragon'
     params['operator-cm-name'] = 'tetragon-operator-config'
+    params['secret-name'] = 'isovalent-registry'
     params['cm-namespace'] = 'tetragon'
     params['cm-name'] = 'tetragon-config'
     params['sm-namespace'] = 'tetragon'

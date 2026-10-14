@@ -32,3 +32,22 @@ class K8sPvcDelete():
             return False
         
         return True
+
+    def delete_namespaced_pvcs(self, namespace, my_output=None, wait=True):
+        pvcs = self.get_pvcs(object_filter=['namespace:%s' % (namespace)], cache_enabled=False)
+        if pvcs is None:
+            if my_output is not None:
+                my_output.error('Failed to get pvcs')
+            return False
+
+        for pvc in pvcs:
+            success = self.delete_pvc(
+                pvc['namespace'],
+                pvc['name'],
+                my_output=my_output,
+                wait=wait
+            )
+            if not success:
+                return False
+
+        return True

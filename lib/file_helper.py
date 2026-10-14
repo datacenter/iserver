@@ -172,17 +172,28 @@ def get_file_yaml(filename, base_directory=None):
     if base_directory is not None:
         filename = os.path.join(base_directory, filename)
 
-    if not os.path.isfile(filename):
+    content = get_file_text(filename)
+    if content is None:
         return None
 
-    try:
-        with open(filename, 'r', encoding='utf-8') as file_handler:
-            content = yaml.safe_load(file_handler)
+    if len(content.split('---')) == 1:
+        try:
+            ycontent = yaml.safe_load(content)
+        except BaseException:
+            return None
 
-    except BaseException:
-        return None
+        return ycontent
 
-    return content
+    multi_content = []        
+    for item in content.split('---'):
+        try:
+            ycontent = yaml.safe_load(item)
+        except BaseException:
+            return None
+
+        multi_content.append(ycontent)
+
+    return multi_content
 
 
 def get_file_format(filename):

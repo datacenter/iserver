@@ -3,6 +3,7 @@ import click
 from menu.get.ocp.cilium.agent import get_ocp_cilium_agent_command
 from menu.get.ocp.cilium.bgp import get_ocp_cilium_bgp_command
 from menu.get.ocp.cilium.config import get_ocp_cilium_config_command
+from menu.get.ocp.cilium.hubble import get_ocp_cilium_hubble_command
 from menu.get.ocp.cilium.inb import get_ocp_cilium_inb_command
 from menu.get.ocp.cilium.mesh import get_ocp_cilium_mesh_command
 from menu.get.ocp.cilium.operator import get_ocp_cilium_operator_command
@@ -11,7 +12,7 @@ from menu.get.ocp.cilium.pnet import get_ocp_cilium_pnet_command
 from menu.get.ocp.cilium.pod import get_ocp_cilium_pod_command
 from menu.get.ocp.cilium.registry import get_ocp_cilium_registry_command
 from menu.get.ocp.cilium.state import get_ocp_cilium_state_command
-from menu.get.ocp.cilium.hubble import get_ocp_cilium_hubble_command
+from menu.get.ocp.cilium.token import get_ocp_cilium_token_command
 
 
 class Failure(Exception):
@@ -27,6 +28,7 @@ def get_ocp_cilium_menu(ctx):
 get_ocp_cilium_menu.add_command(get_ocp_cilium_agent_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_bgp_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_config_command)
+get_ocp_cilium_menu.add_command(get_ocp_cilium_hubble_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_inb_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_mesh_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_operator_command)
@@ -35,4 +37,4 @@ get_ocp_cilium_menu.add_command(get_ocp_cilium_pnet_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_pod_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_registry_command)
 get_ocp_cilium_menu.add_command(get_ocp_cilium_state_command)
-get_ocp_cilium_menu.add_command(get_ocp_cilium_hubble_command)
+get_ocp_cilium_menu.add_command(get_ocp_cilium_token_command)

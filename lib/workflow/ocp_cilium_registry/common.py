@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+from lib.workflow.ocp_cilium_registry import helper as registry_helper
 from lib import file_helper
 from lib import ip_helper
 from lib import settings_helper
@@ -143,6 +144,12 @@ def check_identity_token(registry, identity_token, my_output=None):
 
 
 def get_registry_settings(my_output=None, log_id=None):
+    if os.environ.get('IEP_REGISTRY') is not None and os.environ.get('IEP_TOKEN') is not None:
+        registry_settings = {}
+        registry_settings['registry'] = os.environ.get('IEP_REGISTRY')
+        registry_settings['identity_token'] = os.environ.get('IEP_TOKEN')
+        return registry_settings
+    
     cilium_directory = get_cilium_settings_directory(my_output=my_output, log_id=log_id)
     if cilium_directory is None:
         return None
@@ -226,17 +233,7 @@ def download_manifests(version, my_output=None, log_id=None):
     if access_token is None:
         return None, None
 
-    if 'isovalent' in registry_settings['registry']:
-        url = 'https://%s/artifactory/archive/clife-manifests/clife-v%s.tar.gz' % (
-            registry_settings['registry'],
-            version
-        )
-    else:
-        url = 'https://%s/artifactory/isovalent-iep-generic/clife-manifests/clife-v%s.tar.gz' % (
-            registry_settings['registry'],
-            version
-        )
-
+    url = registry_helper.fixup_clife_url(registry_settings['registry'], version)
     filename = ip_helper.download_url(
         url = url,
         filename = '/tmp/clife-%s.tar.gz' % (ip_helper.get_short_uuid()),

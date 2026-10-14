@@ -1,6 +1,6 @@
 # Splunk - Create Standalone Instance
 
-[[Back]](./README.md) [[kb]](./kb/standalone.md)
+[[Back]](./README.md)
 
 ## Workflow
 
@@ -8,51 +8,64 @@
 - create route
 - wait for instance resources ready
 
-## Requirements
-
-- Splunk operator [created](./create_operator.md)
-- storage subsystem e.g. [LVM](../lvm/README.md), [ODF](../odf/README.md)
-- default storage class used to create PVCs for splunk standalone instance
-
 ## Configurable options
-
-- route is created by default
-- use --no-route flag to disable route create
 
 ```
 # iserver set ocp splunk --mode instance
-  --cluster TEXT                  Cluster Name
-  --instance TEXT                 Standalone instance name
-  --no-route                      Instance route
-  --no-confirm                    Confirmation mode
-```
-
-## Non-configurable defaults
-
-```
-{
-    "namespace": "splunk-operator",
-    "pvc-finalizers": true
-}
+  --cluster TEXT          Cluster name
+  --name TEXT             Standalone instance name
+  --etc-size TEXT         etc volume size  [default: 10Gi]
+  --etc-sc TEXT           etc storage class
+  --var-size TEXT         var volume size  [default: 100Gi]
+  --var-sc TEXT           var storage class
+  --sa TEXT               service account  [default: default]
+  --no-route              Instance route
+  --no-confirm            Confirmation mode
 ```
 
 ## Expected outcome
 
-![InstanceCreate](../images/splunk/instance_create.png)
-
-![InstanceLogin](../images/splunk/instance_login.png)
-
-![InstanceDashboard](../images/splunk/instance_dashboard.png)
+```
+$ oc get standalones.enterprise.splunk.com -A
+NAMESPACE         NAME    PHASE   DESIRED   READY   AGE     MESSAGE
+splunk-operator   inst1   Ready   1         1       2m44s
+```
 
 ## Example
 
 ```
-# iserver set ocp splunk --mode instance --cluster bm1 --instance inst1 --no-confirm
+# iserver set ocp splunk --mode instance --cluster bm1 --name inst1 --etc-size 20Gi --var-size 50Gi --no-confirm
 
 OpenShift Workflow - Splunk Operator - Create Instance
 ======================================================
 
 OpenShift Cluster: bm1
+
+Replace RoleBinding
+-------------------
+- namespace: splunk-operator
+- name: system:openshift:scc:nonroot-v2
+
+~~~
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: system:openshift:scc:nonroot-v2
+  namespace: splunk-operator
+  resource_version: '853136'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:nonroot-v2
+subjects:
+- kind: ServiceAccount
+  name: splunk-operator-controller-manager
+  namespace: splunk-operator
+- kind: ServiceAccount
+  name: default
+  namespace: splunk-operator
+~~~
+RoleBinding [splunk-operator/system:openshift:scc:nonroot-v2] replaced
 
 Create Standalone
 -----------------
@@ -67,7 +80,13 @@ metadata:
   - enterprise.splunk.com/delete-pvc
   name: inst1
   namespace: splunk-operator
-spec: {}
+spec:
+  etcVolumeStorageConfig:
+    storageCapacity: 20Gi
+    storageClassName: lvms-vg1
+  varVolumeStorageConfig:
+    storageCapacity: 50Gi
+    storageClassName: lvms-vg1
 ~~~
 Standalone [splunk-operator/inst1] created
 Wait until pod splunk-operator/splunk-inst1-standalone-0 is running [timeout:1800s]...
@@ -109,12 +128,16 @@ spec:
 Route created
 Wait for Route splunk-operator/splunk-inst1-standalone-service [timeout:120s] with {"ready": true}
 
-+----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
-| ID | Standalone      | Ready | Pod | PVC | Service | Route | URL                                                                        |
-+----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
-| 1  | splunk-operator | V     | V   | 2/2 | V       | 1/1   | http://splunk-inst1-standalone-service-splunk-operator.apps.bm1.domain.com | 
-|    | inst1           |       |     |     |         |       |                                                                            | 
-+----+-----------------+-------+-----+-----+---------+-------+----------------------------------------------------------------------------+
++----+-----------------+-------+-----+-----+---------+-------+-----------------------------------------------------------------------------+
+| ID | Standalone      | Ready | Pod | PVC | Service | Route | URL                                                                         |
++----+-----------------+-------+-----+-----+---------+-------+-----------------------------------------------------------------------------+
+| 1  | splunk-operator | ✓     | ✓   | 2/2 | ✓       | 1/1   | http://splunk-inst1-standalone-service-splunk-operator.apps.bm1.domain.com | 
+|    | inst1           |       |     |     |         |       | (admin, 1BEluK4lz9A4l9XX1WqMr5bG)                                           | 
+|    |                 |       |     |     |         |       | hec_token:1F2B0614-5FE6-B0EC-C7AE-38794FA15AF3                              | 
+|    |                 |       |     |     |         |       | idxc_secret:Z23S01LDCrWs0BecsHoE6lk0                                        | 
+|    |                 |       |     |     |         |       | pass4SymmKey:sHKmgVN2qokWi46ahtJSRLIC                                       | 
+|    |                 |       |     |     |         |       | shc_secret:ib4j7Gy2qjfcSXEvUVsc0pdw                                         | 
++----+-----------------+-------+-----+-----+---------+-------+-----------------------------------------------------------------------------+
 
 Completed tasks
 - Standalone instance created
@@ -123,8 +146,8 @@ Completed tasks
 +----+---------+--------+-----------------+---------+---------+--------------+
 | ID | Target  | Scope  | Workflow        | Changes | Success | Duration [s] |
 +----+---------+--------+-----------------+---------+---------+--------------+
-| 1  | ocp:bm1 | splunk | create instance | 2       | V       | 74           | 
+| 1  | ocp:bm1 | splunk | create instance | 3       | ✓       | 75           | 
 +----+---------+--------+-----------------+---------+---------+--------------+
 ```
 
-[[Back]](./README.md) [[kb]](./kb/standalone.md)
+[[Back]](./README.md)

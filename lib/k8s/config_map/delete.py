@@ -28,3 +28,25 @@ class K8sConfigMapDelete():
                 return False
             
         return True
+
+    def delete_namespaced_config_maps(self, namespace, my_output=None, wait=True, skip=['kube-root-ca.crt', 'openshift-service-ca.crt']):
+        config_maps = self.get_config_maps(object_filter=['namespace:%s' % (namespace)], cache_enabled=False)
+        if config_maps is None:
+            if my_output is not None:
+                my_output.error('Failed to get config maps')
+            return False
+
+        for config_map in config_maps:
+            if config_map['name'] in skip:
+                continue
+            
+            success = self.delete_config_map(
+                config_map['namespace'],
+                config_map['name'],
+                my_output=my_output,
+                wait=wait
+            )
+            if not success:
+                return False
+
+        return True

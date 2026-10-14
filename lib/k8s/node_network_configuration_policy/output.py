@@ -11,4 +11,3 @@ class K8sNodeNetworkConfigurationPolicyOutput():
                 ['Reason', 'reason']
             ]
         )
-

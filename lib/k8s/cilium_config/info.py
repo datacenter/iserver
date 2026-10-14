@@ -55,7 +55,7 @@ class K8sCiliumConfigInfo():
     def get_cilium_config(self, name=None, return_mo=False, cache_enabled=True, optimized=True):
         if name is not None:
             return self.get_info(
-                'cluster_role', 
+                'cilium_config', 
                 name,
                 return_mo=return_mo, 
                 cache_enabled=cache_enabled,

@@ -5,6 +5,7 @@ from menu.delete.ocp.cilium.hubble import delete_ocp_cilium_hubble_command
 from menu.delete.ocp.cilium.inb import delete_ocp_cilium_inb_command
 from menu.delete.ocp.cilium.mesh import delete_ocp_cilium_mesh_command
 from menu.delete.ocp.cilium.pnet import delete_ocp_cilium_pnet_command
+from menu.delete.ocp.cilium.token import delete_ocp_cilium_token_command
 
 
 class Failure(Exception):
@@ -22,3 +23,4 @@ delete_ocp_cilium_menu.add_command(delete_ocp_cilium_hubble_command)
 delete_ocp_cilium_menu.add_command(delete_ocp_cilium_inb_command)
 delete_ocp_cilium_menu.add_command(delete_ocp_cilium_mesh_command)
 delete_ocp_cilium_menu.add_command(delete_ocp_cilium_pnet_command)
+delete_ocp_cilium_menu.add_command(delete_ocp_cilium_token_command)

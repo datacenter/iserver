@@ -5,10 +5,15 @@ from lib.workflow import ocp_common
 
 
 def validate(params):
+    instance_rules = [
+        ['name', False, None, 'str', None, None, None, None]
+    ]
+
     rules = [
         ['cluster', False, None, 'str', None, None, None, None],
-        ['instance', True, None, 'list-of-str', 1, None, None, None]
+        ['instance', False, None, 'list-of-dict', 1, None, None, None]
     ]
+
     success, params, allowed_keys = ocp_common.check_parameters(params, rules)
     if not success:
         return None, params
@@ -29,22 +34,14 @@ def run(params, log_id=None):
     if params is None:
         return False
 
-    if not params['k8s_handler'].is_splunk_subscription(params['__default__']['namespace'], params['__default__']['name']):
+    if not params['k8s_handler'].is_deployment(params['__default__']['namespace'], params['__default__']['deployment'], cache_enabled=False):
         my_output.error('Splunk operator must be installed first')
         return False
-    
-    if len(params['instance']) == 1 and params['instance'][0] == '__all__':
-        all_instances = params['k8s_handler'].get_splunk_standalone_names(cache_enabled=False)
-        params['instance'] = []
-        for instance in all_instances:
-            params['instance'].append(
-                instance['name']
-            )
-        
+
     for instance in params['instance']:
         success = params['k8s_handler'].delete_splunk_standalone_route(
             params['__default__']['namespace'], 
-            instance, 
+            instance['name'], 
             my_output=my_output
         )
         if not success:
@@ -52,30 +49,14 @@ def run(params, log_id=None):
 
         success = params['k8s_handler'].delete_splunk_standalone(
             params['__default__']['namespace'], 
-            instance, 
+            instance['name'], 
             my_output=my_output, 
             wait=True
         )
         if not success:
             return False
 
-    object_filter=[]
-    object_filter.append('namespace:%s' % (params['__default__']['namespace']))
-    object_filter.append('name:%s' % (params['instance']))
-    standalones = params['k8s_handler'].get_splunk_standalones(
-        object_filter=object_filter,
-        pod_info=True,
-        pvc_info=True,
-        service_info=True,
-        route_info=True,
-        secret_info=True,
-        cache_enabled=False
-    )
-    if standalones is not None:
-        k8s_output_handler.print_splunk_standalones_state(standalones)
-        
     my_output.default('')
     my_output.default('Completed tasks')
     my_output.default('- Standalone instance deleted')
-
     return True

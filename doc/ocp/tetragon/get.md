@@ -35,11 +35,10 @@ Collecting state...
 Operator
 - subscription          : tetragon/tetragon-operator
 - package               : tetragon/tetragon-catalog/tetragon-operator
-- channel               : v1.18
-- install plan          : tetragon/install-bkpn6
-- install plan approved : V
-- installed csv         : tetragon-operator.v1.18.2
-- latest_csv            : V
+- install plan          : tetragon/install-nhs6r
+- install plan approved : ✓
+- installed csv         : tetragon-operator.v1.20.0-pre.3
+- latest_csv            : ✓
 
 
 Tetragon resources

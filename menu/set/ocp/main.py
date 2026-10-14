@@ -16,6 +16,7 @@ from menu.set.ocp.cni import set_ocp_cni_command
 from menu.set.ocp.cnv import set_ocp_cnv_command
 from menu.set.ocp.connector import set_ocp_connector
 from menu.set.ocp.console import set_ocp_console_command
+from menu.set.ocp.csr import set_ocp_csr_command
 from menu.set.ocp.file import set_ocp_file_command
 from menu.set.ocp.gpu import set_ocp_gpu_command
 from menu.set.ocp.grafana import set_ocp_grafana_command
@@ -77,6 +78,7 @@ set_ocp_menu.add_command(set_ocp_cni_command)
 set_ocp_menu.add_command(set_ocp_cnv_command)
 set_ocp_menu.add_command(set_ocp_connector)
 set_ocp_menu.add_command(set_ocp_console_command)
+set_ocp_menu.add_command(set_ocp_csr_command)
 set_ocp_menu.add_command(set_ocp_file_command)
 set_ocp_menu.add_command(set_ocp_gpu_command)
 set_ocp_menu.add_command(set_ocp_grafana_command)

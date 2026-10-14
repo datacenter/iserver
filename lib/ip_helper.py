@@ -520,32 +520,51 @@ def is_url_accessible(url, timeout=1):
     return False
 
 
-def download_url(url, filename, timeout=5, verify=True, username=None, password=None):
+def get_proxies():
+    proxies = None
+    if os.environ.get('EXT_HTTP_PROXY') is not None and os.environ.get('EXT_HTTPS_PROXY') is not None:
+        proxies = {}
+        proxies['http'] = os.environ.get('EXT_HTTP_PROXY')
+        proxies['https'] = os.environ.get('EXT_HTTPS_PROXY')
+    return proxies
+
+
+def download_url(url, filename, timeout=5, verify=True, username=None, password=None, return_error=False, proxies=None):
     if username is not None and password is not None:
         try:
             response = requests.get(
                 url,
                 auth=(username, password),
                 timeout=timeout,
+                proxies=proxies,
                 verify=verify
             )
             with open(filename, "wb") as file_handler:
                 file_handler.write(response.content)
         except BaseException:
-            print(traceback.format_exc())
-            return None
+            if return_error:
+                return None, traceback.format_exc()
+            else:
+                return None
     else:                
         try:
             response = requests.get(
                 url,
                 timeout=timeout,
+                proxies=proxies,
                 verify=verify
             )
             with open(filename, "wb") as file_handler:
                 file_handler.write(response.content)
         except BaseException:
-            print(traceback.format_exc())
-            return None
+            if return_error:
+                return None, traceback.format_exc()
+            else:
+                return None
+
+    if return_error:
+        return filename, None
+
     return filename
 
 
@@ -786,5 +805,37 @@ def get_cert_info(data):
         )
     except BaseException:
         info['valid_to'] = '---'
+
+    return info
+
+
+def get_csr_info(data):
+    try:
+        cert = x509.load_pem_x509_csr(data)
+    except BaseException:
+        print(traceback.format_exc())
+        return None
+
+    info = {}
+
+    try:
+        info['subject'] = x509.RelativeDistinguishedName(cert.subject).rfc4514_string()
+    except BaseException:
+        info['subject'] = None
+
+    try:
+        info['valid'] = cert.is_signature_valid
+    except BaseException:
+        info['valid'] = False
+
+    try:
+        info['sign_algo'] = cert.signature_algorithm_oid._name
+    except BaseException:
+        info['sign_algo'] = '---'
+
+    try:
+        info['hash_algo'] = cert.signature_hash_algorithm.name
+    except BaseException:
+        info['hash_algo'] = '---'
 
     return info

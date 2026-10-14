@@ -1254,21 +1254,14 @@ def create_operator(params, my_output, summary=True):
 
 def delete_operator(params, my_output, skip_subscription=False, subscription_only=False, skip_operator_group=False, skip_namespace=False, wipe_namespace=False, summary=True):
     if not skip_subscription:
-        subscription = get_subscription(
-            params['k8s_handler'],
-            params['__default__']['name'],
-            expected=False,
-            my_output=my_output
+        success = getattr(params['k8s_handler'], params['__default__']['delete_subscription'])(
+            params['__default__']['namespace'], 
+            params['__default__']['name'], 
+            my_output=my_output, 
+            wait=True   
         )
-        if subscription is not None:
-            success = getattr(params['k8s_handler'], params['__default__']['delete_subscription'])(
-                params['__default__']['namespace'], 
-                params['__default__']['name'], 
-                my_output=my_output, 
-                wait=True   
-            )
-            if not success:
-                return False
+        if not success:
+            return False
 
     if subscription_only:
         return True
@@ -1453,3 +1446,17 @@ def get_k8s_body(filename, kind, my_output):
         return None
     
     return body
+
+
+def print_namespace_resources(params, namespace, k8s_output_handler):
+    pods = params['k8s_handler'].get_pods(namespace=namespace)
+    if pods is not None:
+        k8s_output_handler.print_pods_state(pods)
+
+    deployments = params['k8s_handler'].get_deployments(object_filter=['namespace:%s' % (namespace)])
+    if deployments is not None:
+        k8s_output_handler.print_deployments_state(deployments)
+
+    replica_sets = params['k8s_handler'].get_replica_sets(object_filter=['namespace:%s' % (namespace)])
+    if replica_sets is not None:
+        k8s_output_handler.print_replica_sets_state(replica_sets)

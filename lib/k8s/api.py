@@ -12,10 +12,11 @@ from menu.common import get_confirmation
 # https://github.com/openshift/openshift-restclient-python
 from openshift.dynamic import DynamicClient
 from urllib3.exceptions import MaxRetryError
+from kubernetes.client.rest import ApiException
 
 
 class K8sApi():
-    def __init__(self, kubeconfig_filename, cluster_type='standard'):
+    def __init__(self, kubeconfig_filename, cluster_type='ocp'):
         self.kubeconfig_filename = kubeconfig_filename
         self.cluster_type = cluster_type
         self.api = {}
@@ -100,6 +101,9 @@ class K8sApi():
             if api_type == 'admission':
                 return self.get_api_admission()
 
+            if api_type == 'certificate':
+                return self.get_api_certificate()
+            
         if cluster_type == 'ocp':
             return self.get_api_ocp()
 
@@ -107,6 +111,19 @@ class K8sApi():
 
     def get_api_standard(self):
         if 'standard' in self.api and self.api['standard'] is not None:
+            return self.api['standard']
+
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                self.api['standard'] = client.CoreV1Api()
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_standard',
+                    traceback.format_exc()
+                )
+                return None
+
             return self.api['standard']
 
         if not os.path.isfile(self.kubeconfig_filename):
@@ -171,6 +188,19 @@ class K8sApi():
         if 'apps' in self.api and self.api['apps'] is not None:
             return self.api['apps']
 
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                self.api['apps'] = client.AppsV1Api()
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_apps',
+                    traceback.format_exc()
+                )
+                return None
+
+            return self.api['apps']
+
         if not os.path.isfile(self.kubeconfig_filename):
             self.log.error(
                 'k8s.get_api_apps',
@@ -228,6 +258,19 @@ class K8sApi():
         if 'version' in self.api and self.api['version'] is not None:
             return self.api['version']
 
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                self.api['version'] = client.VersionApi()
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_version',
+                    traceback.format_exc()
+                )
+                return None
+
+            return self.api['version']
+
         if not os.path.isfile(self.kubeconfig_filename):
             self.log.error(
                 'k8s.get_api_version',
@@ -262,6 +305,19 @@ class K8sApi():
         if 'admission' in self.api and self.api['admission'] is not None:
             return self.api['admission']
 
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                self.api['admission'] = client.AdmissionregistrationV1Api()
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_admission',
+                    traceback.format_exc()
+                )
+                return None
+
+            return self.api['admission']
+
         if not os.path.isfile(self.kubeconfig_filename):
             self.log.error(
                 'k8s.get_api_admission',
@@ -292,8 +348,69 @@ class K8sApi():
 
         return self.api['admission']
 
+    def get_api_certificate(self):
+        if 'certificate' in self.api and self.api['certificate'] is not None:
+            return self.api['certificate']
+
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                self.api['admission'] = client.CertificatesV1Api()
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_certificate',
+                    traceback.format_exc()
+                )
+                return None
+
+            return self.api['certificate']
+
+        if not os.path.isfile(self.kubeconfig_filename):
+            self.log.error(
+                'k8s.get_api_certificate',
+                'Kubeconfig file not found: %s' % (self.kubeconfig_filename)
+            )
+            return None
+
+        try:
+            start_time = int(time.time() * 1000)
+
+            config.load_kube_config(self.kubeconfig_filename)
+            self.api['certificate'] = client.CertificatesV1Api()
+            
+            self.log.k8s(
+                'connect.certificate',
+                '-',
+                True,
+                int(time.time() * 1000) - start_time
+            )
+
+        except BaseException:
+            self.log.error(
+                'k8s.get_api_certificate',
+                'Kubeconfig file failed: %s' % (self.kubeconfig_filename)
+            )
+            self.log.error('k8s.get_api_certificate', traceback.format_exc())
+            return None
+
+        return self.api['certificate']
+
     def get_api_ocp(self):
         if 'ocp' in self.api and self.api['ocp'] is not None:
+            return self.api['ocp']
+
+        if self.kubeconfig_filename is None:
+            try:
+                config.load_incluster_config()
+                my_client = client.ApiClient()
+                self.api['ocp'] = DynamicClient(my_client)
+            except BaseException:
+                self.log.error(
+                    'k8s.get_api_ocp',
+                    traceback.format_exc()
+                )
+                return None
+
             return self.api['ocp']
 
         if not os.path.isfile(self.kubeconfig_filename):
@@ -584,6 +701,12 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+            except ApiException as e:
+                if e.status == 404:
+                    pass
+                else:
+                    self.log.error('k8s.get_namespaced_resources', traceback.format_exc())
+                return None, managed_objects, namespaced_objects
             except BaseException:
                 self.log.error('k8s.get_namespaced_resources', traceback.format_exc())
                 self.log.k8s(
@@ -716,6 +839,12 @@ class K8sApi():
                     True,
                     int(time.time() * 1000) - start_time
                 )
+            except ApiException as e:
+                if e.status == 404:
+                    pass
+                else:
+                    self.log.error('k8s.get_resources', traceback.format_exc())
+                return None, managed_objects
             except BaseException:
                 self.log.error('k8s.get_resources', traceback.format_exc())
                 self.log.k8s(
@@ -1445,3 +1574,22 @@ class K8sApi():
                 return False, False
 
         return True, True
+
+    def get_kind_to_object_name(self, kind):
+        fmap = {}
+        fmap['Namespace'] = 'namespace'
+        fmap['CustomResourceDefinition'] = 'custom_resource_definition'
+        fmap['ServiceAccount'] = 'service_account'
+        fmap['Role'] = 'role'
+        fmap['ClusterRole'] = 'cluster_role'
+        fmap['RoleBinding'] = 'role_binding'
+        fmap['ClusterRoleBinding'] = 'cluster_role_binding'
+        fmap['ConfigMap'] = 'config_map'
+        fmap['Service'] = 'service'
+        fmap['PersistentVolumeClaim'] = 'pvc'
+        fmap['Deployment'] = 'deployment'
+
+        if kind in fmap:
+            return fmap[kind]
+
+        return None

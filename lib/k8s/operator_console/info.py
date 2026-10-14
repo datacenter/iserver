@@ -3,7 +3,7 @@ class K8sOperatorConsoleInfo():
         self.operator_console = None
 
     def get_operator_console_info(self, managed_object):
-        info = self.get_base_info(managed_object)
+        info = self.get_base_info(managed_object, condition_table=True)
 
         info['management'] = self.get(managed_object, 'spec:managementState')
         info['plugin'] = self.get(managed_object, 'spec:plugins', on_error=[], on_none=[])

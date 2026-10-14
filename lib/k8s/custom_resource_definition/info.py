@@ -5,17 +5,20 @@ class K8sCustomResourceDefinitionInfo():
     def __init__(self):
         self.custom_resource_definition = None
 
-    def get_custom_resource_definition_info(self, custom_resource_definition_mo):
-        if custom_resource_definition_mo is None:
+    def get_custom_resource_definition_info(self, managed_object):
+        if managed_object is None:
             return None
 
-        info = {}
-        info['__Output'] = {}
-
-        metadata_info = self.get_metadata_info(
-            custom_resource_definition_mo
+        info = self.get_base_info(
+            managed_object,
+            condition_table=True
         )
-        info.update(metadata_info)
+
+        info['established'] = False
+
+        for condition in info['condition']:
+            if condition['type'] == 'Established' and condition['status'] == 'True':
+                info['established'] = True
 
         return info
 
