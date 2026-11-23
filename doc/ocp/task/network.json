@@ -1,0 +1,18 @@
+[
+    {
+        "nmstate": {
+            "operator": {},
+            "lldp": {
+              "fw": true,
+              "keep-nncp": false,
+              "skip-down": true
+            }
+        }
+    },
+    {
+        "sriov": {
+            "operator": {},
+            "instance": {}
+        }
+    }
+]

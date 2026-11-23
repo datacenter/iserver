@@ -1,0 +1,43 @@
+## Linux Bridge 
+
+[[Back]](./README.md)
+
+Intent | CLI | Task | NNCP CRD | Outcome
+--- | --- | --- | --- | ---
+Delete linux bridge | [Link](./lb_del_cli.md) | See Below | [Link](./lb_del_nncp.md) | [Link](./lb_del_outcome.md)
+
+### Input
+
+```
+[
+  {
+    "k8s": {
+      "items": [
+        {
+          "node": "__all__",
+          "policy": "my-policy",
+          "delete": true,
+          "check": true,
+          "interfaces": [
+            {
+              "type": "lb",
+              "name": "br666",
+              "state": "absent"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
+```
+
+Notes:
+- delete (true|false(def)) attribute controls if nncp policy is deleted once it is applied
+- check (true(def)|false) attribute controls if logical checks are made against the NodeNetworkState object per node e.g., interface name
+- node attribute controls on the nodeSelector value in NNCP CRD
+  - value "__all__" has no associated nodeSelector value
+  - value "__workers__" configures "node-role.kubernetes.io/worker: ''" as nodeSelector
+  - any other value is expected to be proper node name in the clsuter and configures "kubernetes.io/hostname: 'value" as nodeSelector
+
+[[Back]](./README.md)

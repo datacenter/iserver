@@ -1,0 +1,23 @@
+ctkEnabled=true
+
+Links
+https://github.com/latouchek/mtv-vsphere
+https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.0/html/installing_and_using_the_migration_toolkit_for_virtualization/installing-mtv_mtv
+https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.0/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-virtual-machines-to-virt_mtv#increasing-esxi-nfc-service-memory_mtv
+https://dev.to/tosin2013/how-to-use-migration-toolkit-for-virtualization-27-with-openshift-internal-registry-ie3
+https://almogelfassy.medium.com/migrate-your-virtual-machines-to-openshift-virtualization-2342111e86d6
+https://myopenshiftblog.com/openshift-virtualization-mtv-operator/
+https://medium.com/@jeromedecinco/openshift-virtualization-migration-toolkit-for-virtualization-049bd45398ef
+https://veeamkasten.dev/vmware-kubevirt-migration-using-forklift
+
+$ oc adm policy add-role-to-group system:image-puller system:serviceaccounts:openshift-mtv -n openshift-image-registry
+Warning: Group 'system:serviceaccounts:openshift-mtv' not found
+clusterrole.rbac.authorization.k8s.io/system:image-puller added: "system:serviceaccounts:openshift-mtv"
+
+
+lcm implementation and docs
+how to measure performance (metrics)
+mass migration (?)
+test major linux options manually and in automated way: pod, multus, inb
+warm vs. cold migration explained
+migration workflow (ppt slide plus explanation)

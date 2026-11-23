@@ -1,0 +1,337 @@
+import time
+
+from lib.redfish.standard.endpoint import RedfishEndpointStandard
+from lib.redfish.ucs_rack.account.main import RedfishEndpointUcsRackAccount
+from lib.redfish.ucs_rack.template.main import RedfishEndpointUcsRackTemplate
+
+
+class RedfishEndpointUcsRack(
+        RedfishEndpointStandard,
+        RedfishEndpointUcsRackAccount,
+        RedfishEndpointUcsRackTemplate
+        ):
+    def __init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            bmc=False,
+            system_id=None,
+            auto_connect=True,
+            get_timeout=10,
+            ssl_verify=False,
+            deep_search_exlusions=True,
+            log_id=None
+            ):
+        RedfishEndpointStandard.__init__(
+            self,
+            endpoint_handler,
+            endpoint_ip,
+            endpoint_port,
+            redfish_username,
+            redfish_password,
+            bmc=bmc,
+            system_id=system_id,
+            auto_connect=auto_connect,
+            get_timeout=get_timeout,
+            ssl_verify=ssl_verify,
+            deep_search_exlusions=deep_search_exlusions,
+            log_id=log_id
+        )
+        RedfishEndpointUcsRackAccount.__init__(self)
+        RedfishEndpointUcsRackTemplate.__init__(
+            self,
+            endpoint_handler,
+            bmc=bmc
+        )
+
+        self.chassis_uri = None
+        self.virtual_media_base_url = None
+
+    def __del__(self):
+        self.disconnect()
+
+    def get_chassis_type(self):
+        if self.bmc:
+            return 'Rack'
+        
+        uri = '/redfish/v1/Chassis'
+        children = self.endpoint_handler.get_odata_ids(uri)
+        if children is None:
+            self.log.error(
+                'get_chassis_type',
+                'Failed to discover Chassis: %s' % (uri)
+            )
+            return None
+
+        for child in children:
+            if child == uri:
+                continue
+
+            properties = self.get_properties(child)
+            if properties is not None:
+                if 'ChassisType' in properties:
+                    if properties['ChassisType'] in ['Blade', 'Enclosure']:
+                        return 'Blade'
+
+        return 'Rack'
+
+    def get_chassis_uri_bmc(self):
+        if self.chassis_uri is not None:
+            return self.chassis_uri
+
+        self.chassis_uri = '/redfish/v1/Systems/system'
+        return self.chassis_uri
+
+    def get_chassis_uri(self):
+        if self.bmc:
+            return self.get_chassis_uri_bmc()
+        
+        if self.chassis_uri is not None:
+            return self.chassis_uri
+
+        uri = '/redfish/v1/Chassis'
+        children = self.endpoint_handler.get_odata_ids(uri)
+        if children is None:
+            self.log.error(
+                'get_chassis_uri',
+                'Failed to discover Chassis: %s' % (uri)
+            )
+            return self.default_chassis_uri
+
+        chassis_uri = None
+        for child in children:
+            if child == uri:
+                continue
+
+            leaf = child.split('/')[-1]
+            if leaf == 'CMC':
+                continue
+
+            chassis_uri = child
+            break
+
+        if chassis_uri is None:
+            self.log.error(
+                'get_chassis_uri',
+                'Failed to find Chassis: %s' % (uri)
+            )
+            return self.default_chassis_uri
+
+        self.chassis_uri = chassis_uri
+        return chassis_uri
+
+    def get_system_uri(self, base=False):
+        if self.bmc:
+            if base:
+                return '/redfish/v1/Systems/system'
+            
+            return 'https://%s:%s/redfish/v1/Systems/system' % (self.endpoint_ip, self.endpoint_port)
+        
+        system_id = self.get_system_id()
+        if base:
+            url = '/redfish/v1/Systems/%s' % (system_id)
+        else:
+            url = 'https://%s:%s/redfish/v1/Systems/%s' % (self.endpoint_ip, self.endpoint_port, system_id)
+
+        return url
+
+    def get_excluded_tree_uri(self):
+        if not self.deep_search_exclusions:
+            return []
+
+        uri = [
+            '/redfish/v1/JsonSchemas',
+            '%s/LogServices' % (self.get_chassis_uri()),
+            '/redfish/v1/Chassis/CMC/LogServices',
+            '/redfish/v1/SessionService',
+            '/redfish/v1/Managers/CIMC/LogServices',
+            '%s/LogServices' % (self.get_system_uri(base=True))
+        ]
+
+        return uri
+
+    def get_virtual_media_base_url(self):
+        if self.virtual_media_base_url is not None:
+            return self.virtual_media_base_url
+        
+        path = 'Managers/bmc/VirtualMedia'
+        if self.get_properties(path) is not None:
+            self.virtual_media_base_url = path
+            return self.virtual_media_base_url
+        
+        self.virtual_media_base_url = 'Managers/CIMC/VirtualMedia'
+        return self.virtual_media_base_url
+
+    def get_virtual_media_id_url_encoding(self, virtual_media_id):
+        url = self.get_virtual_media_base_url()
+        if 'CIMC' in url:
+            return virtual_media_id
+        
+        return 'Slot_%s' % (virtual_media_id)
+
+    def get_virtual_media_url(self, virtual_media_id):
+        return '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+    
+    def get_virtual_media(self, virtual_media_id=0):
+        path = '%s/%s' % (self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+        response = self.get_properties(path)
+        return response
+
+    def is_virtual_media_defined(self, virtual_media_id=0):
+        response = self.get_virtual_media(virtual_media_id=virtual_media_id)
+        if response is None:
+            return False
+
+        if response['ConnectedVia'] == 'NotConnected':
+            return False
+
+        return True
+
+    def is_virtual_media_inserted(self, virtual_media_id=0):
+        response = self.get_virtual_media(virtual_media_id=virtual_media_id)
+        if response is None:
+            return False
+        return response['Inserted']
+
+    def wait_virtual_media_inserted(self, virtual_media_id=0, timeout=30):
+        start_time = int(time.time())
+        while True:
+            if self.is_virtual_media_inserted(virtual_media_id=virtual_media_id):
+                return True
+
+            time.sleep(5)
+
+            if int(time.time()) - start_time > timeout:
+                return False
+
+    def insert_media_http(self, iso_url, virtual_media_id=0, safe=True):
+        if safe:
+            if self.is_virtual_media_defined(virtual_media_id=virtual_media_id):
+                if not self.eject_media(virtual_media_id=virtual_media_id):
+                    return False
+
+        url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.InsertMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+
+        if iso_url.split(':')[0] == 'https':
+            protocol = 'HTTPS'
+        else:
+            protocol = 'HTTP'
+            
+        data = {}
+        data['Image'] = iso_url
+        data['WriteProtected'] = True
+        data['TransferProtocolType'] = protocol
+        data['TransferMethod'] = 'Stream'
+        data['Inserted'] = True
+
+        return self.post(url, data=data)
+
+    def eject_media(self, virtual_media_id=0):
+        url = 'https://%s:%s/redfish/v1/%s/%s/Actions/VirtualMedia.EjectMedia' % (self.endpoint_ip, self.endpoint_port, self.get_virtual_media_base_url(), self.get_virtual_media_id_url_encoding(virtual_media_id))
+        return self.post(url)
+
+    def get_boot_properties(self):
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'Boot' not in response:
+                return None
+
+        if not self.bmc:
+            system_id = self.get_system_id()
+            path = 'Systems/%s' % (system_id)
+            response = self.get_properties(path)
+            if response is None or 'Boot' not in response:
+                return None
+            
+        return response['Boot']
+
+    def set_one_time_boot_source(self, target, enabled='Once'):
+        data = {}
+        data['Boot'] = {}
+        data['Boot']['BootSourceOverrideTarget'] = target
+        data['Boot']['BootSourceOverrideEnabled'] = enabled
+
+        return self.patch(self.get_system_uri(), data=data)
+
+    def get_power_state(self):
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'PowerState' not in response:
+                return None
+            
+        if not self.bmc:
+            path = 'Systems/%s' % (self.get_system_id())
+            response = self.get_properties(path)
+            if response is None or 'PowerState' not in response:
+                return None
+
+        return response['PowerState']
+
+    def is_power_on(self):
+        power_state = self.get_power_state()
+        if power_state is None or power_state != "On":
+            return False
+        return True
+
+    def power_cycle(self):
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
+
+        data = {}
+        data['ResetType'] = 'PowerCycle'
+
+        return self.post(url, data=data)
+
+    def get_system_actions(self):
+        if self.bmc:
+            response = self.get_properties(
+                self.get_chassis_uri_bmc()
+            )
+            if response is None or 'Actions' not in response:
+                return None
+            
+        if not self.bmc:
+            system_id = self.get_system_id()
+            path = 'Systems/%s' % (system_id)
+            response = self.get_properties(path)
+            if response is None or 'Actions' not in response:
+                return None
+
+        return response['Actions']
+
+    def power_restart(self, graceful=False):
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
+
+        data = {}
+        if graceful:
+            data['ResetType'] = 'GracefulRestart'
+        else:
+            data['ResetType'] = 'ForceRestart'
+
+        return self.post(url, data=data)
+
+    def power_on(self):
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
+
+        data = {}
+        data['ResetType'] = 'On'
+
+        return self.post(url, data=data)
+
+    def power_off(self, gracefull=False):
+        url = '%s/Actions/ComputerSystem.Reset' % (self.get_system_uri())
+
+        data = {}
+
+        if gracefull:
+            data['ResetType'] = 'GracefulShutdown'
+        else:
+            data['ResetType'] = 'ForceOff'
+
+        return self.post(url, data=data)

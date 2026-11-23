@@ -1,0 +1,50 @@
+from lib import ip_helper
+
+
+class K8sSecretInfo():
+    def __init__(self):
+        self.secret = None
+
+    def get_secret_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
+        info = self.get_base_info(
+            managed_object
+        )
+
+        info['data'] = self.get(managed_object, 'data')
+        return info
+
+    def get_secrets(self, object_filter=None, return_mo=False, cache_enabled=True):
+        infos = self.get_infos(
+            'secret', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+        return infos
+
+    def get_secret(self, namespace, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'secret', 
+            name,
+            namespace=namespace,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
+        )
+
+    def is_secret(self, namespace, name, cache_enabled=True, optimized=True):
+        if self.get_secret(namespace, name, cache_enabled=cache_enabled, optimized=optimized) is None:
+            return False
+        return True
+
+    def generate_secret_name(self, namespace, name=None):
+        if name is None:
+            return ip_helper.get_short_uuid()
+
+        if not self.is_secret(namespace, name, cache_enabled=False):
+            return name
+        
+        return '%s-%s' % (name, ip_helper.get_short_uuid())

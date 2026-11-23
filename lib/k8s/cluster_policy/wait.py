@@ -1,0 +1,32 @@
+class K8sClusterPolicyWait():
+    def __init__(self):
+        pass
+
+    def wait_cluster_policy(self, name, match_properties={}, break_properties={}, my_output=None, prompt='ClusterPolicy', max_time=60):
+        return self.wait_managed_object(
+            'cluster_policy',
+            name,
+            match_properties=match_properties,
+            break_properties=break_properties,
+            my_output=my_output,
+            prompt='Wait for %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )
+
+    def wait_no_cluster_policy(self, name, my_output=None, prompt='ClusterPolicy', max_time=60):
+        return self.wait_no_managed_object(
+            'cluster_policy',
+            name,
+            my_output=my_output,
+            prompt='Wait for no %s %s [timeout:%ss]' % (prompt, name, max_time),
+            max_time=max_time
+        )
+    
+    def wait_cluster_policy_ready(self, name, my_output=None, prompt='ClusterPolicy', max_time=180):
+        return self.wait_cluster_policy(
+            name, 
+            match_properties={'ready': True}, 
+            my_output=my_output, 
+            prompt=prompt, 
+            max_time=max_time
+        )

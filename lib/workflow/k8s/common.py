@@ -1,0 +1,170 @@
+import json
+import copy
+from lib import ip_helper
+from lib.workflow.ocp_access import check as ocp_check
+
+
+def get_default_params():
+    params = {}
+    params['title'] = 'Kubernetes Workflow'
+    return params
+
+
+def get_pvcs(k8s_handler, namespace=None, name=None, unused=False):
+    object_filter = []
+    if namespace is not None:
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+
+    if name is not None:
+        object_filter.append(
+            'name:%s' % (name)
+        )
+
+    if unused:
+        object_filter.append(
+            'used:false'
+        )
+
+    pvcs = k8s_handler.get_pvcs(
+        object_filter=object_filter,
+        usage_info=True,
+        cache_enabled=False
+    )
+
+    return pvcs
+
+
+def get_pvs(k8s_handler, name=None, released=False):
+    object_filter = []
+
+    if name is not None:
+        object_filter.append(
+            'name:%s' % (name)
+        )
+
+    if released:
+        object_filter.append(
+            'phase:Released'
+        )
+
+    pvs = k8s_handler.get_pvs(
+        object_filter=object_filter,
+        cache_enabled=False
+    )
+
+    return pvs
+
+
+def get_dvs(k8s_handler, namespace=None, name=None, unused=False):
+    object_filter = []
+    if namespace is not None:
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+
+    if name is not None:
+        object_filter.append(
+            'name:%s' % (name)
+        )
+
+    if unused:
+        object_filter.append(
+            'used:false'
+        )
+
+    dvs = k8s_handler.get_data_volumes(
+        object_filter=object_filter,
+        cache_enabled=False
+    )
+
+    return dvs
+
+
+def get_nads(k8s_handler, namespace=None, name=None, unused=False):
+    object_filter = []
+    if namespace is not None:
+        object_filter.append(
+            'namespace:%s' % (namespace)
+        )
+
+    if name is not None:
+        object_filter.append(
+            'name:%s' % (name)
+        )
+
+    nads = k8s_handler.get_nads(
+        object_filter=object_filter,
+        cache_enabled=False
+    )
+
+    return nads
+
+
+def validate_nad_ipam(params, modes=['dhcp', 'static', 'local']):
+    if 'ipam' not in params:
+        return None, 'ipam required: dhcp, static, local'
+    
+    if params['ipam'] not in modes:
+        return None, 'ipam required: %s' % (', '.join(modes))
+    
+    if params['ipam'] == 'dhcp':
+        params['address'] = None
+        params['gateway'] = None
+
+    if params['ipam'] == 'static':
+        if 'address' not in params or params['address'] is None:
+            return None, 'address required for ipam:static'
+        
+        if not ip_helper.is_valid_ipv4_address(params['address']):
+            return None, 'address required for ipam:static'
+        
+        if 'gateway' not in params or params['gateway'] is None:
+            return None, 'gateway required for ipam:static'
+        
+        if not ip_helper.is_valid_ipv4_cidr(params['gateway']):
+            return None, 'gateway cidr required for ipam:static'
+
+        if not ip_helper.is_ipv4_in_cidr(params['address'], params['gateway']):
+            return None, 'address and gateway cidr mismatch'
+        
+    if params['ipam'] == 'local':
+        if 'address' not in params or params['address'] is None:
+            return None, 'address required for ipam:static'
+        
+        if len(params['address'].split('-')) != 2:
+            return None, 'address_start-address_end required for ipam:local'
+
+        address_start, address_end = params['address'].split('-')
+
+        if not ip_helper.is_valid_ipv4_address(address_start):
+            return None, 'address_start required for ipam:local'
+        
+        if not ip_helper.is_valid_ipv4_address(address_end):
+            return None, 'address_end required for ipam:local'
+
+        if ip_helper.get_ipv4_address_count(address_start, address_end) is None:
+            return None, 'invalid address range for ipam:local'
+        
+        if 'gateway' not in params or params['gateway'] is None:
+            return None, 'gateway required for ipam:local'
+        
+        if not ip_helper.is_valid_ipv4_cidr(params['gateway']):
+            return None, 'gateway cidr required for ipam:local'
+
+        if not ip_helper.is_ipv4_in_cidr(address_start, params['gateway']):
+            return None, 'address and gateway cidr mismatch'
+
+        if not ip_helper.is_ipv4_in_cidr(address_end, params['gateway']):
+            return None, 'address and gateway cidr mismatch'
+    
+    if 'route' in params:
+        if not isinstance(params['route'], list):
+            return None, 'route list required'
+        
+        for route in params['route']:
+            if not ip_helper.is_valid_ipv4_cidr(route):
+                return None, 'route with subnets required'
+
+    return params, None

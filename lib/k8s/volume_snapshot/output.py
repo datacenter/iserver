@@ -1,0 +1,43 @@
+class K8sVolumeSnapshotOutput():
+    def __init__(self):
+        pass
+
+    def print_volume_snapshots(self, info, title=False):
+        if title:
+            self.my_output.default(
+                'Volume Snapshot [#%s]' % (len(info)),
+                underline=True,
+                before_newline=True
+            )
+
+        if len(info) == 0:
+            self.my_output.default('None')
+            return
+
+        order = [
+            'namespace_name',
+            'info.readyT',
+            'info.pvc',
+            'info.class_name',
+            'info.size',
+            'age'
+        ]
+
+        headers = [
+            'Volume Snapshot',
+            'Ready',
+            'PVC',
+            'Class',
+            'Size',
+            'Age'
+        ]
+
+        self.my_output.my_table(
+            info,
+            order=order,
+            headers=headers,
+            allow_order_subkeys=True,
+            underline=True,
+            row_separator=False,
+            table=True
+        )

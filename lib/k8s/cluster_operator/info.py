@@ -1,0 +1,233 @@
+import time
+
+
+class K8sClusterOperatorInfo():
+    def __init__(self):
+        self.cluster_operator = None
+
+    def get_cluster_operator_info(self, managed_object):
+        if managed_object is None:
+            return None
+        
+        info = self.get_base_info(managed_object)
+
+        info['manager'] = None
+        managed_fields = self.get(
+            managed_object,
+            'metadata:managedFields'
+        )
+        if managed_fields is not None:
+            for managed_field in managed_fields:
+                try:
+                    if len(managed_field['fieldsV1']['f:status']['f:conditions']) >= 0:
+                        info['manager'] = managed_field['manager']
+                except BaseException:
+                    pass
+
+        info['since'] = None
+
+        info['available'] = False
+        info['availableTick'] = '\u2717'
+        info['__Output']['availableTick'] = 'Red'
+
+        info['progressing'] = False
+        info['progressingTick'] = '\u2717'
+
+        info['degraded'] = False
+        info['degradedTick'] = '\u2717'
+
+        info['upgradeable'] = False
+        info['upgradeableTick'] = '\u2717'
+
+        conditions_mo = self.get(
+            managed_object,
+            'status:conditions'
+        )
+        if conditions_mo is not None:
+            for condition_mo in conditions_mo:
+                info['since'] = self.get_max_timestamp(
+                    info['since'],
+                    self.get(
+                        condition_mo,
+                        'lastTransitionTime'
+                    )
+                )
+
+                if condition_mo['type'] == 'Available':
+                    if condition_mo['status'] == 'True':
+                        info['available'] = True
+                        info['availableTick'] = '\u2713'
+                        info['__Output']['availableTick'] = 'Green'
+                        
+                if condition_mo['type'] == 'Degraded':
+                    if condition_mo['status'] == 'True':
+                        info['degraded'] = True
+                        info['degradedTick'] = '\u2713'
+                        info['__Output']['degradedTick'] = 'Red'
+
+                if condition_mo['type'] == 'Progressing':
+                    if condition_mo['status'] == 'True':
+                        info['progressing'] = True
+                        info['progressingTick'] = '\u2713'
+
+                if condition_mo['type'] == 'Upgradeable':
+                    if condition_mo['status'] == 'True':
+                        info['upgradeable'] = True
+                        info['upgradeableTick'] = '\u2713'
+
+        info['sinceT'] = None
+        if info['since'] is not None:
+            info['sinceT'] = self.convert_age(int(time.time()) - info['since'])
+
+        versions = self.get(
+            managed_object,
+            'status:versions'
+        )
+        info['version'] = None
+        if versions is not None:
+            for version in versions:
+                if version['name'] == 'operator':
+                    info['version'] = version['version']
+
+        info['related'] = self.get(
+            managed_object,
+            'status:relatedObjects'
+        )
+
+        return info
+
+    def get_cluster_operator_deployment(self, cluster_operator_info, deployments):
+        if cluster_operator_info['related'] is None:
+            return None
+
+        namespaces = []
+        for related in cluster_operator_info['related']:
+            if related['resource'] == 'namespaces':
+                namespaces.append(
+                    related['name']
+                )
+
+        names = []
+        names.append(cluster_operator_info['name'])
+        names.append('openshift-%s' % (cluster_operator_info['name']))
+        names.append('%s-operator' % (cluster_operator_info['name']))
+        names.append('openshift-%s-operator' % (cluster_operator_info['name']))
+        names.append('cluster-%s-operator' % (cluster_operator_info['name']))
+
+        if cluster_operator_info['name'] == 'openshift-samples':
+            names.append('cluster-samples-operator')
+
+        app_label_map = {}
+        app_label_map['operator-lifecycle-manager'] = 'olm-operator'
+        app_label_map['operator-lifecycle-manager-catalog'] = 'catalog-operator'
+        app_label_map['operator-lifecycle-manager-packageserver'] = 'package-server-manager'
+
+        for deployment in deployments:
+            if deployment['owner_kind'] != 'ClusterVersion':
+                continue
+
+            if cluster_operator_info['name'] in app_label_map:
+                for label in deployment['label']:
+                    if label == 'app':
+                        if deployment['label'][label] == app_label_map[cluster_operator_info['name']]:
+                            return deployment
+
+            if deployment['namespace'] not in namespaces:
+                continue
+
+            if deployment['name'] not in names:
+                continue
+
+            return deployment
+
+        return None
+
+    def get_cluster_operator_related_deployments(self, cluster_operator_info, deployments):
+        related = []
+
+        for deployment in deployments:
+            for label in deployment['label']:
+                if label == 'app.kubernetes.io/managed-by':
+                    if deployment['label'][label] == cluster_operator_info['co_deployment']['name']:
+                        related.append(
+                            deployment
+                        )
+                        continue
+
+        return related
+
+    def get_cluster_operators(self, object_filter=None, return_mo=False, deployment_info=False, cache_enabled=True):
+        all_cluster_operators = self.get_infos(
+            'cluster_operator', 
+            object_filter=object_filter, 
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled
+        )
+        if all_cluster_operators is None:
+            return None
+
+        if return_mo:
+            return all_cluster_operators
+        
+        cluster_operators = []
+
+        if deployment_info:
+            deployments = self.get_deployments()
+
+        for cluster_operator_info in all_cluster_operators:
+            if not self.match_info(cluster_operator_info, object_filter):
+                continue
+
+            if deployment_info:
+                cluster_operator_info['co_deployment'] = None
+                cluster_operator_info['related_deployment'] = None
+
+                cluster_operator_deployment = self.get_cluster_operator_deployment(
+                    cluster_operator_info,
+                    deployments
+                )
+                if cluster_operator_deployment is not None:
+                    cluster_operator_info['co_deployment'] = {}
+                    cluster_operator_info['co_deployment']['namespace'] = cluster_operator_deployment['namespace']
+                    cluster_operator_info['co_deployment']['name'] = cluster_operator_deployment['name']
+                    cluster_operator_related_deployments = self.get_cluster_operator_related_deployments(
+                        cluster_operator_info,
+                        deployments
+                    )
+                    if cluster_operator_related_deployments is not None:
+                        cluster_operator_info['related_deployment'] = []
+                        for related_deployment in cluster_operator_related_deployments:
+                            item = {}
+                            item['namespace'] = related_deployment['namespace']
+                            item['name'] = related_deployment['name']
+                            cluster_operator_info['related_deployment'].append(
+                                item
+                            )
+
+            cluster_operators.append(
+                cluster_operator_info
+            )
+
+        return cluster_operators
+
+    def get_cluster_operator(self, name, return_mo=False, cache_enabled=True, optimized=True):
+        return self.get_info(
+            'cluster_operator', 
+            name,
+            return_mo=return_mo, 
+            cache_enabled=cache_enabled,
+            optimized=optimized
+        )
+    
+    def are_cluster_operators_available(self, operators=None, cache_enabled=True):
+        if operators is None:
+            operators = self.get_cluster_operators(cache_enabled=cache_enabled)
+
+        if operators is None:
+            return False
+        
+        for operator in operators:
+            if not operator['available']:
+                return False
+            
+        return True

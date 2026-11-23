@@ -1,0 +1,841 @@
+import datetime
+import random
+import shutil
+import traceback
+import os
+import re
+import socket
+import binascii
+import struct
+import hashlib
+import uuid
+import requests
+import validators
+import sshpubkeys
+import urllib
+import base64
+from cryptography import x509
+
+
+def get_short_uuid():
+    return str(uuid.uuid4()).split('-')[-1]
+
+
+def generate_uuid(seed):
+    md5_handler = hashlib.md5()
+    md5_handler.update(seed.encode('utf-8'))
+    return str(uuid.UUID(md5_handler.hexdigest()))
+
+
+def encode_text_64(text):
+    return base64.b64encode(text.encode("utf-8")).decode("utf-8")
+
+
+def decode_text_64(text):
+    return base64.b64decode(text).decode("utf-8")
+
+
+def generate_mac():
+    address = '02:00:00:%02x:%02x:%02x' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    return address
+
+
+def normalize_mac_address(mac_address):
+    return mac_address.lower().replace(':', '').replace('.', '')
+
+
+def is_mac_address(mac):
+    if mac is None:
+        return False
+
+    mac = normalize_mac_address(mac)
+    if len(mac) != 12:
+        return False
+
+    for char in mac:
+        if char not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
+            return False
+
+    return True
+
+
+def is_mac_equal(mac_a, mac_b):
+    if mac_a is not None and mac_b is not None:
+        if normalize_mac_address(mac_a) == normalize_mac_address(mac_b):
+            return True
+    return False
+
+
+def is_mac_match(mac_a, mac_b):
+    mac_a = mac_a.replace(':', '').lower()
+    mac_b = mac_b.replace(':', '').replace('.', '').lower()
+    if mac_a in mac_b:
+        return True
+    return False
+
+
+def is_valid_mac_address(address, mac_address_format='colon'):
+    try:
+        if mac_address_format == 'colon':
+            if re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", address.lower()):
+                return True
+        if mac_address_format == 'dotted':
+            if re.match("[0-9a-f]{4}([.]?)[0-9a-f]{4}([.]?)[0-9a-f]{4}$", address.lower()):
+                return True
+    except BaseException:
+        pass
+    return False
+
+
+def reformat_mac(address):
+    if address is None:
+        return None
+    
+    if not isinstance(address, str):
+        return None
+    
+    address = normalize_mac_address(address)
+    if len(address) != 12:
+        return None
+    
+    return ':'.join(address[i:i+2] for i in range(0,12,2))
+
+
+def is_valid_ipv4_address(address):
+    try:
+        socket.inet_pton(socket.AF_INET, address)
+    except AttributeError:  # no inet_pton here, sorry
+        try:
+            socket.inet_aton(address)
+        except socket.error:
+            return False
+        return address.count('.') == 3
+    except socket.error:  # not a valid address
+        return False
+    except BaseException:
+        return False
+
+    return True
+
+
+def is_valid_ipv6_address(address):
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_valid_ip_address(address):
+    return is_valid_ipv4_address(address) or is_valid_ipv6_address(address)
+
+
+def is_valid_ipv6_cidr(cidr):
+    valid = False
+    try:
+        network, net_bits = cidr.split('/')
+        if is_valid_ipv6_address(network) and int(net_bits) < 129 and int(net_bits) > 8:
+            valid = True
+    except BaseException:
+        pass
+
+    return valid
+
+
+def is_valid_ipv4_cidr(cidr):
+    valid = False
+    try:
+        if cidr == '0.0.0.0/0':
+            return True
+
+        network, net_bits = cidr.split('/')
+        if is_valid_ipv4_address(network) and int(
+                net_bits) < 33 and int(net_bits) >= 8:
+            valid = True
+    except BaseException:
+        pass
+
+    return valid
+
+
+def cidr_to_netmask(cidr):
+    network, net_bits = cidr.split('/')
+    host_bits = 32 - int(net_bits)
+    netmask = socket.inet_ntoa(struct.pack('!I', (1 << 32) - (1 << host_bits)))
+    return network, netmask
+
+
+def netmask_to_prefix(mask):
+    try:
+        prefix = sum(bin(int(x)).count('1') for x in mask.split('.'))
+        return prefix
+    except BaseException:
+        return None
+
+
+def prefix_to_netmask(prefix):
+    host_bits = 32 - prefix
+    netmask = socket.inet_ntoa(struct.pack('!I', (1 << 32) - (1 << host_bits)))
+    return netmask
+
+
+def ipv4_to_int(address):
+    return struct.unpack('>L', socket.inet_aton(address))[0]
+
+
+def is_ipv4_in_cidr(address, cidr):
+    if not is_valid_ipv4_address(address):
+        return False
+
+    netaddr, bits = cidr.split('/')
+    if not is_valid_ipv4_address(netaddr):
+        return False
+    if int(bits) < 8 or int(bits) > 32:
+        return False
+
+    ip_address = struct.unpack('>L', socket.inet_aton(address))[0]
+    ip_address_cidr = ip_address & (4294967295 << (32 - int(bits)))
+    ip_network = struct.unpack('>L', socket.inet_aton(netaddr))[0]
+    ip_network_cidr = ip_network & (4294967295 << (32 - int(bits)))
+
+    return ip_address_cidr == ip_network_cidr
+
+
+def ip_to_integer(ip_address):
+    """
+    Converts a string-represented IP address to its integer
+    representation.
+
+    Returns a tuple (ip_integer, version), where version
+    indicates the IP version (either 4 or 6).
+
+    Supports both IPv4 (e.g., '192.168.1.1') and IPv6 (e.g.,
+    '2a02:a448:ddb0::') addresses.
+    """
+
+    # Try parsing the IP address first as IPv4, then as IPv6.
+    for version in (socket.AF_INET, socket.AF_INET6):
+        try:
+            ip_hex = socket.inet_pton(version, ip_address)
+            ip_integer = int(binascii.hexlify(ip_hex), 16)
+            return (ip_integer, 4 if version == socket.AF_INET else 6)
+        except BaseException:
+            pass
+
+    return None, None
+
+
+def subnetwork_to_ip_range(subnetwork):
+    """
+    Converts a CIDR notation subnetwork string to its integer
+    bounds.
+
+    Returns a tuple (ip_lower, ip_upper, version), where:
+    - ip_lower and ip_upper are integer values of the lower and
+        upper IP addresses, respectively.
+    - version indicates the subnetwork IP version (either 4 or 6).
+
+    Accepts both IPv4 (e.g., '192.168.1.0/24') and IPv6 (e.g.,
+    '2a02:a448:ddb0::/44') subnetworks.
+    """
+
+    try:
+        fragments = subnetwork.split('/')
+        network_prefix = fragments[0]
+        netmask_len = int(fragments[1])
+
+        # Try parsing the subnetwork first as IPv4, then as IPv6.
+        for version in (socket.AF_INET, socket.AF_INET6):
+            ip_len = 32 if version == socket.AF_INET else 128
+
+            try:
+                suffix_mask = (1 << (ip_len - netmask_len)) - 1
+                netmask = ((1 << ip_len) - 1) - suffix_mask
+                ip_hex = socket.inet_pton(version, network_prefix)
+                ip_lower = int(binascii.hexlify(ip_hex), 16) & netmask
+                ip_upper = ip_lower + suffix_mask
+                return (ip_lower,
+                        ip_upper,
+                        4 if version == socket.AF_INET else 6)
+
+            except BaseException:
+                pass
+
+    except BaseException:
+        pass
+
+    return None, None, None
+
+
+def ip_in_subnetwork(ip_address, subnetwork):
+    """
+    Returns True if the provided IP address belongs to the
+    subnetwork (specified in CIDR notation); otherwise, returns
+    False. Both arguments should be strings.
+
+    Supports both IPv4 (e.g., '192.168.1.1' and '192.168.1.0/24')
+    and IPv6 (e.g., '2a02:a448:ddb0::' and '2a02:a448:ddb0::/44')
+    addresses and subnetworks.
+    """
+
+    (ip_integer, version_1) = ip_to_integer(ip_address)
+    if ip_integer is None or version_1 is None:
+        return False
+
+    (ip_lower, ip_upper, version_2) = subnetwork_to_ip_range(subnetwork)
+    if ip_lower is None or ip_upper is None or version_2 is None:
+        return False
+
+    if version_1 != version_2:
+        return False
+
+    return (ip_lower <= ip_integer <= ip_upper)
+
+
+def is_ipv6_in_cidr(address, cidr):
+    return ip_in_subnetwork(address, cidr)
+
+
+def get_network_ipv4_in_cidr(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return None
+
+    netaddr, bits = cidr.split('/')
+
+    if not is_valid_ipv4_address(netaddr):
+        return None
+    if int(bits) < 8 or int(bits) > 32:
+        return None
+
+    ip_network = struct.unpack('>L', socket.inet_aton(netaddr))[0]
+    ip_network_cidr = ip_network & (4294967295 << (32 - int(bits)))
+
+    return socket.inet_ntoa(struct.pack('>L', ip_network_cidr))
+
+
+def is_cidr4_network(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return False
+    
+    if cidr == '%s/%s' % (get_network_ipv4_in_cidr(cidr), cidr.split('/')[1]):
+        return True
+    
+    return False
+
+
+def get_network_cidr_from_cidr(cidr):
+    network = get_network_ipv4_in_cidr(cidr)
+    if network is None:
+        return None
+
+    return '%s/%s' % (network, cidr.split('/')[1])
+
+
+def get_first_ipv4_in_cidr(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return None
+
+    netaddr, bits = cidr.split('/')
+    address = struct.unpack('>L', socket.inet_aton(netaddr))[0]
+    address = address + 1
+    return socket.inet_ntoa(struct.pack('>L', address))
+
+
+def get_nth_ipv4_in_cidr(cidr, index):
+    if not is_valid_ipv4_cidr(cidr):
+        return None
+
+    size = get_ipv4_cidr_size(cidr)
+    if size is None:
+        return None
+
+    if index >= size:
+        return None
+
+    netaddr, bits = cidr.split('/')
+    address = struct.unpack('>L', socket.inet_aton(netaddr))[0]
+    address = address + index
+    return socket.inet_ntoa(struct.pack('>L', address))
+
+
+def get_last_ipv4_in_cidr(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return None
+
+    netaddr, bits = cidr.split('/')
+    if netaddr == '0.0.0.0':
+        return '0.0.0.0'
+
+    address = struct.unpack('>L', socket.inet_aton(netaddr))[0]
+    address = address + 2**(32 - int(bits)) - 2
+    return socket.inet_ntoa(struct.pack('>L', address))
+
+
+def get_ipv4_cidr_size(cidr):
+    if not is_valid_ipv4_cidr(cidr):
+        return None
+    netaddr, bits = cidr.split('/')
+    return 2**(32 - int(bits)) - 2
+
+
+def get_nth_ipv4_from_address(address, index):
+    if not is_valid_ipv4_address(address):
+        return None
+
+    numeric_address = struct.unpack('>L', socket.inet_aton(address))[0]
+    numeric_address = numeric_address + index
+    return socket.inet_ntoa(struct.pack('>L', numeric_address))
+
+
+def get_ipv4_addresses_in_range(start_address, end_address):
+    if not is_valid_ipv4_address(start_address):
+        return None
+
+    if len(end_address.split('.')) == 4:
+        if not is_valid_ipv4_address(end_address):
+            return None
+    else:
+        end_address_octets = len(end_address.split('.'))
+        start_address_octets = 4 - end_address_octets
+        octets = start_address.split('.')[:start_address_octets] + end_address.split('.')
+        end_address = '.'.join(octets)
+
+        if not is_valid_ipv4_address(end_address):
+            return None
+
+    addresses = [start_address]
+    while True:
+        start_address = get_next_ipv4_address(start_address)
+        addresses.append(start_address)
+        if start_address == end_address:
+            break
+
+    return addresses
+
+
+def get_ipv4_address_count(start_address, end_address):
+    if not is_valid_ipv4_address(start_address):
+        return None
+
+    if not is_valid_ipv4_address(end_address):
+        return None
+
+    numeric_start_address = struct.unpack('>L', socket.inet_aton(start_address))[0]
+    numeric_end_address = struct.unpack('>L', socket.inet_aton(end_address))[0]
+    if numeric_end_address < numeric_start_address:
+        return None
+
+    count = numeric_end_address - numeric_start_address + 1
+
+    return count
+
+
+def get_lower_ipv4(ip_a, ip_b):
+    if not is_valid_ipv4_address(ip_a):
+        return None
+
+    if not is_valid_ipv4_address(ip_b):
+        return None
+
+    numeric_address_a = struct.unpack('>L', socket.inet_aton(ip_a))[0]
+    numeric_address_b = struct.unpack('>L', socket.inet_aton(ip_b))[0]
+
+    if numeric_address_a < numeric_address_b:
+        return ip_a
+
+    return ip_b
+
+
+def is_subnet_in_subnet(subnet_a, subnet_b):
+    if not is_valid_ipv4_cidr(subnet_a):
+        return False
+
+    if not is_valid_ipv4_cidr(subnet_b):
+        return False
+
+    subnet_a = '%s/%s' % (
+        get_network_ipv4_in_cidr(subnet_a),
+        subnet_a.split('/')[1]
+    )
+    subnet_b = '%s/%s' % (
+        get_network_ipv4_in_cidr(subnet_b),
+        subnet_b.split('/')[1]
+    )
+
+    subnet_a_min = get_first_ipv4_in_cidr(subnet_a)
+    subnet_a_max = get_last_ipv4_in_cidr(subnet_a)
+    subnet_b_min = get_first_ipv4_in_cidr(subnet_b)
+    subnet_b_max = get_last_ipv4_in_cidr(subnet_b)
+    if get_lower_ipv4(subnet_a_min, subnet_b_min) == subnet_b_min:
+        if get_lower_ipv4(subnet_a_max, subnet_b_max) == subnet_a_max:
+            return True
+
+    return False
+
+
+def is_subnet_overlap(subnet_a, subnet_b):
+    if not is_valid_ipv4_cidr(subnet_a):
+        return False
+
+    if not is_valid_ipv4_cidr(subnet_b):
+        return False
+
+    subnet_a_min = get_first_ipv4_in_cidr(subnet_a)
+    subnet_a_max = get_last_ipv4_in_cidr(subnet_a)
+    subnet_b_min = get_first_ipv4_in_cidr(subnet_b)
+    subnet_b_max = get_last_ipv4_in_cidr(subnet_b)
+
+    if is_ipv4_in_cidr(subnet_a_min, subnet_b):
+        return True
+    
+    if is_ipv4_in_cidr(subnet_a_max, subnet_b):
+        return True
+
+    if is_ipv4_in_cidr(subnet_b_min, subnet_a):
+        return True
+    
+    if is_ipv4_in_cidr(subnet_b_max, subnet_a):
+        return True
+
+    return False
+
+
+def get_next_ipv4_address(ip_address):
+    return get_nth_ipv4_from_address(ip_address, 1)
+
+
+def is_url_valid(value):
+    return validators.url(value)
+
+
+def is_url_accessible(url, timeout=1):
+    try:
+        if len(url.split(' ')) > 1:
+            return False
+        handler = requests.head(url, timeout=timeout)
+        if 'Content-Type' in handler.headers:
+            return True
+    except BaseException:
+        pass
+    return False
+
+
+def get_proxies():
+    proxies = None
+    if os.environ.get('EXT_HTTP_PROXY') is not None and os.environ.get('EXT_HTTPS_PROXY') is not None:
+        proxies = {}
+        proxies['http'] = os.environ.get('EXT_HTTP_PROXY')
+        proxies['https'] = os.environ.get('EXT_HTTPS_PROXY')
+    return proxies
+
+
+def download_url(url, filename, timeout=5, verify=True, username=None, password=None, return_error=False, proxies=None):
+    if username is not None and password is not None:
+        try:
+            response = requests.get(
+                url,
+                auth=(username, password),
+                timeout=timeout,
+                proxies=proxies,
+                verify=verify
+            )
+            with open(filename, "wb") as file_handler:
+                file_handler.write(response.content)
+        except BaseException:
+            if return_error:
+                return None, traceback.format_exc()
+            else:
+                return None
+    else:                
+        try:
+            response = requests.get(
+                url,
+                timeout=timeout,
+                proxies=proxies,
+                verify=verify
+            )
+            with open(filename, "wb") as file_handler:
+                file_handler.write(response.content)
+        except BaseException:
+            if return_error:
+                return None, traceback.format_exc()
+            else:
+                return None
+
+    if return_error:
+        return filename, None
+
+    return filename
+
+
+def get_url_response(url, bearer=None, timeout=5, verify=True, cast_json=False):
+    headers = None
+    if bearer is not None:
+        headers = {}
+        headers['Authorization'] = 'Bearer %s' % (bearer)
+
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=timeout,
+            verify=verify
+        )
+        if response.status_code >= 300:
+            return None, 'Status code: %s' % (response.status_code)
+        
+        if cast_json:
+            return response.json(), None
+        
+        return response.text(), None
+    
+    except BaseException:
+        return None, str(traceback.format_ext())
+
+def get_url_size(url):
+    try:
+        d = urllib.request.urlopen(url)
+        return d.info()['Content-Length']
+    except BaseException:
+        return None
+    
+
+def download_large_url(url, filename, timeout=5, verify=True):
+    file_size = get_url_size(url)
+    if file_size is not None:
+        print('File size: %s' % (file_size))
+
+    try:
+        response = requests.get(
+            url, 
+            stream=True,
+            timeout=timeout,
+            verify=verify
+        )
+        with open(filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+
+    except requests.exceptions.RequestException as e:
+        print("Error downloading the file:", e)
+        return False
+
+    return True
+
+
+def get_url(url, timeout=5):
+    try:
+        response = requests.get(
+            url,
+            timeout=timeout
+        )
+        return response.text
+    except BaseException:
+        pass
+    return None
+
+
+def get_url_parse(url):
+    if not is_url_valid(url):
+        return None
+    
+    parsed = urllib.parse.urlsplit(url)
+    info = {}
+    info['protocol'] = parsed.scheme
+    info['hostname'] = parsed.hostname
+    if info['protocol'] == 'http':
+        info['port'] = 80
+    else:
+        info['port'] = 443
+    info['netloc'] = parsed.netloc
+    info['path'] = parsed.path.lstrip('/')
+    info['query'] = parsed.query
+    return info
+
+
+def is_public_key_valid(value):
+    ssh = sshpubkeys.SSHKey(value, strict=True)
+    try:
+        ssh.parse()
+    except BaseException:
+        return False
+    return True
+
+
+def get_file_md5(filename):
+    if not os.path.isfile(filename):
+        return None
+    hasher = hashlib.md5()
+    blocksize = 65536
+    with open(filename, 'rb') as file_handler:
+        buf = file_handler.read(blocksize)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = file_handler.read(blocksize)
+    md5 = hasher.hexdigest()
+    return md5
+
+
+def get_string_md5(string):
+    return hashlib.md5(string.encode('utf-8')).hexdigest()
+
+
+def get_ip(name):
+    try:
+        ip_address = socket.gethostbyname(name)
+    except BaseException:
+        return None
+    return ip_address
+
+
+def get_string_ipv4s(line):
+    ips = []
+    candidates = re.findall(r'[0-9]+(?:\.[0-9]+){3}', line)
+    for candidate in candidates:
+        if is_valid_ipv4_address(candidate):
+            ips.append(
+                candidate
+            )
+    return ips
+
+
+def get_obscured_ipv4(address, allow_private_lead=True):
+    if not is_valid_ipv4_address(address):
+        return None
+
+    octets = address.split('.')
+    new_octets = []
+    for octet in octets:
+        new_octets.append(
+            '*' * len(octet)
+        )
+
+    if allow_private_lead:
+        if octets[0] in ['10', '172', '192']:
+            new_octets[0] = octets[0]
+
+    return '.'.join(new_octets)
+
+
+def get_string_macs_colon(line):
+    macs = []
+    candidates = re.findall(r'([0-9a-f]{2}(?::[0-9a-f]{2}){5})', line, re.IGNORECASE)
+    for candidate in candidates:
+        if is_valid_mac_address(candidate, mac_address_format='colon'):
+            macs.append(
+                candidate
+            )
+    return macs
+
+
+def get_string_macs_dotted(line):
+    macs = []
+    candidates = re.findall(r'([0-9a-f]{4}(?:.[0-9a-f]{4}){2})', line, re.IGNORECASE)
+    for candidate in candidates:
+        if is_valid_mac_address(candidate, mac_address_format='dotted'):
+            macs.append(
+                candidate
+            )
+    return macs
+
+
+def get_string_macs(line):
+    macs = []
+    macs = macs + get_string_macs_colon(line)
+    macs = macs + get_string_macs_dotted(line)
+    return macs
+
+
+def get_obscured_mac(address):
+    if is_valid_mac_address(address, mac_address_format='colon'):
+        return '**:**:**:**:**:**'
+
+    if is_valid_mac_address(address, mac_address_format='dotted'):
+        return '****.****.****'
+
+    return None
+
+
+def get_cert_info(data):
+    try:
+        cert = x509.load_pem_x509_certificate(data)
+    except BaseException:
+        print(traceback.format_exc())
+        return None
+
+    info = {}
+    info['version'] = 'v1'
+    if cert.version == x509.Version.v3:
+        info['version'] = 'v3'
+
+    try:
+        info['serial'] = cert.serial_number
+    except BaseException:
+        info['serial'] = '---'
+
+    try:
+        info['issuer'] = x509.RelativeDistinguishedName(cert.issuer).rfc4514_string()
+    except BaseException:
+        info['issuer'] = '---'
+    
+    try:
+        info['subject'] = x509.RelativeDistinguishedName(cert.subject).rfc4514_string()
+    except BaseException:
+        info['subject'] = '---'
+
+    try:
+        info['sign_algo'] = cert.signature_algorithm_oid._name
+    except BaseException:
+        info['sign_algo'] = '---'
+
+    try:
+        info['hash_algo'] = cert.signature_hash_algorithm.name
+    except BaseException:
+        info['hash_algo'] = '---'
+
+    try:
+        info['valid_from'] = cert.not_valid_before.strftime(
+            '%Y-%m-%dT%H:%M:%S.%f%z'
+        )
+    except BaseException:
+        info['valid_from'] = '---'
+
+    try:
+        info['valid_to'] = cert.not_valid_after.strftime(
+            '%Y-%m-%dT%H:%M:%S.%f%z'
+        )
+    except BaseException:
+        info['valid_to'] = '---'
+
+    return info
+
+
+def get_csr_info(data):
+    try:
+        cert = x509.load_pem_x509_csr(data)
+    except BaseException:
+        print(traceback.format_exc())
+        return None
+
+    info = {}
+
+    try:
+        info['subject'] = x509.RelativeDistinguishedName(cert.subject).rfc4514_string()
+    except BaseException:
+        info['subject'] = None
+
+    try:
+        info['valid'] = cert.is_signature_valid
+    except BaseException:
+        info['valid'] = False
+
+    try:
+        info['sign_algo'] = cert.signature_algorithm_oid._name
+    except BaseException:
+        info['sign_algo'] = '---'
+
+    try:
+        info['hash_algo'] = cert.signature_hash_algorithm.name
+    except BaseException:
+        info['hash_algo'] = '---'
+
+    return info

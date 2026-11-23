@@ -1,0 +1,26 @@
+import sys
+import click
+from menu import validations
+from lib.workflow import ocp_common
+
+@click.command("intersight")
+@click.pass_obj
+@click.option("--cluster", "cluster_names", multiple=True, callback=validations.validate_ocp_cluster_names, help="Cluster name")
+@click.option("--mode", type=click.Choice(['operator', 'instance', 'ui', 'all'], case_sensitive=False), default='operator', show_default=True, help="Mode of operation")
+@click.option("--no-confirm", is_flag=True, show_default=True, default=False, help="Confirmation mode")
+def delete_ocp_intersight_command(ctx, cluster_names, mode, no_confirm):
+    """Delete intersight operator in openshift cluster"""
+
+    task = {}
+    if mode in ['operator', 'all']:
+        task['operator'] = {}
+
+    if mode in ['instance', 'all']:
+        task['instance'] = {}
+
+    if mode in ['ui', 'all']:
+        task['ui'] = {}
+
+    success = ocp_common.delete_workflow(cluster_names, 'intersight', task, not no_confirm, ctx.run_id)
+    if not success:
+        sys.exit(1)

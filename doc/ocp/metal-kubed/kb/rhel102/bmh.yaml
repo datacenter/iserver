@@ -1,0 +1,24 @@
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: test
+  namespace: openshift-machine-api
+spec:
+  online: true
+  preprovisioningNetworkDataName: test-network
+  bootMACAddress: aa:aa:aa:aa:aa:aa
+  bootMode: UEFI
+  networkData:
+    name: test-networkdata
+  userData:
+    name: test-userdata
+  bmc:
+    address: redfish-virtualmedia://10.10.10.10/redfish/v1/Systems/AAA
+    credentialsName: test-bmc-secret
+    disableCertificateVerification: true
+  image:
+    url: http://20.20.20.20/rhel-10.2-x86_64-kvm.qcow2
+    checksum: caaacd0b11bbc4206f8c7fec8594b82b4366b3f88ff974dbbf373832ae676f4f
+    checksumType: sha256
+  rootDeviceHints:
+    serialNumber: 123456

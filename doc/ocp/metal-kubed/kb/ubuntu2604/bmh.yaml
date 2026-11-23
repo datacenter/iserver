@@ -1,0 +1,24 @@
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: test
+  namespace: openshift-machine-api
+spec:
+  online: true
+  preprovisioningNetworkDataName: test-network
+  bootMACAddress: aa:aa:aa:aa:aa:aa
+  bootMode: UEFI
+  networkData:
+    name: test-networkdata
+  userData:
+    name: test-userdata
+  bmc:
+    address: redfish-virtualmedia://10.10.10.10/redfish/v1/Systems/AAA
+    credentialsName: test-bmc-secret
+    disableCertificateVerification: true
+  image:
+    url: http://20.20.20.20/ubuntu-26.04-server-cloudimg-amd64.img
+    checksum: 8196be9d7958059cb56c6c75c80fdf6cee8a8885bc149ea791d7db1c7ef93035
+    checksumType: sha256
+  rootDeviceHints:
+    serialNumber: 123456

@@ -1,0 +1,35 @@
+[
+    {
+        "nfd": {
+            "operator": {}
+        }
+    },    
+    {
+        "gpu": {
+            "operator": {},
+            "policy": {},
+            "dashboard": {}
+        }
+    },
+    {
+        "nim": {
+            "operator": {}
+        }
+    },
+    {
+        "serverless": {
+            "operator": {}
+        }
+    },
+    {
+        "service-mesh": {
+            "operator": {}
+        }
+    },
+    {
+        "ai": {
+            "operator": {},
+            "cluster": {}
+        }
+    }
+]

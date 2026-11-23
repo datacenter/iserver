@@ -1,0 +1,49 @@
+from lib import output_helper
+from lib.workflow.ocp_cilium_cni import common as local_common
+from lib.workflow import ocp_common
+
+
+def validate(params):
+    rules = [
+        ['cluster', False, None, 'str', None, None, None, None],
+        ['command', False, None, 'str', None, None, None, None]
+    ]
+    success, params, allowed_keys = ocp_common.check_parameters(params, rules)
+    if not success:
+        return None, params
+        
+    return ocp_common.sanitize_params(params, allowed_keys, defaults=local_common.get_default_params()), None
+
+
+def run(params, log_id=None):
+    my_output = output_helper.OutputHelper(log_id=log_id)
+    params, error = validate(params)
+    if error is not None:
+        my_output.error(error)
+        return None
+
+    if not params['silent']:
+        my_output.default('OpenShift Workflow - Cilium - Agent exec', before_newline=True, after_newline=True, double_underline=True)
+
+    params = ocp_common.workflow_init(params, my_output, log_id, cilium_required=True)
+    if params is None:
+        return False
+
+    pods = params['k8s_handler'].get_pods_daemon_set(
+        params['__default__']['namespace'],
+        params['__default__']['agent-name']
+    )
+    if pods is None:
+        if not params['silent']:
+            my_output.error('Failed to get cilium agent pods')
+        return None
+    
+    response = {}
+    for pod in pods:
+        response[pod['name']] = params['k8s_handler'].get_pod_exec(
+            pod['namespace'],
+            pod['name'],
+            params['command']
+        )
+
+    return response
